@@ -52,9 +52,9 @@
       </template>
 
       <template #[`item.user`]="{ item }">
-        <router-link :to="{ name: 'viewers', params: { id: item.user.userId }}">
+        <NuxtLink :to="'/manage/viewers/' + item.user.userId">
           {{ item.user.username }}&nbsp;<small class="text-muted">{{ item.user.userId }}</small>
-        </router-link>
+        </NuxtLink>
       </template>
     </v-data-table>
   </v-container>
