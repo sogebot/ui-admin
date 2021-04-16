@@ -274,27 +274,26 @@ import {
 } from '@vue/composition-api';
 import { capitalize, orderBy } from 'lodash-es';
 
-import { error } from '../../functions/error';
-import { EventBus } from '../../functions/event-bus';
-import { getPermissionName } from '../../functions/getPermissionName';
-import { truncate } from '../../functions/truncate';
-import {
-  minLength, required, startsWithExclamation, startsWithExclamationOrCustomVariable,
-} from '../../functions/validators';
-
 import type { AliasInterface } from '.bot/src/bot/database/entity/alias';
 import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';
-
-const socket = {
-  permission: getSocket('/core/permissions'),
-  alias:      getSocket('/systems/alias'),
-} as const;
+import { error } from '~/functions/error';
+import { EventBus } from '~/functions/event-bus';
+import { getPermissionName } from '~/functions/getPermissionName';
+import { truncate } from '~/functions/truncate';
+import {
+  minLength, required, startsWithExclamation, startsWithExclamationOrCustomVariable,
+} from '~/functions/validators';
 
 type AliasInterfaceUI = AliasInterface & { groupToBeShownInTable: null | string };
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/alias-newItem.vue') }) },
   setup (_, ctx) {
+    const socket = {
+      permission: getSocket('/core/permissions'),
+      alias:      getSocket('/systems/alias'),
+    } as const;
+
     const timestamp = ref(Date.now());
 
     const selected = ref([] as AliasInterfaceUI[]);
