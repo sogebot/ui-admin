@@ -24,8 +24,6 @@ import { isUserLoggedIn } from '@sogebot/ui-helpers/isUserLoggedIn';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { defineComponent, ref } from '@vue/composition-api';
 
-const socket = getSocket('/core/users', true);
-
 export default defineComponent({
   setup (_props, context) {
     const theme = ref('light');
@@ -53,6 +51,7 @@ export default defineComponent({
       // we need to save users preferred theme
       const user = await isUserLoggedIn(false, false);
       if (user) {
+        const socket = getSocket('/core/users', true);
         socket.emit('theme::set', { theme: themeArg, userId: user.id }, () => {
           return true;
         });

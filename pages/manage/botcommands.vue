@@ -118,11 +118,6 @@ type CommandsInterface = {
 
 export default defineComponent({
   setup () {
-    const socket = {
-      permission: getSocket('/core/permissions'),
-      command:    getSocket('/core/general'),
-    } as const;
-
     const rules = { command: [startsWithExclamation, required, minLength(2)] };
 
     const search = ref('');
@@ -166,14 +161,14 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      socket.permission.emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
+      getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
         if (err) {
           return error(err);
         }
         permissions.value = data;
         state.value.loadingPrm = ButtonStates.success;
       });
-      socket.command.emit('generic::getCoreCommands', (err: string | null, commands: Required<CommandsInterface>[]) => {
+      getSocket('/core/general').emit('generic::getCoreCommands', (err: string | null, commands: Required<CommandsInterface>[]) => {
         if (err) {
           return error(err);
         }
@@ -220,7 +215,7 @@ export default defineComponent({
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-            socket.command.emit('generic::setCoreCommand', {
+            getSocket('/core/general').emit('generic::setCoreCommand', {
               ...itemToUpdate,
               [attr]: item[attr], // save new value for all selected items
             }, () => {

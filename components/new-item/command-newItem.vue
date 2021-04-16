@@ -46,8 +46,6 @@ import type { CommandsInterface } from '.bot/src/bot/database/entity/commands';
 export default defineComponent({
   props: { rules: Object },
   setup (_, ctx) {
-    const socket = { command: getSocket('/systems/customcommands') } as const;
-
     const newItemCommand = ref('');
     const newItemSaving = ref(false);
     const valid = ref(true);
@@ -66,7 +64,8 @@ export default defineComponent({
             visible:   true,
           };
           console.log('Saving', { item });
-          socket.command.emit('generic::setById', { id: item.id, item }, () => {
+          const socket = getSocket('/systems/customcommands');
+          socket.emit('generic::setById', { id: item.id, item }, () => {
             resolve(true);
             ctx.emit('save');
             newItemSaving.value = false;

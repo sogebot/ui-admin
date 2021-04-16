@@ -54,8 +54,6 @@ import { v4 as uuid } from 'uuid';
 
 import type { AliasInterface } from '.bot/src/bot/database/entity/alias';
 
-const socket = { alias: getSocket('/systems/alias') } as const;
-
 export default defineComponent({
   props: { rules: Object },
   setup (_, ctx) {
@@ -80,7 +78,8 @@ export default defineComponent({
             group:      null,
           };
           console.log('Saving', { item });
-          socket.alias.emit('generic::setById', { id: item.id, item }, () => {
+          const socket = getSocket('/systems/alias');
+          socket.emit('generic::setById', { id: item.id, item }, () => {
             resolve(true);
             ctx.emit('save');
             newItemSaving.value = false;

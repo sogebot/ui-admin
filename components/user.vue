@@ -174,7 +174,6 @@ import {
 import type { PermissionsInterface } from '../.bot/src/bot/database/entity/permissions';
 import type { UserInterface } from '../.bot/src/bot/database/entity/user';
 
-const socket = getSocket('/core/users', true);
 let interval = 0;
 
 const theme = defineAsyncComponent({ loader: () => import('./theme.vue') });
@@ -206,6 +205,7 @@ export default defineComponent({
     onUnmounted(() => clearInterval(interval));
 
     const logout = () => {
+      const socket = getSocket('/core/users', true);
       socket.emit('logout', {
         accessToken:  localStorage.getItem('accessToken'),
         refreshToken: localStorage.getItem('refreshToken'),
@@ -221,6 +221,7 @@ export default defineComponent({
       if (typeof (context.root as any).$store.state.loggedUser === 'undefined' || (context.root as any).$store.state.loggedUser === null) {
         return;
       }
+      const socket = getSocket('/core/users', true);
       socket.emit('viewers::findOne', (context.root as any).$store.state.loggedUser.id, (err: string| number, recvViewer: Readonly<Required<UserInterface>> & { aggregatedTips: number; aggregatedBits: number; permission: PermissionsInterface }) => {
         if (err) {
           return console.error(err);
@@ -235,8 +236,14 @@ export default defineComponent({
       });
     };
 
-    const joinBot = () => socket.emit('joinBot');
-    const leaveBot = () => socket.emit('leaveBot');
+    const joinBot = () => {
+      const socket = getSocket('/core/users', true);
+      socket.emit('joinBot');
+    }
+    const leaveBot = () => {
+      const socket = getSocket('/core/users', true);
+      socket.emit('leaveBot');
+    }
 
     return {
       menu,

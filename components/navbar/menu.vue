@@ -56,7 +56,6 @@ import {
 type menuType = { category?: string; name: string; id: string; this: any | null }[];
 type menuWithEnabled = Omit<menuType[number], 'this'> & { enabled: boolean };
 
-const socket = getSocket('/');
 
 const icons = new Map<string, string>([
   ['dashboard', mdiViewDashboard],
@@ -74,6 +73,7 @@ export default defineComponent({
     const isDisabledHidden = ref(true);
 
     onMounted(async () => {
+      const socket = getSocket('/');
       const isLoaded = await Promise.race([
         new Promise<boolean>((resolve) => {
           socket.emit('menu', (err: string | null, data: menuWithEnabled[]) => {

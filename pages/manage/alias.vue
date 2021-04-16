@@ -289,11 +289,6 @@ type AliasInterfaceUI = AliasInterface & { groupToBeShownInTable: null | string 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/alias-newItem.vue') }) },
   setup (_, ctx) {
-    const socket = {
-      permission: getSocket('/core/permissions'),
-      alias:      getSocket('/systems/alias'),
-    } as const;
-
     const timestamp = ref(Date.now());
 
     const selected = ref([] as AliasInterfaceUI[]);
@@ -399,14 +394,14 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      socket.permission.emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
+      getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
         if (err) {
           return error(err);
         }
         permissions.value = data;
         state.value.loadingPrm = ButtonStates.success;
       });
-      socket.alias.emit('generic::getAll', (err: string | null, itemsGetAll: typeof items.value) => {
+      getSocket('/systems/alias').emit('generic::getAll', (err: string | null, itemsGetAll: typeof items.value) => {
         if (err) {
           error(err);
           return;
@@ -448,7 +443,7 @@ export default defineComponent({
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-            socket.alias.emit('generic::setById', {
+            getSocket('/systems/alias').emit('generic::setById', {
               id:   itemToUpdate.id,
               item: {
                 ...itemToUpdate,
@@ -469,7 +464,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            socket.alias.emit('generic::deleteById', item.id, (err: string | null) => {
+            getSocket('/systems/alias').emit('generic::deleteById', item.id, (err: string | null) => {
               if (err) {
                 reject(error(err));
               }

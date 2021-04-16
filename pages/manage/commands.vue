@@ -222,11 +222,6 @@ export default defineComponent({
     responses:  defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
   },
   setup () {
-    const socket = {
-      permission: getSocket('/core/permissions'),
-      command:    getSocket('/systems/customcommands'),
-    } as const;
-
     const rules = { command: [startsWithExclamation, required, minLength(2)] };
 
     const search = ref('');
@@ -272,14 +267,14 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      socket.permission.emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
+      getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
         if (err) {
           return error(err);
         }
         permissions.value = data;
         state.value.loadingPrm = ButtonStates.success;
       });
-      socket.command.emit('generic::getAll', (err: string | null, commands: Required<CommandsInterface>[], countArg: { command: string; count: number }[]) => {
+      getSocket('/systems/customcommands').emit('generic::getAll', (err: string | null, commands: Required<CommandsInterface>[], countArg: { command: string; count: number }[]) => {
         if (err) {
           return error(err);
         }
@@ -319,7 +314,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            socket.command.emit('generic::deleteById', item.id, (err: string | null) => {
+            getSocket('/systems/customcommands').emit('generic::deleteById', item.id, (err: string | null) => {
               if (err) {
                 reject(error(err));
               }
@@ -362,11 +357,11 @@ export default defineComponent({
             }
 
             if (attr === 'count') {
-              socket.command.emit('commands::resetCountByCommand', itemToUpdate.command, () => {
+              getSocket('/systems/customcommands').emit('commands::resetCountByCommand', itemToUpdate.command, () => {
                 resolve(true);
               });
             } else {
-              socket.command.emit('generic::setById', {
+              getSocket('/systems/customcommands').emit('generic::setById', {
                 id:   itemToUpdate.id,
                 item: {
                   ...itemToUpdate,

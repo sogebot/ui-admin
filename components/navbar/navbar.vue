@@ -33,8 +33,6 @@ import {
   defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@vue/composition-api';
 
-const socket = getSocket('/', true);
-
 const navmenu = defineAsyncComponent({ loader: () => import('./menu.vue') });
 const user = defineAsyncComponent({ loader: () => import('../user.vue') });
 
@@ -49,6 +47,7 @@ export default defineComponent({
     const drawer = ref(!(ctx.root as any).$vuetify.breakpoint.mobile);
 
     onMounted(() => {
+      const socket = getSocket('/', true);
       socket.emit('name', (recvName: string) => { name.value = recvName; });
       socket.emit('channelName', (recvName: string) => { channelName.value = recvName; });
     });
