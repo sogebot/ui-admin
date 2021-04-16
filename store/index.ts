@@ -7,31 +7,43 @@ export const state = () => ({
   loadingMsg:    '',
   isUILoaded:    false,
   isMobile:      false,
-})
+  $core:         [],
+  $systems:      [],
+  $integrations: [],
+});
 
 export const mutations = {
-  setLoggedUser (state: { loggedUser: any; }, user: any) {
-    state.loggedUser = user;
+  setLoggedUser (storeState: { loggedUser: any; }, user: any) {
+    storeState.loggedUser = user;
   },
-  setConfiguration (state: { configuration: any; }, configuration: any) {
-    state.configuration = configuration;
+  setConfiguration (storeState: { configuration: any; }, configuration: any) {
+    storeState.configuration = configuration;
   },
-  setCurrentGame (state: { currentGame: any; }, currentGame: any) {
-    state.currentGame = currentGame;
+  setCurrentGame (storeState: { currentGame: any; }, currentGame: any) {
+    storeState.currentGame = currentGame;
   },
-  setCurrentTitle (state: { currentTitle: any; }, currentTitle: any) {
-    state.currentTitle = currentTitle;
+  setCurrentTitle (storeState: { currentTitle: any; }, currentTitle: any) {
+    storeState.currentTitle = currentTitle;
   },
-  setCurrentTags (state: { currentTags: any; }, currentTags: any) {
-    state.currentTags = currentTags;
+  setCurrentTags (storeState: { currentTags: any; }, currentTags: any) {
+    storeState.currentTags = currentTags;
   },
-  setLoadingMsg (state: { loadingMsg: any; }, loadingMsg: any) {
-    state.loadingMsg = loadingMsg;
+  setLoadingMsg (storeState: { loadingMsg: any; }, loadingMsg: any) {
+    storeState.loadingMsg = loadingMsg;
   },
-  setUILoaded (state: { isUILoaded: boolean; }) {
-    state.isUILoaded = true;
+  setUILoaded (storeState: { isUILoaded: boolean; }) {
+    storeState.isUILoaded = true;
   },
-  setMobile (state: { isMobile: any; }, value: any) {
-    state.isMobile = value;
+  setMobile (storeState: { isMobile: any; }, value: any) {
+    storeState.isMobile = value;
+  },
+  $core (storeState: { $core: any[] }, value: any) {
+    storeState.$core = value;
+  },
+  $systems (storeState: { $systems: any[] }, value: any) {
+    storeState.$systems = value;
+  },
+  $integrations (storeState: { $integrations: any[] }, value: any) {
+    storeState.$integrations = value;
   },
 };

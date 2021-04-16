@@ -4,9 +4,9 @@
     dense
   >
     <v-list-item
-      v-for="item of menu"
+      v-for="item of menu.filter(o => typeof o.category === 'undefined')"
       :key="item.name"
-      :to="'/public/' + item.id.replace(/\./g, '/')"
+      :to="'/' + item.id.replace(/\./g, '/')"
       nuxt
     >
       <v-list-item-icon>
@@ -14,12 +14,38 @@
       </v-list-item-icon>
       <v-list-item-title>{{ translate('menu.' + item.name) }}</v-list-item-title>
     </v-list-item>
+    <v-list-group
+      v-for="category of categories"
+      :key="category"
+      :value="false"
+      :prepend-icon="icons.get(category)"
+    >
+      <template #activator>
+        <v-list-item-title>{{ translate('menu.' + category) }}</v-list-item-title>
+      </template>
+
+      <v-list-item
+        v-for="item of menu.filter(o => o.category === category)"
+        :key="item.name"
+        :to="'/' + item.id.replace(/\./g, '/')"
+        nuxt
+      >
+        <v-list-item-title
+          :class="{
+            'grey--text': !item.enabled,
+            'darken-3': !item.enabled,
+          }"
+        >
+          {{ translate('menu.' + item.name) }}
+        </v-list-item-title>
+      </v-list-item>
+    </v-list-group>
   </v-list>
 </template>
 
 <script lang="ts">
 import {
-  mdiFormatQuoteClose, mdiPlaylistMusic, mdiPlaylistPlay, mdiViewDashboard,
+  mdiCog, mdiExclamationThick, mdiFormatListBulletedSquare, mdiInformationVariant, mdiViewDashboard, mdiWrench,
 } from '@mdi/js';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -27,39 +53,57 @@ import {
   defineComponent, onMounted, ref,
 } from '@vue/composition-api';
 
-type menuPublic = { name: string; id: string }[];
+type menuType = { category?: string; name: string; id: string; this: any | null }[];
+type menuWithEnabled = Omit<menuType[number], 'this'> & { enabled: boolean };
 
 const socket = getSocket('/');
 
 const icons = new Map<string, string>([
   ['dashboard', mdiViewDashboard],
-  ['playlist', mdiPlaylistMusic],
-  ['quotes', mdiFormatQuoteClose],
-  ['songs', mdiPlaylistPlay],
+  ['commands', mdiExclamationThick],
+  ['settings', mdiCog],
+  ['manage', mdiWrench],
+  ['stats', mdiInformationVariant],
+  ['registry', mdiFormatListBulletedSquare],
 ]);
 
 export default defineComponent({
-  setup() {
-    const menu = ref([] as menuPublic);
+  setup () {
+    const menu = ref([] as menuWithEnabled[]);
+    const categories = ['commands', 'manage', 'settings', 'registry', /* 'logs', */ 'stats'];
+    const isDisabledHidden = ref(true);
 
     onMounted(async () => {
+      const isLoaded = await Promise.race([
+        new Promise<boolean>((resolve) => {
+          socket.emit('menu', (err: string | null, data: menuWithEnabled[]) => {
+            if (err) {
+              return console.error(err);
+            }
+            console.groupCollapsed('menu::menu');
+            console.log({ data });
+            console.groupEnd();
+            for (const item of data.sort((a, b) => {
+              return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
+            })) {
+              menu.value.push(item);
+            }
+            resolve(true);
+          });
+        }),
+        new Promise<boolean>((resolve) => {
+          setTimeout(() => resolve(false), 4000);
+        }),
+      ]);
 
-      socket.emit('menu::public', (err: string | null, data: menuPublic) => {
-        if (err) {
-          return console.error(err);
-        }
-        console.groupCollapsed('menu::menu::public');
-        console.log({ data });
-        console.groupEnd();
-        for (const item of data.sort((a, b) => {
-          return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
-        })) {
-          menu.value.push(item);
-        }
-      });
+      if (!isLoaded) {
+        console.error('menu not loaded, refreshing page');
+        location.reload();
+      }
     });
+
     return {
-      menu, translate, icons,
+      menu, categories, isDisabledHidden, translate, icons,
     };
   },
 });

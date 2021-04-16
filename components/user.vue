@@ -163,14 +163,13 @@
 import {
   mdiEarth, mdiLogin, mdiLogout, mdiShield,
 } from '@mdi/js';
-import {
-  computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref,
-} from '@vue/composition-api';
-import type { Ref } from '@vue/composition-api';
-
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import type { Ref } from '@vue/composition-api';
+import {
+  computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref,
+} from '@vue/composition-api';
 
 import type { PermissionsInterface } from '../.bot/src/bot/database/entity/permissions';
 import type { UserInterface } from '../.bot/src/bot/database/entity/user';
@@ -182,7 +181,7 @@ const theme = defineAsyncComponent({ loader: () => import('./theme.vue') });
 
 export default defineComponent({
   components: { theme },
-  setup(props, context) {
+  setup (_props, context) {
     const menu = ref(false);
     const isViewerLoaded = ref(false);
     const viewer: Ref<(Required<UserInterface> & { aggregatedTips: number; aggregatedBits: number; permission: PermissionsInterface }) | null> = ref(null);
@@ -206,7 +205,7 @@ export default defineComponent({
     });
     onUnmounted(() => clearInterval(interval));
 
-    const logout = () => {
+    const logout = () => {
       socket.emit('logout', {
         accessToken:  localStorage.getItem('accessToken'),
         refreshToken: localStorage.getItem('refreshToken'),
@@ -218,8 +217,8 @@ export default defineComponent({
       window.location.assign(window.location.origin + '/login#error=logged+out');
     };
     const login = () => window.location.assign(window.location.origin + '/login');
-    const refreshViewer = () => {
-      if (typeof (context.root as any).$store.state.loggedUser === 'undefined'|| (context.root as any).$store.state.loggedUser === null) {
+    const refreshViewer = () => {
+      if (typeof (context.root as any).$store.state.loggedUser === 'undefined' || (context.root as any).$store.state.loggedUser === null) {
         return;
       }
       socket.emit('viewers::findOne', (context.root as any).$store.state.loggedUser.id, (err: string| number, recvViewer: Readonly<Required<UserInterface>> & { aggregatedTips: number; aggregatedBits: number; permission: PermissionsInterface }) => {
@@ -240,9 +239,22 @@ export default defineComponent({
     const leaveBot = () => socket.emit('leaveBot');
 
     return {
-      menu, defaultPermissions, isViewerLoaded, viewer, viewerIs, isPublicPage, logout, login, translate, joinBot, leaveBot,
+      menu,
+      defaultPermissions,
+      isViewerLoaded,
+      viewer,
+      viewerIs,
+      isPublicPage,
+      logout,
+      login,
+      translate,
+      joinBot,
+      leaveBot,
 
-      mdiLogout, mdiShield, mdiLogin, mdiEarth,
+      mdiLogout,
+      mdiShield,
+      mdiLogin,
+      mdiEarth,
 
     };
   },

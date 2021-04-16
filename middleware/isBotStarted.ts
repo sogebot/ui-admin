@@ -1,27 +1,26 @@
-import { isBotStarted } from '@sogebot/ui-helpers/isBotStarted'
-import { isUserLoggedIn } from '@sogebot/ui-helpers/isUserLoggedIn'
-import { getTranslations,getConfiguration } from '@sogebot/ui-helpers/socket'
-import { populateListOf } from '@sogebot/ui-helpers/getListOf'
-import { setLocale } from '@sogebot/ui-helpers/dayjsHelper'
+import { setLocale } from '@sogebot/ui-helpers/dayjsHelper';
+import { getListOf, populateListOf } from '@sogebot/ui-helpers/getListOf';
+import { isBotStarted } from '@sogebot/ui-helpers/isBotStarted';
+import { isUserLoggedIn } from '@sogebot/ui-helpers/isUserLoggedIn';
+import { getConfiguration, getTranslations } from '@sogebot/ui-helpers/socket';
+import { cloneDeep } from 'lodash-es';
 
 export default function ({ store, app }: { store: any, app: any }) {
   (async function init () {
     // force theme
-    app.vuetify.framework.theme.dark = localStorage.theme === 'dark'
+    app.vuetify.framework.theme.dark = localStorage.theme === 'dark';
 
-    await isBotStarted(store)
-    store.commit('setLoggedUser', await isUserLoggedIn(false, false));
+    await isBotStarted(store);
+    store.commit('setLoggedUser', await isUserLoggedIn());
     store.commit('setConfiguration', await getConfiguration());
 
     await populateListOf('core');
     await populateListOf('systems');
     await populateListOf('integrations');
 
-    /* we should commit to store
-    Vue.prototype.$core = await getListOf('core');
-    Vue.prototype.$systems = getListOf('systems');
-    Vue.prototype.$integrations = await getListOf('integrations');
-    */
+    store.commit('$core', cloneDeep(getListOf('core')));
+    store.commit('$systems', cloneDeep(getListOf('systems')));
+    store.commit('$integrations', cloneDeep(getListOf('integrations')));
 
     await getTranslations();
     const configuration = await getConfiguration();

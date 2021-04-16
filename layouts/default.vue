@@ -1,16 +1,16 @@
 <template>
   <v-app id="app">
     <template v-if="$store.state.isUILoaded">
-      <navbar/>
+      <navbar />
       <v-main>
-        <twitch/>
-        <nuxt></nuxt>
+        <nuxt />
+        <snackbar />
       </v-main>
     </template>
     <v-overlay :value="!$store.state.isUILoaded" :dark="$vuetify.theme.dark">
       <v-row>
         <v-col class="text-center">
-          <v-progress-circular indeterminate size="48"></v-progress-circular>
+          <v-progress-circular indeterminate size="48" />
         </v-col>
       </v-row>
       <v-row>
@@ -23,13 +23,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from '@vue/composition-api';
+import Snackbar from '~/components/snackbar.vue';
 
 export default defineComponent({
-  middleware: ['isBotStarted', 'theme'],
   components: {
     navbar: () => import('../components/navbar/navbar.vue'),
-    twitch: () => import('../components/twitch.vue'),
+    snackbar: () => import('../components/snackbar.vue')
   },
-})
+  middleware: ['isBotStarted', 'theme'],
+});
 </script>

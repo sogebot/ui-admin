@@ -20,18 +20,14 @@
 
 <script lang="ts">
 import { mdiMoonWaxingCrescent, mdiWeatherSunny } from '@mdi/js';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import { isUserLoggedIn } from '@sogebot/ui-helpers/isUserLoggedIn';
-import {
-  defineComponent, ref,
-} from '@vue/composition-api';
-import Vue from 'vue';
-import { get } from 'lodash-es';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import { defineComponent, ref } from '@vue/composition-api';
 
 const socket = getSocket('/core/users', true);
 
 export default defineComponent({
-  setup(props, context) {
+  setup (_props, context) {
     const theme = ref('light');
 
     const toggleTheme = () => {
@@ -58,7 +54,7 @@ export default defineComponent({
       const user = await isUserLoggedIn(false, false);
       if (user) {
         socket.emit('theme::set', { theme: themeArg, userId: user.id }, () => {
-          return;
+          return true;
         });
       }
       localStorage.setItem('theme', themeArg);

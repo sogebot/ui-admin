@@ -1,15 +1,15 @@
 {
-  "name": "@sogebot/ui-public",
-  "version": "1.0.5",
+  "name": "@sogebot/ui-admin",
+  "version": "0.0.1",
   "author": "sogehige@gmail.com",
-  "description": "Nuxt.js version of ui-public",
+  "description": "Nuxt.js version of ui-admin",
   "scripts": {
     "prepublishOnly": "npm run generate",
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "lint:js": "eslint --ext \".js,.vue\" --ignore-path .gitignore .",
+    "lint:js": "eslint --ext \".js,.vue\" --fix --ignore-path .gitignore .",
     "lint:style": "stylelint \"**/*.{vue,css}\" --ignore-path .gitignore",
     "lint": "npm run lint:js && npm run lint:style"
   },
@@ -20,11 +20,13 @@
   "dependencies": {
     "@sogebot/ui-helpers": "^1.6.2",
     "core-js": "^3.10.1",
-    "nuxt": "^2.15.4"
+    "nuxt": "^2.15.4",
+    "uuid": "^8.3.2",
+    "xregexp": "^5.0.2"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sogebot/ui-public.git"
+    "url": "git+https://github.com/sogebot/ui-admin.git"
   },
   "devDependencies": {
     "@commitlint/cli": "^12.1.1",
@@ -37,6 +39,7 @@
     "@nuxtjs/stylelint-module": "^4.0.0",
     "@nuxtjs/vuetify": "^1.11.3",
     "@types/lodash-es": "^4.17.4",
+    "@types/uuid": "^8.3.0",
     "@vue/composition-api": "^1.0.0-rc.6",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.24.0",
