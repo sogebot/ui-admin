@@ -4,7 +4,7 @@ import { get } from 'lodash-es';
 
 export default function ({ store, app }: { store: any, app: any }) {
   (async function init () {
-    if (!store.setUILoaded) {
+    if (!store.state.isUILoaded) {
       setTimeout(() => init(), 10);
       return;
     }
