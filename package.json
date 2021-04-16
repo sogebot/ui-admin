@@ -1,6 +1,6 @@
 {
   "name": "@sogebot/ui-admin",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": "sogehige@gmail.com",
   "description": "Nuxt.js version of ui-admin",
   "scripts": {
@@ -18,7 +18,7 @@
     "*.{css,vue}": "stylelint"
   },
   "dependencies": {
-    "@sogebot/ui-helpers": "^1.8.4",
+    "@sogebot/ui-helpers": "^1.9.0",
     "core-js": "^3.10.1",
     "nuxt": "^2.15.4",
     "uuid": "^8.3.2",
