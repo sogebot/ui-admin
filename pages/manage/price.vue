@@ -4,7 +4,7 @@
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
     <v-alert
-      v-if="!$store.state.$systems.find(o => o.name === 'customcommands').enabled"
+      v-if="!$store.state.$systems.find(o => o.name === 'price').enabled"
       dismissible
       prominent
       dense
@@ -15,13 +15,14 @@
     </v-alert>
 
     <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.customcommands') }}
+      {{ translate('menu.price') }}
     </h2>
 
     <v-data-table
       v-model="selected"
       calculate-widths
       show-select
+      sort-by="command"
       :search="search"
       :loading="state.loading !== ButtonStates.success && state.loadingPrm !== ButtonStates.success"
       :headers="headers"
@@ -143,26 +144,50 @@
         </v-edit-dialog>
       </template>
 
-      <template #[`item.count`]="{ item }">
+      <template #[`item.price`]="{ item }">
         <v-edit-dialog
           persistent
           large
-          :return-value.sync="item.count"
-          @save="update(item, true, 'count')"
+          @save="update(item, false, 'price');"
         >
-          {{ item.count }}
+          <div v-html="priceFormatter(item)" />
+
           <template #input>
             <v-text-field
-              :value="item.count"
+              v-model.number="item.price"
+              class="d-inline-block"
               type="number"
-              :rules="rules.count"
+              :rules="rules.price"
               single-line
-              :readonly="true"
-              :append-outer-icon="mdiRestore"
-              @click:append-outer="item.count = 0"
-            />
+              :error="!isAtLeastOneValueAboveZero(item)"
+            >
+              <template #append>
+                {{ getLocalizedName(2, $store.state.configuration.systems.Points.customization.name) }}
+              </template>
+            </v-text-field>
+            {{ translate('or') }}
+            <v-text-field
+              v-model.number="item.priceBits"
+              class="d-inline-block"
+              :error="!isAtLeastOneValueAboveZero(item)"
+              :error-messages="!isAtLeastOneValueAboveZero(item) ? ['Points or bits price needs to be set.'] : []"
+              type="number"
+              :rules="rules.priceBits"
+              single-line
+            >
+              <template #append>
+                {{ getLocalizedName(2, translate('bot.bits')) }}
+              </template>
+            </v-text-field>
           </template>
         </v-edit-dialog>
+      </template>
+
+      <template #[`item.emitRedeemEvent`]="{ item }">
+        <v-simple-checkbox
+          v-model="item.emitRedeemEvent"
+          @click="update(item, true, 'emitRedeemEvent')"
+        />
       </template>
 
       <template #[`item.enabled`]="{ item }">
@@ -171,80 +196,49 @@
           @click="update(item, true, 'enabled')"
         />
       </template>
-
-      <template #[`item.visible`]="{ item }">
-        <v-simple-checkbox
-          v-model="item.visible"
-          @click="update(item, true, 'visible')"
-        />
-      </template>
-
-      <template #[`item.response`]="{ item }">
-        <responses
-          :permissions="permissions"
-          :responses="item.responses"
-          :name="item.command"
-          @save="item.responses = $event; update(item, false, 'responses')"
-        />
-      </template>
     </v-data-table>
   </v-container>
 </template>
 
 <script lang="ts">
-import { mdiMagnify, mdiRestore } from '@mdi/js';
+import { mdiMagnify } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  defineAsyncComponent,
+  defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
-import { capitalize, orderBy } from 'lodash-es';
+import { capitalize } from 'lodash-es';
 
-import type { CommandsInterface } from '.bot/src/bot/database/entity/commands';
-import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';
+import type { PriceInterface } from '.bot/src/bot/database/entity/price';
+import {
+  minLength, minValue, required, startsWithExclamation,
+} from '~/functions//validators';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
-import { getPermissionName } from '~/functions/getPermissionName';
-import {
-  minLength, required, startsWithExclamation,
-} from '~/functions/validators';
-
-let count: {
-  command: string; count: number;
-}[] = [];
-
-type CommandsInterfaceUI = CommandsInterface & { count: number };
+import { getLocalizedName } from '~/functions/getLocalized';
 
 export default defineComponent({
-  components: {
-    'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/command-newItem.vue') }),
-    responses:  defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
-  },
-  setup () {
-    const rules = { command: [startsWithExclamation, required, minLength(2)] };
-
+  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/price-newItem.vue') }) },
+  setup (_, ctx) {
+    const timestamp = ref(Date.now());
     const search = ref('');
-    const items = ref([] as Required<CommandsInterfaceUI>[]);
-    const permissions = ref([] as Required<PermissionsInterface>[]);
-
-    const selected = ref([] as CommandsInterfaceUI[]);
+    const items = ref([] as PriceInterface[]);
+    const selected = ref([] as PriceInterface[]);
     const deleteDialog = ref(false);
     const newDialog = ref(false);
 
-    const timestamp = ref(Date.now());
-
-    const state = ref({
-      loadingPrm: ButtonStates.progress,
-      loading:    ButtonStates.progress,
-    } as {
-      loadingPrm: number;
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
-    watch(newDialog, () => {
-      timestamp.value = Date.now();
-    });
+    // add oneIsAboveZero validation
+    const rules = {
+      price:     [minValue(0), required],
+      priceBits: [minValue(0), required],
+      command:   [required, minLength(2), startsWithExclamation],
+    };
 
     const headers = [
       { value: 'command', text: translate('command') },
@@ -252,42 +246,30 @@ export default defineComponent({
         value: 'enabled', text: translate('enabled'), width: '6rem',
       },
       {
-        value: 'visible', text: capitalize(translate('visible')), width: '6rem',
+        value: 'emitRedeemEvent', text: translate('systems.price.emitRedeemEvent'), width: '15rem',
       },
-      {
-        value: 'count', text: capitalize(translate('count')), width: '6rem',
-      },
-      {
-        value: 'response', text: translate('response'), sortable: false,
-      },
+      { value: 'price', text: capitalize(translate('systems.price.price.name')) },
     ];
-
     const headersDelete = [
       { value: 'command', text: translate('command') },
     ];
 
+    watch(newDialog, () => {
+      timestamp.value = Date.now();
+    });
+
+    onMounted(() => {
+      refresh();
+    });
+
     const refresh = () => {
-      getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
+      getSocket('/systems/price').emit('generic::getAll', (err: string | null, itemsGetAll: PriceInterface[]) => {
         if (err) {
           return error(err);
         }
-        permissions.value = data;
-        state.value.loadingPrm = ButtonStates.success;
-      });
-      getSocket('/systems/customcommands').emit('generic::getAll', (err: string | null, commands: Required<CommandsInterface>[], countArg: { command: string; count: number }[]) => {
-        if (err) {
-          return error(err);
-        }
-        console.debug({ commands, count });
-        count = countArg;
-        items.value.length = 0;
-        for (const command of commands) {
-          items.value.push({
-            ...command,
-            responses: orderBy(command.responses, 'order', 'asc'),
-            count:     count.find(o => o.command === command.command)?.count || 0,
-          });
-        }
+        items.value = itemsGetAll;
+        console.debug({ items: itemsGetAll });
+
         // we also need to reset selection values
         if (selected.value.length > 0) {
           selected.value.forEach((selectedItem, index) => {
@@ -295,38 +277,9 @@ export default defineComponent({
             selected.value[index] = selectedItem;
           });
         }
+
         state.value.loading = ButtonStates.success;
       });
-    };
-
-    onMounted(() => {
-      refresh();
-    });
-
-    const saveSuccess = () => {
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
-      newDialog.value = false;
-    };
-
-    const deleteSelected = async () => {
-      deleteDialog.value = false;
-      await Promise.all(
-        selected.value.map((item) => {
-          return new Promise((resolve, reject) => {
-            getSocket('/systems/customcommands').emit('generic::deleteById', item.id, (err: string | null) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
-          });
-        }),
-      );
-      refresh();
-
-      EventBus.$emit('snack', 'success', 'Data removed.');
-      selected.value = [];
     };
     const update = async (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
       // check validity
@@ -342,35 +295,22 @@ export default defineComponent({
           }
         }
       }
+      if (!isAtLeastOneValueAboveZero(item)) {
+        EventBus.$emit('snack', 'red', `[price] - Points or bits price needs to be set.`);
+        refresh();
+        return;
+      }
 
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-
-            if (attr === 'responses' && itemToUpdate.responses) {
-              // reorder by array
-              for (let i = 0; i < itemToUpdate.responses.length; i++) {
-                console.log(itemToUpdate.responses[i].response + ' --- ' + itemToUpdate.responses[i].order + ' => ' + i);
-                itemToUpdate.responses[i].order = i;
-              }
-            }
-
-            if (attr === 'count') {
-              getSocket('/systems/customcommands').emit('commands::resetCountByCommand', itemToUpdate.command, () => {
-                resolve(true);
-              });
-            } else {
-              getSocket('/systems/customcommands').emit('generic::setById', {
-                id:   itemToUpdate.id,
-                item: {
-                  ...itemToUpdate,
-                  [attr]: item[attr], // save new value for all selected items
-                },
-              }, () => {
-                resolve(true);
-              });
-            }
+            getSocket('/systems/price').emit('price::save', {
+              ...itemToUpdate,
+              [attr]: item[attr], // save new value for all selected items
+            }, () => {
+              resolve(true);
+            });
           });
         }),
       );
@@ -378,40 +318,69 @@ export default defineComponent({
       EventBus.$emit('snack', 'success', 'Data updated.');
     };
 
+    const saveSuccess = () => {
+      refresh();
+      EventBus.$emit('snack', 'success', 'Data updated.');
+      newDialog.value = false;
+    };
+
+    const deleteSelected = async () => {
+      deleteDialog.value = false;
+      await Promise.all(
+        selected.value.map((item) => {
+          return new Promise((resolve, reject) => {
+            getSocket('/systems/price').emit('generic::deleteById', item.id, (err: string | null) => {
+              if (err) {
+                reject(error(err));
+              }
+              resolve(true);
+            });
+          });
+        }),
+      );
+      refresh();
+
+      EventBus.$emit('snack', 'success', 'Data removed.');
+      selected.value = [];
+    };
+
+    const isAtLeastOneValueAboveZero = (item: PriceInterface) => {
+      return item.price > 0 || item.priceBits > 0;
+    };
+
+    const priceFormatter = (item: PriceInterface) => {
+      const output = [];
+      if (item.price !== 0) {
+        output.push(`${item.price} ${getLocalizedName(item.price, ctx.root.$store.state.configuration.systems.Points.customization.name)}`);
+      }
+      if (item.priceBits !== 0) {
+        output.push(`${item.priceBits} ${getLocalizedName(item.priceBits, translate('bot.bits'))}`);
+      }
+      return output.join(` ${translate('or')} `);
+    };
+
     return {
-      orderBy,
-      headers,
       search,
       items,
       state,
-      permissions,
-      getPermissionName,
-      deleteDialog,
-      selected,
-      translate,
-      timestamp,
-      rules,
+      headers,
       headersDelete,
+      update,
+      getLocalizedName,
+      translate,
+      isAtLeastOneValueAboveZero,
+      priceFormatter,
+
+      selected,
+      deleteDialog,
       newDialog,
       saveSuccess,
+      timestamp,
+      rules,
       deleteSelected,
-      update,
-      refresh,
-      capitalize,
       mdiMagnify,
-      mdiRestore,
       ButtonStates,
     };
   },
 });
 </script>
-
-<style>
-tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.v-small-dialog__activator__content {
-  word-break: break-word;
-}
-</style>

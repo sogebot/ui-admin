@@ -4,7 +4,7 @@
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
     <v-alert
-      v-if="!$store.state.$systems.find(o => o.name === 'customcommands').enabled"
+      v-if="!$store.state.$systems.find(o => o.name === 'keywords').enabled"
       dismissible
       prominent
       dense
@@ -15,7 +15,7 @@
     </v-alert>
 
     <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.customcommands') }}
+      {{ translate('menu.keywords') }}
     </h2>
 
     <v-data-table
@@ -124,42 +124,20 @@
         </v-toolbar>
       </template>
 
-      <template #[`item.command`]="{ item }">
+      <template #[`item.keyword`]="{ item }">
         <v-edit-dialog
           persistent
           large
-          :return-value.sync="item.command"
-          @save="update(item, false, 'command')"
+          :return-value.sync="item.keyword"
+          @save="update(item, false, 'keyword')"
         >
-          {{ item.command }}
+          {{ item.keyword }}
           <template #input>
             <v-text-field
-              v-model="item.command"
-              :rules="rules.command"
+              v-model="item.keyword"
+              :rules="rules.keyword"
               single-line
               counter
-            />
-          </template>
-        </v-edit-dialog>
-      </template>
-
-      <template #[`item.count`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.count"
-          @save="update(item, true, 'count')"
-        >
-          {{ item.count }}
-          <template #input>
-            <v-text-field
-              :value="item.count"
-              type="number"
-              :rules="rules.count"
-              single-line
-              :readonly="true"
-              :append-outer-icon="mdiRestore"
-              @click:append-outer="item.count = 0"
             />
           </template>
         </v-edit-dialog>
@@ -172,18 +150,11 @@
         />
       </template>
 
-      <template #[`item.visible`]="{ item }">
-        <v-simple-checkbox
-          v-model="item.visible"
-          @click="update(item, true, 'visible')"
-        />
-      </template>
-
       <template #[`item.response`]="{ item }">
         <responses
           :permissions="permissions"
           :responses="item.responses"
-          :name="item.command"
+          :name="item.keyword"
           @save="item.responses = $event; update(item, false, 'responses')"
         />
       </template>
@@ -192,47 +163,44 @@
 </template>
 
 <script lang="ts">
-import { mdiMagnify, mdiRestore } from '@mdi/js';
+import { mdiMagnify } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@vue/composition-api';
 import { capitalize, orderBy } from 'lodash-es';
 
-import type { CommandsInterface } from '.bot/src/bot/database/entity/commands';
+import type { KeywordInterface } from '.bot/src/bot/database/entity/keyword';
 import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
 import {
-  minLength, required, startsWithExclamation,
+  isValidRegex, minLength, required,
 } from '~/functions/validators';
-
-let count: {
-  command: string; count: number;
-}[] = [];
-
-type CommandsInterfaceUI = CommandsInterface & { count: number };
 
 export default defineComponent({
   components: {
-    'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/command-newItem.vue') }),
-    responses:  defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
+    newItem:   defineAsyncComponent({ loader: () => import('~/components/new-item/keyword-newItem.vue') }),
+    responses: defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
   },
   setup () {
-    const rules = { command: [startsWithExclamation, required, minLength(2)] };
-
     const search = ref('');
-    const items = ref([] as Required<CommandsInterfaceUI>[]);
+    const items = ref([] as Required<KeywordInterface>[]);
     const permissions = ref([] as Required<PermissionsInterface>[]);
 
-    const selected = ref([] as CommandsInterfaceUI[]);
+    const timestamp = ref(Date.now());
+    const selected = ref([] as KeywordInterface[]);
     const deleteDialog = ref(false);
     const newDialog = ref(false);
 
-    const timestamp = ref(Date.now());
+    const rules = {
+      keyword: [
+        minLength(2), required, isValidRegex,
+      ],
+    };
 
     const state = ref({
       loadingPrm: ButtonStates.progress,
@@ -242,20 +210,10 @@ export default defineComponent({
       loading: number;
     });
 
-    watch(newDialog, () => {
-      timestamp.value = Date.now();
-    });
-
     const headers = [
-      { value: 'command', text: translate('command') },
+      { value: 'keyword', text: translate('keyword') },
       {
         value: 'enabled', text: translate('enabled'), width: '6rem',
-      },
-      {
-        value: 'visible', text: capitalize(translate('visible')), width: '6rem',
-      },
-      {
-        value: 'count', text: capitalize(translate('count')), width: '6rem',
       },
       {
         value: 'response', text: translate('response'), sortable: false,
@@ -263,7 +221,7 @@ export default defineComponent({
     ];
 
     const headersDelete = [
-      { value: 'command', text: translate('command') },
+      { value: 'keyword', text: translate('keyword') },
     ];
 
     const refresh = () => {
@@ -274,20 +232,19 @@ export default defineComponent({
         permissions.value = data;
         state.value.loadingPrm = ButtonStates.success;
       });
-      getSocket('/systems/customcommands').emit('generic::getAll', (err: string | null, commands: Required<CommandsInterface>[], countArg: { command: string; count: number }[]) => {
+      getSocket('/systems/keywords').emit('generic::getAll', (err: string | null, keywordsGetAll: Required<KeywordInterface>[]) => {
         if (err) {
           return error(err);
         }
-        console.debug({ commands, count });
-        count = countArg;
         items.value.length = 0;
-        for (const command of commands) {
+        for (const keyword of keywordsGetAll) {
           items.value.push({
-            ...command,
-            responses: orderBy(command.responses, 'order', 'asc'),
-            count:     count.find(o => o.command === command.command)?.count || 0,
+            ...keyword,
+            responses: orderBy(keyword.responses, 'order', 'asc'),
           });
         }
+        console.debug({ keywordsGetAll, items: items.value });
+
         // we also need to reset selection values
         if (selected.value.length > 0) {
           selected.value.forEach((selectedItem, index) => {
@@ -295,7 +252,9 @@ export default defineComponent({
             selected.value[index] = selectedItem;
           });
         }
+
         state.value.loading = ButtonStates.success;
+        timestamp.value = Date.now();
       });
     };
 
@@ -303,18 +262,12 @@ export default defineComponent({
       refresh();
     });
 
-    const saveSuccess = () => {
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
-      newDialog.value = false;
-    };
-
     const deleteSelected = async () => {
       deleteDialog.value = false;
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/customcommands').emit('generic::deleteById', item.id, (err: string | null) => {
+            getSocket('/systems/keywords').emit('generic::deleteById', item.id, (err: string | null) => {
               if (err) {
                 reject(error(err));
               }
@@ -328,6 +281,7 @@ export default defineComponent({
       EventBus.$emit('snack', 'success', 'Data removed.');
       selected.value = [];
     };
+
     const update = async (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
       // check validity
       for (const key of Object.keys(rules)) {
@@ -356,21 +310,15 @@ export default defineComponent({
               }
             }
 
-            if (attr === 'count') {
-              getSocket('/systems/customcommands').emit('commands::resetCountByCommand', itemToUpdate.command, () => {
-                resolve(true);
-              });
-            } else {
-              getSocket('/systems/customcommands').emit('generic::setById', {
-                id:   itemToUpdate.id,
-                item: {
-                  ...itemToUpdate,
-                  [attr]: item[attr], // save new value for all selected items
-                },
-              }, () => {
-                resolve(true);
-              });
-            }
+            getSocket('/systems/keywords').emit('generic::setById', {
+              id:   itemToUpdate.id,
+              item: {
+                ...itemToUpdate,
+                [attr]: item[attr], // save new value for all selected items
+              },
+            }, () => {
+              resolve(true);
+            });
           });
         }),
       );
@@ -378,40 +326,35 @@ export default defineComponent({
       EventBus.$emit('snack', 'success', 'Data updated.');
     };
 
+    const saveSuccess = () => {
+      refresh();
+      EventBus.$emit('snack', 'success', 'Data updated.');
+      newDialog.value = false;
+    };
+
     return {
       orderBy,
-      headers,
       search,
+      headers,
       items,
       state,
       permissions,
       getPermissionName,
-      deleteDialog,
-      selected,
       translate,
-      timestamp,
-      rules,
-      headersDelete,
       newDialog,
-      saveSuccess,
+      deleteDialog,
+      timestamp,
       deleteSelected,
       update,
-      refresh,
+      selected,
+      saveSuccess,
       capitalize,
+      rules,
+      refresh,
+      headersDelete,
       mdiMagnify,
-      mdiRestore,
       ButtonStates,
     };
   },
 });
 </script>
-
-<style>
-tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.v-small-dialog__activator__content {
-  word-break: break-word;
-}
-</style>

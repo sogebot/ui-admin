@@ -4,7 +4,7 @@
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
     <v-alert
-      v-if="!$store.state.$systems.find(o => o.name === 'customcommands').enabled"
+      v-if="!$store.state.$systems.find(o => o.name === 'cooldown').enabled"
       dismissible
       prominent
       dense
@@ -15,7 +15,7 @@
     </v-alert>
 
     <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.customcommands') }}
+      {{ translate('menu.cooldown') }}
     </h2>
 
     <v-data-table
@@ -23,7 +23,7 @@
       calculate-widths
       show-select
       :search="search"
-      :loading="state.loading !== ButtonStates.success && state.loadingPrm !== ButtonStates.success"
+      :loading="state.loading !== ButtonStates.success"
       :headers="headers"
       :items-per-page="-1"
       :items="items"
@@ -124,18 +124,18 @@
         </v-toolbar>
       </template>
 
-      <template #[`item.command`]="{ item }">
+      <template #[`item.name`]="{ item }">
         <v-edit-dialog
           persistent
           large
-          :return-value.sync="item.command"
-          @save="update(item, false, 'command')"
+          :return-value.sync="item.name"
+          @save="update(item, false, 'name')"
         >
-          {{ item.command }}
+          {{ item.name }}
           <template #input>
             <v-text-field
-              v-model="item.command"
-              :rules="rules.command"
+              v-model="item.name"
+              :rules="rules.name"
               single-line
               counter
             />
@@ -148,43 +148,80 @@
           persistent
           large
           :return-value.sync="item.count"
-          @save="update(item, true, 'count')"
+          @save="update(item, false, 'count')"
         >
-          {{ item.count }}
+          {{ item.count }}s
           <template #input>
             <v-text-field
-              :value="item.count"
+              v-model.number="item.count"
               type="number"
               :rules="rules.count"
               single-line
-              :readonly="true"
-              :append-outer-icon="mdiRestore"
-              @click:append-outer="item.count = 0"
+            >
+              <template #append>
+                s
+              </template>
+            </v-text-field>
+          </template>
+        </v-edit-dialog>
+      </template>
+
+      <template #[`item.type`]="{ item }">
+        <v-edit-dialog
+          persistent
+          large
+          :return-value.sync="item.type"
+          @save="update(item, true, 'type')"
+        >
+          {{ translate(item.type) }}
+          <template #input>
+            <v-select
+              v-model="item.type"
+              :items="typeItems"
             />
           </template>
         </v-edit-dialog>
       </template>
 
-      <template #[`item.enabled`]="{ item }">
+      <template #[`item.isEnabled`]="{ item }">
         <v-simple-checkbox
-          v-model="item.enabled"
-          @click="update(item, true, 'enabled')"
+          v-model="item.isEnabled"
+          @click="update(item, true, 'isEnabled')"
         />
       </template>
 
-      <template #[`item.visible`]="{ item }">
+      <template #[`item.isErrorMsgQuiet`]="{ item }">
         <v-simple-checkbox
-          v-model="item.visible"
-          @click="update(item, true, 'visible')"
+          v-model="item.isErrorMsgQuiet"
+          @click="update(item, true, 'isErrorMsgQuiet')"
         />
       </template>
 
-      <template #[`item.response`]="{ item }">
-        <responses
-          :permissions="permissions"
-          :responses="item.responses"
-          :name="item.command"
-          @save="item.responses = $event; update(item, false, 'responses')"
+      <template #[`item.isOwnerAffected`]="{ item }">
+        <v-simple-checkbox
+          v-model="item.isOwnerAffected"
+          @click="update(item, true, 'isOwnerAffected')"
+        />
+      </template>
+
+      <template #[`item.isModeratorAffected`]="{ item }">
+        <v-simple-checkbox
+          v-model="item.isModeratorAffected"
+          @click="update(item, true, 'isModeratorAffected')"
+        />
+      </template>
+
+      <template #[`item.isSubscriberAffected`]="{ item }">
+        <v-simple-checkbox
+          v-model="item.isSubscriberAffected"
+          @click="update(item, true, 'isSubscriberAffected')"
+        />
+      </template>
+
+      <template #[`item.isFollowerAffected`]="{ item }">
+        <v-simple-checkbox
+          v-model="item.isFollowerAffected"
+          @click="update(item, true, 'isFollowerAffected')"
         />
       </template>
     </v-data-table>
@@ -192,101 +229,102 @@
 </template>
 
 <script lang="ts">
-import { mdiMagnify, mdiRestore } from '@mdi/js';
+import { mdiMagnify } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
-import { capitalize, orderBy } from 'lodash-es';
+import { capitalize } from 'lodash-es';
 
-import type { CommandsInterface } from '.bot/src/bot/database/entity/commands';
-import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';
-import { error } from '~/functions/error';
+import type { CooldownInterface } from '.bot/src/bot/database/entity/cooldown';
+import { error } from '~/functions//error';
 import { EventBus } from '~/functions/event-bus';
-import { getPermissionName } from '~/functions/getPermissionName';
 import {
-  minLength, required, startsWithExclamation,
+  minLength, minValue, required,
 } from '~/functions/validators';
 
-let count: {
-  command: string; count: number;
-}[] = [];
-
-type CommandsInterfaceUI = CommandsInterface & { count: number };
+type CooldownInterfaceUI = CooldownInterface & { count: number };
 
 export default defineComponent({
-  components: {
-    'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/command-newItem.vue') }),
-    responses:  defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
-  },
+  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/cooldowns-newItem.vue') }) },
   setup () {
-    const rules = { command: [startsWithExclamation, required, minLength(2)] };
+    const rules = { name: [required, minLength(2)], count: [required, minValue(30)] };
 
+    const items = ref([] as CooldownInterfaceUI[]);
+    const typeItems = [
+      {
+        text:     translate('global'),
+        value:    'global',
+        disabled: false,
+      }, {
+        text:     translate('user'),
+        value:    'user',
+        disabled: false,
+      },
+    ];
     const search = ref('');
-    const items = ref([] as Required<CommandsInterfaceUI>[]);
-    const permissions = ref([] as Required<PermissionsInterface>[]);
 
-    const selected = ref([] as CommandsInterfaceUI[]);
+    const selected = ref([] as CooldownInterfaceUI[]);
     const deleteDialog = ref(false);
     const newDialog = ref(false);
 
     const timestamp = ref(Date.now());
 
-    const state = ref({
-      loadingPrm: ButtonStates.progress,
-      loading:    ButtonStates.progress,
-    } as {
-      loadingPrm: number;
-      loading: number;
-    });
-
     watch(newDialog, () => {
       timestamp.value = Date.now();
     });
 
+    const state = ref({ loading: ButtonStates.progress } as {
+      loading: number;
+    });
+
     const headers = [
-      { value: 'command', text: translate('command') },
+      { value: 'name', text: '!' + translate('command') + ' ' + translate('or') + ' ' + translate('keyword') },
       {
-        value: 'enabled', text: translate('enabled'), width: '6rem',
+        value: 'count', text: translate('cooldown'), width: '7rem',
       },
       {
-        value: 'visible', text: capitalize(translate('visible')), width: '6rem',
+        value: 'type', text: translate('cooldown'), width: '7rem',
       },
       {
-        value: 'count', text: capitalize(translate('count')), width: '6rem',
+        value: 'isEnabled', text: capitalize(translate('enabled')), width: '6rem',
       },
       {
-        value: 'response', text: translate('response'), sortable: false,
+        value: 'isErrorMsgQuiet', text: capitalize(translate('quiet')), width: '6rem',
+      },
+      {
+        value: 'isOwnerAffected', text: capitalize(translate('core.permissions.casters')), width: '6rem',
+      },
+      {
+        value: 'isModeratorAffected', text: capitalize(translate('core.permissions.moderators')), width: '8rem',
+      },
+      {
+        value: 'isSubscriberAffected', text: capitalize(translate('core.permissions.subscribers')), width: '8rem',
+      },
+      {
+        value: 'isFollowerAffected', text: capitalize(translate('core.permissions.followers')), width: '7rem',
       },
     ];
 
     const headersDelete = [
-      { value: 'command', text: translate('command') },
+      { value: 'name', text: '' },
     ];
 
+    onMounted(() => {
+      refresh();
+    });
+
     const refresh = () => {
-      getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
+      getSocket('/systems/cooldown').emit('generic::getAll', (err: string | null, itemsGetAll: CooldownInterfaceUI[]) => {
         if (err) {
           return error(err);
         }
-        permissions.value = data;
-        state.value.loadingPrm = ButtonStates.success;
-      });
-      getSocket('/systems/customcommands').emit('generic::getAll', (err: string | null, commands: Required<CommandsInterface>[], countArg: { command: string; count: number }[]) => {
-        if (err) {
-          return error(err);
-        }
-        console.debug({ commands, count });
-        count = countArg;
-        items.value.length = 0;
-        for (const command of commands) {
-          items.value.push({
-            ...command,
-            responses: orderBy(command.responses, 'order', 'asc'),
-            count:     count.find(o => o.command === command.command)?.count || 0,
-          });
+        console.debug('Loaded', itemsGetAll);
+        items.value = itemsGetAll;
+        for (const item of items.value) {
+          item.count = item.miliseconds / 1000;
         }
         // we also need to reset selection values
         if (selected.value.length > 0) {
@@ -299,34 +337,10 @@ export default defineComponent({
       });
     };
 
-    onMounted(() => {
-      refresh();
-    });
-
     const saveSuccess = () => {
       refresh();
       EventBus.$emit('snack', 'success', 'Data updated.');
       newDialog.value = false;
-    };
-
-    const deleteSelected = async () => {
-      deleteDialog.value = false;
-      await Promise.all(
-        selected.value.map((item) => {
-          return new Promise((resolve, reject) => {
-            getSocket('/systems/customcommands').emit('generic::deleteById', item.id, (err: string | null) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
-          });
-        }),
-      );
-      refresh();
-
-      EventBus.$emit('snack', 'success', 'Data removed.');
-      selected.value = [];
     };
     const update = async (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
       // check validity
@@ -346,31 +360,16 @@ export default defineComponent({
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
-            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-
-            if (attr === 'responses' && itemToUpdate.responses) {
-              // reorder by array
-              for (let i = 0; i < itemToUpdate.responses.length; i++) {
-                console.log(itemToUpdate.responses[i].response + ' --- ' + itemToUpdate.responses[i].order + ' => ' + i);
-                itemToUpdate.responses[i].order = i;
-              }
-            }
-
             if (attr === 'count') {
-              getSocket('/systems/customcommands').emit('commands::resetCountByCommand', itemToUpdate.command, () => {
-                resolve(true);
-              });
-            } else {
-              getSocket('/systems/customcommands').emit('generic::setById', {
-                id:   itemToUpdate.id,
-                item: {
-                  ...itemToUpdate,
-                  [attr]: item[attr], // save new value for all selected items
-                },
-              }, () => {
-                resolve(true);
-              });
+              itemToUpdate.miliseconds = item.count * 1000;
             }
+            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+            getSocket('/systems/cooldown').emit('cooldown::save', {
+              ...itemToUpdate,
+              [attr]: item[attr], // save new value for all selected items
+            }, () => {
+              resolve(true);
+            });
           });
         }),
       );
@@ -378,28 +377,43 @@ export default defineComponent({
       EventBus.$emit('snack', 'success', 'Data updated.');
     };
 
+    const deleteSelected = async () => {
+      deleteDialog.value = false;
+      await Promise.all(
+        selected.value.map((item) => {
+          return new Promise((resolve, reject) => {
+            getSocket('/systems/cooldown').emit('generic::deleteById', item.id, (err: string | null) => {
+              if (err) {
+                reject(error(err));
+              }
+              resolve(true);
+            });
+          });
+        }),
+      );
+      refresh();
+
+      EventBus.$emit('snack', 'success', 'Data removed.');
+      selected.value = [];
+    };
+
     return {
-      orderBy,
-      headers,
-      search,
       items,
+      search,
       state,
-      permissions,
-      getPermissionName,
-      deleteDialog,
-      selected,
-      translate,
-      timestamp,
-      rules,
+      headers,
       headersDelete,
-      newDialog,
-      saveSuccess,
+      selected,
       deleteSelected,
       update,
-      refresh,
-      capitalize,
+      newDialog,
+      deleteDialog,
+      translate,
+      saveSuccess,
+      timestamp,
+      rules,
+      typeItems,
       mdiMagnify,
-      mdiRestore,
       ButtonStates,
     };
   },
