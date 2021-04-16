@@ -24,12 +24,11 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
-import Snackbar from '~/components/snackbar.vue';
 
 export default defineComponent({
   components: {
-    navbar: () => import('../components/navbar/navbar.vue'),
-    snackbar: () => import('../components/snackbar.vue')
+    navbar:   () => import('../components/navbar/navbar.vue'),
+    snackbar: () => import('../components/snackbar.vue'),
   },
   middleware: ['isBotStarted', 'theme'],
 });
