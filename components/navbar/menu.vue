@@ -56,7 +56,6 @@ import {
 type menuType = { category?: string; name: string; id: string; this: any | null }[];
 type menuWithEnabled = Omit<menuType[number], 'this'> & { enabled: boolean };
 
-
 const icons = new Map<string, string>([
   ['dashboard', mdiViewDashboard],
   ['commands', mdiExclamationThick],

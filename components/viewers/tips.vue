@@ -150,6 +150,9 @@
 
 <script lang="ts">
 import { mdiDelete } from '@mdi/js';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, ref, watch,
 } from '@vue/composition-api';
@@ -158,10 +161,7 @@ import { capitalize } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 
 import type { UserInterface, UserTipInterface } from '.bot/src/bot/database/entity/user';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import translate from '@sogebot/ui-helpers/translate';
 import { minValue, required } from '~/functions/validators';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 
 const timeToDate = (value: number) => {
   return new Date(value).toISOString().substr(0, 10);
@@ -175,7 +175,7 @@ export default defineComponent({
     timeToTime,
   },
   props: { sum: Number, userId: String },
-  setup(props, ctx) {
+  setup (props, ctx) {
     const tips = ref([] as UserInterface['tips']);
     const username = ref('');
     const dialog = ref(false);
@@ -230,6 +230,10 @@ export default defineComponent({
       if (val) {
         // load tips
         getSocket('/core/users').emit('viewers::findOne', props.userId, (error: null | string, viewer: UserInterface) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
           console.log('User loaded', viewer);
           username.value = viewer.username;
           tips.value = viewer.tips;

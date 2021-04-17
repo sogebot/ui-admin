@@ -46,12 +46,11 @@
 
 <script lang="ts">
 import {
-  defineComponent, ref, watch,
-} from '@vue/composition-api';
-
-import {
   HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
+import {
+  defineComponent, ref, watch,
+} from '@vue/composition-api';
 
 export default defineComponent({
   model: {
@@ -59,7 +58,7 @@ export default defineComponent({
     event: 'change',
   },
   props: { value: Number },
-  setup(props, ctx) {
+  setup (props, ctx) {
     const value = props.value ?? 0;
     const hours = ref(Math.floor(value / HOUR));
     const minutes = ref(Math.floor(value / MINUTE) % 60);

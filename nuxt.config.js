@@ -57,13 +57,11 @@ export default {
   router: {
     mode: 'hash',
 
-    extendRoutes(routes, resolve) {
+    extendRoutes (routes, resolve) {
       routes.push({
-        path: '/manage/viewers/:id',
-        components: {
-          default: resolve(__dirname, 'pages/manage/viewers'),
-        },
-      })
+        path:       '/manage/viewers/:id',
+        components: { default: resolve(__dirname, 'pages/manage/viewers') },
+      });
     },
-  }
+  },
 };

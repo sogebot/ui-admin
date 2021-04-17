@@ -32,17 +32,17 @@
 </template>
 
 <script lang="ts">
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import { defineComponent, ref } from '@vue/composition-api';
 import { capitalize } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 
 import type { TimerInterface } from '.bot/src/bot/database/entity/timer';
-import translate from '@sogebot/ui-helpers/translate';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 
 export default defineComponent({
   props: { rules: Object },
-  setup(props, ctx) {
+  setup (_, ctx) {
     const name = ref('');
 
     const newItemSaving = ref(false);

@@ -121,6 +121,7 @@
 import {
   mdiCheckboxBlankCircleOutline, mdiCheckboxMarkedCircle, mdiDrag, mdiTrashCan,
 } from '@mdi/js';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent, defineComponent, ref, watch,
 } from '@vue/composition-api';
@@ -129,7 +130,6 @@ import { capitalize } from 'lodash-es';
 import draggable from 'vuedraggable';
 
 import type { TimerResponseInterface } from '.bot/src/bot/database/entity/timer';
-import translate from '@sogebot/ui-helpers/translate';
 
 export default defineComponent({
   components: {
@@ -137,7 +137,7 @@ export default defineComponent({
     'input-variables': defineAsyncComponent({ loader: () => import('~/components/inputVariables.vue') }),
   },
   props: { responses: Array, name: String },
-  setup(props, ctx) {
+  setup (props, ctx) {
     let responsesBackup: any[] = [];
     const responsesUpdated = ref((props.responses ?? []) as TimerResponseInterface[]);
     const dialog = ref(false);
@@ -173,7 +173,10 @@ export default defineComponent({
       save,
       remove,
       responsesUpdated,
-      mdiDrag, mdiTrashCan, mdiCheckboxMarkedCircle, mdiCheckboxBlankCircleOutline,
+      mdiDrag,
+      mdiTrashCan,
+      mdiCheckboxMarkedCircle,
+      mdiCheckboxBlankCircleOutline,
     };
   },
 });

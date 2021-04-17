@@ -239,11 +239,11 @@ export default defineComponent({
     const joinBot = () => {
       const socket = getSocket('/core/users', true);
       socket.emit('joinBot');
-    }
+    };
     const leaveBot = () => {
       const socket = getSocket('/core/users', true);
       socket.emit('leaveBot');
-    }
+    };
 
     return {
       menu,

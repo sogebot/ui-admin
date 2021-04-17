@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import {
-  mdiHelp, mdiCheck, mdiExclamationThick,
+  mdiCheck, mdiExclamationThick, mdiHelp,
 } from '@mdi/js';
 import {
   defineComponent, ref, watch,
@@ -28,7 +28,7 @@ import {
 
 export default defineComponent({
   props: { value: [Boolean, Object] },
-  setup(props, ctx) {
+  setup (props, ctx) {
     const _value = ref(props.value);
 
     watch(_value, (val) => {
@@ -53,13 +53,15 @@ export default defineComponent({
       } else {
         return 'grey darken-4';
       }
-    }
+    };
 
     return {
       toggleValue,
       _value,
       color,
-      mdiExclamationThick, mdiCheck, mdiHelp,
+      mdiExclamationThick,
+      mdiCheck,
+      mdiHelp,
     };
   },
 });

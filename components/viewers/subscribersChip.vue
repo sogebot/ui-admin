@@ -14,7 +14,7 @@
         v-if="item.haveSubscriberLock"
         x-small
       >
-        {{ mdiLock }} 
+        {{ mdiLock }}
       </v-icon>
       Subscriber
     </v-chip>
@@ -57,18 +57,18 @@ import type { UserInterface } from '.bot/src/bot/database/entity/user';
 
 export default defineComponent({
   props: { item: Object },
-  setup(props: {
+  setup (props: {
     item: UserInterface,
   }, ctx) {
     let itemBackup: UserInterface = cloneDeep(props.item);
     const itemUpdated = ref(cloneDeep(props.item));
     const data = computed<number[]>({
-      set(value) {
+      set (value) {
         itemUpdated.value.haveSubscriberLock = value.includes(0);
         itemUpdated.value.isSubscriber = value.includes(1);
         return true;
       },
-      get() {
+      get () {
         const toReturn = [];
         if (itemUpdated.value.haveSubscriberLock) {
           toReturn.push(0);

@@ -61,19 +61,19 @@
 </template>
 
 <script lang="ts">
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
+import { getUsernameById } from '@sogebot/ui-helpers/userById';
 import {
   defineComponent, onMounted, ref,
 } from '@vue/composition-api';
 import { capitalize } from 'lodash-es';
 
 import type { QuotesInterface } from '.bot/src/bot/database/entity/quotes';
-import translate from '@sogebot/ui-helpers/translate';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import { getUsernameById } from '@sogebot/ui-helpers/userById';
 
 export default defineComponent({
   props: { tags: Array, rules: Object },
-  setup(_, ctx) {
+  setup (_, ctx) {
     const quote = ref('');
     const tagsInput = ref([] as string[]);
     const quotedBy = ref('');
@@ -106,7 +106,6 @@ export default defineComponent({
           });
         });
       }
-
     };
 
     const closeDlg = () => {

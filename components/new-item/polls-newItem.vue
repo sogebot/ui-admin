@@ -51,18 +51,18 @@
 </template>
 
 <script lang="ts">
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   computed, defineComponent, ref,
 } from '@vue/composition-api';
 import { capitalize } from 'lodash-es';
 
 import type { PollInterface } from '.bot/src/bot/database/entity/poll';
-import translate from '@sogebot/ui-helpers/translate';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 
 export default defineComponent({
   props: { tags: Array, rules: Object },
-  setup(props, ctx) {
+  setup (props, ctx) {
     const title = ref('');
     const type = ref('normal');
     const options = ref(['', '', '', '', ''] as string[]);
@@ -129,7 +129,6 @@ export default defineComponent({
           });
         });
       }
-
     };
 
     const closeDlg = () => {

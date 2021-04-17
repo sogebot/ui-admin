@@ -142,6 +142,9 @@
 
 <script lang="ts">
 import { mdiDelete } from '@mdi/js';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, ref, watch,
 } from '@vue/composition-api';
@@ -150,10 +153,7 @@ import { capitalize } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 
 import type { UserBitInterface, UserInterface } from '.bot/src/bot/database/entity/user';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import translate from '@sogebot/ui-helpers/translate';
 import { minValue, required } from '~/functions/validators';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 
 const socket = { users: getSocket('/core/users') } as const;
 
@@ -169,7 +169,7 @@ export default defineComponent({
     timeToTime,
   },
   props: { sum: Number, userId: String },
-  setup(props, ctx) {
+  setup (props, ctx) {
     const bits = ref([] as UserInterface['bits']);
     const username = ref('');
     const dialog = ref(false);
@@ -187,6 +187,10 @@ export default defineComponent({
     watch(dialog, (val) => {
       if (val) {
         socket.users.emit('viewers::findOne', props.userId, (error: null | string, viewer: UserInterface) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
           console.log('User loaded', viewer);
           username.value = viewer.username;
           bits.value = viewer.bits;
