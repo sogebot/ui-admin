@@ -36,6 +36,32 @@ import {
 const navmenu = defineAsyncComponent({ loader: () => import('./menu.vue') });
 const user = defineAsyncComponent({ loader: () => import('../user.vue') });
 
+const routeMapper = new Map<string, string>([
+  ['manage-alias', 'alias'],
+  ['manage-botcommands', 'botcommands'],
+  ['manage-commands', 'customcommands'],
+  ['manage-cooldowns', 'cooldown'],
+  ['manage-keywords', 'keywords'],
+  ['manage-price', 'price'],
+  ['manage-polls', 'polls'],
+  ['manage-quotes', 'quotes'],
+  ['manage-ranks', 'ranks'],
+  ['manage-timers', 'timers'],
+  ['manage-viewers', 'viewers'],
+  ['manage-spotify-bannedsongs', 'spotifybannedsongs'],
+  ['manage-songs-bannedsongs', 'bannedsongs'],
+  ['manage-songs-playlist', 'playlist'],
+  ['manage-events', 'event-listeners'],
+  ['manage-highlights', 'highlights'],
+  ['manage-hltb', 'howlongtobeat'],
+  ['stats-api', 'api'],
+  ['stats-bits', 'bits'],
+  ['stats-tips', 'tips'],
+  ['stats-commandcount', 'commandcount'],
+  ['stats-profiler', 'profiler'],
+  ['registry-gallery', 'gallery'],
+]);
+
 export default defineComponent({
   components: {
     navmenu,
