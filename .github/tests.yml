@@ -16,9 +16,8 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: 14
-    - name: Install eslint and dependencies
+    - name: Install dependencies
       run: |
-        npm install glob;
-        npm install --only=dev typescript eslint jsonlint-mod @typescript-eslint/parser @typescript-eslint/eslint-plugin mkdirp@latest;
+        npm install
     - name: Run eslint
-      run: npx eslint --ext .ts,.vue pages --quiet
+      run: npm run lint
