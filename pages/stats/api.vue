@@ -77,6 +77,10 @@
 
 <script lang="ts">
 import { mdiMagnify } from '@mdi/js';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   computed, defineComponent,
   onMounted, ref,
@@ -88,15 +92,10 @@ import {
 import Vue from 'vue';
 import Chartkick from 'vue-chartkick';
 
-import {dayjs} from '@sogebot/ui-helpers/dayjsHelper';
-import translate from '@sogebot/ui-helpers/translate';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-
 Vue.use(Chartkick.use(Chart));
 
 export default defineComponent({
-  setup(props, ctx) {
+  setup () {
     const selected = ref('helix');
     const apiItems = computed(() => {
       return [
@@ -115,7 +114,7 @@ export default defineComponent({
       const errors = items.value.filter(o => o.api === selected.value && !String(o.code).startsWith('2'));
 
       const successPerMinute: any = {};
-      const _successPerMinute = groupBy(success, o => {
+      const _successPerMinute = groupBy(success, (o) => {
         return (new Date(o.timestamp)).getHours() + ':' + (new Date(o.timestamp)).getMinutes();
       });
       for (const minute of Object.keys(_successPerMinute)) {
@@ -124,7 +123,7 @@ export default defineComponent({
       }
 
       const errorsPerMinute: any = {};
-      const _errorsPerMinute = groupBy(errors, o => {
+      const _errorsPerMinute = groupBy(errors, (o) => {
         return (new Date(o.timestamp)).getMinutes();
       });
       for (const minute of Object.keys(_errorsPerMinute)) {
@@ -172,7 +171,7 @@ export default defineComponent({
       refresh();
     });
 
-    function parseJSON(JSONString: string) {
+    function parseJSON (JSONString: string) {
       try {
         return JSON.stringify(JSON.parse(JSONString), null, 2);
       } catch (e) {

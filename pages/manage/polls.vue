@@ -211,6 +211,10 @@
 
 <script lang="ts">
 import { mdiContentCopy, mdiMagnify } from '@mdi/js';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch,
@@ -219,19 +223,15 @@ import { cloneDeep } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 
 import type { PollInterface } from '.bot/src/bot/database/entity/poll';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import translate from '@sogebot/ui-helpers/translate';
-import { expectedValuesCount, required } from '~/functions/validators';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
-import { getSocket } from '@sogebot/ui-helpers/socket';
+import { expectedValuesCount, required } from '~/functions/validators';
 
 let interval: number;
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/polls-newItem.vue') }) },
-  setup(props, ctx) {
+  setup () {
     const rules = { title: [required], options: [expectedValuesCount(2)] };
 
     const items = ref([] as PollInterface[]);
@@ -328,13 +328,13 @@ export default defineComponent({
       }
 
       await Promise.all(
-        [item, ...(multi ? selected.value : [])].map( (itemToUpdate) => {
+        [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
             getSocket('/systems/polls').emit('polls::save', {
               ...itemToUpdate,
               [attr]: item[attr], // save new value for all selected items
-            } , () => {
+            }, () => {
               resolve(true);
             });
           });
@@ -347,7 +347,7 @@ export default defineComponent({
     const deleteSelected = async () => {
       deleteDialog.value = false;
       await Promise.all(
-        selected.value.map( (item) => {
+        selected.value.map((item) => {
           return new Promise((resolve, reject) => {
             getSocket('/systems/polls').emit('generic::deleteById', item.id, (err: string | null) => {
               if (err) {
@@ -391,7 +391,7 @@ export default defineComponent({
       clone.votes = [];
       clone.isOpened = true;
       clone.openedAt = Date.now();
-      getSocket('/systems/polls').emit('polls::save', clone , () => {
+      getSocket('/systems/polls').emit('polls::save', clone, () => {
         refresh();
       });
       EventBus.$emit('snack', 'success', 'Data copied.');

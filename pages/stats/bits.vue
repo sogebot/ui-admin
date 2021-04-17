@@ -62,6 +62,10 @@
 
 <script lang="ts">
 import { mdiMagnify } from '@mdi/js';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineComponent, onMounted, ref,
@@ -72,17 +76,12 @@ import Vue from 'vue';
 import Chartkick from 'vue-chartkick';
 
 import type { UserBitInterface } from '.bot/src/bot/database/entity/user';
-import {dayjs} from '@sogebot/ui-helpers/dayjsHelper';
-import translate from '@sogebot/ui-helpers/translate';
-
 import { getPermissionName } from '~/functions/getPermissionName';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 
 Vue.use(Chartkick.use(Chart));
 
 export default defineComponent({
-  setup(props, ctx) {
+  setup () {
     const search = ref('');
     const selectedYear = ref(String((new Date()).getFullYear()));
     const items = ref([] as Required<UserBitInterface>[]);
@@ -90,7 +89,7 @@ export default defineComponent({
       if (search.value === '') {
         return items.value;
       } else {
-        return items.value.filter(item => {
+        return items.value.filter((item) => {
           const message = item.message.toLowerCase().includes(search.value.toLowerCase());
           const userid = item.user.userId.toLowerCase().includes(search.value.toLowerCase());
           const username = item.user.username.toLowerCase().includes(search.value.toLowerCase());
@@ -136,22 +135,32 @@ export default defineComponent({
         if (d[year]) {
           d[year].push(bit);
         } else {
-          d[year] = [ bit ];
+          d[year] = [bit];
         }
       }
       return d;
     });
     const bitsByMonth = computed(() => {
       const d: { [month: number]: Required<UserBitInterface>[] } = {
-        0:  [], 1:  [], 2:  [], 3:  [], 4:  [], 5:  [],
-        6:  [], 7:  [], 8:  [], 9:  [], 10: [], 11: [],
+        0:  [],
+        1:  [],
+        2:  [],
+        3:  [],
+        4:  [],
+        5:  [],
+        6:  [],
+        7:  [],
+        8:  [],
+        9:  [],
+        10: [],
+        11: [],
       };
       for (const bit of bitsByYear.value[Number(selectedYear.value)]) {
         const month = new Date(bit.cheeredAt).getMonth();
         if (d[month]) {
           d[month].push(bit);
         } else {
-          d[month] = [ bit ];
+          d[month] = [bit];
         }
       }
       return d;

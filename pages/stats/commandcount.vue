@@ -56,6 +56,10 @@
 import {
   mdiMagnify, mdiMinusThick, mdiPlusThick,
 } from '@mdi/js';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   computed, defineComponent,
   onMounted, ref, watch,
@@ -67,17 +71,12 @@ import {
 import Vue from 'vue';
 import Chartkick from 'vue-chartkick';
 
-import {dayjs} from '@sogebot/ui-helpers/dayjsHelper';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import translate from '@sogebot/ui-helpers/translate';
-
 import { getPermissionName } from '~/functions/getPermissionName';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 
 Vue.use(Chartkick.use(Chart));
 
 export default defineComponent({
-  setup(props, ctx) {
+  setup () {
     const search = ref('');
     const showChartCommands = ref([] as string[]);
     watch(showChartCommands, () => {
@@ -168,7 +167,7 @@ export default defineComponent({
     });
 
     const totalInInterval = (command: string, interval: number, values: { command: string, timestamp: number, _id: string }[]): number => {
-      return values.filter(o => {
+      return values.filter((o) => {
         const isCorrectCommand = o.command === command;
         const isInInterval = Date.now() - interval <= o.timestamp;
         return isCorrectCommand && isInInterval;
@@ -179,14 +178,14 @@ export default defineComponent({
     };
     const toggleCommandChart = (command: string) => {
       if (showChartCommands.value.includes(command)) {
-        showChartCommands.value = showChartCommands.value.filter((o) => o !== command);
+        showChartCommands.value = showChartCommands.value.filter(o => o !== command);
       } else {
         showChartCommands.value.push(command);
       }
     };
     const from = computed(() => {
       // oldest timestamp
-      const oldestTimestamp = Math.min(...commandsUsage.value.map(o=>o.timestamp));
+      const oldestTimestamp = Math.min(...commandsUsage.value.map(o => o.timestamp));
       switch (timeRange.value) {
         case 1:
           return Math.max(oldestTimestamp, dayjs().subtract(1, 'year').valueOf());
@@ -227,21 +226,21 @@ export default defineComponent({
         list.push(timestamp);
       }
 
-      if (list.length <= (48 /*day*/ * 1)) {
+      if (list.length <= (48 /* day */ * 1)) {
         return 1000 * 60 * 30; // half hour
-      } else if (list.length <= (48 /*day*/ * 2)) {
+      } else if (list.length <= (48 /* day */ * 2)) {
         return 1000 * 60 * 60; // hour
-      } else if (list.length <= (48 /*day*/ * 3)) {
+      } else if (list.length <= (48 /* day */ * 3)) {
         return 1000 * 60 * 60 * 2; // 2 hours
-      } else if (list.length <= (48 /*day*/ * 6)) {
+      } else if (list.length <= (48 /* day */ * 6)) {
         return 1000 * 60 * 60 * 4; // 4 hours
-      } else if (list.length <= (48 /*day*/ * 12)) {
+      } else if (list.length <= (48 /* day */ * 12)) {
         return 1000 * 60 * 60 * 8; // 8 hours
-      } else if (list.length <= (48 /*day*/ * 21)) {
+      } else if (list.length <= (48 /* day */ * 21)) {
         return 1000 * 60 * 60 * 12; // 12 hours
-      } else if (list.length <= (48 /*day*/ * 30)) {
+      } else if (list.length <= (48 /* day */ * 30)) {
         return 1000 * 60 * 60 * 24; // day
-      } else if (list.length <= (48 /*day*/ * 365)) {
+      } else if (list.length <= (48 /* day */ * 365)) {
         return 1000 * 60 * 60 * 24 * 30; // month
       } else {
         return 1000 * 60 * 60 * 24 * 30 * 12; // year
@@ -261,16 +260,16 @@ export default defineComponent({
           continue;
         }
         const timestamps = commandsUsage.value
-          .filter(o => {
+          .filter((o) => {
             const isCommand = o.command === command;
             const isHigherThanFromDate = o.timestamp >= from.value;
             const isLowerThanToDate = o.timestamp <= to;
             return isCommand && isHigherThanFromDate && isLowerThanToDate;
           })
-          .map(o => {
+          .map((o) => {
             // find smooth timestamp
             let timestamp = from.value;
-            while(timestamp <= o.timestamp) {
+            while (timestamp <= o.timestamp) {
               timestamp += timestampSmooth.value;
             }
             if (timestamp > to) {
@@ -309,8 +308,11 @@ export default defineComponent({
       toggleCommandChart,
       generateChartData,
       showChartCommands,
-      mdiMagnify, mdiPlusThick, mdiMinusThick,
-      timeRange, ticksLabels,
+      mdiMagnify,
+      mdiPlusThick,
+      mdiMinusThick,
+      timeRange,
+      ticksLabels,
       ButtonStates,
     };
   },

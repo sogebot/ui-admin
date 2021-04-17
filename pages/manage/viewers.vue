@@ -560,6 +560,10 @@
 import {
   mdiClose, mdiDotsVertical, mdiLock, mdiLockOff, mdiMagnify, mdiRefresh,
 } from '@mdi/js';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineAsyncComponent,
@@ -569,13 +573,9 @@ import { capitalize, orderBy } from 'lodash-es';
 
 import type { EventListInterface } from '.bot/src/bot/database/entity/eventList';
 import type { UserInterface } from '.bot/src/bot/database/entity/user';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import translate from '@sogebot/ui-helpers/translate';
-import { minValue, required } from '~/functions/validators';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { EventBus } from '~/functions/event-bus';
 import { error } from '~/functions/error';
-import { getSocket } from '@sogebot/ui-helpers/socket';
+import { EventBus } from '~/functions/event-bus';
+import { minValue, required } from '~/functions/validators';
 
 const timeToDate = (value: number) => {
   return new Date(value).toISOString().substr(0, 10);
@@ -590,14 +590,13 @@ export default defineComponent({
     timeToTime,
   },
   components: {
-    followersChip:   defineAsyncComponent({ loader: () => import ('~/components/viewers/followersChip.vue') }),
-    subscribersChip: defineAsyncComponent({ loader: () => import ('~/components/viewers/subscribersChip.vue') }),
-    tips:            defineAsyncComponent({ loader: () => import ('~/components/viewers/tips.vue') }),
-    bits:            defineAsyncComponent({ loader: () => import ('~/components/viewers/bits.vue') }),
-    FilterButton:    defineAsyncComponent({ loader: () => import ('~/components/viewers/filterButton.vue') }),
+    followersChip:   defineAsyncComponent({ loader: () => import('~/components/viewers/followersChip.vue') }),
+    subscribersChip: defineAsyncComponent({ loader: () => import('~/components/viewers/subscribersChip.vue') }),
+    tips:            defineAsyncComponent({ loader: () => import('~/components/viewers/tips.vue') }),
+    bits:            defineAsyncComponent({ loader: () => import('~/components/viewers/bits.vue') }),
+    FilterButton:    defineAsyncComponent({ loader: () => import('~/components/viewers/filterButton.vue') }),
   },
-  setup(_, ctx) {
-    console.log(ctx)
+  setup (_, ctx) {
     const rules = {
       messages:                  [minValue(0), required],
       points:                    [minValue(0), required],
@@ -667,7 +666,7 @@ export default defineComponent({
       if (search.value === '') {
         return items.value;
       } else {
-        return items.value.filter(item => {
+        return items.value.filter((item) => {
           const userId = item.userId.toLowerCase().includes(search.value.toLowerCase());
           const userName = item.username.toLowerCase().includes(search.value.toLowerCase());
           return userId || userName;
@@ -767,7 +766,7 @@ export default defineComponent({
             } else if (attr === 'followedAt') {
               toUpdate.followedAt = item.followedAt;
               toUpdate.haveFollowedAtLock = item.haveFollowedAtLock;
-            }  else if (attr === 'subscribedAt') {
+            } else if (attr === 'subscribedAt') {
               toUpdate.subscribedAt = item.subscribedAt;
               toUpdate.haveSubscribedAtLock = item.haveSubscribedAtLock;
             } else {
@@ -816,7 +815,7 @@ export default defineComponent({
 
     const forceCheckFollowedAt = (item: UserInterface) => {
       state.value.forceCheckFollowedAt = ButtonStates.progress;
-      getSocket('/core/users').emit('viewers::followedAt', item.userId, (err: string | null, followed_at: number) => {
+      getSocket('/core/users').emit('viewers::followedAt', item.userId, (err: string | null, followedAt: number) => {
         state.value.forceCheckFollowedAt = ButtonStates.idle;
         if (err) {
           if (err.includes('Not a follower') && item) {
@@ -824,7 +823,7 @@ export default defineComponent({
           }
           return console.error(err);
         } else if (item) {
-          item.followedAt = followed_at;
+          item.followedAt = followedAt;
         }
       });
     };
@@ -868,7 +867,7 @@ export default defineComponent({
     const deleteSelected = async () => {
       deleteDialog.value = false;
       await Promise.all(
-        selected.value.map( (item) => {
+        selected.value.map((item) => {
           return new Promise((resolve, reject) => {
             getSocket('/core/users').emit('viewers::remove', item, (err: string | null) => {
               if (err) {
@@ -886,9 +885,7 @@ export default defineComponent({
     };
 
     const watchedTimeFormat = (value: number) => {
-      //console.log(ctx.$store.state.configuration);
-      //return Intl.NumberFormat((ctx.$store.state.configuration ?? { lang: 'en' }).lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value / 1000 / 60 / 60);
-      return 'a'
+      return Intl.NumberFormat((ctx.root.$store.state.configuration ?? { lang: 'en' }).lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value / 1000 / 60 / 60);
     };
 
     return {
@@ -917,8 +914,14 @@ export default defineComponent({
       fItems,
       forceCheckFollowedAt,
       timestamp,
-      mdiMagnify, mdiLock, mdiLockOff, mdiRefresh, mdiClose, mdiDotsVertical,
-      dayjs, lockBackup,
+      mdiMagnify,
+      mdiLock,
+      mdiLockOff,
+      mdiRefresh,
+      mdiClose,
+      mdiDotsVertical,
+      dayjs,
+      lockBackup,
       headersHistory,
       history,
       deleteDialog,

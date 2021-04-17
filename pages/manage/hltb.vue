@@ -223,24 +223,24 @@
 
 <script lang="ts">
 import { mdiMagnify, mdiRefresh } from '@mdi/js';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getTime, timestampToObject } from '@sogebot/ui-helpers/getTime';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
 import { cloneDeep, debounce } from 'lodash-es';
 
 import { HowLongToBeatGameInterface, HowLongToBeatGameItemInterface } from '.bot/src/bot/database/entity/howLongToBeatGame';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import { getTime, timestampToObject } from '@sogebot/ui-helpers/getTime';
-import translate from '@sogebot/ui-helpers/translate';
-import { minValue, required } from '~/functions/validators';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
+import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
   components: { timeInput: defineAsyncComponent({ loader: () => import('~/components/time.vue') }) },
-  setup() {
+  setup () {
     const timestamp = ref(Date.now());
     const items = ref([] as HowLongToBeatGameInterface[]);
     const streams = ref([] as HowLongToBeatGameItemInterface[]);
@@ -259,18 +259,18 @@ export default defineComponent({
     });
     const search = ref('');
 
-    const rules = { offset: [ required, minValue(0) ] };
+    const rules = { offset: [required, minValue(0)] };
 
-    const getStreamsOffset = (hltb_id: string, type: 'extra' | 'main' | 'completionist') => {
+    const getStreamsOffset = (hltbId: string, type: 'extra' | 'main' | 'completionist') => {
       return streams.value
-        .filter(o => o.hltb_id === hltb_id && ((type === 'main' && o.isMainCounted) || (type === 'completionist' && o.isCompletionistCounted) || (type === 'extra' && o.isExtraCounted)))
-        .reduce((a,b) => a + b.offset, 0);
+        .filter(o => o.hltb_id === hltbId && ((type === 'main' && o.isMainCounted) || (type === 'completionist' && o.isCompletionistCounted) || (type === 'extra' && o.isExtraCounted)))
+        .reduce((a, b) => a + b.offset, 0);
     };
 
-    const getStreamsTimestamp = (hltb_id: string, type: 'extra' | 'main' | 'completionist') => {
+    const getStreamsTimestamp = (hltbId: string, type: 'extra' | 'main' | 'completionist') => {
       return streams.value
-        .filter(o => o.hltb_id === hltb_id && ((type === 'main' && o.isMainCounted) || (type === 'completionist' && o.isCompletionistCounted) || (type === 'extra' && o.isExtraCounted)))
-        .reduce((a,b) => a + b.timestamp, 0);
+        .filter(o => o.hltb_id === hltbId && ((type === 'main' && o.isMainCounted) || (type === 'completionist' && o.isCompletionistCounted) || (type === 'extra' && o.isExtraCounted)))
+        .reduce((a, b) => a + b.timestamp, 0);
     };
 
     const fItems = computed(() => {
@@ -327,7 +327,6 @@ export default defineComponent({
       {
         value: 'manual', text: translate('systems.howlongtobeat.offset'), sortable: false, align: 'end',
       },
-      ,
     ];
 
     onMounted(() => {
@@ -382,7 +381,7 @@ export default defineComponent({
       }
 
       await Promise.all(
-        [item, ...(multi ? selected.value : [])].map( (itemToUpdate) => {
+        [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
             getSocket('/systems/howlongtobeat').emit('hltb::save', itemToUpdate, () => {
@@ -455,7 +454,7 @@ export default defineComponent({
     const deleteSelected = async () => {
       deleteDialog.value = false;
       await Promise.all(
-        selected.value.map( (item) => {
+        selected.value.map((item) => {
           return new Promise((resolve, reject) => {
             getSocket('/systems/howlongtobeat').emit('generic::deleteById', item.id, (err: string | null) => {
               if (err) {
@@ -501,7 +500,8 @@ export default defineComponent({
       timestamp,
       dayjs,
 
-      mdiMagnify, mdiRefresh,
+      mdiMagnify,
+      mdiRefresh,
       ButtonStates,
     };
   },

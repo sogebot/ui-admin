@@ -46,6 +46,9 @@
 
 <script lang="ts">
 import { mdiMinusThick, mdiPlusThick } from '@mdi/js';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent,
   onMounted, ref, watch,
@@ -55,18 +58,14 @@ import { capitalize, orderBy } from 'lodash-es';
 import Vue from 'vue';
 import Chartkick from 'vue-chartkick';
 
-import translate from '@sogebot/ui-helpers/translate';
-
 import { getPermissionName } from '~/functions/getPermissionName';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 
 Vue.use(Chartkick.use(Chart));
 
 type profilerItem = [function: string, times: number[]];
 
 export default defineComponent({
-  setup(props, ctx) {
+  setup () {
     const showChartFunctions = ref([] as string[]);
     watch(showChartFunctions, () => {
       localStorage.setItem('/stats/profiler/showChartFunctions', JSON.stringify(showChartFunctions.value));
@@ -112,14 +111,14 @@ export default defineComponent({
 
     const toggleFunctionChart = (key: string) => {
       if (showChartFunctions.value.includes(key)) {
-        showChartFunctions.value = showChartFunctions.value.filter((o) => o !== key);
+        showChartFunctions.value = showChartFunctions.value.filter(o => o !== key);
       } else {
         showChartFunctions.value.push(key);
       }
     };
 
     const avg = (data: number[]) => {
-      return data.reduce((a, b) => (a+b)) / data.length;
+      return data.reduce((a, b) => (a + b)) / data.length;
     };
 
     const max = (data: number[]) => {

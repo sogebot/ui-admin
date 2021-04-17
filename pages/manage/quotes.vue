@@ -235,6 +235,10 @@
 
 <script lang="ts">
 import { mdiMagnify, mdiTagPlus } from '@mdi/js';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   computed, defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@vue/composition-api';
@@ -242,18 +246,14 @@ import {
   capitalize, flatten, orderBy, uniq,
 } from 'lodash-es';
 
-import {dayjs} from '@sogebot/ui-helpers/dayjsHelper';
 import type { QuotesInterface } from '.bot/src/bot/database/entity/quotes';
-import translate from '@sogebot/ui-helpers/translate';
-import { required } from '~/functions/validators';
-import { EventBus } from '~/functions/event-bus';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import { error } from '~/functions/error';
+import { EventBus } from '~/functions/event-bus';
+import { required } from '~/functions/validators';
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/quotes-newItem.vue') }) },
-  setup(props, ctx) {
+  setup () {
     const timestamp = ref(Date.now());
 
     const selected = ref([] as QuotesInterface[]);
@@ -309,7 +309,11 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/quotes').emit('quotes:getAll', {}, async (err: string | null, data: QuotesInterface[]) => {
+      getSocket('/systems/quotes').emit('quotes:getAll', {}, (err: string | null, data: QuotesInterface[]) => {
+        if (err) {
+          error(err);
+          return;
+        }
         items.value = data;
         state.value.loading = ButtonStates.success;
       });
@@ -350,7 +354,7 @@ export default defineComponent({
       return orderBy(uniq(flatten(_tags)));
     });
     const tagsItems = computed(() => {
-      return [{ text: 'Not filtered', value: null }, ...tags.value.map((item) => ({
+      return [{ text: 'Not filtered', value: null }, ...tags.value.map(item => ({
         text:     item,
         value:    item,
         disabled: false,
@@ -381,7 +385,8 @@ export default defineComponent({
           return new Promise((resolve) => {
             console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
             getSocket('/systems/quotes').emit('generic::setById', {
-              id:   itemToUpdate.id, item: {
+              id:   itemToUpdate.id,
+              item: {
                 ...itemToUpdate,
                 [attr]: item[attr], // save new value for all selected items
               },
@@ -398,7 +403,7 @@ export default defineComponent({
     const deleteSelected = async () => {
       deleteDialog.value = false;
       await Promise.all(
-        selected.value.map( (item) => {
+        selected.value.map((item) => {
           return new Promise((resolve, reject) => {
             getSocket('/systems/quotes').emit('generic::deleteById', item.id, (err: string | null) => {
               if (err) {

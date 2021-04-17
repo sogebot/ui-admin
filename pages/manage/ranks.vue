@@ -234,24 +234,24 @@
 import {
   mdiMagnify, mdiMinus, mdiPlus,
 } from '@mdi/js';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
 import { capitalize } from 'lodash-es';
 
 import type { RankInterface } from '.bot/src/bot/database/entity/rank';
-import translate from '@sogebot/ui-helpers/translate';
-import { minValue, required } from '~/functions/validators';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { error } from '~/functions/error';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import { EventBus } from '~/functions/event-bus';
+import { minValue, required } from '~/functions/validators';
 
 type RankInterfaceUI = RankInterface & { typeToBeShownInTable: string };
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/ranks-newItem.vue') }) },
-  setup() {
+  setup () {
     const rules = { value: [required, minValue(0)], rank: [required] };
 
     const items = ref([] as RankInterfaceUI[]);
@@ -357,14 +357,14 @@ export default defineComponent({
       }
 
       await Promise.all(
-        [item, ...(multi ? selected.value : [])].map( (itemToUpdate) => {
+        [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             if (itemToUpdate.type !== null) {
               console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
               getSocket('/systems/ranks').emit('ranks::save', {
                 ...itemToUpdate,
                 [attr]: item[attr], // save new value for all selected items
-              } , () => {
+              }, () => {
                 // remove from pending if needed
                 sessionStorage.setItem('ranks-pending', JSON.stringify(
                   JSON.parse(sessionStorage.getItem('ranks-pending') ?? '[]').filter((o: RankInterface) => o.id !== itemToUpdate.id),
@@ -391,7 +391,7 @@ export default defineComponent({
     const deleteSelected = async () => {
       deleteDialog.value = false;
       await Promise.all(
-        selected.value.map( (item) => {
+        selected.value.map((item) => {
           if ((item.type as any) === null) {
             sessionStorage.setItem('ranks-pending', JSON.stringify(
               JSON.parse(sessionStorage.getItem('ranks-pending') ?? '[]').filter((o: RankInterface) => o.id !== item.id),
@@ -436,7 +436,8 @@ export default defineComponent({
 
     return {
       items,
-      isTypeSelected, toggleTypeSelection,
+      isTypeSelected,
+      toggleTypeSelection,
       search,
       state,
       headers,
@@ -451,7 +452,9 @@ export default defineComponent({
       timestamp,
       rules,
       typeItems,
-      mdiMagnify, mdiMinus, mdiPlus,
+      mdiMagnify,
+      mdiMinus,
+      mdiPlus,
       ButtonStates,
     };
   },

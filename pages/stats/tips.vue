@@ -65,6 +65,10 @@
 
 <script lang="ts">
 import { mdiMagnify } from '@mdi/js';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineComponent, onMounted, ref,
@@ -75,17 +79,12 @@ import Vue from 'vue';
 import Chartkick from 'vue-chartkick';
 
 import type { UserTipInterface } from '.bot/src/bot/database/entity/user';
-import {dayjs} from '@sogebot/ui-helpers/dayjsHelper';
-import translate from '@sogebot/ui-helpers/translate';
-
 import { getPermissionName } from '~/functions/getPermissionName';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 
 Vue.use(Chartkick.use(Chart));
 
 export default defineComponent({
-  setup(props, ctx) {
+  setup () {
     const search = ref('');
     const selectedYear = ref(String((new Date()).getFullYear()));
     const items = ref([] as Required<UserTipInterface>[]);
@@ -93,7 +92,7 @@ export default defineComponent({
       if (search.value === '') {
         return items.value;
       } else {
-        return items.value.filter(item => {
+        return items.value.filter((item) => {
           const message = item.message.toLowerCase().includes(search.value.toLowerCase());
           const userid = item.user.userId.toLowerCase().includes(search.value.toLowerCase());
           const username = item.user.username.toLowerCase().includes(search.value.toLowerCase());
@@ -139,22 +138,32 @@ export default defineComponent({
         if (d[year]) {
           d[year].push(tip);
         } else {
-          d[year] = [ tip ];
+          d[year] = [tip];
         }
       }
       return d;
     });
     const tipsByMonth = computed(() => {
       const d: { [month: number]: Required<UserTipInterface>[] } = {
-        0:  [], 1:  [], 2:  [], 3:  [], 4:  [], 5:  [],
-        6:  [], 7:  [], 8:  [], 9:  [], 10: [], 11: [],
+        0:  [],
+        1:  [],
+        2:  [],
+        3:  [],
+        4:  [],
+        5:  [],
+        6:  [],
+        7:  [],
+        8:  [],
+        9:  [],
+        10: [],
+        11: [],
       };
       for (const tip of tipsByYear.value[Number(selectedYear.value)]) {
         const month = new Date(tip.tippedAt).getMonth();
         if (d[month]) {
           d[month].push(tip);
         } else {
-          d[month] = [ tip ];
+          d[month] = [tip];
         }
       }
       return d;

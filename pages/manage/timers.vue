@@ -213,27 +213,27 @@
 
 <script lang="ts">
 import { mdiMagnify } from '@mdi/js';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
 import { capitalize, orderBy } from 'lodash-es';
 
 import type { TimerInterface } from '.bot/src/bot/database/entity/timer';
-import translate from '@sogebot/ui-helpers/translate';
+import { error } from '~/functions/error';
+import { EventBus } from '~/functions/event-bus';
 import {
   minLength, minValue, mustBeCompliant, required,
 } from '~/functions/validators';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import { EventBus } from '~/functions/event-bus';
-import { error } from '~/functions/error';
 
 export default defineComponent({
   components: {
-    'new-item':  defineAsyncComponent({ loader: () => import('~/components/new-item/timers-newItem.vue') }),
-    'responses': defineAsyncComponent({ loader: () => import('~/components/timers-responses.vue') }),
+    'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/timers-newItem.vue') }),
+    responses:  defineAsyncComponent({ loader: () => import('~/components/timers-responses.vue') }),
   },
-  setup(props, ctx) {
+  setup () {
     const rules = {
       name:                [required, minLength(2), mustBeCompliant('a-zA-Z0-9_')],
       triggerEveryMessage: [required, minValue(0)],
@@ -271,6 +271,10 @@ export default defineComponent({
 
     const refresh = () => {
       getSocket('/systems/timers').emit('generic::getAll', (err: string | null, _items: Required<TimerInterface>[]) => {
+        if (err) {
+          error(err);
+          return;
+        }
         items.value.length = 0;
         for (const item of _items) {
           items.value.push({
@@ -303,7 +307,7 @@ export default defineComponent({
     const deleteSelected = async () => {
       deleteDialog.value = false;
       await Promise.all(
-        selected.value.map( (item) => {
+        selected.value.map((item) => {
           return new Promise((resolve, reject) => {
             getSocket('/systems/timers').emit('generic::deleteById', item.id, (err: string | null) => {
               if (err) {
@@ -335,7 +339,7 @@ export default defineComponent({
       }
 
       await Promise.all(
-        [item, ...(multi ? selected.value : [])].map( (itemToUpdate) => {
+        [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             if (attr === 'messages') {
               for (let i = 0; i < item[attr].length; i++) {
@@ -344,7 +348,8 @@ export default defineComponent({
             }
             console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
             getSocket('/systems/timers').emit('generic::setById', {
-              id:   itemToUpdate.id, item: {
+              id:   itemToUpdate.id,
+              item: {
                 ...itemToUpdate,
                 [attr]: item[attr], // save new value for all selected items
               },
