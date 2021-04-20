@@ -223,7 +223,7 @@ export default defineComponent({
   },
   setup (props, ctx) {
     let responsesBackup: any[] = [];
-    const responsesUpdated = ref(props.responses ?? []);
+    const responsesUpdated = ref(cloneDeep(props.responses ?? []));
     const dialog = ref(false);
 
     watch(dialog, (val) => {

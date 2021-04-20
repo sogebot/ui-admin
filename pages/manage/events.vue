@@ -16,55 +16,52 @@
         </v-card-title>
 
         <v-card-text>
-          <v-data-table
-            dense
-            :items="selected"
-            :headers="headersDelete"
-            :items-per-page="-1"
-            hide-default-header
-            hide-default-footer
-          >
-            <template #[`item.name`]="{ item }">
-              {{ capitalize(translate(item.name)) }}
-            </template>
+          <v-card v-for="item of selected" :key="item.id" class="my-2">
+            <v-card-text>
+              <v-row>
+                <v-col cols="3">
+                  <v-list dense outlined class="dense">
+                    <v-subheader>{{ translate('name') }}</v-subheader>
+                    <v-list-item>{{ capitalize(translate(item.name)) }}</v-list-item>
+                    <v-subheader>
+                      {{ translate('events.definitions.filter.label') }}
+                    </v-subheader>
+                    <v-list-item :key="item.id + item.filter + '0'">
+                      <code v-if="item.filter.length > 0" class="ml-2">{{ item.filter }}</code>
+                      <span v-else class="grey--text text--darken-2">No filters set for this event</span>
+                    </v-list-item>
 
-            <template #[`item.definitions`]="{ item }">
-              <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
-                <v-list-item v-if="item.filter.length === 0 && Object.keys(item.definitions).length === 0">
-                  No definition or filters set
-                </v-list-item>
-                <template v-if="item.filter.length > 0">
-                  <v-subheader>{{ translate('events.definitions.filter.label') }}</v-subheader>
-                  <v-list-item v-if="item.filter.length > 0" :key="item.id + item.filter + '0'">
-                    <code class="ml-2">{{ item.filter }}</code>
-                  </v-list-item>
-                </template>
-                <v-subheader v-if="Object.keys(item.definitions).length > 0">
-                  Definitions
-                </v-subheader>
-                <v-list-item v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
-                  <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
-                </v-list-item>
-              </v-list>
-            </template>
+                    <v-subheader v-if="Object.keys(item.definitions).length > 0">
+                      Definitions
+                    </v-subheader>
+                    <v-list-item v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
+                      <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
+                    </v-list-item>
+                  </v-list>
+                </v-col>
+                <v-col cols="9">
+                  <v-list dense outlined class="dense">
+                    <v-list-item v-if="item.operations.length === 0">
+                      <span class="grey--text text--darken-2">No operations set for this event</span>
+                    </v-list-item>
 
-            <template #[`item.operations`]="{ item }">
-              <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
-                <template v-for="operation of item.operations">
-                  <v-subheader :key="item.id + operation.name">
-                    {{ capitalize(translate(operation.name)) }}
-                  </v-subheader>
-                  <v-list-item
-                    v-for="key of Object.keys(operation.definitions)"
-                    :key="item.id + key + '2'"
-                  >
-                    <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong>
-                    <code class="ml-2">{{ operation.definitions[key] }}</code>
-                  </v-list-item>
-                </template>
-              </v-list>
-            </template>
-          </v-data-table>
+                    <template v-for="operation of item.operations">
+                      <v-subheader :key="item.id + operation.name">
+                        {{ capitalize(translate(operation.name)) }}
+                      </v-subheader>
+                      <v-list-item
+                        v-for="key of Object.keys(operation.definitions)"
+                        :key="item.id + key + '2'"
+                      >
+                        <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong>
+                        <code class="ml-2">{{ operation.definitions[key] }}</code>
+                      </v-list-item>
+                    </template>
+                  </v-list>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -85,46 +82,62 @@
       </v-card>
     </v-dialog>
 
-    <v-toolbar
+    <v-sheet
       flat
+      color='dark'
+      class="my-2 p-2"
     >
-      <v-spacer/>
+      <v-row class="px-2" no-gutters>
+        <v-col>
+          <v-autocomplete
+            v-model="search"
+            label="Filter"
+            multiple
+            :items="eventsItems"
+            :return-object="false"
+            chips
+            deletable-chips
+            class="pr-2"
+          />
+        </v-col>
 
-      <v-dialog
-        v-model="newDialog"
-        max-width="800px"
-      >
-        <template #activator="{ on, attrs }">
-          <v-btn
-            color="primary"
-            class="mb-2"
-            v-bind="attrs"
-            v-on="on"
+        <v-col cols="auto" align-self="center">
+          <v-dialog
+            v-model="newDialog"
+            max-width="800px"
           >
-            New item
-          </v-btn>
-        </template>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                color="primary"
+                v-bind="attrs"
+                v-on="on"
+              >
+                New item
+              </v-btn>
+            </template>
 
-        <v-card>
-          <v-card-title>
-            <span class="headline">New item</span>
-          </v-card-title>
+            <v-card>
+              <v-card-title>
+                <span class="headline">New item</span>
+              </v-card-title>
 
-          <v-card-text :key="timestamp">
-            <new-item
-              :rules="rules"
-              @close="newDialog = false"
-              @save="saveSuccess"
-            />
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-    </v-toolbar>
+              <v-card-text :key="timestamp">
+                <new-item
+                  :rules="rules"
+                  @close="newDialog = false"
+                  @save="saveSuccess"
+                />
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+        </v-col>
+      </v-row>
+    </v-sheet>
 
-    <v-card v-for="item of items" :key="item.id" class="my-2">
+    <v-card v-for="item of filteredItems" :key="item.id" class="my-2">
       <v-card-text>
         <v-row>
-          <v-col cols="3">
+          <v-col cols="12" md="6" lg="3">
             <v-list dense outlined class="dense">
               <v-subheader>{{ translate('name') }}</v-subheader>
               <v-list-item>{{ capitalize(translate(item.name)) }}</v-list-item>
@@ -168,8 +181,9 @@
                 @open="backupDefinitions(item.definitions)"
                 @close="restoreDefinitions(item)"
                 @save="update(item, false, 'definitions')"
+                v-if="Object.keys(item.definitions).length > 0"
               >
-                <v-subheader v-if="Object.keys(item.definitions).length > 0">
+                <v-subheader>
                   Definitions
                 </v-subheader>
                 <v-list-item v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
@@ -214,25 +228,13 @@
               </v-edit-dialog>
             </v-list>
           </v-col>
-          <v-col cols="9">
-            <v-list dense outlined class="dense">
-              <v-list-item v-if="item.operations.length === 0">
-                <span class="grey--text text--darken-2">No operations set for this event</span>
-              </v-list-item>
-
-              <template v-for="operation of item.operations">
-                <v-subheader :key="item.id + operation.name">
-                  {{ capitalize(translate(operation.name)) }}
-                </v-subheader>
-                <v-list-item
-                  v-for="key of Object.keys(operation.definitions)"
-                  :key="item.id + key + '2'"
-                >
-                  <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong>
-                  <code class="ml-2">{{ operation.definitions[key] }}</code>
-                </v-list-item>
-              </template>
-            </v-list>
+          <v-col cols="12" md="6" lg="9">
+            <operations
+              :item="item"
+              :operations="item.operations"
+              :rules="rules"
+              @save="item.operations = $event; update(item, false, 'operations')"
+            />
           </v-col>
         </v-row>
       </v-card-text>
@@ -260,6 +262,7 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
+  computed,
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
 import { capitalize, cloneDeep } from 'lodash-es';
@@ -272,9 +275,14 @@ import {
 } from '~/functions/validators';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/events-newItem.vue') }) },
+  components: {
+    'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/events-newItem.vue') }),
+    operations: defineAsyncComponent({ loader: () => import('~/components/events/operations.vue') }),
+  },
   setup () {
     const timestamp = ref(Date.now());
+
+    const search = ref([] as string[]);
 
     const selected = ref([] as EventInterface[]);
     const deleteDialog = ref(false);
@@ -284,6 +292,17 @@ export default defineComponent({
     const items = ref([] as EventInterface[]);
 
     const definitions = ref({} as any);
+    const eventsItems = computed(() => {
+      return availableEvents.value
+        .filter((item) => {
+          return items.value.map(o => o.name).includes(item.id);
+        })
+        .map(item => ({
+          text:     capitalize(translate(item.id)),
+          value:    item.id,
+          disabled: false,
+        }));
+    });
 
     const backupDefinitions = (value: any) => {
       definitions.value = cloneDeep(value);
@@ -294,7 +313,14 @@ export default defineComponent({
       item.definitions = cloneDeep(definitions.value);
     };
 
+    const filteredItems = computed(() => {
+      return items.value.filter((item) => {
+        return search.value.length === 0 || search.value.includes(item.name);
+      });
+    });
+
     const rules = {
+      // event definitions
       fadeOutXCommands:  [required, minValue(0)],
       fadeOutInterval:   [required, minValue(0)],
       runEveryXCommands: [required, minValue(0)],
@@ -307,9 +333,19 @@ export default defineComponent({
       runEveryXMinutes:  [required, minValue(1)],
       viewersAtLeast:    [required, minValue(0)],
       titleOfReward:     [required],
+
+      // operation definitions
+      messageToSend:        [required],
+      commandToRun:         [required],
+      emotesToExplode:      [required],
+      channel:              [required],
+      customVariable:       [required],
+      emotesToFirework:     [required],
+      numberToDecrement:    [required, minValue(1)],
+      numberToIncrement:    [required, minValue(1)],
+      durationOfCommercial: [required],
     };
 
-    const search = ref('');
     const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
@@ -470,6 +506,7 @@ export default defineComponent({
       availableVariables,
       definitions,
       items,
+      filteredItems,
       search,
       state,
       headersDelete,
@@ -495,6 +532,7 @@ export default defineComponent({
       toggleGroupSelection,
       backupDefinitions,
       restoreDefinitions,
+      eventsItems,
     };
   },
 });

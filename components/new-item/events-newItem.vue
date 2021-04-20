@@ -38,10 +38,12 @@
         </v-stepper-step>
       </v-stepper-header><v-stepper-items>
         <v-stepper-content :step="1">
-          <v-select
+          <v-autocomplete
             v-model="event"
             :label="capitalize(translate('event'))"
             :items="eventsItems"
+            :return-object="false"
+            hide-selected
           />
 
           <v-btn
