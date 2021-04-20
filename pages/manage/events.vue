@@ -7,292 +7,255 @@
       {{ translate('menu.event-listeners') }}
     </h2>
 
-    <v-data-table
-      v-model="selected"
-      calculate-widths
-      show-select
-      :search="search"
-      :loading="state.loading !== ButtonStates.success"
-      :headers="headers"
-      group-by="name"
-      :items-per-page="-1"
-      :items="items"
+    <v-dialog
+      v-model="deleteDialog"
     >
-      <template #top>
-        <v-toolbar
-          flat
-        >
-          <v-text-field
-            v-model="search"
-            :append-icon="mdiMagnify"
-            label="Search"
-            single-line
-            hide-details
-            :clearable="true"
-            class="pr-2"
-          />
+      <v-card>
+        <v-card-title>
+          <span class="headline">Delete {{ selected.length }} Item(s)?</span>
+        </v-card-title>
 
-          <template v-if="selected.length > 0">
-            <v-dialog
-              v-model="deleteDialog"
-            >
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  color="error"
-                  class="mb-2 mr-1"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  Delete {{ selected.length }} Item(s)
-                </v-btn>
-              </template>
-
-              <v-card>
-                <v-card-title>
-                  <span class="headline">Delete {{ selected.length }} Item(s)?</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-data-table
-                    dense
-                    :items="selected"
-                    :headers="headersDelete"
-                    :items-per-page="-1"
-                    hide-default-header
-                    hide-default-footer
-                  >
-                    <template #[`item.name`]="{ item }">
-                      {{ capitalize(translate(item.name)) }}
-                    </template>
-
-                    <template #[`item.definitions`]="{ item }">
-                      <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
-                        <v-list-item v-if="item.filter.length === 0 && Object.keys(item.definitions).length === 0">
-                          No definition or filters set
-                        </v-list-item>
-                        <template v-if="item.filter.length > 0">
-                          <v-subheader>{{ translate('events.definitions.filter.label') }}</v-subheader>
-                          <v-list-item v-if="item.filter.length > 0" :key="item.id + item.filter + '0'">
-                            <code class="ml-2">{{ item.filter }}</code>
-                          </v-list-item>
-                        </template>
-                        <v-subheader v-if="Object.keys(item.definitions).length > 0">
-                          Definitions
-                        </v-subheader>
-                        <v-list-item v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
-                          <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
-                        </v-list-item>
-                      </v-list>
-                    </template>
-
-                    <template #[`item.operations`]="{ item }">
-                      <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
-                        <template v-for="operation of item.operations">
-                          <v-subheader :key="item.id + operation.name">
-                            {{ capitalize(translate(operation.name)) }}
-                          </v-subheader>
-                          <v-list-item
-                            v-for="key of Object.keys(operation.definitions)"
-                            :key="item.id + key + '2'"
-                          >
-                            <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong>
-                            <code class="ml-2">{{ operation.definitions[key] }}</code>
-                          </v-list-item>
-                        </template>
-                      </v-list>
-                    </template>
-                  </v-data-table>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn
-                    text
-                    @click="deleteDialog = false"
-                  >
-                    Cancel
-                  </v-btn>
-                  <v-btn
-                    color="error"
-                    text
-                    @click="deleteSelected"
-                  >
-                    Delete
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </template>
-
-          <v-dialog
-            v-model="newDialog"
-            max-width="800px"
+        <v-card-text>
+          <v-data-table
+            dense
+            :items="selected"
+            :headers="headersDelete"
+            :items-per-page="-1"
+            hide-default-header
+            hide-default-footer
           >
-            <template #activator="{ on, attrs }">
-              <v-btn
-                color="primary"
-                class="mb-2"
-                v-bind="attrs"
-                v-on="on"
-              >
-                New item
-              </v-btn>
+            <template #[`item.name`]="{ item }">
+              {{ capitalize(translate(item.name)) }}
             </template>
 
-            <v-card>
-              <v-card-title>
-                <span class="headline">New item</span>
-              </v-card-title>
-
-              <v-card-text :key="timestamp">
-                <new-item
-                  :rules="rules"
-                  @close="newDialog = false"
-                  @save="saveSuccess"
-                />
-              </v-card-text>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
-      </template>
-
-      <template #[`group.header`]="{ items, isOpen, toggle }">
-        <th colspan="7">
-          <v-icon
-            @click="toggle"
-          >
-            {{ isOpen ? mdiMinus : mdiPlus }}
-          </v-icon>
-
-          <v-simple-checkbox
-            class="d-inline-block px-4"
-            style="transform: translateY(5px);"
-            inline
-            :value="isGroupSelected(items[0].name)"
-            @click="toggleGroupSelection(items[0].name)"
-          />
-          {{ capitalize(translate(items[0].name)) }}
-        </th>
-      </template>
-
-      <template #[`item.definitions`]="{ item }">
-        <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
-          <v-edit-dialog
-            persistent
-            large
-            :return-value.sync="item.filter"
-            @save="update(item, false, 'filter')"
-          >
-            <v-subheader>
-              {{ translate('events.definitions.filter.label') }}
-            </v-subheader>
-            <v-list-item v-if="item.filter.length > 0" :key="item.id + item.filter + '0'">
-              <code class="ml-2">{{ item.filter }}</code>
-            </v-list-item>
-
-            <template #input>
-              <v-textarea
-                v-model="item.filter"
-                hide-details="auto"
-                :label="capitalize(translate('systems.customcommands.filter.name'))"
-                :rows="1"
-                counter
-                auto-grow
-                @keydown.enter.prevent
-              >
-                <template #append>
-                  <input-variables
-                    :filters="['global', ...availableVariables(item.name)]"
-                    @input="item.filter = item.filter + $event"
-                  />
+            <template #[`item.definitions`]="{ item }">
+              <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
+                <v-list-item v-if="item.filter.length === 0 && Object.keys(item.definitions).length === 0">
+                  No definition or filters set
+                </v-list-item>
+                <template v-if="item.filter.length > 0">
+                  <v-subheader>{{ translate('events.definitions.filter.label') }}</v-subheader>
+                  <v-list-item v-if="item.filter.length > 0" :key="item.id + item.filter + '0'">
+                    <code class="ml-2">{{ item.filter }}</code>
+                  </v-list-item>
                 </template>
-              </v-textarea>
+                <v-subheader v-if="Object.keys(item.definitions).length > 0">
+                  Definitions
+                </v-subheader>
+                <v-list-item v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
+                  <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
+                </v-list-item>
+              </v-list>
             </template>
-          </v-edit-dialog>
 
-          <v-edit-dialog
-            persistent
-            large
-            @open="backupDefinitions(item.definitions)"
-            @close="restoreDefinitions(item)"
-            @save="update(item, false, 'definitions')"
+            <template #[`item.operations`]="{ item }">
+              <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
+                <template v-for="operation of item.operations">
+                  <v-subheader :key="item.id + operation.name">
+                    {{ capitalize(translate(operation.name)) }}
+                  </v-subheader>
+                  <v-list-item
+                    v-for="key of Object.keys(operation.definitions)"
+                    :key="item.id + key + '2'"
+                  >
+                    <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong>
+                    <code class="ml-2">{{ operation.definitions[key] }}</code>
+                  </v-list-item>
+                </template>
+              </v-list>
+            </template>
+          </v-data-table>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            text
+            @click="deleteDialog = false"
           >
-            <v-subheader v-if="Object.keys(item.definitions).length > 0">
-              Definitions
-            </v-subheader>
-            <v-list-item v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
-              <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
-            </v-list-item>
+            Cancel
+          </v-btn>
+          <v-btn
+            color="error"
+            text
+            @click="deleteSelected"
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-            <template #input>
-              <div
-                v-for="defKey of Object.keys(item.definitions)"
-                :key="timestamp + defKey"
+    <v-toolbar
+      flat
+    >
+      <v-spacer/>
+
+      <v-dialog
+        v-model="newDialog"
+        max-width="800px"
+      >
+        <template #activator="{ on, attrs }">
+          <v-btn
+            color="primary"
+            class="mb-2"
+            v-bind="attrs"
+            v-on="on"
+          >
+            New item
+          </v-btn>
+        </template>
+
+        <v-card>
+          <v-card-title>
+            <span class="headline">New item</span>
+          </v-card-title>
+
+          <v-card-text :key="timestamp">
+            <new-item
+              :rules="rules"
+              @close="newDialog = false"
+              @save="saveSuccess"
+            />
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </v-toolbar>
+
+    <v-card v-for="item of items" :key="item.id" class="my-2">
+      <v-card-text>
+        <v-row>
+          <v-col cols="3">
+            <v-list dense outlined class="dense">
+              <v-subheader>{{ translate('name') }}</v-subheader>
+              <v-list-item>{{ capitalize(translate(item.name)) }}</v-list-item>
+              <v-edit-dialog
+                persistent
+                large
+                :return-value.sync="item.filter"
+                @save="update(item, false, 'filter')"
               >
-                <v-switch
-                  v-if="typeof item.definitions[defKey] === 'boolean'"
-                  v-model="item.definitions[defKey]"
-                  :label="translate(`events.definitions.${defKey}.label`)"
-                />
-                <rewards
-                  v-if="defKey === 'titleOfReward'"
-                  :rules="rules"
-                  :value.sync="item.definitions[defKey]"
-                />
-                <v-text-field
-                  v-else-if="typeof item.definitions[defKey] === 'string'"
-                  v-model="item.definitions[defKey]"
-                  :rules="rules[defKey]"
-                  :label="translate(`events.definitions.${defKey}.label`)"
-                  :hint="translate('events.definitions.' + defKey + '.placeholder')"
-                  persistent-hint
-                />
-                <v-text-field
-                  v-else-if="typeof item.definitions[defKey] === 'number'"
-                  v-model.number="item.definitions[defKey]"
-                  :rules="rules[defKey]"
-                  type="number"
-                  min="0"
-                  :label="translate(`events.definitions.${defKey}.label`)"
-                  :hint="translate('events.definitions.' + defKey + '.placeholder')"
-                  persistent-hint
-                />
-              </div>
-            </template>
-          </v-edit-dialog>
-        </v-list>
-      </template>
+                <v-subheader>
+                  {{ translate('events.definitions.filter.label') }}
+                </v-subheader>
+                <v-list-item :key="item.id + item.filter + '0'">
+                  <code v-if="item.filter.length > 0" class="ml-2">{{ item.filter }}</code>
+                  <span v-else class="grey--text text--darken-2">No filters set for this event</span>
+                </v-list-item>
 
-      <template #[`item.operations`]="{ item }">
-        <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
-          <template v-for="operation of item.operations">
-            <v-subheader :key="item.id + operation.name">
-              {{ capitalize(translate(operation.name)) }}
-            </v-subheader>
-            <v-list-item
-              v-for="key of Object.keys(operation.definitions)"
-              :key="item.id + key + '2'"
-            >
-              <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong>
-              <code class="ml-2">{{ operation.definitions[key] }}</code>
-            </v-list-item>
-          </template>
-        </v-list>
-      </template>
+                <template #input>
+                  <v-textarea
+                    v-model="item.filter"
+                    hide-details="auto"
+                    :label="capitalize(translate('systems.customcommands.filter.name'))"
+                    :rows="1"
+                    counter
+                    auto-grow
+                    @keydown.enter.prevent
+                  >
+                    <template #append>
+                      <input-variables
+                        :filters="['global', ...availableVariables(item.name)]"
+                        @input="item.filter = item.filter + $event"
+                      />
+                    </template>
+                  </v-textarea>
+                </template>
+              </v-edit-dialog>
 
-      <template #[`item.isEnabled`]="{ item }">
-        <v-simple-checkbox
-          v-model="item.isEnabled"
-          @click="update(item, true, 'isEnabled')"
-        />
-      </template>
-    </v-data-table>
+              <v-edit-dialog
+                persistent
+                large
+                @open="backupDefinitions(item.definitions)"
+                @close="restoreDefinitions(item)"
+                @save="update(item, false, 'definitions')"
+              >
+                <v-subheader v-if="Object.keys(item.definitions).length > 0">
+                  Definitions
+                </v-subheader>
+                <v-list-item v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
+                  <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
+                </v-list-item>
+
+                <template #input>
+                  <div
+                    v-for="defKey of Object.keys(item.definitions)"
+                    :key="timestamp + defKey"
+                  >
+                    <v-switch
+                      v-if="typeof item.definitions[defKey] === 'boolean'"
+                      v-model="item.definitions[defKey]"
+                      :label="translate(`events.definitions.${defKey}.label`)"
+                    />
+                    <rewards
+                      v-if="defKey === 'titleOfReward'"
+                      :rules="rules"
+                      :value.sync="item.definitions[defKey]"
+                    />
+                    <v-text-field
+                      v-else-if="typeof item.definitions[defKey] === 'string'"
+                      v-model="item.definitions[defKey]"
+                      :rules="rules[defKey]"
+                      :label="translate(`events.definitions.${defKey}.label`)"
+                      :hint="translate('events.definitions.' + defKey + '.placeholder')"
+                      persistent-hint
+                    />
+                    <v-text-field
+                      v-else-if="typeof item.definitions[defKey] === 'number'"
+                      v-model.number="item.definitions[defKey]"
+                      :rules="rules[defKey]"
+                      type="number"
+                      min="0"
+                      :label="translate(`events.definitions.${defKey}.label`)"
+                      :hint="translate('events.definitions.' + defKey + '.placeholder')"
+                      persistent-hint
+                    />
+                  </div>
+                </template>
+              </v-edit-dialog>
+            </v-list>
+          </v-col>
+          <v-col cols="9">
+            <v-list dense outlined class="dense">
+              <v-list-item v-if="item.operations.length === 0">
+                <span class="grey--text text--darken-2">No operations set for this event</span>
+              </v-list-item>
+
+              <template v-for="operation of item.operations">
+                <v-subheader :key="item.id + operation.name">
+                  {{ capitalize(translate(operation.name)) }}
+                </v-subheader>
+                <v-list-item
+                  v-for="key of Object.keys(operation.definitions)"
+                  :key="item.id + key + '2'"
+                >
+                  <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong>
+                  <code class="ml-2">{{ operation.definitions[key] }}</code>
+                </v-list-item>
+              </template>
+            </v-list>
+          </v-col>
+        </v-row>
+      </v-card-text>
+
+      <v-card-actions class="ma-2">
+        <v-spacer />
+        <v-btn
+          :color="item.isEnabled ? 'success' : 'error'"
+          @click="item.isEnabled = !item.isEnabled; update(item, true, 'isEnabled')"
+        >
+          {{ translate(item.isEnabled ? 'enabled' : 'disabled') }}
+        </v-btn>
+
+        <v-btn color="error" text @click="selected = [item]; deleteDialog = true;">
+          {{ translate('delete') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
   </v-container>
 </template>
 
 <script lang="ts">
-import {
-  mdiFilter, mdiMagnify, mdiMinus, mdiPlus,
-} from '@mdi/js';
+import { mdiDelete, mdiMagnify } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -365,19 +328,6 @@ export default defineComponent({
       refresh();
     });
 
-    const headers = [
-      { value: 'name', text: '' },
-      {
-        value: 'definitions', text: '', sortable: false,
-      },
-      {
-        value: 'operations', text: '', sortable: false,
-      },
-      {
-        value: 'isEnabled', text: '', width: '6rem', sortable: false,
-      },
-    ];
-
     const headersDelete = [
       {
         value: 'name', text: '', sortable: false,
@@ -433,16 +383,21 @@ export default defineComponent({
           }
         }
       }
-      // check validity of definitions
-      for (const key of Object.keys(item.definitions)) {
-        for (const rule of (rules as any)[key]) {
-          const ruleStatus = rule((item as any).definitions[key]);
-          if (ruleStatus === true || typeof (item as any).definitions[key] === 'undefined') {
+      if (attr === 'definitions') {
+        // check validity of definitions
+        for (const key of Object.keys(item.definitions)) {
+          if (typeof (rules as any)[key] === 'undefined') {
             continue;
-          } else {
-            EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-            refresh();
-            return;
+          }
+          for (const rule of (rules as any)[key]) {
+            const ruleStatus = rule((item as any).definitions[key]);
+            if (ruleStatus === true || typeof (item as any).definitions[key] === 'undefined') {
+              continue;
+            } else {
+              EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
+              refresh();
+              return;
+            }
           }
         }
       }
@@ -517,7 +472,6 @@ export default defineComponent({
       items,
       search,
       state,
-      headers,
       headersDelete,
       update,
       deleteSelected,
@@ -534,9 +488,7 @@ export default defineComponent({
 
       capitalize,
       mdiMagnify,
-      mdiMinus,
-      mdiPlus,
-      mdiFilter,
+      mdiDelete,
 
       ButtonStates,
       isGroupSelected,
