@@ -71,10 +71,14 @@
                           No definition or filters set
                         </v-list-item>
                         <template v-if="item.filter.length > 0">
+                          <v-subheader>{{ translate('events.definitions.filter.label') }}</v-subheader>
                           <v-list-item :key="item.id + item.filter + '0'" v-if="item.filter.length > 0">
-                            {{ translate('events.definitions.filter.label') }}: <span class="variable ml-2">{{ item.filter }}</span>
+                            <code class="ml-2">{{ item.filter }}</code>
                           </v-list-item>
                         </template>
+                        <v-subheader v-if="Object.keys(item.definitions).length > 0">
+                          Definitions
+                        </v-subheader>
                         <v-list-item :key="item.id + key + '0'" v-for="key of Object.keys(item.definitions)">
                           <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
                         </v-list-item>
@@ -169,21 +173,33 @@
         </th>
       </template>
 
-      <template #[`item.definitions`]="{ item }">
-        <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
-          <v-list-item v-if="item.filter.length === 0 && Object.keys(item.definitions).length === 0">
-            No definition or filters set
-          </v-list-item>
-          <template v-if="item.filter.length > 0">
-            <v-list-item :key="item.id + item.filter + '0'" v-if="item.filter.length > 0">
-              {{ translate('events.definitions.filter.label') }}: <span class="variable ml-2">{{ item.filter }}</span>
-            </v-list-item>
-          </template>
-          <v-list-item :key="item.id + key + '0'" v-for="key of Object.keys(item.definitions)">
-            <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
-          </v-list-item>
-        </v-list>
-      </template>
+        <template #[`item.definitions`]="{ item }">
+          <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
+            <v-hover v-slot="{ hover }">
+              <div style="cursor: pointer;">
+                <v-subheader>
+                  {{ translate('events.definitions.filter.label') }}
+                  <small v-if="hover" class="ml-1">Click to edit</small>
+                </v-subheader>
+                <v-list-item :key="item.id + item.filter + '0'" v-if="item.filter.length > 0">
+                  <code class="ml-2">{{ item.filter }}</code>
+                </v-list-item>
+              </div>
+            </v-hover>
+
+            <v-hover v-slot="{ hover }">
+              <div style="cursor: pointer;">
+                <v-subheader v-if="Object.keys(item.definitions).length > 0">
+                  Definitions
+                  <small v-if="hover" class="ml-1">Click to edit</small>
+                </v-subheader>
+                <v-list-item :key="item.id + key + '0'" v-for="key of Object.keys(item.definitions)">
+                  <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
+                </v-list-item>
+              </div>
+            </v-hover>
+          </v-list>
+        </template>
 
       <template #[`item.operations`]="{ item }">
         <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
@@ -213,7 +229,7 @@
 
 <script lang="ts">
 import {
-  mdiMagnify, mdiMinus, mdiPlus,
+  mdiMagnify, mdiMinus, mdiPlus, mdiFilter,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -276,18 +292,18 @@ export default defineComponent({
     });
 
     const headers = [
-      { value: 'name', text: translate('name') },
-      { value: 'definitions', text: translate('definitions') },
-      { value: 'operations', text: translate('operations') },
+      { value: 'name', text: '' },
+      { value: 'definitions', text: '', sortable: false },
+      { value: 'operations', text: '', sortable: false },
       {
-        value: 'isEnabled', text: translate('enabled'), width: '6rem',
+        value: 'isEnabled', text: '', width: '6rem', sortable: false
       },
     ];
 
     const headersDelete = [
-      { value: 'name', text: translate('name') },
-      { value: 'definitions', text: translate('definitions') },
-      { value: 'operations', text: translate('operations') },
+      { value: 'name', text: '', sortable: false },
+      { value: 'definitions', text: '', sortable: false },
+      { value: 'operations', text: '', sortable: false },
     ];
 
     const refresh = () => {
@@ -399,6 +415,7 @@ export default defineComponent({
       mdiMagnify,
       mdiMinus,
       mdiPlus,
+      mdiFilter,
 
       ButtonStates,
       isGroupSelected,

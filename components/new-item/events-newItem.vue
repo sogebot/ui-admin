@@ -70,65 +70,34 @@
               :label="translate(`events.definitions.${defKey}.label`)"
             />
             <rewards
-              :rules="rules"
               v-if="defKey === 'titleOfReward'"
+              :rules="rules"
               :value.sync="definitions[defKey]"
             />
             <v-text-field
-              :rules="rules[defKey]"
               v-else-if="typeof definitions[defKey] === 'string'"
               v-model="definitions[defKey]"
+              :rules="rules[defKey]"
               :label="translate(`events.definitions.${defKey}.label`)"
               :hint="translate('events.definitions.' + defKey + '.placeholder')"
               persistent-hint
             />
             <v-text-field
-              :rules="rules[defKey]"
               v-else-if="typeof definitions[defKey] === 'number'"
               v-model.number="definitions[defKey]"
+              :rules="rules[defKey]"
               type="number"
               min="0"
               :label="translate(`events.definitions.${defKey}.label`)"
               :hint="translate('events.definitions.' + defKey + '.placeholder')"
               persistent-hint
             />
-
-            <!--template v-if="defKey === 'titleOfReward'">
-              {{ $v.definitions.titleOfReward.$error && $v.definitions.titleOfReward.$dirty ? false : null }}
-              <rewards
-                :value.sync="definitions[defKey]"
-                :state="$v.definitions.titleOfReward.$error && $v.definitions.titleOfReward.$dirty ? false : null"
-              />
-              <b-form-invalid-feedback :state="!($v.definitions.titleOfReward.$error && $v.definitions.titleOfReward.$dirty)">
-                {{ translate('dialog.errors.required') }}
-              </b-form-invalid-feedback>
-            </template>
-            <input
-              v-else
-              :id="defKey + '_input'"
-              v-model="definitions[defKey]"
-              :class="{ 'is-invalid': getDefinitionValidation(defKey).$error }"
-              type="text"
-              class="form-control"
-              :placeholder="translate('events.definitions.' + defKey + '.placeholder')"
-            >
-            <div
-              v-if="getDefinitionValidation(defKey)"
-              class="invalid-feedback"
-            >
-              <template v-if="!get(getDefinitionValidation(defKey), 'minValue', true)">
-                {{ translate('dialog.errors.minValue').replace('$value', get(getDefinitionValidation(defKey), '$params.minValue.min', 0)) }}
-              </template>
-              <template v-else>
-                {{ translate('dialog.errors.required') }}
-              </template>
-            </div-->
           </div>
 
           <v-btn
             class="mr-4 mt-2"
-            @click="validateForm(3);"
             :disabled="!valid"
+            @click="validateForm(3);"
           >
             continue
           </v-btn>
@@ -142,6 +111,26 @@
         </v-stepper-content>
 
         <v-stepper-content step="3">
+          {{ availableVariables  }}
+          <v-lazy>
+            <v-textarea
+              v-model="filter"
+              hide-details="auto"
+              :label="capitalize(translate('systems.customcommands.filter.name'))"
+              :rows="1"
+              counter
+              auto-grow
+              @keydown.enter.prevent
+            >
+              <template #append>
+                <input-variables
+                  :filters="['global', ...availableVariables]"
+                  @input="filter = filter + $event"
+                />
+              </template>
+            </v-textarea>
+          </v-lazy>
+
           <v-btn
             class="mr-4 mt-2"
             :loading="newItemSaving"
@@ -178,14 +167,15 @@ import { EventInterface, Events } from '~/.bot/src/bot/database/entity/event';
 import { error } from '~/functions/error';
 
 export default defineComponent({
-  props: { rules: Object },
+  props:      { rules: Object },
   components: {
-        rewards:   defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }),
-
+    rewards:           defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }),
+    'input-variables': defineAsyncComponent({ loader: () => import('~/components/inputVariables.vue') }),
   },
   setup (_, ctx) {
     const e1 = ref(1);
     const event = ref('clearchat');
+    const filter = ref('');
     const definitions = ref({});
     const availableEvents = ref([] as Events.SupportedEvent[]);
     const newItemSaving = ref(false);
@@ -263,14 +253,13 @@ export default defineComponent({
             operations:  [],
             triggered:   {},
             definitions: {},
-            filter:      '',
+            filter:      filter.value,
           };
           console.log('Saving', { item });
-          /* getSocket('/systems/cooldown').emit('cooldown::save', item, () => {
-            resolve(true);
+          getSocket('/core/events').emit('events::save', item, () => {
             ctx.emit('save');
             newItemSaving.value = false;
-          }); */
+          });
         });
       }
     };
@@ -283,9 +272,15 @@ export default defineComponent({
       if ((form.value as unknown as HTMLFormElement).validate()) {
         e1.value = nextPage;
       }
-    }
+    };
+
+    const availableVariables = computed(() => {
+      const variables = (availableEvents.value.find(o => o.id === event.value) || { variables: [] }).variables;
+      return variables;
+    });
 
     return {
+      availableVariables,
       capitalize,
       definitions,
       eventsItems,
@@ -299,6 +294,7 @@ export default defineComponent({
       form,
       haveEventDefinitions,
       validateForm,
+      filter,
     };
   },
 });
