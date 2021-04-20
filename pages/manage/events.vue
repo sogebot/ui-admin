@@ -120,7 +120,7 @@
 
           <v-dialog
             v-model="newDialog"
-            max-width="500px"
+            max-width="800px"
           >
             <template #activator="{ on, attrs }">
               <v-btn
@@ -213,7 +213,7 @@
 
 <script lang="ts">
 import {
-  mdiMagnify,
+  mdiMagnify, mdiMinus, mdiPlus,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -226,9 +226,10 @@ import { capitalize } from 'lodash-es';
 import type { EventInterface } from '.bot/src/bot/database/entity/event';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
+import { minValue, required, startsWithExclamation } from '~/functions/validators';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/alias-newItem.vue') }) },
+  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/events-newItem.vue') }) },
   setup () {
     const timestamp = ref(Date.now());
 
@@ -239,6 +240,18 @@ export default defineComponent({
     const items = ref([] as EventInterface[]);
 
     const rules = {
+      fadeOutXCommands:  [required, minValue(0)],
+      fadeOutInterval:   [required, minValue(0)],
+      runEveryXCommands: [required, minValue(0)],
+      runEveryXKeywords: [required, minValue(0)],
+      fadeOutXKeywords:  [required, minValue(0)],
+      runInterval:       [required, minValue(0)],
+      commandToWatch:    [required, startsWithExclamation],
+      keywordToWatch:    [required],
+      runAfterXMinutes:  [required, minValue(1)],
+      runEveryXMinutes:  [required, minValue(1)],
+      viewersAtLeast:    [required, minValue(0)],
+      titleOfReward:     [required],
     };
 
     const search = ref('');
@@ -384,6 +397,8 @@ export default defineComponent({
 
       capitalize,
       mdiMagnify,
+      mdiMinus,
+      mdiPlus,
 
       ButtonStates,
       isGroupSelected,
