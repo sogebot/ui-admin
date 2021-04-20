@@ -111,7 +111,6 @@
         </v-stepper-content>
 
         <v-stepper-content step="3">
-          {{ availableVariables  }}
           <v-lazy>
             <v-textarea
               v-model="filter"
@@ -252,7 +251,7 @@ export default defineComponent({
             isEnabled:   true,
             operations:  [],
             triggered:   {},
-            definitions: {},
+            definitions: definitions.value,
             filter:      filter.value,
           };
           console.log('Saving', { item });

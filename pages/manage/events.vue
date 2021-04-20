@@ -72,14 +72,14 @@
                         </v-list-item>
                         <template v-if="item.filter.length > 0">
                           <v-subheader>{{ translate('events.definitions.filter.label') }}</v-subheader>
-                          <v-list-item :key="item.id + item.filter + '0'" v-if="item.filter.length > 0">
+                          <v-list-item v-if="item.filter.length > 0" :key="item.id + item.filter + '0'">
                             <code class="ml-2">{{ item.filter }}</code>
                           </v-list-item>
                         </template>
                         <v-subheader v-if="Object.keys(item.definitions).length > 0">
                           Definitions
                         </v-subheader>
-                        <v-list-item :key="item.id + key + '0'" v-for="key of Object.keys(item.definitions)">
+                        <v-list-item v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
                           <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
                         </v-list-item>
                       </v-list>
@@ -92,7 +92,8 @@
                             {{ capitalize(translate(operation.name)) }}
                           </v-subheader>
                           <v-list-item
-                            v-for="key of Object.keys(operation.definitions)" :key="item.id + key + '2'"
+                            v-for="key of Object.keys(operation.definitions)"
+                            :key="item.id + key + '2'"
                           >
                             <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong>
                             <code class="ml-2">{{ operation.definitions[key] }}</code>
@@ -173,33 +174,93 @@
         </th>
       </template>
 
-        <template #[`item.definitions`]="{ item }">
-          <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
-            <v-hover v-slot="{ hover }">
-              <div style="cursor: pointer;">
-                <v-subheader>
-                  {{ translate('events.definitions.filter.label') }}
-                  <small v-if="hover" class="ml-1">Click to edit</small>
-                </v-subheader>
-                <v-list-item :key="item.id + item.filter + '0'" v-if="item.filter.length > 0">
-                  <code class="ml-2">{{ item.filter }}</code>
-                </v-list-item>
-              </div>
-            </v-hover>
+      <template #[`item.definitions`]="{ item }">
+        <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
+          <v-edit-dialog
+            persistent
+            large
+            :return-value.sync="item.filter"
+            @save="update(item, false, 'filter')"
+          >
+            <v-subheader>
+              {{ translate('events.definitions.filter.label') }}
+            </v-subheader>
+            <v-list-item v-if="item.filter.length > 0" :key="item.id + item.filter + '0'">
+              <code class="ml-2">{{ item.filter }}</code>
+            </v-list-item>
 
-            <v-hover v-slot="{ hover }">
-              <div style="cursor: pointer;">
-                <v-subheader v-if="Object.keys(item.definitions).length > 0">
-                  Definitions
-                  <small v-if="hover" class="ml-1">Click to edit</small>
-                </v-subheader>
-                <v-list-item :key="item.id + key + '0'" v-for="key of Object.keys(item.definitions)">
-                  <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
-                </v-list-item>
+            <template #input>
+              <v-textarea
+                v-model="item.filter"
+                hide-details="auto"
+                :label="capitalize(translate('systems.customcommands.filter.name'))"
+                :rows="1"
+                counter
+                auto-grow
+                @keydown.enter.prevent
+              >
+                <template #append>
+                  <input-variables
+                    :filters="['global', ...availableVariables(item.name)]"
+                    @input="item.filter = item.filter + $event"
+                  />
+                </template>
+              </v-textarea>
+            </template>
+          </v-edit-dialog>
+
+          <v-edit-dialog
+            persistent
+            large
+            @open="backupDefinitions(item.definitions)"
+            @close="restoreDefinitions(item)"
+            @save="update(item, false, 'definitions')"
+          >
+            <v-subheader v-if="Object.keys(item.definitions).length > 0">
+              Definitions
+            </v-subheader>
+            <v-list-item v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
+              <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
+            </v-list-item>
+
+            <template #input>
+              <div
+                v-for="defKey of Object.keys(item.definitions)"
+                :key="timestamp + defKey"
+              >
+                <v-switch
+                  v-if="typeof item.definitions[defKey] === 'boolean'"
+                  v-model="item.definitions[defKey]"
+                  :label="translate(`events.definitions.${defKey}.label`)"
+                />
+                <rewards
+                  v-if="defKey === 'titleOfReward'"
+                  :rules="rules"
+                  :value.sync="item.definitions[defKey]"
+                />
+                <v-text-field
+                  v-else-if="typeof item.definitions[defKey] === 'string'"
+                  v-model="item.definitions[defKey]"
+                  :rules="rules[defKey]"
+                  :label="translate(`events.definitions.${defKey}.label`)"
+                  :hint="translate('events.definitions.' + defKey + '.placeholder')"
+                  persistent-hint
+                />
+                <v-text-field
+                  v-else-if="typeof item.definitions[defKey] === 'number'"
+                  v-model.number="item.definitions[defKey]"
+                  :rules="rules[defKey]"
+                  type="number"
+                  min="0"
+                  :label="translate(`events.definitions.${defKey}.label`)"
+                  :hint="translate('events.definitions.' + defKey + '.placeholder')"
+                  persistent-hint
+                />
               </div>
-            </v-hover>
-          </v-list>
-        </template>
+            </template>
+          </v-edit-dialog>
+        </v-list>
+      </template>
 
       <template #[`item.operations`]="{ item }">
         <v-list dense outlined class="ma-2 dense" style="background-color: transparent !important;">
@@ -208,7 +269,8 @@
               {{ capitalize(translate(operation.name)) }}
             </v-subheader>
             <v-list-item
-              v-for="key of Object.keys(operation.definitions)" :key="item.id + key + '2'"
+              v-for="key of Object.keys(operation.definitions)"
+              :key="item.id + key + '2'"
             >
               <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong>
               <code class="ml-2">{{ operation.definitions[key] }}</code>
@@ -229,7 +291,7 @@
 
 <script lang="ts">
 import {
-  mdiMagnify, mdiMinus, mdiPlus, mdiFilter,
+  mdiFilter, mdiMagnify, mdiMinus, mdiPlus,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -237,12 +299,14 @@ import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
-import { capitalize } from 'lodash-es';
+import { capitalize, cloneDeep } from 'lodash-es';
 
-import type { EventInterface } from '.bot/src/bot/database/entity/event';
+import type { EventInterface, Events } from '.bot/src/bot/database/entity/event';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
-import { minValue, required, startsWithExclamation } from '~/functions/validators';
+import {
+  minValue, required, startsWithExclamation,
+} from '~/functions/validators';
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/events-newItem.vue') }) },
@@ -252,8 +316,20 @@ export default defineComponent({
     const selected = ref([] as EventInterface[]);
     const deleteDialog = ref(false);
     const newDialog = ref(false);
+    const availableEvents = ref([] as Events.SupportedEvent[]);
 
     const items = ref([] as EventInterface[]);
+
+    const definitions = ref({} as any);
+
+    const backupDefinitions = (value: any) => {
+      definitions.value = cloneDeep(value);
+      timestamp.value = Date.now();
+    };
+
+    const restoreDefinitions = (item: EventInterface) => {
+      item.definitions = cloneDeep(definitions.value);
+    };
 
     const rules = {
       fadeOutXCommands:  [required, minValue(0)],
@@ -271,9 +347,7 @@ export default defineComponent({
     };
 
     const search = ref('');
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
@@ -293,37 +367,77 @@ export default defineComponent({
 
     const headers = [
       { value: 'name', text: '' },
-      { value: 'definitions', text: '', sortable: false },
-      { value: 'operations', text: '', sortable: false },
       {
-        value: 'isEnabled', text: '', width: '6rem', sortable: false
+        value: 'definitions', text: '', sortable: false,
+      },
+      {
+        value: 'operations', text: '', sortable: false,
+      },
+      {
+        value: 'isEnabled', text: '', width: '6rem', sortable: false,
       },
     ];
 
     const headersDelete = [
-      { value: 'name', text: '', sortable: false },
-      { value: 'definitions', text: '', sortable: false },
-      { value: 'operations', text: '', sortable: false },
+      {
+        value: 'name', text: '', sortable: false,
+      },
+      {
+        value: 'definitions', text: '', sortable: false,
+      },
+      {
+        value: 'operations', text: '', sortable: false,
+      },
     ];
 
-    const refresh = () => {
-      getSocket('/core/events').emit('generic::getAll', (err: string | null, data: EventInterface[]) => {
-        if (err) {
-          return error(err);
-        }
-        items.value = data;
-        console.groupCollapsed('events::generic::getAll');
-        console.debug({ data });
-        console.groupEnd();
-        state.value.loading = ButtonStates.success;
-      });
+    const refresh = async () => {
+      await Promise.all([
+        new Promise((resolve) => {
+          getSocket('/core/events').emit('generic::getAll', (err: string | null, data: EventInterface[]) => {
+            if (err) {
+              resolve(false);
+              return error(err);
+            }
+            items.value = data;
+            console.groupCollapsed('events::generic::getAll');
+            console.debug({ data });
+            console.groupEnd();
+            resolve(true);
+          });
+        }),
+        new Promise((resolve) => {
+          getSocket('/core/events').emit('list.supported.events', (err: string | null, data: Events.SupportedEvent[]) => {
+            if (err) {
+              error(err);
+              resolve(false);
+              return;
+            }
+            availableEvents.value = data;
+            resolve(true);
+          });
+        }),
+      ]);
+      state.value.loading = ButtonStates.success;
     };
     const update = async (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
       // check validity
       for (const key of Object.keys(rules)) {
         for (const rule of (rules as any)[key]) {
           const ruleStatus = rule((item as any)[key]);
-          if (ruleStatus === true) {
+          if (ruleStatus === true || typeof (item as any)[key] === 'undefined') {
+            continue;
+          } else {
+            EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
+            refresh();
+            return;
+          }
+        }
+      }
+      // check validity of definitions
+      for (const key of Object.keys(item.definitions)) {
+        for (const rule of (rules as any)[key]) {
+          const ruleStatus = rule((item as any).definitions[key]);
+          if (ruleStatus === true || typeof (item as any).definitions[key] === 'undefined') {
             continue;
           } else {
             EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
@@ -392,7 +506,14 @@ export default defineComponent({
       }
     };
 
+    const availableVariables = (name: string) => {
+      const variables = (availableEvents.value.find(o => o.id === name) || { variables: [] }).variables;
+      return variables;
+    };
+
     return {
+      availableVariables,
+      definitions,
       items,
       search,
       state,
@@ -420,6 +541,8 @@ export default defineComponent({
       ButtonStates,
       isGroupSelected,
       toggleGroupSelection,
+      backupDefinitions,
+      restoreDefinitions,
     };
   },
 });
