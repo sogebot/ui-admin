@@ -4,7 +4,7 @@
       <v-app-bar-nav-icon
         @click.stop="drawer = !drawer"
       />
-      <v-toolbar-title>{{ translate('menu.' + $route.name.toLowerCase()) }}</v-toolbar-title>
+      <v-toolbar-title>{{ translate('menu.' + routeMapper.get($route.name.toLowerCase())) }}</v-toolbar-title>
     </v-app-bar>
     <v-navigation-drawer
       v-model="drawer"
@@ -59,7 +59,6 @@ const routeMapper = new Map<string, string>([
   ['stats-tips', 'tips'],
   ['stats-commandcount', 'commandcount'],
   ['stats-profiler', 'profiler'],
-  ['registry-gallery', 'gallery'],
 ]);
 
 export default defineComponent({
@@ -79,7 +78,7 @@ export default defineComponent({
     });
 
     return {
-      name, channelName, drawer, translate,
+      name, channelName, drawer, translate, routeMapper,
     };
   },
   head () {
