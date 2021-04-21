@@ -88,7 +88,7 @@
                   </div>
                 </v-col>
                 <v-col cols="auto">
-                  <v-spacer/>
+                  <v-spacer />
                   <v-btn
                     icon
                     @click="remove(i)"
@@ -128,9 +128,7 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiTrashCan,
-} from '@mdi/js';
+import { mdiTrashCan } from '@mdi/js';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {

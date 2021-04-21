@@ -156,8 +156,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, ref, watch,
 } from '@vue/composition-api';
-import { orderBy } from 'lodash-es';
-import { capitalize } from 'lodash-es';
+import { capitalize, orderBy } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 
 import type { UserInterface, UserTipInterface } from '.bot/src/bot/database/entity/user';

@@ -22,11 +22,11 @@ import { mdiSync } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize } from 'lodash-es';
 import {
   computed,
   defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
+import { capitalize } from 'lodash-es';
 
 import { error } from '~/functions/error';
 
@@ -60,7 +60,7 @@ export default defineComponent({
       ];
     });
 
-    const refreshRedeemedRewards = async () => {
+    const refreshRedeemedRewards = () => {
       progress.value.redeemRewards = ButtonStates.progress;
       return new Promise<void>((resolve) => {
         getSocket('/core/events').emit('events::getRedeemedRewards', (err: string | null, redeems: string[]) => {

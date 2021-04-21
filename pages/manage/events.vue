@@ -84,7 +84,7 @@
 
     <v-sheet
       flat
-      color='dark'
+      color="dark"
       class="my-2 p-2"
     >
       <v-row class="px-2" no-gutters>
@@ -176,12 +176,12 @@
               </v-edit-dialog>
 
               <v-edit-dialog
+                v-if="Object.keys(item.definitions).length > 0"
                 persistent
                 large
                 @open="backupDefinitions(item.definitions)"
                 @close="restoreDefinitions(item)"
                 @save="update(item, false, 'definitions')"
-                v-if="Object.keys(item.definitions).length > 0"
               >
                 <v-subheader>
                   Definitions

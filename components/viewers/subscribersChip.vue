@@ -24,8 +24,8 @@
         style="max-width: fit-content;"
       >
         <v-btn-toggle
-          class='no-opacity'
           v-model="data"
+          class="no-opacity"
           multiple
           dense
         >
