@@ -188,21 +188,21 @@
               <template #[`item.offset`]="{ item }">
                 <v-btn
                   x-small
-                  :color="item.isMainCounted ? 'green' : 'grey darken-4'"
+                  :color="item.isMainCounted ? 'green' : 'dark'"
                   @click="item.isMainCounted = !item.isMainCounted"
                 >
                   {{ translate('systems.howlongtobeat.main') }}
                 </v-btn>
                 <v-btn
                   x-small
-                  :color="item.isExtraCounted ? 'green' : 'grey darken-4'"
+                  :color="item.isExtraCounted ? 'green' : 'dark'"
                   @click="item.isExtraCounted = !item.isExtraCounted"
                 >
                   {{ translate('systems.howlongtobeat.extra') }}
                 </v-btn>
                 <v-btn
                   x-small
-                  :color="item.isCompletionistCounted ? 'green' : 'grey darken-4'"
+                  :color="item.isCompletionistCounted ? 'green' : 'dark'"
                   @click="item.isCompletionistCounted = !item.isCompletionistCounted"
                 >
                   {{ translate('systems.howlongtobeat.completionist') }}

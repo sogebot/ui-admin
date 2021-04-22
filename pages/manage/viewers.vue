@@ -17,7 +17,7 @@
       <template #activator>
         <v-btn
           v-model="fab"
-          color="grey darken-4"
+          color="dark"
           fab
         >
           <v-icon v-if="fab">
