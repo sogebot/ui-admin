@@ -1,0 +1,11 @@
+tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.v-small-dialog__activator__content {
+  word-break: break-word;
+}
+
+.dense .v-list-item {
+  min-height: 25px !important;
+}

@@ -391,7 +391,9 @@ export default defineComponent({
     };
 
     const headers = [
-      { value: 'alias', text: translate('alias') },
+      {
+        value: 'alias', text: translate('alias'), width: '15rem',
+      },
       {
         value: 'groupToBeShownInTable', text: translate('group'), width: '8rem',
       },
@@ -536,13 +538,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style>
-tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.v-small-dialog__activator__content {
-  word-break: break-word;
-}
-</style>

@@ -964,14 +964,6 @@ export default defineComponent({
 </script>
 
 <style>
-tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.v-small-dialog__activator__content {
-  word-break: break-word;
-}
-
 .timePicker .v-picker__title {
   padding: 9px;
 }
