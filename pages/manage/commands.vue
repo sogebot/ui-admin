@@ -21,7 +21,7 @@
     <v-data-table
       v-model="selected"
       calculate-widths
-      show-select
+      :show-select="selectable"
       :search="search"
       :loading="state.loading !== ButtonStates.success && state.loadingPrm !== ButtonStates.success"
       :headers="headers"
@@ -29,99 +29,112 @@
       :items="items"
     >
       <template #top>
-        <v-toolbar
+        <v-sheet
           flat
+          color="dark"
+          class="my-2 p-2"
         >
-          <v-text-field
-            v-model="search"
-            :append-icon="mdiMagnify"
-            label="Search"
-            single-line
-            hide-details
-            class="pr-2"
-          />
-
-          <template v-if="selected.length > 0">
-            <v-dialog
-              v-model="deleteDialog"
-              max-width="500px"
-            >
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  color="error"
-                  class="mb-2 mr-1"
-                  v-bind="attrs"
-                  v-on="on"
+          <v-row class="px-2" no-gutters>
+            <v-col cols="auto" align-self="center" class="pr-2">
+              <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
+                <v-icon>
+                  {{ mdiCheckBoxMultipleOutline }}
+                </v-icon>
+              </v-btn>
+            </v-col>
+            <v-col align-self="center">
+              <v-text-field
+                v-model="search"
+                :append-icon="mdiMagnify"
+                label="Search"
+                single-line
+                hide-details
+                class="pa-0 ma-2"
+              />
+            </v-col>
+            <v-col cols="auto" align-self="center">
+              <template v-if="selected.length > 0">
+                <v-dialog
+                  v-model="deleteDialog"
+                  max-width="500px"
                 >
-                  Delete {{ selected.length }} Item(s)
-                </v-btn>
+                  <template #activator="{ on, attrs }">
+                    <v-btn
+                      color="error"
+                      class="mr-1"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      Delete {{ selected.length }} Item(s)
+                    </v-btn>
+                  </template>
+
+                  <v-card>
+                    <v-card-title>
+                      <span class="headline">Delete {{ selected.length }} Item(s)?</span>
+                    </v-card-title>
+
+                    <v-card-text>
+                      <v-data-table
+                        dense
+                        :items="selected"
+                        :headers="headersDelete"
+                        :items-per-page="-1"
+                        hide-default-header
+                        hide-default-footer
+                      />
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn
+                        text
+                        @click="deleteDialog = false"
+                      >
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        color="error"
+                        text
+                        @click="deleteSelected"
+                      >
+                        Delete
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
               </template>
 
-              <v-card>
-                <v-card-title>
-                  <span class="headline">Delete {{ selected.length }} Item(s)?</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-data-table
-                    dense
-                    :items="selected"
-                    :headers="headersDelete"
-                    :items-per-page="-1"
-                    hide-default-header
-                    hide-default-footer
-                  />
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn
-                    text
-                    @click="deleteDialog = false"
-                  >
-                    Cancel
-                  </v-btn>
-                  <v-btn
-                    color="error"
-                    text
-                    @click="deleteSelected"
-                  >
-                    Delete
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </template>
-
-          <v-dialog
-            v-model="newDialog"
-            max-width="500px"
-          >
-            <template #activator="{ on, attrs }">
-              <v-btn
-                color="primary"
-                class="mb-2"
-                v-bind="attrs"
-                v-on="on"
+              <v-dialog
+                v-model="newDialog"
+                max-width="500px"
               >
-                New Item
-              </v-btn>
-            </template>
+                <template #activator="{ on, attrs }">
+                  <v-btn
+                    color="primary"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    New Item
+                  </v-btn>
+                </template>
 
-            <v-card>
-              <v-card-title>
-                <span class="headline">New item</span>
-              </v-card-title>
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">New item</span>
+                  </v-card-title>
 
-              <v-card-text :key="timestamp">
-                <new-item
-                  :rules="rules"
-                  @close="newDialog = false"
-                  @save="saveSuccess"
-                />
-              </v-card-text>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
+                  <v-card-text :key="timestamp">
+                    <new-item
+                      :rules="rules"
+                      @close="newDialog = false"
+                      @save="saveSuccess"
+                    />
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
+            </v-col>
+          </v-row>
+        </v-sheet>
       </template>
 
       <template #[`item.command`]="{ item }">
@@ -192,7 +205,9 @@
 </template>
 
 <script lang="ts">
-import { mdiMagnify, mdiRestore } from '@mdi/js';
+import {
+  mdiCheckBoxMultipleOutline, mdiMagnify, mdiRestore,
+} from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -229,6 +244,12 @@ export default defineComponent({
     const permissions = ref([] as Required<PermissionsInterface>[]);
 
     const selected = ref([] as CommandsInterfaceUI[]);
+    const selectable = ref(false);
+    watch(selectable, (val) => {
+      if (!val) {
+        selected.value = [];
+      }
+    });
     const deleteDialog = ref(false);
     const newDialog = ref(false);
 
@@ -247,7 +268,9 @@ export default defineComponent({
     });
 
     const headers = [
-      { value: 'command', text: translate('command') },
+      {
+        value: 'command', text: translate('command'), width: '15rem',
+      },
       {
         value: 'enabled', text: translate('enabled'), width: '6rem',
       },
@@ -400,7 +423,9 @@ export default defineComponent({
       capitalize,
       mdiMagnify,
       mdiRestore,
+      mdiCheckBoxMultipleOutline,
       ButtonStates,
+      selectable,
     };
   },
 });

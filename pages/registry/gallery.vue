@@ -14,9 +14,9 @@
     >
       <v-row class="px-2" no-gutters>
         <v-col cols="auto" align-self="center" class="pr-2">
-          <v-btn icon @click="selectable = !selectable" :color="selectable ? 'primary' : 'secondary'">
+          <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
             <v-icon>
-              {{ mdiCheckBoxMultipleOutline}}
+              {{ mdiCheckBoxMultipleOutline }}
             </v-icon>
           </v-btn>
         </v-col>
@@ -69,8 +69,8 @@
                   <v-btn
                     color="primary"
                     text
-                      :loading="state.folder === ButtonStates.progress"
-                      @click="changeFolder(null)"
+                    :loading="state.folder === ButtonStates.progress"
+                    @click="changeFolder(null)"
                   >
                     Yes, change
                   </v-btn>
@@ -155,8 +155,8 @@
           <v-card-text>
             <v-treeview
               :key="state.loading + 'treeview'"
-              selection-type="leaf"
               v-model="selected"
+              selection-type="leaf"
               :selectable="selectable"
               :items="itemsTree"
               transition
@@ -180,7 +180,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="12" md="5" v-if="activeItem">
+      <v-col v-if="activeItem" cols="12" md="5">
         <v-card>
           <v-card-title class="headline">
             {{ activeItem.name }}
@@ -339,7 +339,7 @@
 import { normalize } from 'path';
 
 import {
-  mdiFileImage, mdiFileMusic, mdiFileVideo, mdiFolder, mdiFolderOpen, mdiLink, mdiThumbUp, mdiCheckBoxMultipleOutline,
+  mdiCheckBoxMultipleOutline, mdiFileImage, mdiFileMusic, mdiFileVideo, mdiFolder, mdiFolderOpen, mdiLink, mdiThumbUp,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -367,7 +367,14 @@ export default defineComponent({
     const active = ref([] as string[]);
     const opened = ref([] as string[]);
     const selected = ref([] as string[]);
+
     const selectable = ref(false);
+    watch(selectable, (val) => {
+      if (!val) {
+        selected.value = [];
+      }
+    });
+
     const uploadedFiles = ref(0);
     const isUploadingNum = ref(0);
 
@@ -587,7 +594,7 @@ export default defineComponent({
       await Promise.all(
         toDelete.map((_id) => {
           return new Promise((resolve, reject) => {
-            console.log('Deleting', _id)
+            console.log('Deleting', _id);
             getSocket('/overlays/gallery').emit('generic::deleteById', _id, (err: string | null) => {
               if (err) {
                 reject(error(err));

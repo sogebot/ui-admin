@@ -9,7 +9,6 @@
 
     <v-data-table
       v-model="selected"
-      show-select
       :loading="state.loading !== ButtonStates.success || state.loadingPrm !== ButtonStates.success"
       :headers="headers"
       :items-per-page="-1"
@@ -18,8 +17,10 @@
       group-by="type"
     >
       <template #top>
-        <v-toolbar
+        <v-sheet
           flat
+          color="dark"
+          class="my-2 p-2"
         >
           <v-text-field
             v-model="search"
@@ -27,9 +28,9 @@
             label="Search"
             single-line
             hide-details
-            class="pr-2"
+            class="pa-0 ma-2 py-2"
           />
-        </v-toolbar>
+        </v-sheet>
       </template>
 
       <template #[`group.header`]="{ items, isOpen, toggle }">

@@ -9,7 +9,7 @@
       hide-details="auto"
       :label="'!' + translate('command') + ' ' + translate('or') + ' ' + translate('keyword')"
       :rows="1"
-      :rules="rules.command"
+      :rules="rules.name"
       counter
       :clearable="true"
       auto-grow

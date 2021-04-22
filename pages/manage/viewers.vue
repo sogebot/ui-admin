@@ -52,7 +52,7 @@
     <v-data-table
       v-model="selected"
       :expanded.sync="expanded"
-      show-select
+      :show-select="selectable"
       :loading="state.loading !== ButtonStates.success"
       :headers="headers"
       :items-per-page.sync="perPage"
@@ -66,93 +66,108 @@
       :single-expand="true"
     >
       <template #top>
-        <v-toolbar
+        <v-sheet
           flat
+          color="dark"
+          class="my-2 p-2"
         >
-          <v-text-field
-            v-model="search"
-            :append-icon="mdiMagnify"
-            label="Search"
-            single-line
-            hide-details
-            class="pr-2"
-          />
+          <v-row class="px-2" no-gutters>
+            <v-col cols="auto" align-self="center" class="pr-2">
+              <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
+                <v-icon>
+                  {{ mdiCheckBoxMultipleOutline }}
+                </v-icon>
+              </v-btn>
+            </v-col>
+            <v-col align-self="center">
+              <v-text-field
+                v-model="search"
+                :append-icon="mdiMagnify"
+                label="Search"
+                single-line
+                hide-details
+                class="pa-0 ma-2"
+              />
+            </v-col>
+            <v-col cols="auto" align-self="center">
+              <filter-button
+                :value="filter.followers"
+                @save="value=>filter.followers=value"
+              >
+                followers
+              </filter-button>
+              <filter-button
+                :value="filter.subscribers"
+                @save="value=>filter.subscribers=value"
+              >
+                subscribers
+              </filter-button>
+              <filter-button
+                :value="filter.vips"
+                @save="value=>filter.vips=value"
+              >
+                vips
+              </filter-button>
+              <filter-button
+                :value="filter.active"
+                @save="value=>filter.active=value"
+              >
+                active
+              </filter-button>
 
-          <filter-button
-            :value="filter.followers"
-            @save="value=>filter.followers=value"
-          >
-            followers
-          </filter-button>
-          <filter-button
-            :value="filter.subscribers"
-            @save="value=>filter.subscribers=value"
-          >
-            subscribers
-          </filter-button>
-          <filter-button
-            :value="filter.vips"
-            @save="value=>filter.vips=value"
-          >
-            vips
-          </filter-button>
-          <filter-button
-            :value="filter.active"
-            @save="value=>filter.active=value"
-          >
-            active
-          </filter-button>
-
-          <template v-if="selected.length > 0">
-            <v-dialog
-              v-model="deleteDialog"
-              max-width="500px"
-            >
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  color="error"
-                  v-bind="attrs"
-                  v-on="on"
+              <template v-if="selected.length > 0">
+                <v-dialog
+                  v-model="deleteDialog"
+                  max-width="500px"
                 >
-                  Delete {{ selected.length }} Item(s)
-                </v-btn>
+                  <template #activator="{ on, attrs }">
+                    <v-btn
+                      color="error"
+                      class="mr-1"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      Delete {{ selected.length }} Item(s)
+                    </v-btn>
+                  </template>
+
+                  <v-card>
+                    <v-card-title>
+                      <span class="headline">Delete {{ selected.length }} Item(s)?</span>
+                    </v-card-title>
+
+                    <v-card-text>
+                      <v-data-table
+                        dense
+                        :items="selected"
+                        :headers="headersDelete"
+                        :items-per-page="-1"
+                        hide-default-header
+                        hide-default-footer
+                      />
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn
+                        text
+                        @click="deleteDialog = false"
+                      >
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        color="error"
+                        text
+                        @click="deleteSelected"
+                      >
+                        Delete
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
               </template>
-
-              <v-card>
-                <v-card-title>
-                  <span class="headline">Delete {{ selected.length }} Item(s)?</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-data-table
-                    dense
-                    :items="selected"
-                    :headers="headersDelete"
-                    :items-per-page="-1"
-                    hide-default-header
-                    hide-default-footer
-                  />
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn
-                    text
-                    @click="deleteDialog = false"
-                  >
-                    Cancel
-                  </v-btn>
-                  <v-btn
-                    color="error"
-                    text
-                    @click="deleteSelected"
-                  >
-                    Delete
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </template>
-        </v-toolbar>
+            </v-col>
+          </v-row>
+        </v-sheet>
       </template>
 
       <template #[`item.username`]="{ item }">
@@ -558,7 +573,7 @@
 
 <script lang="ts">
 import {
-  mdiClose, mdiDotsVertical, mdiLock, mdiLockOff, mdiMagnify, mdiRefresh,
+  mdiCheckBoxMultipleOutline, mdiClose, mdiDotsVertical, mdiLock, mdiLockOff, mdiMagnify, mdiRefresh,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -610,6 +625,12 @@ export default defineComponent({
     const history = ref([] as EventListInterface[]);
     const items = ref([] as UserInterface[]);
     const selected = ref([] as UserInterface[]);
+    const selectable = ref(false);
+    watch(selectable, (val) => {
+      if (!val) {
+        selected.value = [];
+      }
+    });
     const expanded = ref([] as UserInterface[]);
     const lockBackup = ref(false);
     const deleteDialog = ref(false);
@@ -889,6 +910,7 @@ export default defineComponent({
     };
 
     return {
+      selectable,
       setAttr,
       orderBy,
       headers,
@@ -920,6 +942,7 @@ export default defineComponent({
       mdiRefresh,
       mdiClose,
       mdiDotsVertical,
+      mdiCheckBoxMultipleOutline,
       dayjs,
       lockBackup,
       headersHistory,

@@ -23,7 +23,7 @@
       :expanded.sync="expanded"
       calculate-widths
       hide-default-header
-      show-select
+      :show-select="selectable"
       :loading="state.loading !== ButtonStates.success"
       :headers="headers"
       :items-per-page.sync="perPage"
@@ -35,79 +35,91 @@
       :server-items-length.sync="count"
     >
       <template #top>
-        <v-toolbar
+        <v-sheet
           flat
+          color="dark"
+          class="my-2 p-2"
         >
-          <v-text-field
-            v-model="search"
-            :append-icon="mdiMagnify"
-            label="Search or add by link/id"
-            single-line
-            hide-details
-            class="pr-2"
-          />
-
-          <template v-if="selected.length > 0">
-            <v-dialog
-              v-model="deleteDialog"
-              max-width="500px"
-            >
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  color="error"
-                  class="mb-2 mr-1"
-                  v-bind="attrs"
-                  v-on="on"
+          <v-row class="px-2" no-gutters>
+            <v-col cols="auto" align-self="center" class="pr-2">
+              <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
+                <v-icon>
+                  {{ mdiCheckBoxMultipleOutline }}
+                </v-icon>
+              </v-btn>
+            </v-col>
+            <v-col align-self="center">
+              <v-text-field
+                v-model="search"
+                :append-icon="mdiMagnify"
+                label="Search or add by link/id"
+                single-line
+                hide-details
+                class="pa-0 ma-2"
+              />
+            </v-col>
+            <v-col cols="auto" align-self="center">
+              <template v-if="selected.length > 0">
+                <v-dialog
+                  v-model="deleteDialog"
+                  max-width="500px"
                 >
-                  Delete {{ selected.length }} Item(s)
-                </v-btn>
+                  <template #activator="{ on, attrs }">
+                    <v-btn
+                      color="error"
+                      class="mr-1"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      Delete {{ selected.length }} Item(s)
+                    </v-btn>
+                  </template>
+
+                  <v-card>
+                    <v-card-title>
+                      <span class="headline">Delete {{ selected.length }} Item(s)?</span>
+                    </v-card-title>
+
+                    <v-card-text>
+                      <v-data-table
+                        dense
+                        :items="selected"
+                        :headers="headersDelete"
+                        hide-default-header
+                        hide-default-footer
+                      />
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn
+                        text
+                        @click="deleteDialog = false"
+                      >
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        color="error"
+                        text
+                        @click="deleteSelected"
+                      >
+                        Delete
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
               </template>
 
-              <v-card>
-                <v-card-title>
-                  <span class="headline">Delete {{ selected.length }} Item(s)?</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-data-table
-                    dense
-                    :items="selected"
-                    :headers="headersDelete"
-                    :items-per-page="-1"
-                    hide-default-header
-                    hide-default-footer
-                  />
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn
-                    text
-                    @click="deleteDialog = false"
-                  >
-                    Cancel
-                  </v-btn>
-                  <v-btn
-                    color="error"
-                    text
-                    @click="deleteSelected"
-                  >
-                    Delete
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </template>
-
-          <v-btn
-            color="primary"
-            class="mb-2 mr-2"
-            :disabled="search.length === 0"
-            :loading="state.import === 1"
-            @click="addSongOrPlaylist"
-          >
-            New Item
-          </v-btn>
-        </v-toolbar>
+              <v-btn
+                color="primary"
+                :disabled="search.length === 0"
+                :loading="state.import === 1"
+                @click="addSongOrPlaylist"
+              >
+                New Item
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-sheet>
       </template>
 
       <template #[`body.prepend`]="{}">
@@ -260,7 +272,7 @@
 
 <script lang="ts">
 import {
-  mdiClockOutline, mdiLink, mdiMagnify, mdiMusic, mdiSkipNext, mdiSkipPrevious, mdiVolumeHigh,
+  mdiCheckBoxMultipleOutline, mdiClockOutline, mdiLink, mdiMagnify, mdiMusic, mdiSkipNext, mdiSkipPrevious, mdiVolumeHigh,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -297,6 +309,12 @@ export default defineComponent({
     const deleteDialog = ref(false);
     const selected = ref([] as SongPlaylistInterface[]);
     const expanded = ref([] as SongPlaylistInterface[]);
+    const selectable = ref(false);
+    watch(selectable, (val) => {
+      if (!val) {
+        selected.value = [];
+      }
+    });
 
     const state = ref({
       loading: ButtonStates.progress,
@@ -499,6 +517,7 @@ export default defineComponent({
       perPage,
       currentPage,
       count,
+      selectable,
 
       generateThumbnail,
       addSongOrPlaylist,
@@ -521,6 +540,7 @@ export default defineComponent({
       mdiSkipNext,
       mdiMusic,
       mdiLink,
+      mdiCheckBoxMultipleOutline,
     };
   },
 });

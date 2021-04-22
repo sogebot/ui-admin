@@ -21,7 +21,7 @@
     <v-data-table
       v-model="selected"
       calculate-widths
-      show-select
+      :show-select="selectable"
       :loading="state.loading !== ButtonStates.success"
       :headers="headers"
       sort-by="startedAt"
@@ -32,88 +32,103 @@
       :items="fItems"
     >
       <template #top>
-        <v-toolbar
+        <v-sheet
           flat
+          color="dark"
+          class="my-2 p-2"
         >
-          <v-combobox
-            v-model="gameToAdd"
-            :search-input.sync="search"
-            label="Search or add game"
-            :append-outside-icon="mdiMagnify"
-            :items="searchForGameOpts"
-            :return-object="false"
-            class="pr-2 pt-5"
-            :loading="state.search !== ButtonStates.idle && search.length > 0"
-            clearable
-          >
-            <template #no-data>
-              <v-list-item>
-                <span class="subheading">Add new game</span>
-              </v-list-item>
-            </template>
-          </v-combobox>
+          <v-row class="px-2" no-gutters>
+            <v-col cols="auto" align-self="center" class="pr-2">
+              <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
+                <v-icon>
+                  {{ mdiCheckBoxMultipleOutline }}
+                </v-icon>
+              </v-btn>
+            </v-col>
+            <v-col align-self="center">
+              <v-combobox
+                v-model="gameToAdd"
+                :search-input.sync="search"
+                label="Search or add game"
+                :append-outside-icon="mdiMagnify"
+                :items="searchForGameOpts"
+                :return-object="false"
+                class="pr-2 pt-5"
+                :loading="state.search !== ButtonStates.idle && search.length > 0"
+                clearable
+              >
+                <template #no-data>
+                  <v-list-item>
+                    <span class="subheading">Add new game</span>
+                  </v-list-item>
+                </template>
+              </v-combobox>
+            </v-col>
 
-          <template v-if="selected.length > 0">
-            <v-dialog
-              v-model="deleteDialog"
-              max-width="500px"
-            >
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  color="error"
-                  class="mb-2 mr-1"
-                  v-bind="attrs"
-                  v-on="on"
+            <v-col cols="auto" align-self="center">
+              <template v-if="selected.length > 0">
+                <v-dialog
+                  v-model="deleteDialog"
+                  max-width="500px"
                 >
-                  Delete {{ selected.length }} Item(s)
-                </v-btn>
+                  <template #activator="{ on, attrs }">
+                    <v-btn
+                      color="error"
+                      class="mr-1"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      Delete {{ selected.length }} Item(s)
+                    </v-btn>
+                  </template>
+
+                  <v-card>
+                    <v-card-title>
+                      <span class="headline">Delete {{ selected.length }} Item(s)?</span>
+                    </v-card-title>
+
+                    <v-card-text>
+                      <v-data-table
+                        dense
+                        :items="selected"
+                        :headers="headersDelete"
+                        :items-per-page="-1"
+                        hide-default-header
+                        hide-default-footer
+                      />
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn
+                        text
+                        @click="deleteDialog = false"
+                      >
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        color="error"
+                        text
+                        @click="deleteSelected"
+                      >
+                        Delete
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
               </template>
 
-              <v-card>
-                <v-card-title>
-                  <span class="headline">Delete {{ selected.length }} Item(s)?</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-data-table
-                    dense
-                    :items="selected"
-                    :headers="headersDelete"
-                    :items-per-page="-1"
-                    hide-default-header
-                    hide-default-footer
-                  />
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn
-                    text
-                    @click="deleteDialog = false"
-                  >
-                    Cancel
-                  </v-btn>
-                  <v-btn
-                    color="error"
-                    text
-                    @click="deleteSelected"
-                  >
-                    Delete
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </template>
-
-          <v-btn
-            color="primary"
-            class="mb-2 mr-2"
-            :disabled="gameToAdd === null || gameToAdd.length === 0"
-            :loading="state.add === 1"
-            @click="addGame"
-          >
-            New Item
-          </v-btn>
-        </v-toolbar>
+              <v-btn
+                color="primary"
+                class="mr-2"
+                :disabled="gameToAdd === null || gameToAdd.length === 0"
+                :loading="state.add === 1"
+                @click="addGame"
+              >
+                New Item
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-sheet>
       </template>
       <template #[`item.main`]="{ item }">
         {{ timeToReadable(timestampToObject(getStreamsTimestamp(item.id, 'main') + +item.offset + getStreamsOffset(item.id, 'main'))) }} <span v-if="item.gameplayMain">/ {{ timeToReadable(timestampToObject(item.gameplayMain * 3600000)) }}</span>
@@ -222,7 +237,9 @@
 </template>
 
 <script lang="ts">
-import { mdiMagnify, mdiRefresh } from '@mdi/js';
+import {
+  mdiCheckBoxMultipleOutline, mdiMagnify, mdiRefresh,
+} from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getTime, timestampToObject } from '@sogebot/ui-helpers/getTime';
@@ -248,6 +265,14 @@ export default defineComponent({
     const searchForGameOpts = ref([] as string[]);
     const deleteDialog = ref(false);
     const selected = ref([] as HowLongToBeatGameItemInterface[]);
+
+    const selectable = ref(false);
+    watch(selectable, (val) => {
+      if (!val) {
+        selected.value = [];
+      }
+    });
+
     const expanded = ref([] as HowLongToBeatGameItemInterface[]);
     const gameToAdd = ref('');
     const state = ref({
@@ -492,6 +517,7 @@ export default defineComponent({
       deleteDialog,
       deleteSelected,
       selected,
+      selectable,
       addGame,
       headersDelete,
       rules,
@@ -502,6 +528,7 @@ export default defineComponent({
 
       mdiMagnify,
       mdiRefresh,
+      mdiCheckBoxMultipleOutline,
       ButtonStates,
     };
   },

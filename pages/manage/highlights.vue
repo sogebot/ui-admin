@@ -19,10 +19,8 @@
     </h2>
 
     <v-data-table
-      v-model="selected"
       calculate-widths
       hide-default-header
-      show-select
       :loading="state.loading !== ButtonStates.success"
       :headers="headers"
       sort-by="createdAt"
@@ -31,94 +29,33 @@
       :items="fItems"
     >
       <template #top>
-        <v-toolbar
+        <v-sheet
           flat
+          color="dark"
+          class="my-2 p-2"
         >
-          <v-text-field
-            v-model="search"
-            :append-icon="mdiMagnify"
-            label="Search"
-            single-line
-            hide-details
-            class="pr-2"
-          />
-
-          <v-btn
-            color="error"
-            class="mb-2 mr-1"
-            @click="deleteExpired"
-          >
-            Delete Expired
-          </v-btn>
-
-          <template v-if="selected.length > 0">
-            <v-dialog
-              v-model="deleteDialog"
-              max-width="500px"
-            >
-              <template #activator="{ on, attrs }">
-                <v-btn
-                  color="error"
-                  class="mb-2 mr-1"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  Delete {{ selected.length }} Item(s)
-                </v-btn>
-              </template>
-
-              <v-card>
-                <v-card-title>
-                  <span class="headline">Delete {{ selected.length }} Item(s)?</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-data-table
-                    dense
-                    :items="selected"
-                    :headers="headersDelete"
-                    :items-per-page="-1"
-                    hide-default-header
-                    hide-default-footer
-                  >
-                    <template #[`item.timestamp`]="{ item }">
-                      {{ timestampToString(item.timestamp) }}
-                    </template>
-                    <template #[`item.createdAt`]="{ item }">
-                      {{ dayjs(item.createdAt).format('LL') }} {{ dayjs(item.createdAt).format('LTS') }}
-                    </template>
-                    <template #[`item.expired`]="{ item }">
-                      <span
-                        v-if="item.expired"
-                        class="green--text text--lighten-1"
-                      >Available</span>
-                      <span
-                        v-else
-                        class="red--text text--lighten-1"
-                      >Expired</span>
-                    </template>
-                  </v-data-table>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn
-                    text
-                    @click="deleteDialog = false"
-                  >
-                    Cancel
-                  </v-btn>
-                  <v-btn
-                    color="error"
-                    text
-                    @click="deleteSelected"
-                  >
-                    Delete
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </template>
-        </v-toolbar>
+          <v-row class="px-2" no-gutters>
+            <v-col align-self="center">
+              <v-text-field
+                v-model="search"
+                :append-icon="mdiMagnify"
+                label="Search"
+                single-line
+                hide-details
+                class="pa-0 ma-2"
+              />
+            </v-col>
+            <v-col cols="auto" align-self="center">
+              <v-btn
+                color="error"
+                class="mr-1"
+                @click="deleteExpired"
+              >
+                Delete Expired
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-sheet>
       </template>
 
       <template #[`item.thumbnail`]="{ item }">
@@ -183,9 +120,6 @@ export default defineComponent({
         return title || game;
       });
     });
-
-    const deleteDialog = ref(false);
-    const selected = ref([] as HighlightInterface[]);
 
     const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
@@ -252,27 +186,6 @@ export default defineComponent({
       EventBus.$emit('snack', 'success', 'Data removed.');
     };
 
-    const deleteSelected = async () => {
-      deleteDialog.value = false;
-      await Promise.all(
-        selected.value.map((item) => {
-          console.debug('Deleting', item);
-          return new Promise((resolve, reject) => {
-            getSocket('/systems/highlights').emit('generic::deleteById', item.id, (err: string | null) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
-          });
-        }),
-      );
-      refresh();
-
-      EventBus.$emit('snack', 'success', 'Data removed.');
-      selected.value = [];
-    };
-
     const generateThumbnail = (game: string) => {
       const template = 'https://static-cdn.jtvnw.net/ttv-boxart/./%{game}-60x80.jpg';
       return template.replace('%{game}', encodeURI(game));
@@ -292,10 +205,7 @@ export default defineComponent({
       translate,
       ButtonStates,
 
-      deleteDialog,
-      deleteSelected,
       deleteExpired,
-      selected,
 
       dayjs,
       mdiMagnify,
