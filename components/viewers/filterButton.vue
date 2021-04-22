@@ -51,7 +51,7 @@ export default defineComponent({
       } else if (value === false) {
         return 'error';
       } else {
-        return 'grey darken-4';
+        return 'dark';
       }
     };
 
