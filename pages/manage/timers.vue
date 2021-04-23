@@ -27,6 +27,7 @@
       :headers="headers"
       :items-per-page="-1"
       :items="items"
+      @click:row="addToSelectedItem"
     >
       <template #top>
         <v-sheet
@@ -235,6 +236,7 @@ import {
 import { capitalize, orderBy } from 'lodash-es';
 
 import type { TimerInterface } from '.bot/src/bot/database/entity/timer';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import {
@@ -276,8 +278,12 @@ export default defineComponent({
 
     const headers = [
       { value: 'name', text: translate('timers.dialog.name') },
-      { value: 'tickOffline', text: translate('timers.dialog.tickOffline') },
-      { value: 'isEnabled', text: translate('enabled') },
+      {
+        value: 'tickOffline', text: translate('timers.dialog.tickOffline'), align: 'center',
+      },
+      {
+        value: 'isEnabled', text: translate('enabled'), align: 'center',
+      },
       // virtual attributes
       { value: 'triggerEveryMessage', text: translate('messages') },
       { value: 'triggerEverySecond', text: capitalize(translate('seconds')) },
@@ -383,6 +389,7 @@ export default defineComponent({
     };
 
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'id'),
       orderBy,
       headers,
       search,

@@ -27,6 +27,7 @@
       :headers="headers"
       :items-per-page="-1"
       :items="items"
+      @click:row="addToSelectedItem"
     >
       <template #top>
         <v-sheet
@@ -218,6 +219,7 @@ import { capitalize, orderBy } from 'lodash-es';
 
 import type { CommandsInterface } from '.bot/src/bot/database/entity/commands';
 import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
@@ -272,10 +274,10 @@ export default defineComponent({
         value: 'command', text: translate('command'), width: '15rem',
       },
       {
-        value: 'enabled', text: translate('enabled'), width: '6rem',
+        value: 'enabled', text: translate('enabled'), width: '6rem', align: 'center',
       },
       {
-        value: 'visible', text: capitalize(translate('visible')), width: '6rem',
+        value: 'visible', text: capitalize(translate('visible')), width: '6rem', align: 'center',
       },
       {
         value: 'count', text: capitalize(translate('count')), width: '6rem',
@@ -402,6 +404,7 @@ export default defineComponent({
     };
 
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'id'),
       orderBy,
       headers,
       search,

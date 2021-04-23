@@ -9,3 +9,12 @@ tr:nth-of-type(odd) {
 .dense .v-list-item {
   min-height: 25px !important;
 }
+
+.v-simple-checkbox {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+td.text-center .v-simple-checkbox {
+  display: contents;
+}

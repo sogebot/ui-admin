@@ -27,6 +27,7 @@
       :headers="headers"
       :items-per-page="-1"
       :items="items"
+      @click:row="addToSelectedItem"
     >
       <template #top>
         <v-sheet
@@ -253,6 +254,7 @@ import { capitalize } from 'lodash-es';
 
 import type { CooldownInterface } from '.bot/src/bot/database/entity/cooldown';
 import { error } from '~/functions//error';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
 import {
   minLength, minValue, required,
@@ -308,22 +310,22 @@ export default defineComponent({
         value: 'type', text: translate('cooldown'), width: '7rem',
       },
       {
-        value: 'isEnabled', text: capitalize(translate('enabled')), width: '6rem',
+        value: 'isEnabled', text: capitalize(translate('enabled')), width: '6rem', align: 'center',
       },
       {
-        value: 'isErrorMsgQuiet', text: capitalize(translate('quiet')), width: '6rem',
+        value: 'isErrorMsgQuiet', text: capitalize(translate('quiet')), width: '6rem', align: 'center',
       },
       {
-        value: 'isOwnerAffected', text: capitalize(translate('core.permissions.casters')), width: '6rem',
+        value: 'isOwnerAffected', text: capitalize(translate('core.permissions.casters')), width: '6rem', align: 'center',
       },
       {
-        value: 'isModeratorAffected', text: capitalize(translate('core.permissions.moderators')), width: '8rem',
+        value: 'isModeratorAffected', text: capitalize(translate('core.permissions.moderators')), width: '8rem', align: 'center',
       },
       {
-        value: 'isSubscriberAffected', text: capitalize(translate('core.permissions.subscribers')), width: '8rem',
+        value: 'isSubscriberAffected', text: capitalize(translate('core.permissions.subscribers')), width: '8rem', align: 'center',
       },
       {
-        value: 'isFollowerAffected', text: capitalize(translate('core.permissions.followers')), width: '7rem',
+        value: 'isFollowerAffected', text: capitalize(translate('core.permissions.followers')), width: '7rem', align: 'center',
       },
     ];
 
@@ -417,6 +419,7 @@ export default defineComponent({
     };
 
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'id'),
       items,
       search,
       state,

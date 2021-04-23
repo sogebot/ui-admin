@@ -27,6 +27,7 @@
       :headers="headers"
       :items-per-page="-1"
       :items="items"
+      @click:row="addToSelectedItem"
     >
       <template #top>
         <v-sheet
@@ -226,6 +227,7 @@ import { cloneDeep } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 
 import type { PollInterface } from '.bot/src/bot/database/entity/poll';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { expectedValuesCount, required } from '~/functions/validators';
@@ -417,6 +419,7 @@ export default defineComponent({
     };
 
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'id'),
       items,
       search,
       state,

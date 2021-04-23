@@ -125,15 +125,18 @@
         />
       </template>
       <template #[`item.actions`]="{ item }">
-        <v-btn
-          plain
-          :href="'http://youtu.be/' + item.videoId"
-          target="_blank"
-        >
-          <v-icon>
-            {{ mdiLink }}
-          </v-icon>
-        </v-btn>
+        <v-hover v-slot="{ hover }">
+          <v-btn
+            icon
+            :color="hover ? 'primary' : 'secondary lighten-3'"
+            :href="'http://youtu.be/' + item.videoId"
+            target="_blank"
+          >
+            <v-icon>
+              {{ mdiLink }}
+            </v-icon>
+          </v-btn>
+        </v-hover>
       </template>
     </v-data-table>
   </v-container>
@@ -152,6 +155,7 @@ import {
 import { escapeRegExp, isNil } from 'lodash-es';
 
 import type { SongBanInterface } from '.bot/src/bot/database/entity/song';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
@@ -265,6 +269,7 @@ export default defineComponent({
     };
 
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'videoId'),
       items,
       fItems,
       headers,

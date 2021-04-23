@@ -260,6 +260,7 @@ import {
 } from 'lodash-es';
 
 import type { QuotesInterface } from '.bot/src/bot/database/entity/quotes';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
@@ -440,6 +441,7 @@ export default defineComponent({
     };
 
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'id'),
       items,
       fItems,
       tags,

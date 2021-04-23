@@ -251,6 +251,7 @@ import {
 import { cloneDeep, debounce } from 'lodash-es';
 
 import { HowLongToBeatGameInterface, HowLongToBeatGameItemInterface } from '.bot/src/bot/database/entity/howLongToBeatGame';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { minValue, required } from '~/functions/validators';
@@ -497,6 +498,7 @@ export default defineComponent({
     };
 
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'id'),
       items,
       streams,
       headers,

@@ -28,6 +28,7 @@
       :headers="headers"
       :items-per-page="-1"
       :items="items"
+      @click:row="addToSelectedItem"
     >
       <template #top>
         <v-sheet
@@ -289,6 +290,7 @@ import { capitalize, orderBy } from 'lodash-es';
 
 import type { AliasInterface } from '.bot/src/bot/database/entity/alias';
 import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
@@ -401,10 +403,10 @@ export default defineComponent({
         value: 'permission', text: translate('permission'), width: '7rem',
       },
       {
-        value: 'enabled', text: translate('enabled'), width: '6rem',
+        value: 'enabled', text: translate('enabled'), width: '6rem', align: 'center',
       },
       {
-        value: 'visible', text: capitalize(translate('visible')), width: '6rem',
+        value: 'visible', text: capitalize(translate('visible')), width: '6rem', align: 'center',
       },
       { value: 'command', text: translate('command') },
     ];
@@ -501,6 +503,7 @@ export default defineComponent({
     };
 
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'id'),
       items,
       permissions,
       search,

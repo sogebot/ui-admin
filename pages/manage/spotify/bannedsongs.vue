@@ -132,6 +132,7 @@ import {
 import { escapeRegExp, isNil } from 'lodash-es';
 
 import type { SpotifySongBanInterface } from '.bot/src/bot/database/entity/spotify';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
@@ -225,6 +226,7 @@ export default defineComponent({
     };
 
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'spotifyUri'),
       items,
       fItems,
       headers,

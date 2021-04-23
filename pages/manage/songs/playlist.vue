@@ -169,13 +169,18 @@
         />
       </template>
       <template #[`item.actions`]="{ item }">
-        <v-btn
-          plain
-          :href="'http://youtu.be/' + item.videoId"
-          target="_blank"
-        >
-          <v-icon>{{ mdiLink }}</v-icon>
-        </v-btn>
+        <v-hover v-slot="{ hover }">
+          <v-btn
+            icon
+            :color="hover ? 'primary' : 'secondary lighten-3'"
+            :href="'http://youtu.be/' + item.videoId"
+            target="_blank"
+          >
+            <v-icon>
+              {{ mdiLink }}
+            </v-icon>
+          </v-btn>
+        </v-hover>
       </template>
 
       <template #expanded-item="{ headers, item }">
@@ -283,6 +288,7 @@ import {
 } from '@vue/composition-api';
 
 import type { SongPlaylistInterface } from '.bot/src/bot/database/entity/song';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import {
@@ -503,6 +509,7 @@ export default defineComponent({
     };
 
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'videoId'),
       items,
       fItems,
       headers,

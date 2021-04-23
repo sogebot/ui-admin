@@ -28,6 +28,7 @@
       group-by="typeToBeShownInTable"
       :items-per-page="-1"
       :items="items"
+      @click:row="addToSelectedItem"
     >
       <template #top>
         <v-sheet
@@ -245,6 +246,7 @@ import {
 import { capitalize } from 'lodash-es';
 
 import type { RankInterface } from '.bot/src/bot/database/entity/rank';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { minValue, required } from '~/functions/validators';
@@ -443,6 +445,7 @@ export default defineComponent({
     };
 
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'id'),
       items,
       isTypeSelected,
       toggleTypeSelection,
