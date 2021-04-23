@@ -180,7 +180,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col v-if="activeItem" cols="12" md="5">
+      <v-col v-if="activeItem" :key="activeItem.id" cols="12" md="5">
         <v-card>
           <v-card-title class="headline">
             {{ activeItem.name }}
