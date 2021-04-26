@@ -714,6 +714,7 @@ export default defineComponent({
     const headers = [
       { value: 'username', text: capitalize(translate('username')) },
       { value: 'messages', text: capitalize(translate('messages')) },
+      { value: 'level', text: capitalize(translate('level')) },
       { value: 'points', text: capitalize(translate('points')) },
       { value: 'watchedTime', text: capitalize(translate('watched-time')) },
       { value: 'seenAt', text: capitalize(translate('last-seen')) },
