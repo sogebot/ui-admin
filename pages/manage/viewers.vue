@@ -64,6 +64,8 @@
       :server-items-length.sync="count"
       show-expand
       :single-expand="true"
+      @current-items="saveCurrentItems"
+      @click:row="addToSelectedItem"
     >
       <template #top>
         <v-sheet
@@ -626,6 +628,10 @@ export default defineComponent({
     const history = ref([] as EventListInterface[]);
     const items = ref([] as UserInterface[]);
     const selected = ref([] as UserInterface[]);
+    const currentItems = ref([] as UserInterface[]);
+    const saveCurrentItems = (value: UserInterface[]) => {
+      currentItems.value = value;
+    };
     const selectable = ref(false);
     watch(selectable, (val) => {
       if (!val) {
@@ -912,7 +918,7 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'userId', currentItems),
       selectable,
       setAttr,
       orderBy,
@@ -952,6 +958,7 @@ export default defineComponent({
       history,
       deleteDialog,
       deleteSelected,
+      saveCurrentItems,
 
       resetTips,
       resetBits,

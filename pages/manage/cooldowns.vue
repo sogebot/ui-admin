@@ -27,6 +27,7 @@
       :headers="headers"
       :items-per-page="-1"
       :items="items"
+      @current-items="saveCurrentItems"
       @click:row="addToSelectedItem"
     >
       <template #top>
@@ -282,6 +283,10 @@ export default defineComponent({
     const search = ref('');
 
     const selected = ref([] as CooldownInterfaceUI[]);
+    const currentItems = ref([] as CooldownInterfaceUI[]);
+    const saveCurrentItems = (value: CooldownInterfaceUI[]) => {
+      currentItems.value = value;
+    };
     const deleteDialog = ref(false);
     const newDialog = ref(false);
     const selectable = ref(false);
@@ -419,7 +424,8 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
+      saveCurrentItems,
       items,
       search,
       state,

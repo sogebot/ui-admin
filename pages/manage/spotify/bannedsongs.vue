@@ -28,6 +28,8 @@
       :headers="headers"
       item-key="spotifyUri"
       :items-per-page="-1"
+      @click:row="addToSelectedItem"
+      @current-items="saveCurrentItems"
       :items="fItems"
     >
       <template #top>
@@ -142,6 +144,10 @@ export default defineComponent({
 
     const deleteDialog = ref(false);
     const selected = ref([] as SpotifySongBanInterface[]);
+    const currentItems = ref([] as SpotifySongBanInterface[]);
+    const saveCurrentItems = (value: SpotifySongBanInterface[]) => {
+      currentItems.value = value;
+    };
     const selectable = ref(false);
     watch(selectable, (val) => {
       if (!val) {
@@ -226,13 +232,14 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'spotifyUri'),
+      addToSelectedItem: addToSelectedItem(selected, 'spotifyUri', currentItems),
       items,
       fItems,
       headers,
       state,
       search,
       selectable,
+      saveCurrentItems,
 
       addSong,
 

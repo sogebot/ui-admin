@@ -28,6 +28,7 @@
       :items-per-page="-1"
       :items="items"
       @click:row="addToSelectedItem"
+      @current-items="saveCurrentItems"
     >
       <template #top>
         <v-sheet
@@ -258,6 +259,10 @@ export default defineComponent({
     const search = ref('');
     const items = ref([] as Required<TimerInterface>[]);
     const selected = ref([] as TimerInterface[]);
+    const currentItems = ref([] as TimerInterface[]);
+    const saveCurrentItems = (value: TimerInterface[]) => {
+      currentItems.value = value;
+    };
     const deleteDialog = ref(false);
     const newDialog = ref(false);
     const timestamp = ref(Date.now());
@@ -389,7 +394,7 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       orderBy,
       headers,
       search,
@@ -411,6 +416,7 @@ export default defineComponent({
       mdiMagnify,
       mdiCheckBoxMultipleOutline,
       ButtonStates,
+      saveCurrentItems,
     };
   },
 });

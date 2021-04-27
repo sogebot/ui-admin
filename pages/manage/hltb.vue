@@ -29,6 +29,8 @@
       show-expand
       :sort-desc="true"
       :items-per-page="-1"
+      @current-items="saveCurrentItems"
+      @click:row="addToSelectedItem"
       :items="fItems"
     >
       <template #top>
@@ -266,6 +268,10 @@ export default defineComponent({
     const searchForGameOpts = ref([] as string[]);
     const deleteDialog = ref(false);
     const selected = ref([] as HowLongToBeatGameItemInterface[]);
+    const currentItems = ref([] as HowLongToBeatGameItemInterface[]);
+    const saveCurrentItems = (value: HowLongToBeatGameItemInterface[]) => {
+      currentItems.value = value;
+    };
 
     const selectable = ref(false);
     watch(selectable, (val) => {
@@ -498,7 +504,8 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
+      saveCurrentItems,
       items,
       streams,
       headers,

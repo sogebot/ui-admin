@@ -27,6 +27,7 @@
       :headers="headers"
       :items-per-page="-1"
       :items="items"
+      @current-items="saveCurrentItems"
       @click:row="addToSelectedItem"
     >
       <template #top>
@@ -246,6 +247,10 @@ export default defineComponent({
     const permissions = ref([] as Required<PermissionsInterface>[]);
 
     const selected = ref([] as CommandsInterfaceUI[]);
+    const currentItems = ref([] as CommandsInterfaceUI[]);
+    const saveCurrentItems = (value: CommandsInterfaceUI[]) => {
+      currentItems.value = value;
+    };
     const selectable = ref(false);
     watch(selectable, (val) => {
       if (!val) {
@@ -404,7 +409,8 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
+      saveCurrentItems,
       orderBy,
       headers,
       search,
