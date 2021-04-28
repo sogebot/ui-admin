@@ -27,8 +27,8 @@
       :loading="state.loading !== ButtonStates.success && state.loadingPrm !== ButtonStates.success"
       :headers="headers"
       :items-per-page="-1"
-      @current-items="saveCurrentItems"
       :items="items"
+      @current-items="saveCurrentItems"
       @click:row="addToSelectedItem"
     >
       <template #top>
@@ -228,7 +228,7 @@ import { capitalize } from 'lodash-es';
 
 import type { PriceInterface } from '.bot/src/bot/database/entity/price';
 import {
-  minLength, minValue, required, startsWithExclamation,
+  minLength, minValue, required, startsWith,
 } from '~/functions//validators';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
@@ -263,7 +263,7 @@ export default defineComponent({
     const rules = {
       price:     [minValue(0), required],
       priceBits: [minValue(0), required],
-      command:   [required, minLength(2), startsWithExclamation],
+      command:   [required, minLength(2), startsWith(['!'])],
     };
 
     const headers = [

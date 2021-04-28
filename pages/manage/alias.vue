@@ -297,7 +297,7 @@ import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
 import { truncate } from '~/functions/truncate';
 import {
-  minLength, required, startsWithExclamation, startsWithExclamationOrCustomVariable,
+  minLength, required, startsWith,
 } from '~/functions/validators';
 
 type AliasInterfaceUI = AliasInterface & { groupToBeShownInTable: null | string };
@@ -325,8 +325,8 @@ export default defineComponent({
     const permissions = ref([] as PermissionsInterface[]);
 
     const rules = {
-      alias:   [startsWithExclamation, required],
-      command: [startsWithExclamationOrCustomVariable, minLength(2)],
+      alias:   [startsWith(['!']), required],
+      command: [startsWith(['!', '$_']), minLength(2)],
     };
 
     const search = ref('');

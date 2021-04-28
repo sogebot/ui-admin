@@ -258,17 +258,19 @@ import {
 import { v4 } from 'uuid';
 
 import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';
-import { VariableInterface } from '.bot/src/bot/database/entity/variable';
+import type { VariableInterface } from '.bot/src/bot/database/entity/variable';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
-import { required } from '~/functions/validators';
+import {
+  minLength, required, restrictedChars, startsWith,
+} from '~/functions/validators';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/textoverlay-newItem.vue') }) },
+  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/customvariables-newItem.vue') }) },
   setup () {
-    const rules = { name: [required] };
+    const rules = { variableName: [required, startsWith(['$_']), minLength(3), restrictedChars([' '])] };
 
     const items = ref([] as VariableInterface[]);
     const editItem = ref(null as null | VariableInterface);

@@ -2,7 +2,7 @@ import XRegExp from 'xregexp';
 
 const required = (v?: string) => String(v).length > 0 || 'This value is required';
 const minLength = (length: number) => {
-  return (v?: string) => (typeof v === 'string' && v.length > length) || 'Min length of this value is ' + length;
+  return (v?: string) => (typeof v === 'string' && v.length >= length) || 'Min length of this value is ' + length;
 };
 const minValue = (value: number) => {
   return (v?: string) => Number(v) >= value || 'Min value of this value is ' + value;
@@ -11,8 +11,25 @@ const maxValue = (value: number) => {
   return (v?: string) => Number(v) <= value || 'Max value of this value is ' + value;
 };
 
-const startsWithExclamation = (v?: string) => (typeof v === 'string' && v.length > 0 && v[0] === '!') || 'Must start with !';
-const startsWithExclamationOrCustomVariable = (v?: string) => (typeof v === 'string' && v.length > 0 && (v[0] === '!' || v[0] === '$')) || 'Must start with ! or should be custom variable';
+const startsWith = (chars: string[]) => {
+  return (v?: string) => {
+    return (
+      typeof v === 'string'
+        && v.length > 0
+        && chars.map(char => v.startsWith(char)).includes(true)
+    ) || 'Must start with ' + chars.join(', ');
+  };
+};
+
+const restrictedChars = (chars: string[]) => {
+  return (v?: string) => {
+    return (
+      typeof v === 'string'
+        && v.length > 0
+        && !chars.map(char => v.includes(char)).includes(true)
+    ) || 'Contains restricted chars: ' + chars.map(o => '"' + o + '"').join(', ');
+  };
+};
 
 const isValidRegex = (val: string) => {
   try {
@@ -25,7 +42,7 @@ const isValidRegex = (val: string) => {
 
 const mustBeCompliant = (acceptedChars: string) => {
   const regexp = new RegExp(`^[${acceptedChars}]+$`, 'g');
-  return (v?: string) => typeof v === 'string' && !!v.match(regexp) || 'This value can contain only ' + acceptedChars;
+  return (v?: string) => (typeof v === 'string' && !!v.match(regexp)) || 'This value can contain only ' + acceptedChars;
 };
 
 const expectedValuesCount = (count: number) => {
@@ -40,5 +57,5 @@ const expectedValuesCount = (count: number) => {
 };
 
 export {
-  expectedValuesCount, mustBeCompliant, isValidRegex, required, minLength, maxValue, startsWithExclamation, startsWithExclamationOrCustomVariable, minValue,
+  expectedValuesCount, mustBeCompliant, isValidRegex, required, minLength, maxValue, startsWith, minValue, restrictedChars,
 };
