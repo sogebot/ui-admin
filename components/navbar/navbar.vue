@@ -11,6 +11,7 @@
       app
       bottom
     >
+      <div class="pt-1 text-center text-button">{{ name }}</div>
       <user />
 
       <v-spacer />
