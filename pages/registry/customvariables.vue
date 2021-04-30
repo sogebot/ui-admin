@@ -131,7 +131,7 @@
               >
                 <v-card v-if="editItem">
                   <v-card-title>
-                    <span class="headline">Update item <code>{{ editItem.name }}</code></span>
+                    <span class="headline">Update item <code>{{ editItem.variableName }}</code></span>
                   </v-card-title>
 
                   <v-card-text :key="timestamp">
