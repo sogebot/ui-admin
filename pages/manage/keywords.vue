@@ -26,6 +26,7 @@
       :loading="state.loading !== ButtonStates.success && state.loadingPrm !== ButtonStates.success"
       :headers="headers"
       :items-per-page="-1"
+      @current-items="saveCurrentItems"
       :items="items"
       @click:row="addToSelectedItem"
     >
@@ -208,6 +209,10 @@ export default defineComponent({
 
     const timestamp = ref(Date.now());
     const selected = ref([] as KeywordInterface[]);
+    const currentItems = ref([] as KeywordInterface[]);
+    const saveCurrentItems = (value: KeywordInterface[]) => {
+      currentItems.value = value;
+    };
     const selectable = ref(false);
     watch(selectable, (val) => {
       if (!val) {
@@ -354,7 +359,8 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
+      saveCurrentItems,
       selectable,
       orderBy,
       search,

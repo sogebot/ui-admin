@@ -31,8 +31,10 @@
       :single-expand="true"
       show-expand
       item-key="videoId"
+      @current-items="saveCurrentItems"
       :page.sync="currentPage"
       :server-items-length.sync="count"
+      @click:row="addToSelectedItem"
     >
       <template #top>
         <v-sheet
@@ -314,6 +316,10 @@ export default defineComponent({
 
     const deleteDialog = ref(false);
     const selected = ref([] as SongPlaylistInterface[]);
+    const currentItems = ref([] as SongPlaylistInterface[]);
+    const saveCurrentItems = (value: SongPlaylistInterface[]) => {
+      currentItems.value = value;
+    };
     const expanded = ref([] as SongPlaylistInterface[]);
     const selectable = ref(false);
     watch(selectable, (val) => {
@@ -509,7 +515,7 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'videoId'),
+      addToSelectedItem: addToSelectedItem(selected, 'videoId', currentItems),
       items,
       fItems,
       headers,
@@ -525,6 +531,7 @@ export default defineComponent({
       currentPage,
       count,
       selectable,
+      saveCurrentItems,
 
       generateThumbnail,
       addSongOrPlaylist,

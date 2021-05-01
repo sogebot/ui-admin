@@ -105,7 +105,7 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
 import {
-  minLength, required, startsWithExclamation,
+  minLength, required, startsWith,
 } from '~/functions/validators';
 
 type CommandsInterface = {
@@ -119,7 +119,7 @@ type CommandsInterface = {
 
 export default defineComponent({
   setup () {
-    const rules = { command: [startsWithExclamation, required, minLength(2)] };
+    const rules = { command: [startsWith(['!']), required, minLength(2)] };
 
     const search = ref('');
     const items = ref([] as CommandsInterface[]);

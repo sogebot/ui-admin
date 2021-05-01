@@ -28,6 +28,7 @@
       :headers="headers"
       :items-per-page="-1"
       :items="items"
+      @current-items="saveCurrentItems"
       @click:row="addToSelectedItem"
     >
       <template #top>
@@ -296,7 +297,7 @@ import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
 import { truncate } from '~/functions/truncate';
 import {
-  minLength, required, startsWithExclamation, startsWithExclamationOrCustomVariable,
+  minLength, required, startsWith,
 } from '~/functions/validators';
 
 type AliasInterfaceUI = AliasInterface & { groupToBeShownInTable: null | string };
@@ -307,6 +308,10 @@ export default defineComponent({
     const timestamp = ref(Date.now());
 
     const selected = ref([] as AliasInterfaceUI[]);
+    const currentItems = ref([] as AliasInterfaceUI[]);
+    const saveCurrentItems = (value: AliasInterfaceUI[]) => {
+      currentItems.value = value;
+    };
     const deleteDialog = ref(false);
     const newDialog = ref(false);
     const selectable = ref(false);
@@ -320,8 +325,8 @@ export default defineComponent({
     const permissions = ref([] as PermissionsInterface[]);
 
     const rules = {
-      alias:   [startsWithExclamation, required],
-      command: [startsWithExclamationOrCustomVariable, minLength(2)],
+      alias:   [startsWith(['!']), required],
+      command: [startsWith(['!', '$_']), minLength(2)],
     };
 
     const search = ref('');
@@ -503,7 +508,8 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
+      saveCurrentItems,
       items,
       permissions,
       search,

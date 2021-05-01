@@ -28,6 +28,7 @@
       :headers="headers"
       :items-per-page="-1"
       :items="items"
+      @current-items="saveCurrentItems"
       @click:row="addToSelectedItem"
     >
       <template #top>
@@ -227,7 +228,7 @@ import { capitalize } from 'lodash-es';
 
 import type { PriceInterface } from '.bot/src/bot/database/entity/price';
 import {
-  minLength, minValue, required, startsWithExclamation,
+  minLength, minValue, required, startsWith,
 } from '~/functions//validators';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
@@ -241,6 +242,10 @@ export default defineComponent({
     const search = ref('');
     const items = ref([] as PriceInterface[]);
     const selected = ref([] as PriceInterface[]);
+    const currentItems = ref([] as PriceInterface[]);
+    const saveCurrentItems = (value: PriceInterface[]) => {
+      currentItems.value = value;
+    };
     const selectable = ref(false);
     watch(selectable, (val) => {
       if (!val) {
@@ -258,7 +263,7 @@ export default defineComponent({
     const rules = {
       price:     [minValue(0), required],
       priceBits: [minValue(0), required],
-      command:   [required, minLength(2), startsWithExclamation],
+      command:   [required, minLength(2), startsWith(['!'])],
     };
 
     const headers = [
@@ -381,7 +386,8 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
+      saveCurrentItems,
       search,
       items,
       state,

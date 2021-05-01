@@ -11,6 +11,7 @@
       app
       bottom
     >
+      <div class="pt-1 text-center text-button">{{ name }}</div>
       <user />
 
       <v-spacer />
@@ -54,6 +55,9 @@ const routeMapper = new Map<string, string>([
   ['manage-events', 'event-listeners'],
   ['manage-highlights', 'highlights'],
   ['manage-hltb', 'howlongtobeat'],
+  ['registry-customvariables', 'custom-variables'],
+  ['registry-textoverlay', 'textoverlay'],
+  ['registry-gallery', 'gallery'],
   ['stats-api', 'api'],
   ['stats-bits', 'bits'],
   ['stats-tips', 'tips'],

@@ -27,6 +27,7 @@
       :headers="headers"
       :items-per-page="-1"
       :items="items"
+      @current-items="saveCurrentItems"
       @click:row="addToSelectedItem"
     >
       <template #top>
@@ -224,7 +225,7 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
 import {
-  minLength, required, startsWithExclamation,
+  minLength, required, startsWith,
 } from '~/functions/validators';
 
 let count: {
@@ -239,13 +240,17 @@ export default defineComponent({
     responses:  defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
   },
   setup () {
-    const rules = { command: [startsWithExclamation, required, minLength(2)] };
+    const rules = { command: [startsWith(['!']), required, minLength(2)] };
 
     const search = ref('');
     const items = ref([] as Required<CommandsInterfaceUI>[]);
     const permissions = ref([] as Required<PermissionsInterface>[]);
 
     const selected = ref([] as CommandsInterfaceUI[]);
+    const currentItems = ref([] as CommandsInterfaceUI[]);
+    const saveCurrentItems = (value: CommandsInterfaceUI[]) => {
+      currentItems.value = value;
+    };
     const selectable = ref(false);
     watch(selectable, (val) => {
       if (!val) {
@@ -404,7 +409,8 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
+      saveCurrentItems,
       orderBy,
       headers,
       search,

@@ -25,8 +25,10 @@
       :search="search"
       :loading="state.loading !== ButtonStates.success"
       :headers="headers"
+      @current-items="saveCurrentItems"
       :items-per-page="-1"
       :items="fItems"
+      @click:row="addToSelectedItem"
     >
       <template #top>
         <v-sheet
@@ -271,6 +273,10 @@ export default defineComponent({
     const timestamp = ref(Date.now());
 
     const selected = ref([] as QuotesInterface[]);
+    const currentItems = ref([] as QuotesInterface[]);
+    const saveCurrentItems = (value: QuotesInterface[]) => {
+      currentItems.value = value;
+    };
     const selectable = ref(false);
     watch(selectable, (val) => {
       if (!val) {
@@ -441,7 +447,8 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
+      saveCurrentItems,
       items,
       fItems,
       tags,

@@ -1,6 +1,9 @@
 import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';
 
 const getPermissionName = (id: string | null, permissions: PermissionsInterface[]) => {
+  if (!permissions) {
+    throw new Error('Missing permissions list');
+  }
   if (!id) {
     return 'Disabled';
   }

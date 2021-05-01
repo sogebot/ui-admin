@@ -16,6 +16,7 @@
       :items-per-page="-1"
       :items="items"
       sort-by="name"
+      @current-items="saveCurrentItems"
       @click:row="addToSelectedItem"
     >
       <template #top>
@@ -209,6 +210,10 @@ export default defineComponent({
     const search = ref('');
 
     const selected = ref([] as TextInterface[]);
+    const currentItems = ref([] as TextInterface[]);
+    const saveCurrentItems = (value: TextInterface[]) => {
+      currentItems.value = value;
+    };
     const deleteDialog = ref(false);
     const newDialog = ref(false);
     const selectable = ref(false);
@@ -355,7 +360,7 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       edit,
       editItem,
       items,
@@ -382,6 +387,7 @@ export default defineComponent({
       ButtonStates,
       clone,
       link,
+      saveCurrentItems,
     };
   },
 });

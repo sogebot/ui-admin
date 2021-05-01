@@ -26,8 +26,10 @@
       :loading="state.loading !== ButtonStates.success"
       :headers="headers"
       :items-per-page="-1"
+      @current-items="saveCurrentItems"
       item-key="videoId"
       :items="fItems"
+      @click:row="addToSelectedItem"
     >
       <template #top>
         <v-sheet
@@ -166,6 +168,10 @@ export default defineComponent({
 
     const deleteDialog = ref(false);
     const selected = ref([] as SongBanInterface[]);
+    const currentItems = ref([] as SongBanInterface[]);
+    const saveCurrentItems = (value: SongBanInterface[]) => {
+      currentItems.value = value;
+    };
     const selectable = ref(false);
     watch(selectable, (val) => {
       if (!val) {
@@ -269,7 +275,7 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'videoId'),
+      addToSelectedItem: addToSelectedItem(selected, 'videoId', currentItems),
       items,
       fItems,
       headers,
@@ -277,6 +283,7 @@ export default defineComponent({
       state,
       search,
       selectable,
+      saveCurrentItems,
 
       generateThumbnail,
       addSong,

@@ -271,7 +271,7 @@ import type { EventInterface, Events } from '.bot/src/bot/database/entity/event'
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import {
-  minValue, required, startsWithExclamation,
+  minValue, required, startsWith,
 } from '~/functions/validators';
 
 export default defineComponent({
@@ -327,7 +327,7 @@ export default defineComponent({
       runEveryXKeywords: [required, minValue(0)],
       fadeOutXKeywords:  [required, minValue(0)],
       runInterval:       [required, minValue(0)],
-      commandToWatch:    [required, startsWithExclamation],
+      commandToWatch:    [required, startsWith(['!'])],
       keywordToWatch:    [required],
       runAfterXMinutes:  [required, minValue(1)],
       runEveryXMinutes:  [required, minValue(1)],

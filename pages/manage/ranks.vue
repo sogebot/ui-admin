@@ -28,6 +28,7 @@
       group-by="typeToBeShownInTable"
       :items-per-page="-1"
       :items="items"
+      @current-items="saveCurrentItems"
       @click:row="addToSelectedItem"
     >
       <template #top>
@@ -279,6 +280,10 @@ export default defineComponent({
     const search = ref('');
 
     const selected = ref([] as RankInterfaceUI[]);
+    const currentItems = ref([] as RankInterfaceUI[]);
+    const saveCurrentItems = (value: RankInterfaceUI[]) => {
+      currentItems.value = value;
+    };
     const selectable = ref(false);
     watch(selectable, (val) => {
       if (!val) {
@@ -445,7 +450,7 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       items,
       isTypeSelected,
       toggleTypeSelection,
@@ -469,6 +474,7 @@ export default defineComponent({
       mdiPlus,
       mdiCheckBoxMultipleOutline,
       ButtonStates,
+      saveCurrentItems,
     };
   },
 });

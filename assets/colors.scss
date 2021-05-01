@@ -6,3 +6,16 @@
 .theme--dark.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
   background: var(--v-secondary-darken1) !important;
 }
+
+.theme--dark.v-data-table tbody tr.v-data-table__selected {
+  background: var(--v-secondary-darken2) !important;
+  color: var(--v-primary-base) !important;
+}
+
+.theme--light.v-data-table tbody tr.v-data-table__selected {
+  background: var(--v-primary-lighten4) !important;
+}
+
+.theme--dark.v-stepper .v-stepper__step--active .v-stepper__label {
+  text-shadow: none !important;
+}

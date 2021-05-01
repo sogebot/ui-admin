@@ -26,6 +26,7 @@
       :loading="state.loading !== ButtonStates.success"
       :headers="headers"
       :items-per-page="-1"
+      @current-items="saveCurrentItems"
       :items="items"
       @click:row="addToSelectedItem"
     >
@@ -247,6 +248,10 @@ export default defineComponent({
     const search = ref('');
 
     const selected = ref([] as PollInterface[]);
+    const currentItems = ref([] as PollInterface[]);
+    const saveCurrentItems = (value: PollInterface[]) => {
+      currentItems.value = value;
+    };
     const selectable = ref(false);
     watch(selectable, (val) => {
       if (!val) {
@@ -419,7 +424,8 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id'),
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
+      saveCurrentItems,
       items,
       search,
       state,
