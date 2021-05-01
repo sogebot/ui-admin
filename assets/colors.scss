@@ -15,3 +15,7 @@
 .theme--light.v-data-table tbody tr.v-data-table__selected {
   background: var(--v-primary-lighten4) !important;
 }
+
+.theme--dark.v-stepper .v-stepper__step--active .v-stepper__label {
+  text-shadow: none !important;
+}
