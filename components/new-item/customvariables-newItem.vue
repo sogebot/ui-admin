@@ -10,6 +10,8 @@
         Name your custom variable
       </v-stepper-step>
 
+      <v-divider />
+
       <v-stepper-step
         :complete="e1 > 2"
         step="2"
@@ -20,10 +22,29 @@
       </v-stepper-step>
 
       <v-divider />
+
+      <v-stepper-step
+        :complete="e1 > 3"
+        step="3"
+        editable
+      >
+        REST access
+        <small>Optional</small>
+      </v-stepper-step>
+
+      <v-divider />
+
+      <v-stepper-step
+        :complete="e1 > 4"
+        step="4"
+        editable
+      >
+        Settings
+        <small>Optional</small>
+      </v-stepper-step>
     </v-stepper-header><v-stepper-items>
       <v-stepper-content :step="1">
         <v-text-field
-          @input="variableNameDirty = true"
           v-model="variableName"
           :label="translate('registry.customvariables.variable.name')"
           :hint="translate('registry.customvariables.variable.help')"
@@ -32,11 +53,19 @@
           hide-details="auto"
           required
           counter
+          @input="variableNameDirty = true"
         >
           <template #append>
-            <v-progress-circular size="18" indeterminate v-if="states.isUnique === ButtonStates.progress"></v-progress-circular>
+            <v-progress-circular v-if="states.isUnique === ButtonStates.progress" size="18" indeterminate />
           </template>
         </v-text-field>
+
+        <v-text-field
+          v-model="description"
+          :label="translate('registry.customvariables.description.name')"
+          :hint="translate('registry.customvariables.description.help')"
+          counter
+        />
       </v-stepper-content>
 
       <v-stepper-content :step="2">
@@ -146,6 +175,110 @@
         </v-form>
       </v-stepper-content>
 
+      <v-stepper-content step="3">
+        <v-data-table
+          dense
+          :items="urls"
+          :headers="urlsHeaders"
+          :items-per-page="-1"
+        >
+          <template #top>
+            <v-sheet
+              flat
+              color="dark"
+            >
+              <v-row no-gutters>
+                <v-col cols="auto" align-self="center">
+                  <v-btn @click="generateURL">
+                    {{ translate('registry.customvariables.generateurl') }}
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-sheet>
+          </template>
+          <template #[`item.GET`]="{ item }">
+            <v-simple-checkbox
+              v-model="item.GET"
+            />
+          </template>
+          <template #[`item.POST`]="{ item }">
+            <v-simple-checkbox
+              v-model="item.POST"
+            />
+          </template>
+          <template #[`item.showResponse`]="{ item }">
+            <v-simple-checkbox
+              v-model="item.showResponse"
+            />
+          </template>
+          <template #[`item.link`]="{ item }">
+            {{ origin }}/customvariables/{{ item.id }}
+          </template>
+
+          <template #[`item.actions`]="{ item }">
+            <div style="width: max-content;">
+              <v-hover v-slot="{ hover }">
+                <v-btn
+                  icon
+                  :color="hover ? 'primary' : 'secondary lighten-3'"
+                  @click="link(item)"
+                >
+                  <v-icon>{{ mdiLink }}</v-icon>
+                </v-btn>
+              </v-hover>
+              <v-hover v-slot="{ hover }">
+                <v-btn
+                  icon
+                  :color="hover ? 'red' : 'secondary lighten-3'"
+                  @click="removeURL(item.id)"
+                >
+                  <v-icon>{{ mdiDelete }}</v-icon>
+                </v-btn>
+              </v-hover>
+            </div>
+          </template>
+        </v-data-table>
+      </v-stepper-content>
+
+      <v-stepper-content step="4">
+        <v-select
+          v-model="permission"
+          class="ma-2"
+          :label="translate('permission')"
+          :items="permissionItems"
+        />
+
+        <v-container fluid>
+          <h5 style="font-weight: normal;">{{ translate('registry.customvariables.response.name') }}</h5>
+          <v-radio-group v-model="responseType">
+            <v-radio
+              key="responseType-0"
+              :label="translate('registry.customvariables.response.default')"
+              :value="0"
+            ></v-radio>
+            <v-radio
+              key="responseType-1"
+              :label="translate('registry.customvariables.response.custom')"
+              :value="1"
+              @click="responseText = ''"
+            ></v-radio>
+            <v-radio
+              key="responseType-2"
+              :label="translate('registry.customvariables.response.command') + ' - ' + translate('registry.customvariables.useIfInCommand')"
+              :value="2"
+              @click="responseText = ''"
+            ></v-radio>
+          </v-radio-group>
+
+          <v-text-field
+            v-if="responseType === 1"
+            v-model="responseText"
+            :label="translate('registry.customvariables.response.default-placeholder')"
+            counter
+          />
+        </v-container>
+      </v-stepper-content>
+
       <v-sheet>
         <v-btn
           plain
@@ -155,7 +288,7 @@
           close
         </v-btn>
         <v-btn
-          v-if="e1 < 5"
+          v-if="e1 < 4"
           plain
           class="ma-2"
           @click="validateForm"
@@ -176,7 +309,7 @@
 </template>
 
 <script lang="ts">
-import { mdiDelete } from '@mdi/js';
+import { mdiDelete, mdiLink } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -196,8 +329,10 @@ import { v4 } from 'uuid';
 import { codemirror } from 'vue-codemirror';
 
 import type { VariableInterface } from '.bot/src/bot/database/entity/variable';
+import type { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
+import { origin } from '~/functions/origin';
 import { minValue, required } from '~/functions/validators';
 
 type Props = {
@@ -221,23 +356,31 @@ export default defineComponent({
       if (variableNameDirty.value) {
         for (const validator of computedRules.variableName) {
           const validated = validator(variableName.value);
-          console.log(validated);
           if (typeof validated === 'string') {
             return validated;
           }
         }
       }
       return true;
-    })
+    });
 
     const e1 = ref(1);
     const newItemSaving = ref(false);
     const theme = localStorage.getItem('theme') || get(ctx.root.$store.state, 'configuration.core.ui.theme', 'light');
 
+    const permissions = ref([] as PermissionsInterface[]);
+    const permissionItems = computed(() => {
+      return permissions.value.map(item => ({
+        text:     item.name,
+        value:    item.id,
+        disabled: false,
+      }));
+    });
+
     const id = ref(props.item ? props.item.id : v4());
     const variableName = ref(props.item ? props.item.variableName : '');
     const variableNameDirty = ref(false);
-    const urls = ref(props.item ? props.item.urls : []);
+    const urls = ref(props.item ? props.item.urls : [] as { id: string; showResponse: boolean; GET: boolean; POST: boolean }[]);
     const history = ref(props.item ? props.item.history : []);
     const currentValue = ref(props.item ? props.item.currentValue : '');
     const permission = ref(props.item ? props.item.permission : defaultPermissions.MODERATORS);
@@ -247,13 +390,14 @@ export default defineComponent({
     const type = ref(props.item ? props.item.type : 'text');
     const description = ref(props.item ? props.item.description : '');
     const responseType = ref(props.item ? props.item.responseType : 0);
+    const responseText = ref(props.item ? props.item.responseText : '');
     const evalValue = ref(props.item ? props.item.evalValue : '');
     const runEveryType = ref(props.item ? props.item.runEveryType : 'isUsed');
     const runEveryX = ref(props.item ? (props.item.runEvery ?? 0) / (props.item.runEvery || 1) : 0);
 
     const optionSearch = ref('');
 
-    const states = ref({ test: ButtonStates.idle as number, isUnique: ButtonStates.idle as number });
+    const states = ref({ test: ButtonStates.idle as number, isUnique: ButtonStates.success as number });
 
     const form2 = ref(null);
     const valid2 = ref(true);
@@ -325,6 +469,13 @@ export default defineComponent({
             error(e);
           });
       }
+
+      getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
+        if (err) {
+          return error(err);
+        }
+        permissions.value = data;
+      });
     });
 
     const newItem = async () => {
@@ -337,7 +488,7 @@ export default defineComponent({
             variableName:      variableName.value,
             history:           history.value,
             currentValue:      currentValue.value,
-            urls:              urls.value,
+            urls:              (urls.value as any),
             permission:        permission.value,
             readOnly:          readOnly.value,
             usableOptions:     usableOptions.value,
@@ -345,6 +496,7 @@ export default defineComponent({
             type:              type.value,
             description:       description.value,
             responseType:      responseType.value,
+            responseText:      responseText.value,
             evalValue:         evalValue.value,
             runEveryType:      runEveryType.value,
             runEveryTypeValue: availableRunEvery.find(o => o.value === runEveryType.value)?.seconds ?? 0,
@@ -415,6 +567,28 @@ export default defineComponent({
       });
     };
 
+    const urlsHeaders = [
+      { value: 'GET', text: 'GET' }, { value: 'POST', text: 'POST' }, { value: 'showResponse', text: translate('registry.customvariables.response.show') }, { value: 'link', text: '' }, { value: 'actions', text: '' },
+    ];
+
+    const generateURL = () => {
+      urls.value?.push({
+        id:           v4(),
+        showResponse: false,
+        GET:          false,
+        POST:         false,
+      });
+    };
+
+    const removeURL = (urlId: string) => {
+      urls.value = urls.value?.filter(o => o.id !== urlId);
+    };
+
+    const link = (item: any) => {
+      navigator.clipboard.writeText(`${origin}customvariables/${item.id}`);
+      EventBus.$emit('snack', 'success', 'Link copied to clipboard.');
+    };
+
     return {
       theme,
       variableName,
@@ -432,6 +606,13 @@ export default defineComponent({
       valid2,
       closeDlg,
       validateForm,
+      permission,
+      urls,
+      generateURL,
+      removeURL,
+      description,
+      responseType,
+      responseText,
 
       availableTypes,
       availableValues,
@@ -440,12 +621,20 @@ export default defineComponent({
       removeOption,
 
       mdiDelete,
+      mdiLink,
       ButtonStates,
       states,
       testScript,
       computedRules,
       isVariableNameValid,
       variableNameDirty,
+
+      permissions,
+      permissionItems,
+
+      urlsHeaders,
+      origin,
+      link,
     };
   },
 });

@@ -9,6 +9,9 @@
 
     <v-data-table
       v-model="selected"
+      :single-expand="true"
+      show-expand
+      :expanded.sync="expanded"
       calculate-widths
       :show-select="selectable"
       :search="search"
@@ -149,6 +152,36 @@
         </v-sheet>
       </template>
 
+      <template #expanded-item="{ headers, item }">
+        <td
+          :colspan="headers.length"
+          class="pa-2"
+        >
+          <h3>{{ translate('registry.customvariables.history') }}</h3>
+          <v-data-table
+            v-if="item.type.toLowerCase() !== 'eval'"
+            dense
+            hide-default-header
+            :headers="headersHistory"
+            :items-per-page="5"
+            :items="item.history"
+            sort-by="changedAt"
+            :sort-desc="true"
+          >
+            <template #[`item.changedAt`]="{ item }">
+              {{ dayjs(item.changedAt).format('LL') }} {{ dayjs(item.changedAt).format('LTS') }}
+            </template>
+            <template #[`item.username`]="{ item }">
+              <NuxtLink :to="'/manage/viewers/' + item.quotedBy" v-if="item.username !== 'n/a'">
+                {{ item.username }}&nbsp;<small>{{ item.userId }}</small>
+              </NuxtLink>
+              <span v-else>Dashboard</span>
+            </template>
+          </v-data-table>
+          <span v-else>Script doesn't have saved history</span>
+        </td>
+      </template>
+
       <template #[`item.description`]="{ item }">
         <span
           v-if="item.description.length === 0"
@@ -266,6 +299,7 @@ import { getPermissionName } from '~/functions/getPermissionName';
 import {
   minLength, required, restrictedChars, startsWith,
 } from '~/functions/validators';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/customvariables-newItem.vue') }) },
@@ -280,6 +314,7 @@ export default defineComponent({
     const runningScripts = ref([] as string[]);
 
     const selected = ref([] as VariableInterface[]);
+    const expanded = ref([] as VariableInterface[]);
     const currentItems = ref([] as VariableInterface[]);
     const saveCurrentItems = (value: VariableInterface[]) => {
       currentItems.value = value;
@@ -326,12 +361,18 @@ export default defineComponent({
       {
         value: 'actions', text: '', sortable: false,
       },
-
+      { text: '', value: 'data-table-expand' },
     ];
 
     const headersDelete = [
       { value: 'variableName', text: '' },
       { value: 'type', text: '' },
+    ];
+
+    const headersHistory = [
+      { value: 'changedAt', text: '' },
+      { value: 'value', text: '' },
+      { value: 'username', text: '' },
     ];
 
     onMounted(() => {
@@ -441,7 +482,9 @@ export default defineComponent({
       state,
       headers,
       headersDelete,
+      headersHistory,
       selected,
+      expanded,
       deleteSelected,
       selectable,
       newDialog,
@@ -465,6 +508,7 @@ export default defineComponent({
       runScript,
       runningScripts,
       saveCurrentItems,
+      dayjs,
     };
   },
 });
