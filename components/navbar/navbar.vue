@@ -38,6 +38,7 @@ const navmenu = defineAsyncComponent({ loader: () => import('./menu.vue') });
 const user = defineAsyncComponent({ loader: () => import('../user.vue') });
 
 const routeMapper = new Map<string, string>([
+  ['index', 'dashboard'],
   ['manage-alias', 'alias'],
   ['manage-botcommands', 'botcommands'],
   ['manage-commands', 'customcommands'],
@@ -76,6 +77,7 @@ export default defineComponent({
     const drawer = ref(!(ctx.root as any).$vuetify.breakpoint.mobile);
 
     onMounted(() => {
+      console.debug('#route | ' + ctx.root.$route.name)
       const socket = getSocket('/', true);
       socket.emit('name', (recvName: string) => { name.value = recvName; });
       socket.emit('channelName', (recvName: string) => { channelName.value = recvName; });

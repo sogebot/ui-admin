@@ -1,9 +1,11 @@
 <template>
-  <v-container>
-    Nothing here yet
+  <v-container fluid>
+    <statsbar />
   </v-container>
 </template>
 
 <script>
-export default {};
+import { defineAsyncComponent } from '@vue/composition-api';
+
+export default { components: { statsbar: defineAsyncComponent({ loader: () => import('~/components/statsbar.vue') }) } };
 </script>
