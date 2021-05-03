@@ -46,503 +46,87 @@
       <v-row no-gutters>
         <uptime :timestamp="timestamp" :uptime="uptime" :is-loaded="isLoaded" />
         <viewers :timestamp="timestamp" :is-stream-online="isStreamOnline" :is-loaded="isLoaded" :viewers="currentStats.currentViewers" />
-        <with-trending hide title="max-viewers" :timestamp="timestamp" :is-stream-online="isStreamOnline" :is-loaded="isLoaded" :value="currentStats.maxViewers" :average="averageStats.maxViewers" />
-        <with-trending hide title="new-chatters" :timestamp="timestamp" :is-stream-online="isStreamOnline" :is-loaded="isLoaded" :value="currentStats.newChatters" :average="averageStats.newChatters" />
-
-        <v-col
-          cols="6"
-          lg="2"
-          md="4"
-          sm="4"
-        >
-          <v-skeleton-loader
-            v-if="!isLoaded"
-            tile
-            type="card"
-            min-height="60"
-            max-height="60"
-          />
-          <v-card
-            v-else
-            tile
-            min-height="60"
-            elevation="1"
-          >
-            <v-card-title
-              :key="timestamp"
-              class="pa-1"
-            >
-              <span
-                v-html="
-                  Intl.NumberFormat($store.state.configuration.lang, {
-                    notation: b_shortenNumber ? 'compact' : 'standard',
-                    maximumFractionDigits: b_shortenNumber ? 1 : 0,
-                  }).formatToParts(isStreamOnline ? currentStats.chatMessages : 0).reduce(numberReducer, '')
-                "
-              />
-              <small
-                v-if="$store.state.configuration.core.ui.showdiff && isStreamOnline && currentStats.chatMessages - averageStats.chatMessages !== 0"
-                class="text-caption"
-                :class="{
-                  'green--text': isTrending('chatMessages'),
-                  'red--text': !isTrending('chatMessages'),
-                }"
-              >
-                <v-icon
-                  :style="{
-                    'vertical-align': isTrending('chatMessages') ? 'super' : 'sub',
-                  }"
-                  x-small
-                  :color="isTrending('chatMessages') ? 'green' : 'red'"
-                >{{ isTrending('chatMessages') ? mdiTrendingUp : mdiTrendingDown }}</v-icon>
-                <span
-                  :style="{
-                    'vertical-align': isTrending('chatMessages') ? 'super' : 'sub',
-                  }"
-                  v-html="
-                    Intl.NumberFormat($store.state.configuration.lang, {
-                      style: $store.state.configuration.core.ui.percentage ? 'percent' : 'decimal',
-                      notation: b_shortenNumber ? 'compact' : 'standard',
-                      maximumFractionDigits: b_shortenNumber && !$store.state.configuration.core.ui.percentage ? 1 : 0,
-                    }).format($store.state.configuration.core.ui.percentage ? Math.abs(currentStats.chatMessages - averageStats.chatMessages) / (averageStats.chatMessages || 1) : currentStats.chatMessages - averageStats.chatMessages)
-                  "
-                />
-              </small>
-            </v-card-title>
-            <v-card-subtitle class="pa-1 text-caption">
-              {{ translate('chat-messages') }}
-            </v-card-subtitle>
-          </v-card>
-        </v-col>
-
-        <v-col
-          cols="6"
-          lg="2"
-          md="4"
-          sm="4"
-        >
-          <v-skeleton-loader
-            v-if="!isLoaded"
-            tile
-            type="card"
-            min-height="60"
-            max-height="60"
-          />
-          <v-card
-            v-else
-            tile
-            min-height="60"
-            elevation="1"
-          >
-            <v-card-title
-              :key="timestamp"
-              class="pa-1"
-            >
-              <span
-                v-html="
-                  Intl.NumberFormat($store.state.configuration.lang, {
-                    notation: b_shortenNumber ? 'compact' : 'standard',
-                    maximumFractionDigits: b_shortenNumber ? 1 : 0,
-                  }).formatToParts(currentStats.currentViews).reduce(numberReducer, '')
-                "
-              />
-              <small
-                v-if="$store.state.configuration.core.ui.showdiff && isStreamOnline && currentStats.currentViews - averageStats.currentViews !== 0"
-                class="text-caption"
-                :class="{
-                  'green--text': isTrending('currentViews'),
-                  'red--text': !isTrending('currentViews'),
-                }"
-              >
-                <v-icon
-                  :style="{
-                    'vertical-align': isTrending('currentViews') ? 'super' : 'sub',
-                  }"
-                  x-small
-                  :color="isTrending('currentViews') ? 'green' : 'red'"
-                >{{ isTrending('currentViews') ? mdiTrendingUp : mdiTrendingDown }}</v-icon>
-                <span
-                  :style="{
-                    'vertical-align': isTrending('currentViews') ? 'super' : 'sub',
-                  }"
-                  v-html="
-                    Intl.NumberFormat($store.state.configuration.lang, {
-                      style: $store.state.configuration.core.ui.percentage ? 'percent' : 'decimal',
-                      notation: b_shortenNumber ? 'compact' : 'standard',
-                      maximumFractionDigits: b_shortenNumber && !$store.state.configuration.core.ui.percentage ? 1 : 0,
-                    }).format($store.state.configuration.core.ui.percentage ? Math.abs(currentStats.currentViews - averageStats.currentViews) / (averageStats.currentViews || 1) : currentStats.currentViews - averageStats.currentViews)
-                  "
-                />
-              </small>
-            </v-card-title>
-            <v-card-subtitle class="pa-1 text-caption">
-              {{ translate('views') }}
-            </v-card-subtitle>
-          </v-card>
-        </v-col>
-
-        <v-col
-          cols="6"
-          lg="2"
-          md="4"
-          sm="4"
-        >
-          <v-skeleton-loader
-            v-if="!isLoaded"
-            tile
-            type="card"
-            min-height="60"
-            max-height="60"
-          />
-          <v-card
-            v-else
-            tile
-            min-height="60"
-            elevation="1"
-          >
-            <v-card-title
-              :key="timestamp"
-              class="pa-1"
-            >
-              <span
-                v-html="
-                  Intl.NumberFormat($store.state.configuration.lang, {
-                    notation: b_shortenNumber ? 'compact' : 'standard',
-                    maximumFractionDigits: b_shortenNumber ? 1 : 0,
-                  }).formatToParts(currentStats.currentFollowers).reduce(numberReducer, '')
-                "
-              />
-              <small
-                v-if="$store.state.configuration.core.ui.showdiff && isStreamOnline && currentStats.currentFollowers - averageStats.currentFollowers !== 0"
-                class="text-caption"
-                :class="{
-                  'green--text': isTrending('currentFollowers'),
-                  'red--text': !isTrending('currentFollowers'),
-                }"
-              >
-                <v-icon
-                  :style="{
-                    'vertical-align': isTrending('currentFollowers') ? 'super' : 'sub',
-                  }"
-                  x-small
-                  :color="isTrending('currentFollowers') ? 'green' : 'red'"
-                >{{ isTrending('currentFollowers') ? mdiTrendingUp : mdiTrendingDown }}</v-icon>
-                <span
-                  :style="{
-                    'vertical-align': isTrending('currentFollowers') ? 'super' : 'sub',
-                  }"
-                  v-html="
-                    Intl.NumberFormat($store.state.configuration.lang, {
-                      style: $store.state.configuration.core.ui.percentage ? 'percent' : 'decimal',
-                      notation: b_shortenNumber ? 'compact' : 'standard',
-                      maximumFractionDigits: b_shortenNumber && !$store.state.configuration.core.ui.percentage ? 1 : 0,
-                    }).format($store.state.configuration.core.ui.percentage ? Math.abs(currentStats.currentFollowers - averageStats.currentFollowers) / (averageStats.currentFollowers || 1) : currentStats.currentFollowers - averageStats.currentFollowers)
-                  "
-                />
-              </small>
-            </v-card-title>
-            <v-card-subtitle class="pa-1 text-caption">
-              {{ translate('followers') }}
-            </v-card-subtitle>
-          </v-card>
-        </v-col>
-
-        <v-col
-          cols="6"
-          lg="2"
-          md="4"
-          sm="4"
-        >
-          <v-skeleton-loader
-            v-if="!isLoaded"
-            tile
-            type="card"
-            min-height="60"
-            max-height="60"
-          />
-          <v-card
-            v-else
-            tile
-            min-height="60"
-            elevation="1"
-          >
-            <v-card-title
-              v-if="broadcasterType !== ''"
-              class="pa-1"
-            >
-              <span
-                v-html="
-                  Intl.NumberFormat($store.state.configuration.lang, {
-                    notation: b_shortenNumber ? 'compact' : 'standard',
-                    maximumFractionDigits: b_shortenNumber ? 1 : 0,
-                  }).formatToParts(currentStats.currentSubscribers).reduce(numberReducer, '')
-                "
-              />
-              <small
-                v-if="$store.state.configuration.core.ui.showdiff && isStreamOnline && currentStats.currentSubscribers - averageStats.currentSubscribers !== 0"
-                class="text-caption"
-                :class="{
-                  'green--text': isTrending('currentSubscribers'),
-                  'red--text': !isTrending('currentSubscribers'),
-                }"
-              >
-                <v-icon
-                  :style="{
-                    'vertical-align': isTrending('currentSubscribers') ? 'super' : 'sub',
-                  }"
-                  x-small
-                  :color="isTrending('currentSubscribers') ? 'green' : 'red'"
-                >{{ isTrending('currentSubscribers') ? mdiTrendingUp : mdiTrendingDown }}</v-icon>
-                <span
-                  :style="{
-                    'vertical-align': isTrending('currentSubscribers') ? 'super' : 'sub',
-                  }"
-                  v-html="
-                    Intl.NumberFormat($store.state.configuration.lang, {
-                      style: $store.state.configuration.core.ui.percentage ? 'percent' : 'decimal',
-                      notation: b_shortenNumber ? 'compact' : 'standard',
-                      maximumFractionDigits: b_shortenNumber && !$store.state.configuration.core.ui.percentage ? 1 : 0,
-                    }).format($store.state.configuration.core.ui.percentage ? Math.abs(currentStats.currentSubscribers - averageStats.currentSubscribers) / (averageStats.currentSubscribers || 1) : currentStats.currentSubscribers - averageStats.currentSubscribers)
-                  "
-                />
-              </small>
-            </v-card-title>
-            <v-card-title
-              v-else
-              class="pa-1"
-            >
-              {{ translate('not-affiliate-or-partner') }}
-            </v-card-title>
-            <v-card-subtitle class="pa-1 text-caption">
-              {{ translate('subscribers') }}
-            </v-card-subtitle>
-          </v-card>
-        </v-col>
-
-        <v-col
-          cols="6"
-          lg="2"
-          md="4"
-          sm="4"
-        >
-          <v-skeleton-loader
-            v-if="!isLoaded"
-            tile
-            type="card"
-            min-height="60"
-            max-height="60"
-          />
-          <v-card
-            v-else
-            tile
-            min-height="60"
-            elevation="1"
-          >
-            <v-card-title
-              v-if="broadcasterType !== ''"
-              class="pa-1"
-            >
-              <span
-                v-html="
-                  Intl.NumberFormat($store.state.configuration.lang, {
-                    notation: b_shortenNumber ? 'compact' : 'standard',
-                    maximumFractionDigits: b_shortenNumber ? 1 : 0,
-                  }).formatToParts(isStreamOnline ? currentStats.currentBits : 0).reduce(numberReducer, '')
-                "
-              />
-              <small
-                v-if="$store.state.configuration.core.ui.showdiff && isStreamOnline && currentStats.currentBits - averageStats.currentBits !== 0"
-                class="text-caption"
-                :class="{
-                  'green--text': isTrending('currentBits'),
-                  'red--text': !isTrending('currentBits'),
-                }"
-              >
-                <v-icon
-                  :style="{
-                    'vertical-align': isTrending('currentBits') ? 'super' : 'sub',
-                  }"
-                  x-small
-                  :color="isTrending('currentBits') ? 'green' : 'red'"
-                >{{ isTrending('currentBits') ? mdiTrendingUp : mdiTrendingDown }}</v-icon>
-                <span
-                  :style="{
-                    'vertical-align': isTrending('currentBits') ? 'super' : 'sub',
-                  }"
-                  v-html="
-                    Intl.NumberFormat($store.state.configuration.lang, {
-                      style: $store.state.configuration.core.ui.percentage ? 'percent' : 'decimal',
-                      notation: b_shortenNumber ? 'compact' : 'standard',
-                      maximumFractionDigits: b_shortenNumber && !$store.state.configuration.core.ui.percentage ? 1 : 0,
-                    }).format($store.state.configuration.core.ui.percentage ? Math.abs(currentStats.currentBits - averageStats.currentBits) / (averageStats.currentBits || 1) : currentStats.currentBits - averageStats.currentBits)
-                  "
-                />
-              </small>
-            </v-card-title>
-            <v-card-title
-              v-else
-              class="pa-1"
-            >
-              {{ translate('not-affiliate-or-partner') }}
-            </v-card-title>
-            <v-card-subtitle class="pa-1 text-caption">
-              {{ translate('bits') }}
-            </v-card-subtitle>
-          </v-card>
-        </v-col>
-
-        <v-col
-          cols="6"
-          lg="2"
-          md="4"
-          sm="4"
-        >
-          <v-skeleton-loader
-            v-if="!isLoaded"
-            tile
-            type="card"
-            min-height="60"
-            max-height="60"
-          />
-          <v-card
-            v-else
-            tile
-            min-height="60"
-            elevation="1"
-          >
-            <v-card-title
-              :key="timestamp"
-              class="pa-1"
-            >
-              <span
-                v-html="
-                  Intl.NumberFormat($store.state.configuration.lang, {
-                    style: 'currency',
-                    currency: $store.state.configuration.currency,
-                  }).formatToParts(isStreamOnline ? currentStats.currentTips : 0).reduce(numberReducer, '')
-                "
-              />
-              <small
-                v-if="$store.state.configuration.core.ui.showdiff && isStreamOnline && currentStats.currentTips - averageStats.currentTips !== 0"
-                class="text-caption"
-                :class="{
-                  'green--text': isTrending('currentTips'),
-                  'red--text': ~isTrending('currentTips'),
-                }"
-              >>
-                <v-icon
-                  :style="{
-                    'vertical-align': isTrending('currentTips') ? 'super' : 'sub',
-                  }"
-                  x-small
-                  :color="isTrending('currentTips') ? 'green' : 'red'"
-                >{{ isTrending('currentTips') ? mdiTrendingUp : mdiTrendingDown }}</v-icon>
-                <span
-                  :style="{
-                    'vertical-align': isTrending('currentTips') ? 'super' : 'sub',
-                  }"
-                  v-html="
-                    Intl.NumberFormat($store.state.configuration.lang, {
-                      style: $store.state.configuration.core.ui.percentage ? 'percent' : 'currency',
-                      currency: $store.state.configuration.currency,
-                    }).format($store.state.configuration.core.ui.percentage ? Math.abs(currentStats.currentTips - averageStats.currentTips) / (averageStats.currentTips || 1) : currentStats.currentTips - averageStats.currentTips)
-                  "
-                />
-              </small>
-            </v-card-title>
-            <v-card-subtitle class="pa-1 text-caption">
-              {{ translate('tips') }}
-            </v-card-subtitle>
-          </v-card>
-        </v-col>
-
-        <v-col
-          cols="6"
-          lg="2"
-          md="4"
-          sm="4"
-        >
-          <v-skeleton-loader
-            v-if="!isLoaded"
-            tile
-            type="card"
-            min-height="60"
-            max-height="60"
-          />
-          <v-card
-            v-else
-            tile
-            min-height="60"
-            elevation="1"
-          >
-            <v-card-title
-              :key="timestamp"
-              class="pa-1"
-            >
-              <span
-                class="data"
-                v-html="
-                  [
-                    ...Intl.NumberFormat($store.state.configuration.lang, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }).formatToParts((isStreamOnline ? currentStats.currentWatched : 0) / 1000 / 60 / 60),
-                    { type:'', value: ' '},
-                    { type:'currency', value: 'h'}
-                  ].reduce(numberReducer, '')
-                "
-              />
-              <small
-                v-if="$store.state.configuration.core.ui.showdiff && isStreamOnline && currentStats.currentWatched - averageStats.currentWatched !== 0"
-                class="text-caption"
-                :class="{
-                  'green--text': isTrending('currentWatched'),
-                  'red--text': ~isTrending('currentWatched'),
-                }"
-              >
-                <v-icon
-                  :style="{
-                    'vertical-align': isTrending('currentWatched') ? 'super' : 'sub',
-                  }"
-                  x-small
-                  :color="isTrending('currentWatched') ? 'green' : 'red'"
-                >{{ isTrending('currentWatched') ? mdiTrendingUp : mdiTrendingDown }}</v-icon>
-                <span
-                  v-if="$store.state.configuration.core.ui.percentage"
-                  :style="{
-                    'vertical-align': isTrending('currentWathced') ? 'super' : 'sub',
-                  }"
-                  v-html="
-                    [
-                      ...Intl.NumberFormat($store.state.configuration.lang, {
-                        style: 'percent',
-                      }).formatToParts(averageStats.currentWatched / currentStats.currentWatched),
-                    ].reduce(numberReducer, '')
-                  "
-                />
-                <span
-                  v-else
-                  :style="{
-                    'vertical-align': isTrending('currentWathced') ? 'super' : 'sub',
-                  }"
-                  v-html="
-                    [
-                      ...Intl.NumberFormat($store.state.configuration.lang, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }).formatToParts((currentStats.currentWatched - averageStats.currentWatched) / 1000 / 60 / 60),
-                      { type:'', value: ' '},
-                      { type:'', value: 'h'}
-                    ].reduce(numberReducer, '')
-                  "
-                />
-              </small>
-            </v-card-title>
-            <v-card-subtitle class="pa-1 text-caption">
-              {{ translate('watched-time') }}
-            </v-card-subtitle>
-          </v-card>
-        </v-col>
+        <with-trending
+          hide
+          title="max-viewers"
+          :timestamp="timestamp"
+          :is-stream-online="isStreamOnline"
+          :is-loaded="isLoaded"
+          :current="currentStats.maxViewers"
+          :average="averageStats.maxViewers"
+        />
+        <with-trending
+          hide
+          title="new-chatters"
+          :timestamp="timestamp"
+          :is-stream-online="isStreamOnline"
+          :is-loaded="isLoaded"
+          :current="currentStats.newChatters"
+          :average="averageStats.newChatters"
+        />
+        <with-trending
+          type="bigNumber"
+          title="chat-messages"
+          :timestamp="timestamp"
+          :is-stream-online="isStreamOnline"
+          :is-loaded="isLoaded"
+          :current="currentStats.chatMessages"
+          :average="averageStats.chatMessages"
+        />
+        <with-trending
+          type="bigNumber"
+          title="views"
+          :timestamp="timestamp"
+          :is-stream-online="isStreamOnline"
+          :is-loaded="isLoaded"
+          :current="currentStats.currentViews"
+          :average="averageStats.currentViews"
+        />
+        <with-trending
+          type="bigNumber"
+          title="followers"
+          :timestamp="timestamp"
+          :is-stream-online="isStreamOnline"
+          :is-loaded="isLoaded"
+          :current="currentStats.currentFollowers"
+          :average="averageStats.currentFollowers"
+        />
+        <with-trending
+          type="bigNumber"
+          title="subscribers"
+          :timestamp="timestamp"
+          :is-stream-online="isStreamOnline"
+          :is-loaded="isLoaded"
+          :current="currentStats.currentSubscribers"
+          :average="averageStats.currentSubscribers"
+        />
+        <with-trending
+          type="bigNumber"
+          title="bits"
+          :timestamp="timestamp"
+          :is-stream-online="isStreamOnline"
+          :is-loaded="isLoaded"
+          :current="currentStats.currentBits"
+          :average="averageStats.currentBits"
+        />
+        <with-trending
+          type="currency"
+          title="tips"
+          :timestamp="timestamp"
+          :is-stream-online="isStreamOnline"
+          :is-loaded="isLoaded"
+          :current="currentStats.currentTips"
+          :average="averageStats.currentTips"
+        />
+        <with-trending
+          type="hours"
+          title="watched-time"
+          :timestamp="timestamp"
+          :is-stream-online="isStreamOnline"
+          :is-loaded="isLoaded"
+          :current="currentStats.currentWatched"
+          :average="averageStats.currentWatched"
+        />
       </v-row>
     </v-container>
   </div>
@@ -674,15 +258,17 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable camelcase */
 import { mdiTrendingDown, mdiTrendingUp } from '@mdi/js';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  computed, ComputedRef, defineAsyncComponent, defineComponent, onMounted, onUnmounted, reactive, ref, watch,
+  computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, reactive, ref, watch,
 } from '@vue/composition-api';
 import type { Ref } from '@vue/composition-api';
 import { isNil } from 'lodash-es';
 
+import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 let interval = 0;
@@ -701,16 +287,16 @@ const numberReducer = (out: string, item: any) => {
 
 export default defineComponent({
   components: {
-    uptime:     defineAsyncComponent({ loader: () => import('~/components/statsbar/uptime.vue') }),
-    viewers:    defineAsyncComponent({ loader: () => import('~/components/statsbar/viewers.vue') }),
-    withTrending: defineAsyncComponent({ loader: () => import('~/components/statsbar/withTrending.vue') })
+    uptime:       defineAsyncComponent({ loader: () => import('~/components/statsbar/uptime.vue') }),
+    viewers:      defineAsyncComponent({ loader: () => import('~/components/statsbar/viewers.vue') }),
+    withTrending: defineAsyncComponent({ loader: () => import('~/components/statsbar/withTrending.vue') }),
   },
-  setup (props, context) {
+  setup (_, context) {
     const averageStats: any = reactive({});
     const currentStats: any = reactive({});
     const hideStats = ref(localStorage.getItem('hideStats') === 'true');
     const timestamp: Ref<null | number> = ref(null);
-    const uptime = ref(null);
+    const uptime = ref(null as null | number);
     const currentSong = ref(null);
     const broadcasterType = ref('');
     const tags: Ref<{ is_auto: boolean; localization_names: { [x:string]: string } }[]> = ref([]);
@@ -726,7 +312,6 @@ export default defineComponent({
     const top = ref('50');
 
     const isStreamOnline = computed(() => uptime.value !== null);
-    const b_shortenNumber: ComputedRef<boolean> = computed(() => context.root.$store.state.configuration.core.ui.shortennumbers);
 
     // $refs
     const quickwindow = ref(null);
@@ -736,9 +321,12 @@ export default defineComponent({
     });
 
     const showGameAndTitleDlg = () => EventBus.$emit('show-game_and_title_dlg');
-    const loadCustomVariableValue = async (variable: string) => {
-      return new Promise<string>((resolve, reject) => {
+    const loadCustomVariableValue = (variable: string) => {
+      return new Promise<string>((resolve) => {
         socket.emit('custom.variable.value', variable, (err: string | null, value: string) => {
+          if (err) {
+            error(err);
+          }
           resolve(value);
         });
       });
@@ -842,13 +430,13 @@ export default defineComponent({
           if (err) {
             return console.error(err);
           }
-          for (const error of data.errors) {
-            console.error(`UIError: ${error.name} ¦ ${error.message}`);
-            EventBus.$emit('snack', 'red', `<h4>${error.name}</h4><div>${error.message}</div>`);
+          for (const e of data.errors) {
+            console.error(`UIError: ${e.name} ¦ ${e.message}`);
+            EventBus.$emit('snack', 'red', `<h4>${e.name}</h4><div>${e.message}</div>`);
           }
-          for (const error of data.warns) {
-            console.info(`UIWarn: ${error.name} ¦ ${error.message}`);
-            EventBus.$emit('snack', 'orange', `<h4>${error.name}</h4><div>${error.message}</div>`);
+          for (const e of data.warns) {
+            console.info(`UIWarn: ${e.name} ¦ ${e.message}`);
+            EventBus.$emit('snack', 'orange', `<h4>${e.name}</h4><div>${e.message}</div>`);
           }
         });
       }, 5000);
@@ -866,6 +454,13 @@ export default defineComponent({
         for (const key of Object.keys(data)) {
           currentStats[key] = data[key];
         }
+        uptime.value = 1620034166295;
+        currentStats.chatMessages = Math.floor(Math.random() * 100);
+        currentStats.currentTips = Math.floor(Math.random() * 100);
+        currentStats.currentBits = Math.floor(Math.random() * 100);
+        currentStats.currentFollowers = Math.floor(Math.random() * 100);
+        currentStats.currentSubscribers = Math.floor(Math.random() * 100);
+        currentStats.currentWatched = Math.floor(Math.random() * 10000000000);
         isLoaded.value = true;
         title.value = await generateTitle(data.status, data.rawStatus);
         rawStatus.value = data.rawStatus;
@@ -907,7 +502,6 @@ export default defineComponent({
       isLoaded,
       top,
       isStreamOnline,
-      b_shortenNumber,
       showGameAndTitleDlg,
       filterTags,
       toggleViewerShow,
