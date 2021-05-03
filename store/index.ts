@@ -6,7 +6,7 @@ export const state = () => ({
   currentTags:      [],
   loadingMsg:       '',
   isUILoaded:       false,
-  areUIStatsHidden: Boolean(localStorage.getItem('$store.areUIStatsHidden')),
+  areUIStatsHidden: localStorage.getItem('$store.areUIStatsHidden') === 'true',
   isMobile:         false,
   $core:            [],
   $systems:         [],

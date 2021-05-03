@@ -20,7 +20,7 @@
         <v-card
           tile
           min-height="60"
-          elevation="1"
+          elevation="5"
         >
           <v-card-title
             :key="timestamp"

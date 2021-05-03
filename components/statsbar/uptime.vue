@@ -20,7 +20,7 @@
         <v-card
           tile
           min-height="60"
-          elevation="1"
+          elevation="5"
         >
           <v-card-title
             :key="timestamp"
@@ -29,7 +29,7 @@
             {{ getTime(uptime, false) }}
           </v-card-title>
           <v-card-subtitle class="pa-1 text-caption">
-            {{ translate('uptime') }}
+            {{ capitalize(translate('uptime')) }}
           </v-card-subtitle>
 
           <v-fade-transition>
@@ -54,6 +54,7 @@ import { getTime } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { defineComponent } from '@vue/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
+import { capitalize } from 'lodash-es';
 
 export default defineComponent({
   props: {
@@ -64,7 +65,7 @@ export default defineComponent({
   setup () {
     const saveHighlight = () => getSocket('/systems/highlights').emit('highlight');
 
-    return { saveHighlight, getTime, translate };
+    return { saveHighlight, getTime, translate, capitalize };
   },
 });
 </script>

@@ -40,95 +40,93 @@
       />
     </v-alert>
 
-    <v-container
-      fluid
-    >
-      <v-row no-gutters>
-        <uptime :timestamp="timestamp" :uptime="uptime" :is-loaded="isLoaded" />
-        <viewers :timestamp="timestamp" :is-stream-online="isStreamOnline" :is-loaded="isLoaded" :viewers="currentStats.currentViewers" />
-        <with-trending
-          hide
-          title="max-viewers"
-          :timestamp="timestamp"
-          :is-stream-online="isStreamOnline"
-          :is-loaded="isLoaded"
-          :current="currentStats.maxViewers"
-          :average="averageStats.maxViewers"
-        />
-        <with-trending
-          hide
-          title="new-chatters"
-          :timestamp="timestamp"
-          :is-stream-online="isStreamOnline"
-          :is-loaded="isLoaded"
-          :current="currentStats.newChatters"
-          :average="averageStats.newChatters"
-        />
-        <with-trending
-          type="bigNumber"
-          title="chat-messages"
-          :timestamp="timestamp"
-          :is-stream-online="isStreamOnline"
-          :is-loaded="isLoaded"
-          :current="currentStats.chatMessages"
-          :average="averageStats.chatMessages"
-        />
-        <with-trending
-          type="bigNumber"
-          title="views"
-          :timestamp="timestamp"
-          :is-stream-online="isStreamOnline"
-          :is-loaded="isLoaded"
-          :current="currentStats.currentViews"
-          :average="averageStats.currentViews"
-        />
-        <with-trending
-          type="bigNumber"
-          title="followers"
-          :timestamp="timestamp"
-          :is-stream-online="isStreamOnline"
-          :is-loaded="isLoaded"
-          :current="currentStats.currentFollowers"
-          :average="averageStats.currentFollowers"
-        />
-        <with-trending
-          type="bigNumber"
-          title="subscribers"
-          :timestamp="timestamp"
-          :is-stream-online="isStreamOnline"
-          :is-loaded="isLoaded"
-          :current="currentStats.currentSubscribers"
-          :average="averageStats.currentSubscribers"
-        />
-        <with-trending
-          type="bigNumber"
-          title="bits"
-          :timestamp="timestamp"
-          :is-stream-online="isStreamOnline"
-          :is-loaded="isLoaded"
-          :current="currentStats.currentBits"
-          :average="averageStats.currentBits"
-        />
-        <with-trending
-          type="currency"
-          title="tips"
-          :timestamp="timestamp"
-          :is-stream-online="isStreamOnline"
-          :is-loaded="isLoaded"
-          :current="currentStats.currentTips"
-          :average="averageStats.currentTips"
-        />
-        <with-trending
-          type="hours"
-          title="watched-time"
-          :timestamp="timestamp"
-          :is-stream-online="isStreamOnline"
-          :is-loaded="isLoaded"
-          :current="currentStats.currentWatched"
-          :average="averageStats.currentWatched"
-        />
-      </v-row>
-    </v-container>
+    <v-row no-gutters>
+      <game :timestamp="timestamp" />
+      <song :timestamp="timestamp" />
+      <uptime :timestamp="timestamp" :uptime="uptime" :is-loaded="isLoaded" />
+      <viewers :timestamp="timestamp" :is-stream-online="isStreamOnline" :is-loaded="isLoaded" :viewers="currentStats.currentViewers" />
+      <with-trending
+        hide
+        title="max-viewers"
+        :timestamp="timestamp"
+        :is-stream-online="isStreamOnline"
+        :is-loaded="isLoaded"
+        :current="currentStats.maxViewers"
+        :average="averageStats.maxViewers"
+      />
+      <with-trending
+        hide
+        title="new-chatters"
+        :timestamp="timestamp"
+        :is-stream-online="isStreamOnline"
+        :is-loaded="isLoaded"
+        :current="currentStats.newChatters"
+        :average="averageStats.newChatters"
+      />
+      <with-trending
+        type="bigNumber"
+        title="chat-messages"
+        :timestamp="timestamp"
+        :is-stream-online="isStreamOnline"
+        :is-loaded="isLoaded"
+        :current="currentStats.chatMessages"
+        :average="averageStats.chatMessages"
+      />
+      <with-trending
+        type="bigNumber"
+        title="views"
+        :timestamp="timestamp"
+        :is-stream-online="isStreamOnline"
+        :is-loaded="isLoaded"
+        :current="currentStats.currentViews"
+        :average="averageStats.currentViews"
+      />
+      <with-trending
+        type="bigNumber"
+        title="followers"
+        :timestamp="timestamp"
+        :is-stream-online="isStreamOnline"
+        :is-loaded="isLoaded"
+        :current="currentStats.currentFollowers"
+        :average="averageStats.currentFollowers"
+      />
+      <with-trending
+        type="bigNumber"
+        title="subscribers"
+        :timestamp="timestamp"
+        :is-stream-online="isStreamOnline"
+        :is-loaded="isLoaded"
+        :current="currentStats.currentSubscribers"
+        :average="averageStats.currentSubscribers"
+      />
+      <with-trending
+        type="bigNumber"
+        title="bits"
+        :timestamp="timestamp"
+        :is-stream-online="isStreamOnline"
+        :is-loaded="isLoaded"
+        :current="currentStats.currentBits"
+        :average="averageStats.currentBits"
+      />
+      <with-trending
+        type="currency"
+        title="tips"
+        :timestamp="timestamp"
+        :is-stream-online="isStreamOnline"
+        :is-loaded="isLoaded"
+        :current="currentStats.currentTips"
+        :average="averageStats.currentTips"
+      />
+      <with-trending
+        type="hours"
+        title="watched-time"
+        :timestamp="timestamp"
+        :is-stream-online="isStreamOnline"
+        :is-loaded="isLoaded"
+        :current="currentStats.currentWatched"
+        :average="averageStats.currentWatched"
+      />
+    </v-row>
   </div>
   <!--div
     ref="quickwindow"
@@ -287,6 +285,8 @@ const numberReducer = (out: string, item: any) => {
 
 export default defineComponent({
   components: {
+    game:         defineAsyncComponent({ loader: () => import('~/components/statsbar/game.vue') }),
+    song:         defineAsyncComponent({ loader: () => import('~/components/statsbar/song.vue') }),
     uptime:       defineAsyncComponent({ loader: () => import('~/components/statsbar/uptime.vue') }),
     viewers:      defineAsyncComponent({ loader: () => import('~/components/statsbar/viewers.vue') }),
     withTrending: defineAsyncComponent({ loader: () => import('~/components/statsbar/withTrending.vue') }),
@@ -299,7 +299,6 @@ export default defineComponent({
     const uptime = ref(null as null | number);
     const currentSong = ref(null);
     const broadcasterType = ref('');
-    const tags: Ref<{ is_auto: boolean; localization_names: { [x:string]: string } }[]> = ref([]);
     const version = ref('');
     const update: {
       version: null | string;
@@ -321,53 +320,7 @@ export default defineComponent({
     });
 
     const showGameAndTitleDlg = () => EventBus.$emit('show-game_and_title_dlg');
-    const loadCustomVariableValue = (variable: string) => {
-      return new Promise<string>((resolve) => {
-        socket.emit('custom.variable.value', variable, (err: string | null, value: string) => {
-          if (err) {
-            error(err);
-          }
-          resolve(value);
-        });
-      });
-    };
-    const generateTitle = async (current: string, raw: string) => {
-      if (raw.length === 0) {
-        return current;
-      }
-
-      const variables = raw.match(/(\$_[a-zA-Z0-9_]+)/g);
-      if (cachedTitle.value === current && isNil(variables)) {
-        return cachedTitle.value;
-      }
-
-      if (!isNil(variables)) {
-        for (const variable of variables) {
-          const value = await loadCustomVariableValue(variable);
-          raw = raw.replace(variable, `<strong style="border-bottom: 1px dotted gray" data-toggle="tooltip" data-placement="bottom" title="${variable}">${value}</strong>`);
-        }
-      }
-      cachedTitle.value = raw;
-      return raw;
-    };
-    const filterTags = (is_auto: boolean) => {
-      return tags.value.filter(o => !!o.is_auto === is_auto).map((o) => {
-        const key = Object.keys(o.localization_names).find(key2 => key2.includes(context.root.$store.state.configuration.lang));
-        return { name: o.localization_names[key || 'en-us'], is_auto: !!o.is_auto };
-      }).sort((a, b) => {
-        if ((a || { name: '' }).name < (b || { name: '' }).name) { // sort string ascending
-          return -1;
-        }
-        if ((a || { name: '' }).name > (b || { name: '' }).name) {
-          return 1;
-        }
-        return 0; // default return value (no sorting)
-      });
-    };
-    const toggleViewerShow = () => {
-      hideStats.value = !hideStats.value;
-      localStorage.setItem('hideStats', String(hideStats.value));
-    };
+    
     const getLatestStats = () => {
       socket.emit('getLatestStats', (err: string | null, data: any) => {
         console.groupCollapsed('navbar::getLatestStats');
@@ -462,12 +415,6 @@ export default defineComponent({
         currentStats.currentSubscribers = Math.floor(Math.random() * 100);
         currentStats.currentWatched = Math.floor(Math.random() * 10000000000);
         isLoaded.value = true;
-        title.value = await generateTitle(data.status, data.rawStatus);
-        rawStatus.value = data.rawStatus;
-
-        context.root.$store.commit('setCurrentGame', game.value);
-        context.root.$store.commit('setCurrentTitle', title.value);
-        context.root.$store.commit('setCurrentTags', tags.value);
       });
 
       interval = window.setInterval(() => {
@@ -479,12 +426,7 @@ export default defineComponent({
       clearInterval(UIErrorInterval);
     });
 
-    const isTrending = (key: string) => {
-      return currentStats[key] - averageStats[key] > 0;
-    };
-
     return {
-      isTrending,
       averageStats,
       currentStats,
       hideStats,
@@ -492,7 +434,6 @@ export default defineComponent({
       uptime,
       currentSong,
       broadcasterType,
-      tags,
       version,
       update,
       title,
@@ -503,8 +444,7 @@ export default defineComponent({
       top,
       isStreamOnline,
       showGameAndTitleDlg,
-      filterTags,
-      toggleViewerShow,
+
       quickwindow,
       translate,
       numberReducer,
