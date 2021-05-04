@@ -1,59 +1,44 @@
 <template>
   <v-col
-    cols="6"
-    lg="6"
-    md="6"
-    sm="6"
-    class="pa-1"
+    cols="12"
+    lg="12"
+    md="12"
+    sm="12"
+    style="padding: 2px;"
   >
-    <v-skeleton-loader
-      v-if="!isLoaded"
-      tile
-      type="card"
-      min-height="60"
-      max-height="60"
-    />
-    <v-hover
-      v-else
-    >
+    <v-hover>
       <template #default="{ hover }">
         <v-card
           tile
-          min-height="60"
+          min-height="48"
           elevation="5"
+          :loading="!isLoaded"
         >
-          <v-row no-gutters>
-            <v-col cols="auto" class="pr-1 d-none d-lg-flex">
-              <v-img :src="'https://static-cdn.jtvnw.net/ttv-boxart/' + encodeURIComponent(game) + '-50x70.jpg'" max-width="35" />
-            </v-col>
-            <v-col>
-              <v-card-subtitle class="pa-1 text-caption" style="line-height: 1.1rem;">
-                <div class="text-truncate">
-                  <strong>{{ capitalize(translate('title')) }}:</strong> <span v-html="title"></span>
-                </div>
-                <div class="text-truncate">
-                  <strong>{{ capitalize(translate('game')) }}:</strong> {{ game }}
-                </div>
-                <div class="text-truncate">
-                  <strong>{{ capitalize(translate('tags')) }}:</strong>
-                  <small
-                    v-for="tag of filterTags(true)"
-                    :key="tag.name"
-                    :class="{ 'grey--text': tag.is_auto }"
-                  >
-                    {{ tag.name }}
-                  </small>
-                  <span
-                    v-for="tag of filterTags(false)"
-                    :key="tag.name"
-                    :class="{ 'grey--text': tag.is_auto }"
-                  >
-                    {{ tag.name }}
-                  </span>
-                </div>
-              </v-card-subtitle>
-            </v-col>
-          </v-row>
+          <v-card-subtitle class="pa-1 text-caption" style="line-height: 0.8rem;">
+            <div class="text-truncate">
+              <strong>{{ capitalize(translate('title')) }}:</strong> <span v-html="title || capitalize(translate('not-available'))" />
+            </div>
+            <div class="text-truncate">
+              <strong>{{ capitalize(translate('game')) }}:</strong> {{ game || capitalize(translate('not-available')) }}
+            </div>
+            <div class="text-truncate">
+              <strong>{{ capitalize(translate('tags')) }}:</strong>
+              <small
+                v-for="tag of filterTags(true)"
+                :key="tag.name"
+                :class="{ 'grey--text': tag.is_auto }"
+              >
+                {{ tag.name }}
+              </small>
+              <span
+                v-for="tag of filterTags(false)"
+                :key="tag.name"
+                :class="{ 'grey--text': tag.is_auto }"
+              >
+                {{ tag.name }}
+              </span>
+            </div>
+          </v-card-subtitle>
 
           <v-fade-transition>
             <v-overlay
@@ -61,7 +46,7 @@
               absolute
               color="#333"
             >
-              <v-btn x-small @click="() => {}">
+              <v-btn x-small @click.stop="dialog = true">
                 {{ translate('click-to-change') }}
               </v-btn>
             </v-overlay>
@@ -69,6 +54,7 @@
         </v-card>
       </template>
     </v-hover>
+    <change-game-dialog :dialog.sync="dialog" />
   </v-col>
 </template>
 
@@ -78,6 +64,7 @@ import { getTime } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
+  defineAsyncComponent,
   defineComponent, onMounted, ref,
 } from '@vue/composition-api';
 import { capitalize, isNil } from 'lodash-es';
@@ -85,8 +72,10 @@ import { capitalize, isNil } from 'lodash-es';
 import { error } from '~/functions/error';
 
 export default defineComponent({
-  props: { timestamp: Number },
+  props:      { timestamp: Number },
+  components: { changeGameDialog: defineAsyncComponent({ loader: () => import('./change-game-dialog.vue') }) },
   setup (_, ctx) {
+    const dialog = ref(false);
     const game = ref(null as null | string);
     const title = ref(null as null | string);
     const cachedTitle = ref('');
@@ -159,7 +148,7 @@ export default defineComponent({
       });
     });
     return {
-      getTime, translate, capitalize, game, title, tags, filterTags, isLoaded,
+      getTime, translate, capitalize, game, title, tags, filterTags, isLoaded, dialog,
     };
   },
 });

@@ -42,7 +42,6 @@
 
     <v-row no-gutters>
       <game :timestamp="timestamp" />
-      <song :timestamp="timestamp" />
       <uptime :timestamp="timestamp" :uptime="uptime" :is-loaded="isLoaded" />
       <viewers :timestamp="timestamp" :is-stream-online="isStreamOnline" :is-loaded="isLoaded" :viewers="currentStats.currentViewers" />
       <with-trending
@@ -126,6 +125,7 @@
         :current="currentStats.currentWatched"
         :average="averageStats.currentWatched"
       />
+      <song :timestamp="timestamp" />
     </v-row>
   </div>
   <!--div
@@ -320,7 +320,7 @@ export default defineComponent({
     });
 
     const showGameAndTitleDlg = () => EventBus.$emit('show-game_and_title_dlg');
-    
+
     const getLatestStats = () => {
       socket.emit('getLatestStats', (err: string | null, data: any) => {
         console.groupCollapsed('navbar::getLatestStats');

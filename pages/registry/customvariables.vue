@@ -134,7 +134,7 @@
               >
                 <v-card v-if="editItem">
                   <v-card-title>
-                    <span class="headline">Update item <code>{{ editItem.variableName }}</code></span>
+                    <span class="headline">Update item <span class="primary--text pl-1">{{ editItem.variableName }}</span></span>
                   </v-card-title>
 
                   <v-card-text :key="timestamp">
@@ -172,7 +172,7 @@
               {{ dayjs(item.changedAt).format('LL') }} {{ dayjs(item.changedAt).format('LTS') }}
             </template>
             <template #[`item.username`]="{ item }">
-              <NuxtLink :to="'/manage/viewers/' + item.quotedBy" v-if="item.username !== 'n/a'">
+              <NuxtLink v-if="item.username !== 'n/a'" :to="'/manage/viewers/' + item.quotedBy">
                 {{ item.username }}&nbsp;<small>{{ item.userId }}</small>
               </NuxtLink>
               <span v-else>Dashboard</span>
@@ -282,6 +282,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiCog, mdiCogRefresh, mdiContentCopy, mdiExclamationThick, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
@@ -299,7 +300,6 @@ import { getPermissionName } from '~/functions/getPermissionName';
 import {
   minLength, required, restrictedChars, startsWith,
 } from '~/functions/validators';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/customvariables-newItem.vue') }) },

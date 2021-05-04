@@ -4,31 +4,26 @@
     lg="2"
     md="4"
     sm="4"
-    class="pa-1"
+    style="padding: 2px;"
   >
-    <v-skeleton-loader
-      v-if="!isLoaded"
-      tile
-      type="card"
-      min-height="60"
-      max-height="60"
-    />
-    <v-hover
-      v-else
-    >
+    <v-hover>
       <template #default="{ hover }">
         <v-card
           tile
-          min-height="60"
+          min-height="48"
           elevation="5"
+          :loading="!isLoaded"
         >
           <v-card-title
             :key="timestamp"
-            class="pa-1"
+            class="px-1 py-0 text-truncate"
+            style="font-size: 1rem;"
           >
-            {{ getTime(uptime, false) }}
+            <template>
+              {{ getTime(uptime, false) }}
+            </template>
           </v-card-title>
-          <v-card-subtitle class="pa-1 text-caption">
+          <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
             {{ capitalize(translate('uptime')) }}
           </v-card-subtitle>
 
@@ -52,8 +47,8 @@
 <script lang="ts">
 import { getTime } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import { defineComponent } from '@vue/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
+import { defineComponent } from '@vue/composition-api';
 import { capitalize } from 'lodash-es';
 
 export default defineComponent({
@@ -65,7 +60,9 @@ export default defineComponent({
   setup () {
     const saveHighlight = () => getSocket('/systems/highlights').emit('highlight');
 
-    return { saveHighlight, getTime, translate, capitalize };
+    return {
+      saveHighlight, getTime, translate, capitalize,
+    };
   },
 });
 </script>

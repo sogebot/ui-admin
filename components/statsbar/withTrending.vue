@@ -4,27 +4,20 @@
     lg="2"
     md="4"
     sm="4"
-    class="pa-1"
+    style='padding: 2px;'
   >
-    <v-skeleton-loader
-      v-if="!isLoaded"
-      tile
-      type="card"
-      min-height="60"
-      max-height="60"
-    />
-    <v-hover
-      v-else
-    >
+    <v-hover>
       <template #default="{ hover }">
         <v-card
           tile
-          min-height="60"
+          min-height="48"
           elevation="5"
+          :loading="!isLoaded"
         >
           <v-card-title
+            class="px-1 py-0 text-truncate"
+            style="font-size: 1rem; height: 32px;"
             :key="timestamp"
-            class="pa-1"
           >
             <template v-if="!$store.state.areUIStatsHidden || !hide">
               <span
@@ -76,15 +69,17 @@
               >
                 <v-icon
                   :style="{
-                    'vertical-align': isTrending(current, average) ? 'super' : 'sub',
+                    'transform': isTrending(current, average) ? 'translateY(-7px)' : 'translateY(5px)',
                   }"
                   x-small
                   :color="isTrending(current, average) ? 'green' : 'red'"
                 >{{ isTrending(current, average) ? mdiTrendingUp : mdiTrendingDown }}</v-icon>
 
                 <span
+                  class="text-truncate"
+                  style="font-size: 0.6rem; position: relative;"
                   :style="{
-                    'vertical-align': isTrending(current, average) ? 'super' : 'sub',
+                    'top': isTrending(current, average) ? '-7px' : '6px',
                   }"
                 >
                   <span v-if="$store.state.configuration.core.ui.percentage && average === 0">
@@ -149,7 +144,7 @@
               {{ translate('hidden') }}
             </small>
           </v-card-title>
-          <v-card-subtitle class="pa-1 text-caption">
+          <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
             {{ translate(title) }}
           </v-card-subtitle>
 

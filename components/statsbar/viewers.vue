@@ -4,27 +4,20 @@
     lg="2"
     md="4"
     sm="4"
-    class="pa-1"
+    style='padding: 2px;'
   >
-    <v-skeleton-loader
-      v-if="!isLoaded"
-      tile
-      type="card"
-      min-height="60"
-      max-height="60"
-    />
-    <v-hover
-      v-else
-    >
+    <v-hover>
       <template #default="{ hover }">
         <v-card
           tile
-          min-height="60"
+          min-height="48"
           elevation="5"
+          :loading="!isLoaded"
         >
           <v-card-title
             :key="timestamp"
-            class="pa-1"
+            class="px-1 py-0 text-truncate"
+            style="font-size: 1rem;"
           >
             <template v-if="!$store.state.areUIStatsHidden">
               {{
@@ -39,7 +32,7 @@
               {{ translate('hidden') }}
             </small>
           </v-card-title>
-          <v-card-subtitle class="pa-1 text-caption">
+          <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
             {{ translate('viewers') }}
           </v-card-subtitle>
 
@@ -74,7 +67,7 @@ export default defineComponent({
   setup (_, ctx) {
     const toggleDisplay = () => {
       ctx.root.$store.commit('setUIStatsHidden', !ctx.root.$store.state.areUIStatsHidden);
-    }
+    };
     return { toggleDisplay, translate };
   },
 });

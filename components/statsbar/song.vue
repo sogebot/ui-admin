@@ -1,28 +1,21 @@
 <template>
   <v-col
     cols="6"
-    lg="6"
-    md="6"
-    sm="6"
-    class="pa-1"
+    lg="2"
+    md="4"
+    sm="4"
+    style="padding: 2px;"
   >
-    <v-skeleton-loader
-      v-if="!isLoaded"
-      tile
-      type="card"
-      min-height="60"
-      max-height="60"
-    />
     <v-card
-      v-else
       tile
-      min-height="60"
+      min-height="48"
       elevation="5"
+      :loading="!isLoaded"
     >
-      <v-card-title class="pa-1" :key="timestamp">
-        {{ song }}
+      <v-card-title :key="timestamp" class="px-1 py-0 text-truncate" style="font-size: 1rem;">
+        {{ song || capitalize(translate('not-available')) }}
       </v-card-title>
-      <v-card-subtitle class="pa-1 text-caption">
+      <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
         {{ capitalize(translate('currentsong')) }}
       </v-card-subtitle>
     </v-card>
@@ -32,27 +25,29 @@
 <script lang="ts">
 import { getTime } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import { defineComponent, onMounted, ref } from '@vue/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
+import {
+  defineComponent, onMounted, ref,
+} from '@vue/composition-api';
 import { capitalize } from 'lodash-es';
 
 export default defineComponent({
-  props: {
-    timestamp: Number,
-  },
+  props: { timestamp: Number },
   setup () {
     const song = ref(null);
     const isLoaded = ref(false);
     onMounted(() => {
-      getSocket('/').on('panel::stats', async (data: Record<string, any>) => {
+      getSocket('/').on('panel::stats', (data: Record<string, any>) => {
         console.groupCollapsed('panel::stats::song');
         console.log(data.currentSong);
         console.groupEnd();
         song.value = data.currentSong;
         isLoaded.value = true;
       });
-    })
-    return { getTime, translate, capitalize, song, isLoaded };
+    });
+    return {
+      getTime, translate, capitalize, song, isLoaded,
+    };
   },
 });
 </script>
