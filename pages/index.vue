@@ -2,9 +2,9 @@
   <v-container fluid>
     <v-row dense>
       <v-col cols="12" md="8" sm="8">
-        <v-card width="100%" class="mb-2">
+        <v-card width="100%" class="mb-2" height="100%">
           <v-toolbar dense color="blue-grey darken-4" class="mb-1">
-            <small class="text-caption">Eventlist</small>
+            <small class="text-button">Events</small>
           </v-toolbar>
 
           Eventlist
@@ -13,21 +13,25 @@
       <v-col cols="12" md="4" sm="4">
         <v-card width="100%" class="mb-2">
           <v-toolbar dense color="blue-grey darken-4" class="mb-1">
-            <small class="text-caption">Chat</small>
+            <small class="text-button">Chat</small>
           </v-toolbar>
 
           bla bla iframe
         </v-card>
         <v-card width="100%" class="mb-2">
           <v-toolbar dense color="blue-grey darken-4" class="mb-1">
-            <small class="text-caption">Twitch Monitor</small>
+            <small class="text-button">Twitch Monitor</small>
           </v-toolbar>
 
           bla bla iframe
         </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
         <v-card width="100%" class="mb-2">
           <v-toolbar dense color="blue-grey darken-4" class="mb-1">
-            <small class="text-caption">Quick actions</small>
+            <small class="text-button">actions</small>
           </v-toolbar>
           <!--v-col md="2" lg="1" sm="3" xs="4"-->
           <v-row dense>
