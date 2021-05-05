@@ -19,7 +19,7 @@
     "*.{css,vue}": "stylelint"
   },
   "simple-git-hooks": {
-    "pre-commit": "npx simple-git-hooks && npx lint-staged",
+    "pre-commit": "npx lint-staged",
     "commit-msg": "npx commitlint -e \"$1\"",
     "preserveUnused": true
   },
