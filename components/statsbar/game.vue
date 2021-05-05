@@ -141,7 +141,7 @@ export default defineComponent({
         tags.value = data.tags;
 
         ctx.root.$store.commit('setCurrentGame', game.value);
-        ctx.root.$store.commit('setCurrentTitle', title.value);
+        ctx.root.$store.commit('setCurrentTitle', data.rawStatus);
         ctx.root.$store.commit('setCurrentTags', tags.value);
 
         isLoaded.value = true;
