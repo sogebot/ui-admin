@@ -90,6 +90,7 @@
         :average="averageStats.currentFollowers"
       />
       <with-trending
+        v-if="broadcasterType !== ''"
         type="bigNumber"
         title="subscribers"
         :timestamp="timestamp"
@@ -99,6 +100,7 @@
         :average="averageStats.currentSubscribers"
       />
       <with-trending
+        v-if="broadcasterType !== ''"
         type="bigNumber"
         title="bits"
         :timestamp="timestamp"
@@ -128,131 +130,6 @@
       <song :timestamp="timestamp" />
     </v-row>
   </div>
-  <!--div
-    ref="quickwindow"
-    class="stream-info-container container-fluid"
-    :class="{ 'sticky-top': b_sticky }"
-    :style="{ 'top': b_sticky ? top + 'px' : undefined }"
-  >
-    <b-toast
-      v-for="error of errors"
-      :key="error.name + error.message + error.date"
-      :title="error.name"
-      :no-auto-hide="getErrorType(error.type) !== 'success'"
-      visible
-      :variant="getErrorType(error.type)"
-    >
-      <div v-html="error.message" />
-    </b-toast>
-    <b-toast
-      v-if="!$store.state.configuration.isChannelSet"
-      :title="translate('errors.channel_is_not_set')"
-      no-auto-hide
-      visible
-      variant="danger"
-      solid
-    >
-      <div v-html="translate('errors.please_set_your_channel')" />
-    </b-toast>
-    <b-toast
-      v-if="!$store.state.configuration.isCastersSet"
-      :title="translate('errors.owner_and_broadcaster_oauth_is_not_set')"
-      no-auto-hide
-      visible
-      variant="danger"
-      solid
-    >
-      <div v-html="translate('errors.please_set_your_broadcaster_oauth_or_owners')" />
-    </b-toast>
-    <b-toast
-      v-if="update.version"
-      :title="translate('errors.new_update_available')"
-      no-auto-hide
-      visible
-      variant="info"
-      solid
-    >
-      <div v-html="translate('errors.new_bot_version_available_at').replace(/\$version/gmi, update.version)" />
-    </b-toast>
-    <template v-if="!isLoaded">
-      <div class="mx-auto text-center p-3 pt-4">
-        <div
-          class="spinner-grow"
-          role="status"
-        />
-      </div>
-    </template>
-    <template v-else>
-
-      <div class="row">
-        <div
-          class="col-12 col-sm-12 col-md-4 col-lg-4 stream-info"
-          @click="showGameAndTitleDlg"
-        >
-          <span
-            v-if="game"
-            class="data"
-            :title="game"
-          >{{ game }}</span>
-          <span
-            v-else
-            class="data"
-          >{{ translate('not-available') }}</span>
-          <h2>
-            <span>{{ translate('game') }}</span>
-            <small>{{ translate('click-to-change') }}</small>
-          </h2>
-        </div>
-
-        <div
-          class="col-12 col-sm-12 col-md-4 col-lg-4 stream-info"
-          @click="showGameAndTitleDlg"
-        >
-          <span
-            v-if="title"
-            class="data"
-            :title="rawStatus"
-            v-html="title"
-          />
-          <span
-            v-else
-            class="data"
-          >{{ translate('not-available') }}</span>
-          <span class="data">
-            <small
-              v-for="tag of filterTags(true)"
-              :key="tag.name"
-              :class="{ 'text-muted': tag.is_auto }"
-              :title="tag.is_auto ? 'Automatically added tag' : 'Manual tag'"
-            >
-              {{ tag.name }}
-            </small>
-            <span
-              v-for="tag of filterTags(false)"
-              :key="tag.name"
-              :class="{ 'text-muted': tag.is_auto }"
-              :title="tag.is_auto ? 'Automatically added tag' : 'Manual tag'"
-            >
-              {{ tag.name }}
-            </span>
-          </span>
-          <h2>
-            <span>{{ translate('title') }}</span>
-            <small>{{ translate('click-to-change') }}</small>
-          </h2>
-        </div>
-
-        <div class="col-12 col-sm-12 col-md-4 col-lg-4 stream-info">
-          <span class="data">
-            {{ currentSong }}
-          </span>
-          <h2>
-            <span>{{ translate('currentsong') }}</span>
-          </h2>
-        </div>
-      </div>
-    </template>
-  </div-->
 </template>
 
 <script lang="ts">
@@ -264,9 +141,7 @@ import {
   computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, reactive, ref, watch,
 } from '@vue/composition-api';
 import type { Ref } from '@vue/composition-api';
-import { isNil } from 'lodash-es';
 
-import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 let interval = 0;
@@ -291,29 +166,20 @@ export default defineComponent({
     viewers:      defineAsyncComponent({ loader: () => import('~/components/statsbar/viewers.vue') }),
     withTrending: defineAsyncComponent({ loader: () => import('~/components/statsbar/withTrending.vue') }),
   },
-  setup (_, context) {
+  setup (_) {
     const averageStats: any = reactive({});
     const currentStats: any = reactive({});
-    const hideStats = ref(localStorage.getItem('hideStats') === 'true');
     const timestamp: Ref<null | number> = ref(null);
     const uptime = ref(null as null | number);
-    const currentSong = ref(null);
-    const broadcasterType = ref('');
+    const broadcasterType = ref(localStorage.broadcasterType || '');
     const version = ref('');
     const update: {
       version: null | string;
     } = reactive({ version: null });
-    const title: Ref<null | string> = ref(null);
-    const game: Ref<null | string> = ref(null);
-    const rawStatus = ref('');
-    const cachedTitle = ref('');
     const isLoaded = ref(false);
     const top = ref('50');
 
     const isStreamOnline = computed(() => uptime.value !== null);
-
-    // $refs
-    const quickwindow = ref(null);
 
     watch(isStreamOnline, () => {
       getLatestStats();
@@ -397,23 +263,13 @@ export default defineComponent({
       getLatestStats();
 
       socket.emit('panel::resetStatsState');
-      socket.on('panel::stats', async (data: Record<string, any>) => {
+      socket.on('panel::stats', (data: Record<string, any>) => {
         console.groupCollapsed('panel::stats');
         console.log(data);
         console.groupEnd();
 
         broadcasterType.value = data.broadcasterType;
-        uptime.value = data.uptime;
-        for (const key of Object.keys(data)) {
-          currentStats[key] = data[key];
-        }
-        uptime.value = 1620034166295;
-        currentStats.chatMessages = Math.floor(Math.random() * 100);
-        currentStats.currentTips = Math.floor(Math.random() * 100);
-        currentStats.currentBits = Math.floor(Math.random() * 100);
-        currentStats.currentFollowers = Math.floor(Math.random() * 100);
-        currentStats.currentSubscribers = Math.floor(Math.random() * 100);
-        currentStats.currentWatched = Math.floor(Math.random() * 10000000000);
+        localStorage.broadcasterType = data.broadcasterType;
         isLoaded.value = true;
       });
 
@@ -429,23 +285,16 @@ export default defineComponent({
     return {
       averageStats,
       currentStats,
-      hideStats,
       timestamp,
-      uptime,
-      currentSong,
       broadcasterType,
       version,
       update,
-      title,
-      game,
-      rawStatus,
-      cachedTitle,
+      uptime,
       isLoaded,
       top,
       isStreamOnline,
       showGameAndTitleDlg,
 
-      quickwindow,
       translate,
       numberReducer,
       mdiTrendingDown,

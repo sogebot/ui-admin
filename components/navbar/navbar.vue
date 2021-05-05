@@ -77,7 +77,7 @@ export default defineComponent({
     const drawer = ref(!(ctx.root as any).$vuetify.breakpoint.mobile);
 
     onMounted(() => {
-      console.debug('#route | ' + ctx.root.$route.name)
+      console.debug('#route | ' + ctx.root.$route.name);
       const socket = getSocket('/', true);
       socket.emit('name', (recvName: string) => { name.value = recvName; });
       socket.emit('channelName', (recvName: string) => { channelName.value = recvName; });
