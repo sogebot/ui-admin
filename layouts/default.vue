@@ -1,5 +1,5 @@
 <template>
-  <v-app id="app">
+  <v-app id="app" dark>
     <template v-if="$store.state.isUILoaded">
       <navbar />
       <v-main>
@@ -11,7 +11,7 @@
         <snackbar />
       </v-main>
     </template>
-    <v-overlay :value="!$store.state.isUILoaded" :dark="$vuetify.theme.dark">
+    <v-overlay :value="!$store.state.isUILoaded" dark>
       <v-row>
         <v-col class="text-center">
           <v-progress-circular indeterminate size="48" />
@@ -35,6 +35,6 @@ export default defineComponent({
     snackbar: () => import('../components/snackbar.vue'),
     statsbar: defineAsyncComponent({ loader: () => import('~/components/statsbar.vue') }),
   },
-  middleware: ['isBotStarted', 'theme'],
+  middleware: ['isBotStarted'],
 });
 </script>

@@ -185,11 +185,7 @@
       <template #[`item.description`]="{ item }">
         <span
           v-if="item.description.length === 0"
-          class="grey--text"
-          :class="{
-            'text--darken-3': $vuetify.theme.dark,
-            'text--lighten-1': !$vuetify.theme.dark,
-          }"
+          class="grey--text text--darken-3"
         >No description set</span>
         {{ item.description }}
       </template>

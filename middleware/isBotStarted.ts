@@ -7,9 +7,6 @@ import { cloneDeep } from 'lodash-es';
 
 export default function ({ store, app }: { store: any, app: any }) {
   (async function init () {
-    // force theme
-    app.vuetify.framework.theme.dark = localStorage.theme === 'dark';
-
     await isBotStarted(store);
     store.commit('setLoggedUser', await isUserLoggedIn());
     store.commit('setConfiguration', await getConfiguration());

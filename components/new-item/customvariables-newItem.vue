@@ -134,7 +134,7 @@
               :options="{
                 tabSize: 4,
                 mode : 'javascript',
-                theme: 'base16-' + theme,
+                theme: 'base16-dark',
                 lineNumbers: true,
                 line: true,
                 matchBrackets: true
@@ -322,7 +322,6 @@ import 'codemirror/mode/javascript/javascript.js';
 import 'codemirror/mode/xml/xml.js';
 import 'codemirror/mode/css/css.js';
 import 'codemirror/theme/base16-dark.css';
-import 'codemirror/theme/base16-light.css';
 import 'codemirror/lib/codemirror.css';
 import { get } from 'lodash-es';
 import { v4 } from 'uuid';
@@ -366,7 +365,6 @@ export default defineComponent({
 
     const e1 = ref(1);
     const newItemSaving = ref(false);
-    const theme = localStorage.getItem('theme') || get(ctx.root.$store.state, 'configuration.core.ui.theme', 'light');
 
     const permissions = ref([] as PermissionsInterface[]);
     const permissionItems = computed(() => {
@@ -590,7 +588,6 @@ export default defineComponent({
     };
 
     return {
-      theme,
       variableName,
       evalValue,
       type,

@@ -88,7 +88,7 @@
             tabSize: 4,
             mode : 'xml',
             htmlMode: true,
-            theme: 'base16-' + theme,
+            theme: 'base16-dark',
             lineNumbers: true,
             line: true,
             matchBrackets: true
@@ -103,7 +103,7 @@
           :options="{
             tabSize: 4,
             mode : 'javascript',
-            theme: 'base16-' + theme,
+            theme: 'base16-dark',
             lineNumbers: true,
             line: true,
             matchBrackets: true
@@ -118,7 +118,7 @@
           :options="{
             tabSize: 4,
             mode : 'text/css',
-            theme: 'base16-' + theme,
+            theme: 'base16-dark',
             lineNumbers: true,
             line: true,
             matchBrackets: true
@@ -163,10 +163,7 @@ import { defineComponent, ref } from '@vue/composition-api';
 import 'codemirror/mode/javascript/javascript.js';
 import 'codemirror/mode/xml/xml.js';
 import 'codemirror/mode/css/css.js';
-import 'codemirror/theme/base16-dark.css';
-import 'codemirror/theme/base16-light.css';
 import 'codemirror/lib/codemirror.css';
-import { get } from 'lodash-es';
 import { v4 } from 'uuid';
 import { codemirror } from 'vue-codemirror';
 
@@ -183,7 +180,6 @@ export default defineComponent({
   setup (props: Props, ctx) {
     const e1 = ref(1);
     const newItemSaving = ref(false);
-    const theme = localStorage.getItem('theme') || get(ctx.root.$store.state, 'configuration.core.ui.theme', 'light');
 
     const name = ref(props.item ? props.item.name : '');
     const id = ref(props.item ? props.item.id : v4());
@@ -237,7 +233,6 @@ export default defineComponent({
     };
 
     return {
-      theme,
       name,
       libraries,
       html,

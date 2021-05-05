@@ -57,10 +57,6 @@
                   </v-chip>
                 </v-list-item-subtitle>
               </v-list-item-content>
-
-              <v-list-item-action>
-                <theme />
-              </v-list-item-action>
             </v-list-item>
           </v-list>
 
@@ -168,7 +164,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import type { Ref } from '@vue/composition-api';
 import {
-  computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref,
+  computed, defineComponent, onMounted, onUnmounted, ref,
 } from '@vue/composition-api';
 
 import type { PermissionsInterface } from '../.bot/src/bot/database/entity/permissions';
@@ -176,10 +172,7 @@ import type { UserInterface } from '../.bot/src/bot/database/entity/user';
 
 let interval = 0;
 
-const theme = defineAsyncComponent({ loader: () => import('./theme.vue') });
-
 export default defineComponent({
-  components: { theme },
   setup (_props, context) {
     const menu = ref(false);
     const isViewerLoaded = ref(false);
