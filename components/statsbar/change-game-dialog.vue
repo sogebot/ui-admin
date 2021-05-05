@@ -4,18 +4,19 @@
     fullscreen
     transition="dialog-bottom-transition"
   >
-    <v-card :loading="isLoading">
-      <v-toolbar dense>
+    <v-card :loading="isLoading" tile>
+      <v-toolbar dense color="primary">
         <v-btn
           icon
+          color="black"
           @click="dialogController = false"
         >
           <v-icon>{{ mdiClose }}</v-icon>
         </v-btn>
-        Change game and title
+        <span class="black--text headline">Change game and title</span>
         <v-spacer />
         <v-btn
-          color="primary"
+          color="black"
           text
           :loading="isSaving"
           @click="save"
@@ -38,10 +39,10 @@
           :return-object="false"
         />
 
+        <v-subheader class="pl-0" style="height: 30px; font-size: 0.75rem;">
+          Last used games
+        </v-subheader>
         <v-container :key="JSON.stringify(lastGames)" fluid>
-          <v-subheader class="pl-0" style="height: 30px; font-size: 0.75rem;">
-            Last used games
-          </v-subheader>
           <v-item-group v-model="selectedGameIdx" :mandatory="selectedGameIdx > -1">
             <v-row no-gutters>
               <v-col
@@ -54,6 +55,7 @@
                   <v-card
                     :color="active ? 'primary' : ''"
                     class="d-flex align-center"
+                    tile
                     @click="toggle(); setGame(game)"
                   >
                     <v-img
@@ -61,7 +63,7 @@
                       :title="game"
                       max-height="280"
                       contain
-                      aspect-ratio="0.71"
+                      :aspect-ratio="200/280"
                     />
                     <v-scroll-y-transition>
                       <v-overlay
@@ -100,6 +102,7 @@
             <v-list-item
               v-for="(item, i) in lastTitles"
               :key="item + i"
+              class="elevation-1"
               @click="title = item"
             >
               <v-list-item-content>

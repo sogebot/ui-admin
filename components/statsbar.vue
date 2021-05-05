@@ -134,7 +134,6 @@
 
 <script lang="ts">
 /* eslint-disable camelcase */
-import { mdiTrendingDown, mdiTrendingUp } from '@mdi/js';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
@@ -148,15 +147,6 @@ let interval = 0;
 let UIErrorInterval = 0;
 
 const socket = getSocket('/');
-
-const numberReducer = (out: string, item: any) => {
-  if (['currency', 'compact'].includes(item.type)) {
-    out += `<small class="text-muted">${item.value}</small>`;
-  } else {
-    out += item.value;
-  }
-  return out;
-};
 
 export default defineComponent({
   components: {
@@ -177,7 +167,6 @@ export default defineComponent({
       version: null | string;
     } = reactive({ version: null });
     const isLoaded = ref(false);
-    const top = ref('50');
 
     const isStreamOnline = computed(() => uptime.value !== null);
 
@@ -185,15 +174,12 @@ export default defineComponent({
       getLatestStats();
     });
 
-    const showGameAndTitleDlg = () => EventBus.$emit('show-game_and_title_dlg');
-
     const getLatestStats = () => {
       socket.emit('getLatestStats', (err: string | null, data: any) => {
         console.groupCollapsed('navbar::getLatestStats');
         if (err) {
           return console.error(err);
         }
-        console.log(data);
         console.groupEnd();
         for (const key of Object.keys(data)) {
           averageStats[key] = data[key];
@@ -291,14 +277,9 @@ export default defineComponent({
       update,
       uptime,
       isLoaded,
-      top,
       isStreamOnline,
-      showGameAndTitleDlg,
 
       translate,
-      numberReducer,
-      mdiTrendingDown,
-      mdiTrendingUp,
     };
   },
 });

@@ -14,7 +14,7 @@
           elevation="5"
           :loading="!isLoaded"
         >
-          <v-card-subtitle class="pa-1 text-caption" style="line-height: 0.8rem;">
+          <v-card-subtitle class="pa-1 text-caption" style="line-height: 1rem;">
             <div class="text-truncate">
               <strong>{{ capitalize(translate('title')) }}:</strong> <span v-html="title || capitalize(translate('not-available'))" />
             </div>
@@ -23,6 +23,7 @@
             </div>
             <div class="text-truncate">
               <strong>{{ capitalize(translate('tags')) }}:</strong>
+              <span v-if="tags.length === 0">{{ capitalize(translate('not-available')) }}</span>
               <small
                 v-for="tag of filterTags(true)"
                 :key="tag.name"
