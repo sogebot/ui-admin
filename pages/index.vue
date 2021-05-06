@@ -1,9 +1,9 @@
 <template>
   <v-container fluid>
     <v-row dense>
-      <v-col cols="12" md="8" sm="8">
+      <v-col cols="12" md="6" sm="6">
         <v-card width="100%" class="mb-2" height="100%">
-          <v-toolbar dense color="blue-grey darken-4" class="mb-1">
+          <v-toolbar height="36" color="blue-grey darken-4" class="mb-1">
             <small class="text-button">Events</small>
           </v-toolbar>
 
@@ -13,17 +13,15 @@
       <v-col cols="12" md="4" sm="4">
         <chat />
       </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <v-card width="100%" class="mb-2">
-          <v-toolbar dense color="blue-grey darken-4" class="mb-1">
+
+      <v-col cols="12" md="2" sm="4">
+        <v-card width="100%" class="mb-2" height="100%">
+          <v-toolbar height="36" color="blue-grey darken-4" class="mb-1">
             <small class="text-button">actions</small>
           </v-toolbar>
-          <!--v-col md="2" lg="1" sm="3" xs="4"-->
           <v-row dense>
-            <v-col cols="12" lg="6">
-              <v-card color="primary" elevation="2" height="100%" @click="() => {}">
+            <v-col cols="12">
+              <v-card color="primary" elevation="2" width="100%" @click="() => {}">
                 <v-card-text class="text-caption pa-1 ma-0 text-center">
                   <strong>Add 5 to $_test</strong>
                 </v-card-text>

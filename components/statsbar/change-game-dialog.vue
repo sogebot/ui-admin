@@ -8,15 +8,13 @@
       <v-toolbar dense color="primary">
         <v-btn
           icon
-          color="black"
           @click="dialogController = false"
         >
           <v-icon>{{ mdiClose }}</v-icon>
         </v-btn>
-        <span class="black--text headline">Change game and title</span>
+        <span class="headline">Change game and title</span>
         <v-spacer />
         <v-btn
-          color="black"
           text
           :loading="isSaving"
           @click="save"

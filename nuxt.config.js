@@ -50,7 +50,11 @@ export default {
   vuetify: {
     icons:      { iconfont: 'mdiSvg' },
     breakpoint: { mobileBreakpoint: 'sm' },
-    theme:      { options: { customProperties: true }, dark: true },
+    theme:      {
+      options: { customProperties: true },
+      dark:    true,
+      themes:  { dark: { primary: '#FF9800' } },
+    },
   },
 
   // Modules: https://go.nuxtjs.dev/config-modules

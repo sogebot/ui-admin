@@ -11,7 +11,7 @@
       app
       bottom
     >
-      <div class="pt-1 text-center text-button">{{ name }}</div>
+      <v-toolbar dense class="text-button" color="primary">{{ name }}</v-toolbar>
       <user />
 
       <v-spacer />

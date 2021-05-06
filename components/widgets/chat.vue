@@ -1,15 +1,15 @@
 <template>
   <v-card :key="timestamp" ref="chatRef" width="100%">
-    <v-toolbar dense color="blue-grey darken-4" class="mb-1">
+    <v-toolbar color="blue-grey darken-4" class="mb-1" height="36">
       <small class="text-button">Chat</small>
       <v-spacer />
       <v-btn icon @click="timestamp = Date.now()">
         <v-icon>{{ mdiRefresh }}</v-icon>
       </v-btn>
-      <v-btn icon :color="showJoins ? 'success' : 'error'" @click="showJoins = !showJoins">
+      <v-btn icon :color="showJoins ? 'green' : 'red'" @click="showJoins = !showJoins">
         <v-icon>{{ mdiAccountPlus }}</v-icon>
       </v-btn>
-      <v-btn icon :color="showParts ? 'success' : 'error'" @click="showParts = !showParts">
+      <v-btn icon :color="showParts ? 'green' : 'red'" @click="showParts = !showParts">
         <v-icon>{{ mdiAccountMinus }}</v-icon>
       </v-btn>
       <v-btn icon @click="dialog = true">
@@ -30,7 +30,7 @@
     />
 
     <v-card v-if="showJoins || showParts" height="200px">
-      <v-toolbar dense color="blue-grey darken-4" class="mb-1">
+      <v-toolbar color="blue-grey darken-4" class="mb-1" height="36">
         <small class="text-button">Chat Events</small>
       </v-toolbar>
 
