@@ -11,20 +11,7 @@
         </v-card>
       </v-col>
       <v-col cols="12" md="4" sm="4">
-        <v-card width="100%" class="mb-2">
-          <v-toolbar dense color="blue-grey darken-4" class="mb-1">
-            <small class="text-button">Chat</small>
-          </v-toolbar>
-
-          bla bla iframe
-        </v-card>
-        <v-card width="100%" class="mb-2">
-          <v-toolbar dense color="blue-grey darken-4" class="mb-1">
-            <small class="text-button">Twitch Monitor</small>
-          </v-toolbar>
-
-          bla bla iframe
-        </v-card>
+        <chat />
       </v-col>
     </v-row>
     <v-row>
@@ -47,9 +34,10 @@
       </v-col>
     </v-row>
   </v-container>
-
 </template>
 
 <script>
-export default { };
+import { defineAsyncComponent, defineComponent } from '@vue/composition-api';
+
+export default defineComponent({ components: { chat: defineAsyncComponent({ loader: () => import('~/components/widgets/chat.vue') }) } });
 </script>
