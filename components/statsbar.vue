@@ -72,6 +72,7 @@
         :average="averageStats.chatMessages"
       />
       <with-trending
+        offline
         type="bigNumber"
         title="views"
         :timestamp="timestamp"
@@ -81,6 +82,7 @@
         :average="averageStats.currentViews"
       />
       <with-trending
+        offline
         type="bigNumber"
         title="followers"
         :timestamp="timestamp"
@@ -90,6 +92,7 @@
         :average="averageStats.currentFollowers"
       />
       <with-trending
+        offline
         v-if="broadcasterType !== ''"
         type="bigNumber"
         title="subscribers"
@@ -177,6 +180,7 @@ export default defineComponent({
     const getLatestStats = () => {
       socket.emit('getLatestStats', (err: string | null, data: any) => {
         console.groupCollapsed('navbar::getLatestStats');
+        console.log(data);
         if (err) {
           return console.error(err);
         }
@@ -256,6 +260,10 @@ export default defineComponent({
 
         broadcasterType.value = data.broadcasterType;
         localStorage.broadcasterType = data.broadcasterType;
+
+        for (const key of Object.keys(data)) {
+          currentStats[key] = data[key];
+        }
         isLoaded.value = true;
       });
 

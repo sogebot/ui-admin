@@ -26,7 +26,7 @@
                   Intl.NumberFormat($store.state.configuration.lang, {
                     notation: $store.state.configuration.core.ui.shortennumbers ? 'compact' : 'standard',
                     maximumFractionDigits: $store.state.configuration.core.ui.shortennumbers ? 1 : 0,
-                  }).formatToParts(isStreamOnline ? current : 0).reduce(numberReducer, '')
+                  }).formatToParts(isStreamOnline || offline ? current || 0 : 0).reduce(numberReducer, '')
                 "
               />
               <span
@@ -35,7 +35,7 @@
                   Intl.NumberFormat($store.state.configuration.lang, {
                     style: 'currency',
                     currency: $store.state.configuration.currency,
-                  }).formatToParts(isStreamOnline ? current : 0).reduce(numberReducer, '')
+                  }).formatToParts(isStreamOnline || offline ? current || 0 : 0).reduce(numberReducer, '')
                 "
               />
               <span
@@ -45,7 +45,7 @@
                     ...Intl.NumberFormat($store.state.configuration.lang, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
-                    }).formatToParts((isStreamOnline ? current : 0) / 1000 / 60 / 60),
+                    }).formatToParts((isStreamOnline || offline ? current || 0 : 0) / 1000 / 60 / 60),
                     { type:'', value: ' '},
                     { type:'currency', value: 'h'}
                   ].reduce(numberReducer, '')"
@@ -182,6 +182,7 @@ export default defineComponent({
     current:        Number,
     average:        Number,
     hide:           Boolean,
+    offline:           Boolean,
     title:          String,
     type:           String,
   },

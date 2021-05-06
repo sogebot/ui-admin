@@ -1,7 +1,7 @@
 <template>
   <v-card :key="timestamp" ref="chatRef" width="100%">
     <v-toolbar color="blue-grey darken-4" class="mb-1" height="36">
-      <small class="text-button">Chat</small>
+      <v-toolbar-title class="text-button">Chat</v-toolbar-title>
       <v-spacer />
       <v-btn icon @click="timestamp = Date.now()">
         <v-icon>{{ mdiRefresh }}</v-icon>
@@ -117,7 +117,7 @@ export default defineComponent({
         setTimeout(() => updateWidth(), 100);
       } else {
         const offsetTop = chatRef.value.$el.offsetTop;
-        height.value = window.innerHeight - offsetTop - 70 - (showParts.value || showJoins.value ? 200 : 0);
+        height.value = window.innerHeight - offsetTop - 52 - (showParts.value || showJoins.value ? 200 : 0);
       }
     }
 
