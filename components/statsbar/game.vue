@@ -14,32 +14,46 @@
           elevation="5"
           :loading="!isLoaded"
         >
-          <v-card-subtitle class="pa-1 text-caption" style="line-height: 1rem;">
-            <div class="text-truncate">
-              <strong>{{ capitalize(translate('title')) }}:</strong> <span v-html="title || capitalize(translate('not-available'))" />
-            </div>
-            <div class="text-truncate">
-              <strong>{{ capitalize(translate('game')) }}:</strong> {{ game || capitalize(translate('not-available')) }}
-            </div>
-            <div class="text-truncate">
-              <strong>{{ capitalize(translate('tags')) }}:</strong>
-              <span v-if="tags.length === 0">{{ capitalize(translate('not-available')) }}</span>
-              <small
-                v-for="tag of filterTags(true)"
-                :key="tag.name"
-                :class="{ 'grey--text': tag.is_auto }"
-              >
-                {{ tag.name }}
-              </small>
-              <span
-                v-for="tag of filterTags(false)"
-                :key="tag.name"
-                :class="{ 'grey--text': tag.is_auto }"
-              >
-                {{ tag.name }}
-              </span>
-            </div>
-          </v-card-subtitle>
+          <v-row no-gutters>
+            <v-col>
+              <v-card-title :key="timestamp" class="px-1 py-0 text-truncate" style="font-size: 1rem;">
+                <span v-html="game || capitalize(translate('not-available'))" />
+              </v-card-title>
+              <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
+                {{ capitalize(translate('game')) }}
+              </v-card-subtitle>
+            </v-col>
+            <v-col>
+              <v-card-title :key="timestamp" class="px-1 py-0 text-truncate" style="font-size: 1rem;">
+                <span v-html="title || capitalize(translate('not-available'))" />
+              </v-card-title>
+              <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
+                {{ capitalize(translate('title')) }}
+              </v-card-subtitle>
+            </v-col>
+            <v-col>
+              <v-card-title :key="timestamp" class="px-1 py-0 text-truncate" style="font-size: 1rem;">
+                <span v-if="tags.length === 0">{{ capitalize(translate('not-available')) }}</span>
+                <small
+                  v-for="tag of filterTags(true)"
+                  :key="tag.name"
+                  :class="{ 'grey--text': tag.is_auto }"
+                >
+                  {{ tag.name }}
+                </small>
+                <span
+                  v-for="tag of filterTags(false)"
+                  :key="tag.name"
+                  :class="{ 'grey--text': tag.is_auto }"
+                >
+                  {{ tag.name }}
+                </span>
+              </v-card-title>
+              <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
+                {{ capitalize(translate('tags')) }}
+              </v-card-subtitle>
+            </v-col>
+          </v-row>
 
           <v-fade-transition>
             <v-overlay
