@@ -153,7 +153,7 @@
           <v-btn
             icon
             :color="hover ? 'primary' : 'secondary lighten-3'"
-            @click="edit(item)"
+            @click.stop="edit(item)"
           >
             <v-icon>{{ mdiPencil }}</v-icon>
           </v-btn>
@@ -162,7 +162,7 @@
           <v-btn
             icon
             :color="hover ? 'primary' : 'secondary lighten-3'"
-            @click="clone(item)"
+            @click.stop="clone(item)"
           >
             <v-icon>{{ mdiContentCopy }}</v-icon>
           </v-btn>
@@ -171,7 +171,7 @@
           <v-btn
             icon
             :color="hover ? 'primary' : 'secondary lighten-3'"
-            @click="link(item)"
+            @click.stop="link(item)"
           >
             <v-icon>{{ mdiLink }}</v-icon>
           </v-btn>
