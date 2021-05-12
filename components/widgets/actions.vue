@@ -24,7 +24,7 @@
         />
       </v-col>
     </v-row>
-    <v-row v-if="isAnySelected">
+    <v-row v-if="isAnySelected && editing">
       <v-col cols="12">
         <v-btn color="error" block>
           Delete
