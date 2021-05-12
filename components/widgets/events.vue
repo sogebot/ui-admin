@@ -214,8 +214,8 @@
               </v-list-item-content>
 
               <v-list-item-action>
-                <v-btn v-if="hover" @click.stop="resendAlert(item.id)">
-                  <v-icon>{{ mdiAutorenew }}</v-icon>
+                <v-btn v-if="hover" icon style="transform: translateX(5px);" @click.stop="resendAlert(item.id)">
+                  <v-icon>{{ mdiRefresh }}</v-icon>
                 </v-btn>
                 <template v-else>
                   <v-icon v-if="item.event === 'follow'" color="red lighten-1">
@@ -264,8 +264,9 @@
 import {
   mdiAutorenew, mdiBellCancel, mdiBellRing, mdiCash, mdiDelete,
   mdiDiamond, mdiFencing, mdiFilterMenu, mdiFormatQuoteClose, mdiFormatQuoteOpen,
-  mdiGift, mdiGiftOpen, mdiHeart, mdiOpenInNew, mdiSkipNext,
-  mdiTelevision, mdiTextToSpeech, mdiTextToSpeechOff, mdiVolumeHigh, mdiVolumeMute, mdiYoutubeSubscription,
+  mdiGift, mdiGiftOpen, mdiHeart, mdiOpenInNew, mdiRefresh,
+  mdiSkipNext, mdiTelevision, mdiTextToSpeech, mdiTextToSpeechOff,
+  mdiVolumeHigh, mdiVolumeMute, mdiYoutubeSubscription,
 } from '@mdi/js';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -435,6 +436,7 @@ export default defineComponent({
       mdiFilterMenu,
       mdiOpenInNew,
       mdiDelete,
+      mdiRefresh,
     };
   },
 });

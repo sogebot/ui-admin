@@ -10,8 +10,6 @@
       </v-btn>
     </v-toolbar>
 
-    {{ items }}
-
     <v-row dense>
       <v-col cols="12">
         <component
@@ -26,7 +24,7 @@
     </v-row>
     <v-row v-if="isAnySelected && editing">
       <v-col cols="12">
-        <v-btn color="error" block>
+        <v-btn color="error" block @click="deleteItems">
           Delete
         </v-btn>
       </v-col>
@@ -45,8 +43,7 @@ import {
 export default defineComponent({
   components: { custom: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/custom.vue') }) },
   setup () {
-    const dialog = ref(false);
-    const editing = ref(false);
+    const editing = ref(true);
     const height = ref(600);
 
     const selectedItems = computed(() => {
@@ -88,18 +85,27 @@ export default defineComponent({
       items.value.splice(idx, 1, item);
     }
 
+    function deleteItems () {
+      items.value = items.value.filter(item => !item.selected);
+    }
+
     onMounted(() => {
       setInterval(() => updateHeight(), 1000);
     });
 
     return {
-      dialog,
+      /* refs */
       isAnySelected,
       selectedItems,
-      updateItem,
       editing,
       height,
       items,
+
+      /* functions */
+      updateItem,
+      deleteItems,
+
+      /* icons */
       mdiCircleEditOutline,
     };
   },
