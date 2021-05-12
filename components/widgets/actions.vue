@@ -1,29 +1,34 @@
 <template>
-  <v-card id="c7eff6a7-dc62-4c0b-bad6-90df9d5b605f" :key="timestamp" width="100%" height="100%">
+  <v-card id="c7eff6a7-dc62-4c0b-bad6-90df9d5b605f" width="100%" height="100%">
     <v-toolbar color="blue-grey darken-4" class="mb-1" height="36">
       <v-toolbar-title class="text-button">
         Actions
       </v-toolbar-title>
       <v-spacer />
-      <v-btn icon>
+      <v-btn icon :color="editing ? 'primary' : 'secondary lighten-2'" @click="editing = !editing">
         <v-icon>{{ mdiCircleEditOutline }}</v-icon>
       </v-btn>
     </v-toolbar>
 
+    {{ items }}
+
     <v-row dense>
       <v-col cols="12">
-        <v-card
-          v-for="item of items"
+        <component
+          :is="item.type"
+          v-for="(item, idx) of items"
           :key="item.id"
-          :color="item.color"
-          elevation="2"
-          width="100%"
-          @click="() => {}"
-        >
-          <v-card-text class="text-button pa-1 mb-1 text-center" style="font-size: 12px !important;">
-            <strong>{{ item.title }}</strong>
-          </v-card-text>
-        </v-card>
+          :item="item"
+          :editing="editing"
+          @update:item="updateItem(idx, $event)"
+        />
+      </v-col>
+    </v-row>
+    <v-row v-if="isAnySelected">
+      <v-col cols="12">
+        <v-btn color="error" block>
+          Delete
+        </v-btn>
       </v-col>
     </v-row>
   </v-card>
@@ -32,26 +37,43 @@
 <script lang="ts">
 import { mdiCircleEditOutline } from '@mdi/js';
 import {
+  computed,
+  defineAsyncComponent,
   defineComponent, onMounted, ref,
 } from '@vue/composition-api';
 
 export default defineComponent({
+  components: { custom: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/custom.vue') }) },
   setup () {
     const dialog = ref(false);
+    const editing = ref(false);
     const height = ref(600);
 
+    const selectedItems = computed(() => {
+      return items.value.filter(o => o.selected);
+    });
+    const isAnySelected = computed(() => {
+      return selectedItems.value.length > 0;
+    });
+
     const items = ref([{
-      id:    '2f1e3ea3-3071-4781-948a-978e7b362ed5',
-      title: 'Add 5 to $_test',
-      color: 'green',
+      id:       '2f1e3ea3-3071-4781-948a-978e7b362ed5',
+      title:    'Add 5 to $_test',
+      color:    'green',
+      type:     'custom',
+      selected: false,
     }, {
-      id:    '2f1e3ea3-3072-4781-948a-978e7b362ed5',
-      title: 'Run commercial 30s',
-      color: 'deep-orange',
+      id:       '2f1e3ea3-3072-4781-948a-978e7b362ed5',
+      title:    'Run commercial 30s',
+      color:    'deep-orange',
+      type:     'custom',
+      selected: false,
     }, {
-      id:    '2f1e3ea3-4072-4781-948a-978e7b362ed5',
-      title: 'PUBG Poll',
-      color: 'cyan',
+      id:       '2f1e3ea3-4072-4781-948a-978e7b362ed5',
+      title:    'PUBG Poll',
+      color:    'cyan',
+      type:     'custom',
+      selected: false,
     }]);
 
     function updateHeight () {
@@ -62,12 +84,20 @@ export default defineComponent({
       height.value = Math.max(newHeight, 500);
     }
 
+    function updateItem (idx: number, item: typeof items.value[number]) {
+      items.value.splice(idx, 1, item);
+    }
+
     onMounted(() => {
       setInterval(() => updateHeight(), 1000);
     });
 
     return {
       dialog,
+      isAnySelected,
+      selectedItems,
+      updateItem,
+      editing,
       height,
       items,
       mdiCircleEditOutline,
