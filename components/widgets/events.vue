@@ -49,11 +49,10 @@
               <v-card-text>
                 <v-row>
                   <v-col>
-                    <v-checkbox label="Follows" class="pa-0 ma-0" hide-details />
-                    <v-checkbox label="Tips" class="pa-0 ma-0" hide-details />
-                    <v-checkbox label="Hosts" class="pa-0 ma-0" hide-details />
-                    <v-checkbox label="Bits" class="pa-0 ma-0" hide-details />
-                    <v-checkbox label="Raids" class="pa-0 ma-0" hide-details />
+                    <v-checkbox v-model="showFollows" label="Follows" class="pa-0 ma-0" hide-details />
+                    <v-checkbox v-model="showHosts" label="Hosts" class="pa-0 ma-0" hide-details />
+                    <v-checkbox v-model="showBits" label="Bits" class="pa-0 ma-0" hide-details />
+                    <v-checkbox v-model="showRaids" label="Raids" class="pa-0 ma-0" hide-details />
                   </v-col>
                   <v-col>
                     <v-checkbox label="Subs" class="pa-0 ma-0" hide-details />
@@ -88,7 +87,7 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-checkbox label="Tips" class="pa-0 ma-0" hide-details />
+                    <v-checkbox v-model="showTips" label="Tips" class="pa-0 ma-0" hide-details />
                     <v-divider class="pa-1 ma-1" />
                     <v-row no-gutters class="pl-2">
                       <v-col style="align-self: flex-end;">
@@ -108,19 +107,12 @@
 
               <v-card-actions>
                 <v-spacer />
-
-                <v-btn
-                  text
-                  @click="menu = false"
-                >
-                  Cancel
-                </v-btn>
                 <v-btn
                   color="primary"
                   text
                   @click="menu = false"
                 >
-                  Save
+                  Close
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -192,68 +184,71 @@
         multiple
       >
         <template v-for="(item, index) in events">
-          <v-hover v-slot="{ hover }" :key="item.timestamp + item.username + item.type">
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>
-                  {{ item.username }} <span v-html="prepareMessage(item)" />
-                </v-list-item-title>
-                <v-list-item-subtitle v-text="dayjs(item.timestamp).fromNow()" />
+          <v-fade-transition :key="item.timestamp + item.username + item.type">
+            <v-hover v-if="filter(item)" v-slot="{ hover }">
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    {{ item.username }} <span v-html="prepareMessage(item)" />
+                  </v-list-item-title>
+                  <v-list-item-subtitle v-text="dayjs(item.timestamp).fromNow()" />
 
-                <v-row v-if="blockquote(item)" no-gutters class="pt-2">
-                  <v-col cols="auto">
-                    <v-icon color="accent" x-small style="transform: translateY(5px);">
-                      {{ mdiFormatQuoteOpen }}
+                  <v-row v-if="blockquote(item)" no-gutters class="pt-2">
+                    <v-col cols="auto">
+                      <v-icon color="accent" x-small style="transform: translateY(5px);">
+                        {{ mdiFormatQuoteOpen }}
+                      </v-icon>
+                      {{ blockquote(item) }}
+                      <v-icon color="accent" x-small style="transform: translateY(-5px);">
+                        {{ mdiFormatQuoteClose }}
+                      </v-icon>
+                    </v-col>
+                  </v-row>
+                </v-list-item-content>
+
+                <v-list-item-action>
+                  <v-btn v-if="hover" icon style="transform: translateX(5px);" @click.stop="resendAlert(item.id)">
+                    <v-icon>{{ mdiRefresh }}</v-icon>
+                  </v-btn>
+                  <template v-else>
+                    <v-icon v-if="item.event === 'follow'" color="red lighten-1">
+                      {{ mdiHeart }}
                     </v-icon>
-                    {{ blockquote(item) }}
-                    <v-icon color="accent" x-small style="transform: translateY(-5px);">
-                      {{ mdiFormatQuoteClose }}
+                    <v-icon v-else-if="item.event === 'host'" color="orange lighten-1">
+                      {{ mdiTelevision }}
                     </v-icon>
-                  </v-col>
-                </v-row>
-              </v-list-item-content>
+                    <v-icon v-else-if="item.event === 'raid'" color="lime lighten-1">
+                      {{ mdiFencing }}
+                    </v-icon>
+                    <v-icon v-else-if="item.event === 'sub'" color="indigo lighten-1">
+                      {{ mdiYoutubeSubscription }}
+                    </v-icon>
+                    <v-icon v-else-if="item.event === 'subgift'" color="pink lighten-1">
+                      {{ mdiGift }}
+                    </v-icon>
+                    <v-icon v-else-if="item.event === 'subcommunitygift'" color="deep-orange lighten-1">
+                      {{ mdiGiftOpen }}
+                    </v-icon>
+                    <v-icon v-else-if="item.event === 'resub'" color="deep-purple lighten-1">
+                      {{ mdiAutorenew }}
+                    </v-icon>
+                    <v-icon v-else-if="item.event === 'cheer'" color="yellow lighten-1">
+                      {{ mdiDiamond }}
+                    </v-icon>
+                    <v-icon v-else-if="item.event === 'tip'" color="green lighten-1">
+                      {{ mdiCash }}
+                    </v-icon>
+                  </template>
+                </v-list-item-action>
+              </v-list-item>
+            </v-hover>
+          </v-fade-transition>
 
-              <v-list-item-action>
-                <v-btn v-if="hover" icon style="transform: translateX(5px);" @click.stop="resendAlert(item.id)">
-                  <v-icon>{{ mdiRefresh }}</v-icon>
-                </v-btn>
-                <template v-else>
-                  <v-icon v-if="item.event === 'follow'" color="red lighten-1">
-                    {{ mdiHeart }}
-                  </v-icon>
-                  <v-icon v-else-if="item.event === 'host'" color="orange lighten-1">
-                    {{ mdiTelevision }}
-                  </v-icon>
-                  <v-icon v-else-if="item.event === 'raid'" color="lime lighten-1">
-                    {{ mdiFencing }}
-                  </v-icon>
-                  <v-icon v-else-if="item.event === 'sub'" color="indigo lighten-1">
-                    {{ mdiYoutubeSubscription }}
-                  </v-icon>
-                  <v-icon v-else-if="item.event === 'subgift'" color="pink lighten-1">
-                    {{ mdiGift }}
-                  </v-icon>
-                  <v-icon v-else-if="item.event === 'subcommunitygift'" color="deep-orange lighten-1">
-                    {{ mdiGiftOpen }}
-                  </v-icon>
-                  <v-icon v-else-if="item.event === 'resub'" color="deep-purple lighten-1">
-                    {{ mdiAutorenew }}
-                  </v-icon>
-                  <v-icon v-else-if="item.event === 'cheer'" color="yellow lighten-1">
-                    {{ mdiDiamond }}
-                  </v-icon>
-                  <v-icon v-else-if="item.event === 'tip'" color="green lighten-1">
-                    {{ mdiCash }}
-                  </v-icon>
-                </template>
-              </v-list-item-action>
-            </v-list-item>
-          </v-hover>
-
-          <v-divider
-            v-if="index < events.length - 1"
-            :key="index"
-          />
+          <v-fade-transition :key="item.timestamp + item.username + item.type + '2'">
+            <v-divider
+              v-if="index < events.length - 1 && filter(item)"
+            />
+          </v-fade-transition>
         </template>
       </v-list-item-group>
     </v-list>
@@ -277,6 +272,7 @@ import {
 } from '@vue/composition-api';
 import { get } from 'lodash-es';
 
+import type { EventListInterface } from '~/.bot/src/bot/database/entity/eventList';
 import { error } from '~/functions/error';
 
 export default defineComponent({
@@ -286,10 +282,33 @@ export default defineComponent({
     const isSoundMuted = ref(false);
     const isLoading = ref(true);
     const height = ref(600);
-    const events = ref([] as any[]);
-    const selected = ref([] as any[]);
+    const events = ref([] as EventListInterface[]);
+    const selected = ref([] as number[]);
     const menu = ref(false);
     const isPopout = computed(() => location.href.includes('popout'));
+
+    const showFollows = ref(localStorage.showFollows === 'true' ?? true);
+    const showTips = ref(localStorage.showTips === 'true' ?? true);
+    const showHosts = ref(localStorage.showHosts === 'true' ?? true);
+    const showBits = ref(localStorage.showBits === 'true' ?? true);
+    const showRaids = ref(localStorage.showRaids === 'true' ?? true);
+    watch([showFollows, showHosts, showTips, showBits, showRaids], (val) => {
+      localStorage.showFollows = String(val[0]);
+      localStorage.showHosts = String(val[1]);
+      localStorage.showTips = String(val[2]);
+      localStorage.showBits = String(val[3]);
+      localStorage.showRaids = String(val[4]);
+    });
+
+    function filter (event: EventListInterface) {
+      const follow = showFollows.value && event.event === 'follow';
+      const host = showHosts.value && event.event === 'host';
+      const raid = showRaids.value && event.event === 'raid';
+      const tip = showTips.value && event.event === 'tip';
+      const bit = showBits.value && event.event === 'cheer';
+      return follow || host || raid || tip || bit;
+    }
+
     watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
       getSocket('/registries/alerts').emit('alerts::areAlertsMuted', val[0]);
       getSocket('/registries/alerts').emit('alerts::areAlertsMuted', val[1]);
@@ -402,6 +421,7 @@ export default defineComponent({
       blockquote,
       resendAlert,
       removeSelected,
+      filter,
 
       /* refs */
       isTTSMuted,
@@ -413,6 +433,13 @@ export default defineComponent({
       selected,
       menu,
       isPopout,
+
+      /* filter refs */
+      showFollows,
+      showTips,
+      showHosts,
+      showBits,
+      showRaids,
 
       /* icons */
       mdiSkipNext,

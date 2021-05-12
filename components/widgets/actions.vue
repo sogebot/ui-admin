@@ -12,14 +12,15 @@
 
     <v-row dense>
       <v-col cols="12">
-        <component
-          :is="item.type"
-          v-for="(item, idx) of items"
-          :key="item.id"
-          :item="item"
-          :editing="editing"
-          @update:item="updateItem(idx, $event)"
-        />
+        <v-expand-transition v-for="(item, idx) of items" :key="item.id + 'transition'">
+          <component
+            :is="item.type"
+            :key="item.id"
+            :item="item"
+            :editing="editing"
+            @update:item="updateItem(idx, $event)"
+          />
+        </v-expand-transition>
       </v-col>
     </v-row>
     <v-row v-if="isAnySelected && editing">
