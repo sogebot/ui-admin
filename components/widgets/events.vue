@@ -1,5 +1,5 @@
 <template>
-  <v-card ref="eventsRef" width="100%" class="mb-2" :loading="isLoading">
+  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e4" width="100%" :loading="isLoading">
     <v-toolbar height="36" color="blue-grey darken-4" class="mb-1">
       <v-toolbar-title v-if="isPopout" class="text-button">
         {{ translate('widget-title-eventlist') }}
@@ -287,7 +287,6 @@ export default defineComponent({
     const height = ref(600);
     const events = ref([] as any[]);
     const selected = ref([] as any[]);
-    const eventsRef = ref(null as any);
     const menu = ref(false);
     const isPopout = computed(() => location.href.includes('popout'));
     watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
@@ -297,12 +296,11 @@ export default defineComponent({
     });
 
     function updateHeight () {
-      if (eventsRef.value === null) {
-        setTimeout(() => updateHeight(), 100);
-      } else {
-        const offsetTop = eventsRef.value.$el.offsetTop;
-        height.value = window.innerHeight - offsetTop - 45;
-      }
+      // so. many. parentElement. to get proper offsetTop as children offset is 0
+      const offsetTop = document.getElementById('5b90af97-ad95-4776-89e3-9a59c67510e4')?.parentElement?.parentElement?.parentElement?.parentElement?.offsetTop || 0;
+      const offset = 85;
+      const newHeight = window.innerHeight - offsetTop - offset;
+      height.value = Math.max(newHeight, 500);
     }
 
     function resendAlert (id: string) {
@@ -389,7 +387,7 @@ export default defineComponent({
       });
       getSocket('/widgets/eventlist').emit('eventlist::get', 100);
       setInterval(() => getSocket('/widgets/eventlist').emit('eventlist::get', 100), 60000);
-      setTimeout(() => updateHeight(), 100);
+      setInterval(() => updateHeight(), 1000);
     });
 
     return {
@@ -411,7 +409,6 @@ export default defineComponent({
       events,
       isLoading,
       height,
-      eventsRef,
       selected,
       menu,
       isPopout,

@@ -1,7 +1,9 @@
 <template>
-  <v-card :key="timestamp" ref="chatRef" width="100%">
+  <v-card id="c7eff6a7-dc61-4c0b-bad6-90df9d5b605f" :key="timestamp" width="100%">
     <v-toolbar color="blue-grey darken-4" class="mb-1" height="36">
-      <v-toolbar-title class="text-button">Chat</v-toolbar-title>
+      <v-toolbar-title class="text-button">
+        Chat
+      </v-toolbar-title>
       <v-spacer />
       <v-btn icon @click="timestamp = Date.now()">
         <v-icon>{{ mdiRefresh }}</v-icon>
@@ -101,28 +103,26 @@ export default defineComponent({
         + '?darkpopout'
         + '&parent=' + window.location.hostname;
     });
-    const chatRef = ref(null as null | any);
 
     watch(showJoins, (val) => {
       localStorage.showJoins = String(val);
-      updateWidth();
+      updateHeight();
     });
     watch(showParts, (val) => {
       localStorage.showParts = String(val);
-      updateWidth();
+      updateHeight();
     });
 
-    function updateWidth () {
-      if (chatRef.value === null) {
-        setTimeout(() => updateWidth(), 100);
-      } else {
-        const offsetTop = chatRef.value.$el.offsetTop;
-        height.value = window.innerHeight - offsetTop - 52 - (showParts.value || showJoins.value ? 200 : 0);
-      }
+    function updateHeight () {
+      // so. many. parentElement. to get proper offsetTop as children offset is 0
+      const offsetTop = document.getElementById('c7eff6a7-dc61-4c0b-bad6-90df9d5b605f')?.offsetTop || 0;
+      const offset = 51 + (showParts.value || showJoins.value ? 200 : 0);
+      const newHeight = window.innerHeight - offsetTop - offset;
+      height.value = Math.max(newHeight, 500);
     }
 
     onMounted(() => {
-      setTimeout(() => updateWidth(), 100);
+      setInterval(() => updateHeight(), 1000);
 
       interval = window.setInterval(() => {
         refresh();
@@ -185,7 +185,6 @@ export default defineComponent({
       showJoins,
       showParts,
       height,
-      chatRef,
       list,
       mdiRefresh,
       mdiClose,

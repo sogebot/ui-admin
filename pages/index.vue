@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="pb-0">
     <v-row dense>
       <v-col cols="12" md="6" sm="6">
         <v-tabs
@@ -21,22 +21,7 @@
       </v-col>
 
       <v-col cols="12" md="2" sm="4">
-        <v-card width="100%" class="mb-2" height="100%">
-          <v-toolbar height="36" color="blue-grey darken-4" class="mb-1">
-            <v-toolbar-title class="text-button">
-              actions
-            </v-toolbar-title>
-          </v-toolbar>
-          <v-row dense>
-            <v-col cols="12">
-              <v-card color="primary" elevation="2" width="100%" @click="() => {}">
-                <v-card-text class="text-caption pa-1 ma-0 text-center">
-                  <strong>Add 5 to $_test</strong>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-card>
+        <actions />
       </v-col>
     </v-row>
   </v-container>
@@ -50,8 +35,9 @@ import {
 
 export default defineComponent({
   components: {
-    chat:   defineAsyncComponent({ loader: () => import('~/components/widgets/chat.vue') }),
-    events: defineAsyncComponent({ loader: () => import('~/components/widgets/events.vue') }),
+    actions: defineAsyncComponent({ loader: () => import('~/components/widgets/actions.vue') }),
+    chat:    defineAsyncComponent({ loader: () => import('~/components/widgets/chat.vue') }),
+    events:  defineAsyncComponent({ loader: () => import('~/components/widgets/events.vue') }),
   },
   setup () {
     const tab = ref(null);
