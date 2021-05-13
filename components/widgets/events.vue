@@ -55,28 +55,28 @@
                     <v-checkbox v-model="showRaids" label="Raids" class="pa-0 ma-0" hide-details />
                   </v-col>
                   <v-col>
-                    <v-checkbox label="Subs" class="pa-0 ma-0" hide-details />
+                    <v-checkbox v-model="showSubs" label="Subs" class="pa-0 ma-0" hide-details />
                     <v-divider class="pa-1 ma-1" />
-                    <v-checkbox label="Prime" class="pa-0 ma-0 pl-2" hide-details />
-                    <v-checkbox label="Tier 1" class="pa-0 ma-0 pl-2" hide-details />
-                    <v-checkbox label="Tier 2" class="pa-0 ma-0 pl-2" hide-details />
-                    <v-checkbox label="Tier 3" class="pa-0 ma-0 pl-2" hide-details />
+                    <v-checkbox v-model="showSubsPrime" label="Prime" class="pa-0 ma-0 pl-2" hide-details :disabled="!showSubs" />
+                    <v-checkbox v-model="showSubsTier1" label="Tier 1" class="pa-0 ma-0 pl-2" hide-details :disabled="!showSubs" />
+                    <v-checkbox v-model="showSubsTier2" label="Tier 2" class="pa-0 ma-0 pl-2" hide-details :disabled="!showSubs" />
+                    <v-checkbox v-model="showSubsTier3" label="Tier 3" class="pa-0 ma-0 pl-2" hide-details :disabled="!showSubs" />
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col>
-                    <v-checkbox label="Resubs" class="pa-0 ma-0" hide-details />
+                    <v-checkbox v-model="showResubs" label="Resubs" class="pa-0 ma-0" hide-details />
                     <v-divider class="pa-1 ma-1" />
-                    <v-checkbox label="Prime" class="pa-0 ma-0 pl-2" hide-details />
-                    <v-checkbox label="Tier 1" class="pa-0 ma-0 pl-2" hide-details />
-                    <v-checkbox label="Tier 2" class="pa-0 ma-0 pl-2" hide-details />
-                    <v-checkbox label="Tier 3" class="pa-0 ma-0 pl-2" hide-details />
+                    <v-checkbox v-model="showResubsPrime" label="Prime" class="pa-0 ma-0 pl-2" hide-details :disabled="!showResubs" />
+                    <v-checkbox v-model="showResubsTier1" label="Tier 1" class="pa-0 ma-0 pl-2" hide-details :disabled="!showResubs" />
+                    <v-checkbox v-model="showResubsTier2" label="Tier 2" class="pa-0 ma-0 pl-2" hide-details :disabled="!showResubs" />
+                    <v-checkbox v-model="showResubsTier3" label="Tier 3" class="pa-0 ma-0 pl-2" hide-details :disabled="!showResubs" />
                     <v-row no-gutters class="pl-2">
                       <v-col style="align-self: flex-end;">
-                        <v-checkbox class="pa-0 ma-0" label="Minimum" />
+                        <v-checkbox v-model="showResubsMinimal" class="pa-0 ma-0" label="Minimum" :disabled="!showResubs" />
                       </v-col>
                       <v-col>
-                        <v-text-field type="number" single-line dense>
+                        <v-text-field v-model.number="showResubsMinimalAmount" type="number" single-line dense :disabled="!showResubs || !showResubsMinimal">
                           <template #append>
                             months
                           </template>
@@ -91,10 +91,10 @@
                     <v-divider class="pa-1 ma-1" />
                     <v-row no-gutters class="pl-2">
                       <v-col style="align-self: flex-end;">
-                        <v-checkbox class="pa-0 ma-0" label="Minimum" />
+                        <v-checkbox v-model="showTipsMinimal" class="pa-0 ma-0" label="Minimum" :disabled="!showTips" />
                       </v-col>
                       <v-col>
-                        <v-text-field type="number" single-line dense>
+                        <v-text-field v-model.number="showTipsMinimalAmount" type="number" single-line dense :disabled="!showTips || !showTipsMinimal">
                           <template #append>
                             {{ $store.state.configuration.currency }}
                           </template>
@@ -287,26 +287,88 @@ export default defineComponent({
     const menu = ref(false);
     const isPopout = computed(() => location.href.includes('popout'));
 
-    const showFollows = ref(localStorage.showFollows === 'true' ?? true);
-    const showTips = ref(localStorage.showTips === 'true' ?? true);
-    const showHosts = ref(localStorage.showHosts === 'true' ?? true);
-    const showBits = ref(localStorage.showBits === 'true' ?? true);
-    const showRaids = ref(localStorage.showRaids === 'true' ?? true);
-    watch([showFollows, showHosts, showTips, showBits, showRaids], (val) => {
+    const showFollows = ref((localStorage.showFollows && localStorage.showFollows === 'true') ?? true);
+    const showTips = ref((localStorage.showTips && localStorage.showTips === 'true') ?? true);
+    const showTipsMinimal = ref((localStorage.showTipsMinimal && localStorage.showTipsMinimal === 'true') ?? false);
+    const showTipsMinimalAmount = ref(Number(localStorage.showTipsMinimalAmount || 50));
+    const showResubs = ref((localStorage.showResubs && localStorage.showResubs === 'true') ?? true);
+    const showResubsPrime = ref((localStorage.showResubsPrime && localStorage.showResubsPrime === 'true') ?? true);
+    const showResubsTier1 = ref((localStorage.showResubsTier1 && localStorage.showResubsTier1 === 'true') ?? true);
+    const showResubsTier2 = ref((localStorage.showResubsTier2 && localStorage.showResubsTier2 === 'true') ?? true);
+    const showResubsTier3 = ref((localStorage.showResubsTier3 && localStorage.showResubsTier3 === 'true') ?? true);
+    const showSubs = ref((localStorage.showSubs && localStorage.showSubs === 'true') ?? true);
+    const showSubsPrime = ref((localStorage.showSubsPrime && localStorage.showSubsPrime === 'true') ?? true);
+    const showSubsTier1 = ref((localStorage.showSubsTier1 && localStorage.showSubsTier1 === 'true') ?? true);
+    const showSubsTier2 = ref((localStorage.showSubsTier2 && localStorage.showSubsTier2 === 'true') ?? true);
+    const showSubsTier3 = ref((localStorage.showSubsTier3 && localStorage.showSubsTier3 === 'true') ?? true);
+    const showResubsMinimal = ref((localStorage.showResubsMinimal && localStorage.showResubsMinimal === 'true') ?? false);
+    const showResubsMinimalAmount = ref(Number(localStorage.showResubsMinimalAmount || 50));
+    const showHosts = ref((localStorage.showHosts && localStorage.showHosts === 'true') ?? true);
+    const showBits = ref((localStorage.showBits && localStorage.showBits === 'true') ?? true);
+    const showRaids = ref((localStorage.showRaids && localStorage.showRaids === 'true') ?? true);
+    watch([
+      showFollows, showHosts, showBits, showRaids,
+      showTips, showTipsMinimal, showTipsMinimalAmount,
+      showResubs, showResubsPrime, showResubsTier1, showResubsTier2, showResubsTier3, showResubsMinimal, showResubsMinimalAmount,
+      showSubs, showSubsPrime, showSubsTier1, showSubsTier2, showSubsTier3,
+    ], (val) => {
       localStorage.showFollows = String(val[0]);
       localStorage.showHosts = String(val[1]);
-      localStorage.showTips = String(val[2]);
-      localStorage.showBits = String(val[3]);
-      localStorage.showRaids = String(val[4]);
+      localStorage.showBits = String(val[2]);
+      localStorage.showRaids = String(val[3]);
+      localStorage.showTips = String(val[4]);
+      localStorage.showTipsMinimal = String(val[5]);
+      localStorage.showTipsMinimalAmount = String(val[6]);
+      localStorage.showResubs = String(val[7]);
+      localStorage.showResubsPrime = String(val[8]);
+      localStorage.showResubsTier1 = String(val[9]);
+      localStorage.showResubsTier2 = String(val[10]);
+      localStorage.showResubsTier3 = String(val[11]);
+      localStorage.showResubsMinimal = String(val[12]);
+      localStorage.showResubsMinimalAmount = String(val[13]);
+      localStorage.showSubs = String(val[14]);
+      localStorage.showSubsPrime = String(val[15]);
+      localStorage.showSubsTier1 = String(val[16]);
+      localStorage.showSubsTier2 = String(val[17]);
+      localStorage.showSubsTier3 = String(val[18]);
     });
 
-    function filter (event: EventListInterface) {
+    function filter (event: EventListInterface & { sortAmount: number}) {
       const follow = showFollows.value && event.event === 'follow';
       const host = showHosts.value && event.event === 'host';
       const raid = showRaids.value && event.event === 'raid';
-      const tip = showTips.value && event.event === 'tip';
       const bit = showBits.value && event.event === 'cheer';
-      return follow || host || raid || tip || bit;
+
+      const tip = showTips.value && event.event === 'tip';
+      const tipMinimal = !showTipsMinimal.value || (showTipsMinimal.value && event.sortAmount >= showTipsMinimalAmount.value);
+
+      const resub = showResubs.value && event.event === 'resub';
+      const months = JSON.parse(event.values_json).subCumulativeMonths ?? 0;
+      const tier = JSON.parse(event.values_json).tier ?? 1;
+      const resubMinimal = !showResubsMinimal.value || (showResubsMinimal.value && months >= showResubsMinimalAmount.value);
+      const resubPrime = showResubsPrime.value && tier === 'Prime';
+      const resubTier1 = showResubsTier1.value && Number(tier) === 1;
+      const resubTier2 = showResubsTier2.value && Number(tier) === 2;
+      const resubTier3 = showResubsTier3.value && Number(tier) === 3;
+
+      const sub = showSubs.value && event.event === 'sub';
+      const subPrime = showSubsPrime.value && tier === 'Prime';
+      const subTier1 = showSubsTier1.value && Number(tier) === 1;
+      const subTier2 = showSubsTier2.value && Number(tier) === 2;
+      const subTier3 = showSubsTier3.value && Number(tier) === 3;
+      if (event.event === 'sub') {
+        console.log({
+          event, tier, sub, subPrime, subTier1, subTier2, subTier3,
+        });
+      }
+
+      return follow
+        || host
+        || raid
+        || (tip && tipMinimal)
+        || bit
+        || (resub && resubMinimal && (resubPrime || resubTier1 || resubTier2 || resubTier3))
+        || (sub && (subPrime || subTier1 || subTier2 || subTier3));
     }
 
     watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
@@ -437,9 +499,23 @@ export default defineComponent({
       /* filter refs */
       showFollows,
       showTips,
+      showTipsMinimal,
+      showTipsMinimalAmount,
       showHosts,
       showBits,
       showRaids,
+      showResubs,
+      showResubsPrime,
+      showResubsTier1,
+      showResubsTier2,
+      showResubsTier3,
+      showResubsMinimal,
+      showResubsMinimalAmount,
+      showSubs,
+      showSubsPrime,
+      showSubsTier1,
+      showSubsTier2,
+      showSubsTier3,
 
       /* icons */
       mdiSkipNext,
