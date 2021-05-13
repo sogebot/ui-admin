@@ -77,7 +77,7 @@ export default defineComponent({
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
       const offsetTop = document.getElementById('c7eff6a7-dc62-4c0b-bad6-90df9d5b605f')?.parentElement?.parentElement?.parentElement?.parentElement?.offsetTop || 0;
-      const offset = 85;
+      const offset = 95;
       const newHeight = window.innerHeight - offsetTop - offset;
       height.value = Math.max(newHeight, 500);
     }

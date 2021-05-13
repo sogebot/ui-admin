@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="pb-0">
+  <v-container fluid class="pb-1">
     <v-row dense>
       <v-col cols="12" md="6" sm="6">
         <v-tabs
@@ -20,7 +20,7 @@
         <chat />
       </v-col>
 
-      <v-col cols="12" md="2" sm="4">
+      <v-col cols="12" md="2" sm="2">
         <actions />
       </v-col>
     </v-row>

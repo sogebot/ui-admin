@@ -356,11 +356,6 @@ export default defineComponent({
       const subTier1 = showSubsTier1.value && Number(tier) === 1;
       const subTier2 = showSubsTier2.value && Number(tier) === 2;
       const subTier3 = showSubsTier3.value && Number(tier) === 3;
-      if (event.event === 'sub') {
-        console.log({
-          event, tier, sub, subPrime, subTier1, subTier2, subTier3,
-        });
-      }
 
       return follow
         || host
@@ -380,7 +375,7 @@ export default defineComponent({
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
       const offsetTop = document.getElementById('5b90af97-ad95-4776-89e3-9a59c67510e4')?.parentElement?.parentElement?.parentElement?.parentElement?.offsetTop || 0;
-      const offset = 85;
+      const offset = 95;
       const newHeight = window.innerHeight - offsetTop - offset;
       height.value = Math.max(newHeight, 500);
     }

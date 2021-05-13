@@ -116,9 +116,9 @@ export default defineComponent({
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
       const offsetTop = document.getElementById('c7eff6a7-dc61-4c0b-bad6-90df9d5b605f')?.offsetTop || 0;
-      const offset = 51 + (showParts.value || showJoins.value ? 200 : 0);
+      const offset = 61 + (showParts.value || showJoins.value ? 200 : 0);
       const newHeight = window.innerHeight - offsetTop - offset;
-      height.value = Math.max(newHeight, 500);
+      height.value = Math.max(newHeight, (showParts.value || showJoins.value) ? 300 : 500);
     }
 
     onMounted(() => {
