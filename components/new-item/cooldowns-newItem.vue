@@ -7,7 +7,7 @@
     <v-textarea
       v-model="newItemCommand"
       hide-details="auto"
-      :label="'!' + translate('command') + ' ' + translate('or') + ' ' + translate('keyword')"
+      :label="'!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group')"
       :rows="1"
       :rules="rules.name"
       counter

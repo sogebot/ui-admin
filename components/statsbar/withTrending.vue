@@ -182,7 +182,7 @@ export default defineComponent({
     current:        Number,
     average:        Number,
     hide:           Boolean,
-    offline:           Boolean,
+    offline:        Boolean,
     title:          String,
     type:           String,
   },
