@@ -7,6 +7,7 @@
           <!-- dashboard needs to be visible all the time -->
           <statsbar />
         </span>
+        <dashboard v-show="$route.name === 'index'" />
         <nuxt />
         <snackbar />
       </v-main>
@@ -31,9 +32,10 @@ import { defineAsyncComponent, defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   components: {
-    navbar:   () => import('../components/navbar/navbar.vue'),
-    snackbar: () => import('../components/snackbar.vue'),
-    statsbar: defineAsyncComponent({ loader: () => import('~/components/statsbar.vue') }),
+    navbar:    () => import('../components/navbar/navbar.vue'),
+    snackbar:  () => import('../components/snackbar.vue'),
+    dashboard: () => import('../components/dashboard.vue'),
+    statsbar:  defineAsyncComponent({ loader: () => import('~/components/statsbar.vue') }),
   },
   middleware: ['isBotStarted'],
 });

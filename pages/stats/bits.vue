@@ -84,15 +84,15 @@ export default defineComponent({
   setup () {
     const search = ref('');
     const selectedYear = ref(String((new Date()).getFullYear()));
-    const items = ref([] as Required<UserBitInterface>[]);
+    const items = ref([] as Required<UserBitInterface & { username: string }>[]);
     const fItems = computed(() => {
       if (search.value === '') {
         return items.value;
       } else {
         return items.value.filter((item) => {
           const message = item.message.toLowerCase().includes(search.value.toLowerCase());
-          const userid = item.user.userId.toLowerCase().includes(search.value.toLowerCase());
-          const username = item.user.username.toLowerCase().includes(search.value.toLowerCase());
+          const userid = item.userId.toLowerCase().includes(search.value.toLowerCase());
+          const username = item.username.toLowerCase().includes(search.value.toLowerCase());
           return message || userid || username;
         });
       }
@@ -112,7 +112,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      getSocket('/stats/bits').emit('generic::getAll', (err: string | null, val: Required<UserBitInterface>[]) => {
+      getSocket('/stats/bits').emit('generic::getAll', (err: string | null, val: Required<UserBitInterface & { username: string }>[]) => {
         if (err) {
           return console.error(err);
         }

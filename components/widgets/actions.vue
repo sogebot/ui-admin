@@ -91,7 +91,7 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      setInterval(() => updateHeight(), 1000);
+      setInterval(() => updateHeight(), 100);
     });
 
     return {

@@ -17,7 +17,6 @@
             v-bind="attrs"
             href="#/popout/events"
             target="_blank"
-            @click="emitSkipAlertEvent()"
             v-on="on"
           >
             <v-icon>{{ mdiOpenInNew }}</v-icon>
@@ -464,7 +463,7 @@ export default defineComponent({
       });
       getSocket('/widgets/eventlist').emit('eventlist::get', 100);
       setInterval(() => getSocket('/widgets/eventlist').emit('eventlist::get', 100), 60000);
-      setInterval(() => updateHeight(), 1000);
+      setInterval(() => updateHeight(), 100);
     });
 
     return {
