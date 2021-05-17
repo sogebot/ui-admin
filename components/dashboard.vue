@@ -12,6 +12,9 @@
           <v-tab v-if="$store.state.$systems.find(o => o.name === 'songs').enabled">
             {{ translate('widget-title-ytplayer') }}
           </v-tab>
+          <v-tab v-if="$store.state.$systems.find(o => o.name === 'queue').enabled">
+            {{ translate('widget-title-queue') }}
+          </v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item>
@@ -19,6 +22,9 @@
           </v-tab-item>
           <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'songs').enabled">
             <ytplayer />
+          </v-tab-item>
+          <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'queue').enabled">
+            <queue />
           </v-tab-item>
         </v-tabs-items>
       </v-col>
@@ -45,6 +51,7 @@ export default defineComponent({
     chat:     defineAsyncComponent({ loader: () => import('~/components/widgets/chat.vue') }),
     events:   defineAsyncComponent({ loader: () => import('~/components/widgets/events.vue') }),
     ytplayer: defineAsyncComponent({ loader: () => import('~/components/widgets/ytplayer.vue') }),
+    queue:    defineAsyncComponent({ loader: () => import('~/components/widgets/queue.vue') }),
   },
   setup () {
     const tab = ref(null);
