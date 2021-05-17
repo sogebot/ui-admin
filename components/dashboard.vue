@@ -15,6 +15,9 @@
           <v-tab v-if="$store.state.$systems.find(o => o.name === 'queue').enabled">
             {{ translate('widget-title-queue') }}
           </v-tab>
+          <v-tab v-if="$store.state.$systems.find(o => o.name === 'raffles').enabled">
+            {{ translate('widget-title-raffles') }}
+          </v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item>
@@ -25,6 +28,9 @@
           </v-tab-item>
           <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'queue').enabled">
             <queue />
+          </v-tab-item>
+          <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'raffles').enabled">
+            <raffles />
           </v-tab-item>
         </v-tabs-items>
       </v-col>
@@ -52,6 +58,7 @@ export default defineComponent({
     events:   defineAsyncComponent({ loader: () => import('~/components/widgets/events.vue') }),
     ytplayer: defineAsyncComponent({ loader: () => import('~/components/widgets/ytplayer.vue') }),
     queue:    defineAsyncComponent({ loader: () => import('~/components/widgets/queue.vue') }),
+    raffles:  defineAsyncComponent({ loader: () => import('~/components/widgets/raffles.vue') }),
   },
   setup () {
     const tab = ref(null);

@@ -53,6 +53,26 @@
         </template>
         <span>Clear list</span>
       </v-tooltip>
+
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
+          <v-btn
+            :color="locked ? 'red lighten-1' : 'green lighten-1'"
+            icon
+            v-bind="attrs"
+            @click="locked = !locked"
+            v-on="on"
+          >
+            <v-icon v-if="locked">
+              {{ mdiLock }}
+            </v-icon>
+            <v-icon v-else>
+              {{ mdiLockOpen }}
+            </v-icon>
+          </v-btn>
+        </template>
+        <span>{{ locked ? 'Queue locked' : 'Queue opened' }}</span>
+      </v-tooltip>
     </v-toolbar>
 
     <v-card-text class="pa-0 ma-0">
@@ -81,12 +101,12 @@
             <v-btn v-if="selectedUsers.length > 0" block text @click="pickSelected">
               Pick {{ selectedUsers.length }} selected
             </v-btn>
-            <v-btn v-else block text @click="pick(false)">
+            <v-btn v-else block text :disabled="fUsers.length === 0" @click="pick(false)">
               Pick first {{ selectCount }}
             </v-btn>
           </v-col>
           <v-col>
-            <v-btn block text @click="pick(true)">
+            <v-btn block text :disabled="fUsers.length === 0" @click="pick(true)">
               Pick random {{ selectCount }}
             </v-btn>
           </v-col>
@@ -154,7 +174,9 @@
 </template>
 
 <script lang="ts">
-import { mdiBackspace, mdiOpenInNew } from '@mdi/js';
+import {
+  mdiBackspace, mdiLock, mdiLockOpen, mdiOpenInNew,
+} from '@mdi/js';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -337,6 +359,8 @@ export default defineComponent({
       // icons,
       mdiBackspace,
       mdiOpenInNew,
+      mdiLock,
+      mdiLockOpen,
     };
   },
 });

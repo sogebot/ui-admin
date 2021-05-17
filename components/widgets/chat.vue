@@ -8,10 +8,10 @@
       <v-btn icon @click="timestamp = Date.now()">
         <v-icon>{{ mdiRefresh }}</v-icon>
       </v-btn>
-      <v-btn icon :color="showJoins ? 'green' : 'red'" @click="showJoins = !showJoins">
+      <v-btn icon :color="showJoins ? 'green lighten-1' : 'red lighten-1'" @click="showJoins = !showJoins">
         <v-icon>{{ mdiAccountPlus }}</v-icon>
       </v-btn>
-      <v-btn icon :color="showParts ? 'green' : 'red'" @click="showParts = !showParts">
+      <v-btn icon :color="showParts ? 'green lighten-1' : 'red lighten-1'" @click="showParts = !showParts">
         <v-icon>{{ mdiAccountMinus }}</v-icon>
       </v-btn>
       <v-btn icon @click="dialog = true">
