@@ -1,29 +1,10 @@
 <template>
   <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e4" width="100%" :loading="isLoading">
     <v-toolbar height="36" color="blue-grey darken-4" class="mb-1">
-      <v-toolbar-title v-if="isPopout" class="text-button">
-        {{ translate('widget-title-eventlist') }}
-      </v-toolbar-title>
       <v-spacer />
-
       <v-btn v-if="selected.length > 0" color="red" icon @click="removeSelected">
         <v-icon>{{ mdiDelete }}</v-icon> {{ selected.length }}
       </v-btn>
-
-      <v-tooltip v-if="!isPopout" bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn
-            icon
-            v-bind="attrs"
-            href="#/popout/events"
-            target="_blank"
-            v-on="on"
-          >
-            <v-icon>{{ mdiOpenInNew }}</v-icon>
-          </v-btn>
-        </template>
-        <span>Popout</span>
-      </v-tooltip>
 
       <v-tooltip bottom>
         <template #activator="{ on: onTooltip }">
@@ -258,7 +239,7 @@
 import {
   mdiAutorenew, mdiBellCancel, mdiBellRing, mdiCash, mdiDelete,
   mdiDiamond, mdiFencing, mdiFilterMenu, mdiFormatQuoteClose, mdiFormatQuoteOpen,
-  mdiGift, mdiGiftOpen, mdiHeart, mdiOpenInNew, mdiRefresh,
+  mdiGift, mdiGiftOpen, mdiHeart, mdiRefresh,
   mdiSkipNext, mdiTelevision, mdiTextToSpeech, mdiTextToSpeechOff,
   mdiVolumeHigh, mdiVolumeMute, mdiYoutubeSubscription,
 } from '@mdi/js';
@@ -531,7 +512,6 @@ export default defineComponent({
       mdiDiamond,
       mdiCash,
       mdiFilterMenu,
-      mdiOpenInNew,
       mdiDelete,
       mdiRefresh,
     };

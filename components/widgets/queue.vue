@@ -1,124 +1,137 @@
 <template>
   <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e5" width="100%" :height="isPopout ? '100%' : undefined">
-    <v-toolbar height="36" color="blue-grey darken-4">
-      <v-toolbar-title v-if="isPopout" class="text-button">
-        {{ translate('widget-title-queue') }}
-      </v-toolbar-title>
-
-      <v-spacer v-if="isPopout" />
-
-      <v-btn-toggle
-        v-model="eligibility"
-        multiple
-        dense
-      >
-        <v-btn text small>
-          ALL
-        </v-btn>
-        <v-btn text small>
-          FOLLOWERS
-        </v-btn>
-        <v-btn text small>
-          SUBSCRIBERS
-        </v-btn>
-      </v-btn-toggle>
-
-      <v-spacer />
-
-      <v-tooltip v-if="!isPopout" bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn
-            icon
-            v-bind="attrs"
-            href="#/popout/queue"
-            target="_blank"
-            v-on="on"
-          >
-            <v-icon>{{ mdiOpenInNew }}</v-icon>
-          </v-btn>
-        </template>
-        <span>Popout</span>
-      </v-tooltip>
-
-      <v-tooltip bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn
-            icon
-            v-bind="attrs"
-            @click="clear"
-            v-on="on"
-          >
-            <v-icon>{{ mdiBackspace }}</v-icon>
-          </v-btn>
-        </template>
-        <span>Clear list</span>
-      </v-tooltip>
-
-      <v-tooltip bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn
-            :color="locked ? 'red lighten-1' : 'green lighten-1'"
-            icon
-            v-bind="attrs"
-            @click="locked = !locked"
-            v-on="on"
-          >
-            <v-icon v-if="locked">
-              {{ mdiLock }}
-            </v-icon>
-            <v-icon v-else>
-              {{ mdiLockOpen }}
-            </v-icon>
-          </v-btn>
-        </template>
-        <span>{{ locked ? 'Queue locked' : 'Queue opened' }}</span>
-      </v-tooltip>
-    </v-toolbar>
-
     <v-card-text class="pa-0 ma-0">
-      <v-btn-toggle v-model="tab" active-class="primary--text" mandatory style="width: 50%;">
-        <v-btn small block>
-          Pick users
-        </v-btn>
-        <v-btn small block>
-          Show picked
-        </v-btn>
-      </v-btn-toggle>
+      <v-tabs
+        v-model="tab"
+        height="36"
+        background-color="blue-grey darken-4"
+        grow
+      >
+        <v-tab>Pick users</v-tab>
+        <v-tab>Show picked</v-tab>
+      </v-tabs>
+      <v-tabs-items v-model="tab">
+        <v-tab-item>
+          <v-toolbar height="36" color="blue-grey darken-4">
+            <v-btn-toggle
+              v-model="eligibility"
+              multiple
+              dense
+            >
+              <v-btn text small>
+                ALL
+              </v-btn>
+              <v-btn text small>
+                FOLLOWERS
+              </v-btn>
+              <v-btn text small>
+                SUBSCRIBERS
+              </v-btn>
+            </v-btn-toggle>
 
-      <template v-if="tab === 0">
-        <v-text-field
-          v-model.number="selectCount"
-          label="Select count to pick"
-          dense
-          filled
-          hide-details
-          type="number"
-          min="1"
-        />
+            <v-spacer />
 
-        <v-row no-gutters class=" pt-2">
-          <v-col>
-            <v-btn v-if="selectedUsers.length > 0" block text @click="pickSelected">
-              Pick {{ selectedUsers.length }} selected
-            </v-btn>
-            <v-btn v-else block text :disabled="fUsers.length === 0" @click="pick(false)">
-              Pick first {{ selectCount }}
-            </v-btn>
-          </v-col>
-          <v-col>
-            <v-btn block text :disabled="fUsers.length === 0" @click="pick(true)">
-              Pick random {{ selectCount }}
-            </v-btn>
-          </v-col>
-        </v-row>
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  v-bind="attrs"
+                  @click="clear"
+                  v-on="on"
+                >
+                  <v-icon>{{ mdiBackspace }}</v-icon>
+                </v-btn>
+              </template>
+              <span>Clear list</span>
+            </v-tooltip>
 
-        <v-list dense :height="!isPopout ? height : null" style="overflow: auto;">
-          <v-list-item-group
-            v-model="selectedUsers"
-            multiple
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-btn
+                  :color="locked ? 'red lighten-1' : 'green lighten-1'"
+                  icon
+                  v-bind="attrs"
+                  @click="locked = !locked"
+                  v-on="on"
+                >
+                  <v-icon v-if="locked">
+                    {{ mdiLock }}
+                  </v-icon>
+                  <v-icon v-else>
+                    {{ mdiLockOpen }}
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>{{ locked ? 'Queue locked' : 'Queue opened' }}</span>
+            </v-tooltip>
+          </v-toolbar>
+
+          <v-text-field
+            v-model.number="selectCount"
+            label="Select count to pick"
+            dense
+            filled
+            hide-details
+            type="number"
+            min="1"
+          />
+
+          <v-row no-gutters class=" pt-2">
+            <v-col>
+              <v-btn v-if="selectedUsers.length > 0" block text @click="pickSelected">
+                Pick {{ selectedUsers.length }} selected
+              </v-btn>
+              <v-btn v-else block text :disabled="fUsers.length === 0" @click="pick(false)">
+                Pick first {{ selectCount }}
+              </v-btn>
+            </v-col>
+            <v-col>
+              <v-btn block text :disabled="fUsers.length === 0" @click="pick(true)">
+                Pick random {{ selectCount }}
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <v-list dense :height="!isPopout ? height : null" style="overflow: auto;">
+            <v-list-item-group
+              v-model="selectedUsers"
+              multiple
+            >
+              <v-list-item
+                v-for="user of fUsers"
+                :key="user.id"
+              >
+                <v-container fluid class="pa-0 ma-0">
+                  <v-row no-gutters>
+                    <v-col>
+                      <strong>{{ user.username }}</strong>
+                    </v-col>
+                    <v-col>
+                      <code v-if="user.isFollower">FOLLOWER</code>
+                      <code v-if="user.isSubscriber">SUBSCRIBER</code>
+                    </v-col>
+                  </v-row>
+                  <v-row no-gutters>
+                    <v-col cols="12">
+                      <small>{{ dayjs(user.createdAt).format('LL') }} {{ dayjs(user.createdAt).format('LTS') }}</small>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-tab-item>
+        <v-tab-item>
+          <div
+            v-if="picked.length === 0"
+            :style="{ height: !isPopout ? height + 98 + 34 + 'px' : 'inherit' }"
+            class="font-weight-light text-center pa-3 m-auto"
           >
+            No users were picked yet
+          </div>
+          <v-list v-else dense :height="!isPopout ? height + 98 + 34 : null" style="overflow: auto;">
             <v-list-item
-              v-for="user of fUsers"
+              v-for="user of picked"
               :key="user.id"
             >
               <v-container fluid class="pa-0 ma-0">
@@ -131,51 +144,18 @@
                     <code v-if="user.isSubscriber">SUBSCRIBER</code>
                   </v-col>
                 </v-row>
-                <v-row no-gutters>
-                  <v-col cols="12">
-                    <small>{{ dayjs(user.createdAt).format('LL') }} {{ dayjs(user.createdAt).format('LTS') }}</small>
-                  </v-col>
-                </v-row>
               </v-container>
             </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </template>
-
-      <template v-if="tab === 1">
-        <div
-          v-if="picked.length === 0"
-          :style="{ height: !isPopout ? height + 98 + 'px' : 'inherit' }"
-          class="font-weight-light text-center pa-3 m-auto"
-        >
-          No users were picked yet
-        </div>
-        <v-list v-else dense :height="!isPopout ? height + 98 : null" style="overflow: auto;">
-          <v-list-item
-            v-for="user of picked"
-            :key="user.id"
-          >
-            <v-container fluid class="pa-0 ma-0">
-              <v-row no-gutters>
-                <v-col>
-                  <strong>{{ user.username }}</strong>
-                </v-col>
-                <v-col>
-                  <code v-if="user.isFollower">FOLLOWER</code>
-                  <code v-if="user.isSubscriber">SUBSCRIBER</code>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-list-item>
-        </v-list>
-      </template>
+          </v-list>
+        </v-tab-item>
+      </v-tabs-items>
     </v-card-text>
   </v-card>
 </template>
 
 <script lang="ts">
 import {
-  mdiBackspace, mdiLock, mdiLockOpen, mdiOpenInNew,
+  mdiBackspace, mdiLock, mdiLockOpen,
 } from '@mdi/js';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -212,7 +192,7 @@ export default defineComponent({
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
       const offsetTop = document.getElementById('5b90af97-ad95-4776-89e3-9a59c67510e5')?.parentElement?.parentElement?.parentElement?.parentElement?.offsetTop || 0;
-      const offset = 90 + 126;
+      const offset = 90 + 133;
       const newHeight = window.innerHeight - offsetTop - offset;
       height.value = Math.max(newHeight, 300);
     }
@@ -358,7 +338,6 @@ export default defineComponent({
 
       // icons,
       mdiBackspace,
-      mdiOpenInNew,
       mdiLock,
       mdiLockOpen,
     };

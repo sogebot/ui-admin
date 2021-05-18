@@ -1,70 +1,432 @@
 <template>
-  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e5" width="100%" :height="isPopout ? '100%' : undefined">
-    <v-toolbar height="36" color="blue-grey darken-4">
-      <v-toolbar-title v-if="isPopout" class="text-button">
-        {{ translate('widget-title-raffles') }}
-      </v-toolbar-title>
+  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e5" :loading="isLoading" width="100%" :height="isPopout ? '100%' : undefined">
+    <v-card-text class="pa-0 ma-0">
+      <v-tabs
+        v-model="tab"
+        height="36"
+        background-color="blue-grey darken-4"
+        grow
+      >
+        <v-tab>Raffle</v-tab>
+        <v-tab>Participants</v-tab>
+        <v-tab>Winner</v-tab>
+      </v-tabs>
 
-      <v-spacer />
+      <v-tabs-items v-model="tab" :style="{ height: height + 'px' }">
+        <v-tab-item class="pa-2">
+          <v-form v-model="valid" lazy-validation>
+            <v-text-field
+              v-model="keyword"
+              label="Raffle command"
+              :rules="commandRule"
+              :disabled="running"
+              hide-details
+            >
+              <template #append>
+                <v-progress-circular v-if="running" indeterminate size="20" />
+              </template>
+            </v-text-field>
 
-      <v-tooltip v-if="!isPopout" bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn
-            icon
-            v-bind="attrs"
-            href="#/popout/raffles"
-            target="_blank"
-            v-on="on"
+            <template v-if="!running">
+              <v-autocomplete
+                v-model="eligible"
+                hide-details
+                multiple
+                :label="translate('eligible-to-enter')"
+                :items="eligibleItems"
+              />
+              <v-select
+                v-model="isTypeKeywords"
+                :items="typeItems"
+                :label="translate('raffle-type')"
+                item-value="value"
+                hide-details
+              />
+
+              <template v-if="!isTypeKeywords">
+                <div style="font-size: 12px;" class="pa-0 ma-0">
+                  {{ translate('raffle-tickets-range') }}
+                </div>
+                <v-range-slider
+                  v-model="range"
+                  :max="100000"
+                  :min="0"
+                  hide-details
+                  class="align-center mb-2"
+                >
+                  <template #prepend>
+                    <v-text-field
+                      :value="range[0]"
+                      class="mt-0 pt-0"
+                      hide-details
+                      single-line
+                      type="number"
+                      style="width: 60px;"
+                      @change="$set(range, 0, $event)"
+                    />
+                  </template>
+                  <template #append>
+                    <v-text-field
+                      :value="range[1]"
+                      class="mt-0 pt-0"
+                      hide-details
+                      single-line
+                      type="number"
+                      style="width: 60px;"
+                      @change="$set(range, 1, $event)"
+                    />
+                  </template>
+                </v-range-slider>
+              </template>
+              <v-btn
+                color="success"
+                class="my-2"
+                :disabled="!valid"
+                block
+                @click="open"
+              >
+                Open raffle
+              </v-btn>
+            </template>
+
+            <v-btn v-if="running" color="error" class="mb-2" block @click="close">
+              Close raffle
+            </v-btn>
+            <v-btn v-if="running" block @click="pickWinner">
+              Pick Winner
+            </v-btn>
+          </v-form>
+        </v-tab-item>
+        <v-tab-item>
+          <v-text-field v-model="search" filled dense hide-details label="Search" />
+          <v-list dense>
+            <v-list-item
+              v-for="participant of fParticipants"
+              :key="participant._id"
+              @click="toggleEligibility(participant)"
+            >
+              <v-icon v-if="participant.isEligible" class="pr-2" color="success">
+                {{ mdiCheckCircleOutline }}
+              </v-icon>
+              <v-icon v-else class="pr-2" color="error">
+                {{ mdiCheckboxBlankCircleOutline }}
+              </v-icon>
+              {{ participant.username }}
+            </v-list-item>
+            <v-list-item v-if="Math.abs(fParticipants.length - participants.length) > 0">
+              <v-icon class="pr-2">
+                {{ mdiEyeOff }}
+              </v-icon>
+              <span class="grey--text">{{ Math.abs(fParticipants.length - participants.length) }} {{ translate('hidden') }}</span>
+            </v-list-item>
+          </v-list>
+        </v-tab-item>
+        <v-tab-item>
+          <div
+            v-if="!winner"
+            class="font-weight-light text-center pa-3 m-auto"
           >
-            <v-icon>{{ mdiOpenInNew }}</v-icon>
-          </v-btn>
-        </template>
-        <span>Popout</span>
-      </v-tooltip>
-    </v-toolbar>
+            No winner was picked yet
+          </div>
+          <div
+            v-else
+            class="font-weight-light pa-3"
+          >
+            <div class="text-h4 m-auto text-center">
+              {{ winner.username }}
+            </div>
+            <v-row no-gutters class="m-auto text-center">
+              <v-col :class="{'text-decoration-line-through': !winner.isFollower }">
+                {{ translate('follower') }}
+              </v-col>
+              <v-col :class="{'text-decoration-line-through': !winner.isSubscriber }">
+                {{ translate('subscriber') }}
+              </v-col>
+            </v-row>
 
-    <v-card-text class="pa-0 ma-0" />
+            <v-card-actions class="px-0">
+              <v-btn v-if="countEligibleParticipants > 0" block @click="pickWinner">
+                <v-icon class="pr-2">
+                  {{ mdiSync }}
+                </v-icon> {{ translate('roll-again') }}
+              </v-btn>
+              <v-btn v-else block disabled>
+                <v-icon class="pr-2">
+                  {{ mdiSyncOff }}
+                </v-icon> {{ translate('no-eligible-participants') }}
+              </v-btn>
+            </v-card-actions>
+
+            <div class="text-button">
+              <v-icon>{{ mdiCommentMultiple }}</v-icon> {{ translate('messages') }}
+            </div>
+            <v-simple-table v-if="winnerMessages.length > 0">
+              <template #default>
+                <tbody>
+                  <tr
+                    v-for="item in winnerMessages"
+                    :key="item.timestamp"
+                  >
+                    <td>{{ message.text }}</td>
+                    <td>{{ dayjs(messge.timestamp).format('LL') }} {{ dayjs(messge.timestamp).format('LTS') }}</td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+            <div
+              v-else
+              class="font-weight-light text-center pa-3 m-auto"
+            >
+              No messages from winner yet
+            </div>
+          </div>
+        </v-tab-item>
+      </v-tabs-items>
+    </v-card-text>
   </v-card>
 </template>
 
 <script lang="ts">
-import { mdiOpenInNew } from '@mdi/js';
-// import { getSocket } from '@sogebot/ui-helpers/socket';
+import {
+  mdiCheckboxBlankCircleOutline, mdiCheckCircleOutline, mdiCommentMultiple, mdiEyeOff, mdiSync, mdiSyncOff,
+} from '@mdi/js';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
-  defineComponent, onMounted, ref,
+  defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
+
+import type { RaffleInterface } from '.bot/src/bot/database/entity/raffle';
+import { UserInterface } from '~/.bot/src/bot/database/entity/user';
+import { error } from '~/functions/error';
+import {
+  minLength, required, startsWith,
+} from '~/functions/validators';
 
 export default defineComponent({
   setup () {
     const isPopout = computed(() => location.href.includes('popout'));
     const height = ref(600);
+    const tab = ref(0);
+    const isLoading = ref(true);
+
+    const commandRule = [
+      required, startsWith(['!']), minLength(2),
+    ];
+
+    const search = ref('');
+    const valid = ref(true);
+    const updated = ref(Date.now());
+    const participants = ref([] as RaffleInterface['participants']);
+    const running = ref(false);
+    const winner = ref(null as null | UserInterface);
+    const keyword = ref('');
+    const isTypeKeywords = ref(false);
+    const range = ref([0, 1000]);
+    const eligible = ref(['all']);
+    watch(eligible, (val, old) => {
+      if ((val.includes('all') && !old.includes('all'))
+        || val.length === 0) {
+        // we picked all, unselect subs and followers
+        eligible.value = ['all'];
+      }
+      if ((val.includes('followers') || val.includes('subscribers')) && old.includes('all')) {
+        // we picked all, unselect subs and followers
+        eligible.value = eligible.value.filter(o => o !== 'all');
+      }
+    });
+
+    const eligibleItems = [
+      { text: translate('everyone'), value: 'all' },
+      { text: translate('followers'), value: 'followers' },
+      { text: translate('subscribers'), value: 'subscribers' },
+    ];
+    const typeItems = [
+      { text: translate('raffle-type-keywords'), value: true },
+      { text: translate('raffle-type-tickets'), value: false },
+    ];
+    const fParticipants = computed(() => {
+      if (search.value.trim().length === 0) {
+        return participants.value;
+      } else {
+        return participants.value.filter(o => o.username.includes(search.value.trim()));
+      }
+    });
+    const winnerMessages = computed(() => {
+      if (winner.value) {
+        const messages = participants.value.find(o => o.username === winner.value?.username)?.messages ?? [];
+        return messages.slice(Math.max(messages.length - 5, 0));
+      } else {
+        return [];
+      }
+    });
+    const countEligibleParticipants = computed(() => {
+      return (participants.value.filter(o => o.isEligible)).length;
+    });
+
+    watch(keyword, (val) => {
+      if (!val.startsWith('!')) {
+        keyword.value = '!' + val;
+      }
+    });
+
+    onMounted(() => {
+      setInterval(() => updateHeight(), 100);
+      const cache = localStorage.getItem('/widget/raffles/');
+      if (cache) {
+        const parsed = JSON.parse(cache);
+        eligible.value = parsed.eligible;
+        isTypeKeywords.value = parsed.isTypeKeywords;
+        keyword.value = parsed.keyword;
+        range.value[1] = parsed.ticketsMax;
+        range.value[0] = parsed.ticketsMin;
+      }
+
+      // better would be to have watcher, but there is no simple way
+      // to catch all relevant props without lot of a code
+      setInterval(() => {
+        localStorage.setItem('/widget/raffles/', JSON.stringify({
+          eligible:       eligible.value,
+          isTypeKeywords: isTypeKeywords.value,
+          keyword:        keyword.value,
+          ticketsMax:     range.value[1],
+          ticketsMin:     range.value[0],
+        }));
+      }, 1000);
+
+      setInterval(() => refresh(), 1000);
+    });
 
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
       const offsetTop = document.getElementById('5b90af97-ad95-4776-89e3-9a59c67510e5')?.parentElement?.parentElement?.parentElement?.parentElement?.offsetTop || 0;
-      const offset = 90 + 126;
+      const offset = 127 - 36;
       const newHeight = window.innerHeight - offsetTop - offset;
       height.value = Math.max(newHeight, 300);
     }
 
-    onMounted(() => {
-      setInterval(() => updateHeight(), 100);
-    });
+    function refresh () {
+      getSocket('/systems/raffles').emit('raffle:getLatest', (err: string | null, raffle: RaffleInterface) => {
+        console.groupCollapsed('raffle:getLatest');
+        console.log({ err, raffle });
+        console.groupEnd();
+        isLoading.value = false;
+        if (err) {
+          error(err);
+        }
+        if (raffle) {
+          participants.value = raffle.participants;
+          running.value = !raffle.isClosed;
+
+          if (!raffle.winner) {
+            winner.value = null;
+          } else if (winner.value === null || winner.value.username !== raffle.winner) {
+            getSocket('/systems/raffles').emit('raffle::getWinner', raffle.winner, (err2: string | null, user: UserInterface) => {
+              if (err2) {
+                error(err2);
+              }
+              winner.value = user;
+            });
+          }
+
+          if (running.value) {
+            keyword.value = raffle.keyword;
+            isTypeKeywords.value = raffle.type === 0;
+            range.value[1] = raffle.maxTickets ?? 0;
+            range.value[0] = raffle.minTickets ?? 0;
+
+            // set eligibility
+            if (!raffle.forSubscribers && !raffle.forFollowers) {
+              eligible.value = ['all'];
+            } else {
+              eligible.value = [];
+              if (raffle.forFollowers) {
+                eligible.value.push('followers');
+              }
+              if (raffle.forSubscribers) {
+                eligible.value.push('subscribers');
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function toggleEligibility (participant: typeof participants.value[number]) {
+      participant.isEligible = !participant.isEligible;
+      getSocket('/systems/raffles').emit('raffle::setEligibility', { id: participant.id, isEligible: participant.isEligible }, (err) => {
+        if (err) {
+          return console.error(err);
+        }
+      });
+    }
+    function open () {
+      const out = [];
+      out.push(keyword.value);
+      if (eligible.value.includes('followers') || eligible.value.includes('subscribers')) {
+        out.push('-for ' + (eligible.value.includes('followers') ? 'followers' : ' ') + (eligible.value.includes('subscribers') ? 'subscribers' : ' '));
+      }
+
+      if (!isTypeKeywords.value) {
+        out.push(`-min ${range.value[0]}`);
+        out.push(`-max ${range.value[1]}`);
+      }
+      console.group('raffles open()');
+      console.debug('out: ', out.join(' '));
+      console.groupEnd();
+      getSocket('/systems/raffles').emit('raffle::open', out.join(' '));
+    }
+    function close () {
+      getSocket('/systems/raffles').emit('raffle::close');
+      running.value = false;
+    }
+    function pickWinner () {
+      getSocket('/systems/raffles').emit('raffle::pick');
+      tab.value = 2;
+    }
 
     return {
       // refs
       isPopout,
       height,
+      tab,
+      search,
+      participants,
+      running,
+      winner,
+      keyword,
+      isTypeKeywords,
+      range,
+      eligible,
+      fParticipants,
+      winnerMessages,
+      countEligibleParticipants,
+      updated,
+      valid,
+      commandRule,
+      isLoading,
+      eligibleItems,
+      typeItems,
 
       // functions
+      toggleEligibility,
+      open,
+      close,
+      pickWinner,
 
       // helpers
       translate,
+      dayjs,
 
       // icons,
-      mdiOpenInNew,
+      mdiCheckCircleOutline,
+      mdiCheckboxBlankCircleOutline,
+      mdiEyeOff,
+      mdiSync,
+      mdiSyncOff,
+      mdiCommentMultiple,
     };
   },
 });

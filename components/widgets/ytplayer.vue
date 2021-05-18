@@ -1,26 +1,7 @@
 <template>
   <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e5" width="100%">
     <v-toolbar height="36" color="blue-grey darken-4">
-      <v-toolbar-title v-if="isPopout" class="text-button">
-        {{ translate('widget-title-ytplayer') }}
-      </v-toolbar-title>
-
       <v-spacer />
-
-      <v-tooltip v-if="!isPopout" bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn
-            icon
-            v-bind="attrs"
-            href="#/popout/ytplayer"
-            target="_blank"
-            v-on="on"
-          >
-            <v-icon>{{ mdiOpenInNew }}</v-icon>
-          </v-btn>
-        </template>
-        <span>Popout</span>
-      </v-tooltip>
 
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
@@ -134,7 +115,7 @@
 
 <script lang="ts">
 import {
-  mdiDelete, mdiOpenInNew, mdiPlay, mdiSkipForward, mdiStop,
+  mdiDelete, mdiPlay, mdiSkipForward, mdiStop,
 } from '@mdi/js';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -417,7 +398,6 @@ export default defineComponent({
       updateHeight,
 
       // icons
-      mdiOpenInNew,
       mdiPlay,
       mdiStop,
       mdiSkipForward,
