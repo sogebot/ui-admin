@@ -169,7 +169,7 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>
-                    {{ item.username }} <span v-html="prepareMessage(item)" />
+                    <span class="text-h6">{{ item.username }}</span> <span v-html="prepareMessage(item)" />
                   </v-list-item-title>
                   <v-list-item-subtitle v-text="dayjs(item.timestamp).fromNow()" />
 
