@@ -23,13 +23,15 @@
         </v-expand-transition>
       </v-col>
     </v-row>
-    <v-row v-if="isAnySelected && editing">
-      <v-col cols="12">
-        <v-btn color="error" block @click="deleteItems">
-          Delete
-        </v-btn>
-      </v-col>
-    </v-row>
+    <v-fade-transition>
+      <v-row v-if="isAnySelected && editing">
+        <v-col cols="12">
+          <v-btn color="error" block @click="deleteItems">
+            Delete
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-fade-transition>
   </v-card>
 </template>
 

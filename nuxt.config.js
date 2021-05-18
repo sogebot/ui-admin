@@ -26,6 +26,7 @@ export default {
   css: [
     '@/assets/colors.scss',
     '@/assets/global.scss',
+    '@/assets/transitions.scss',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins

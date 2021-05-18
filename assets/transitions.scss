@@ -1,0 +1,14 @@
+.enable-transition {
+  transition: all 0.25s;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.25s;
+  position: absolute;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}

@@ -24,6 +24,7 @@
 
     <iframe
       v-else
+      class="enable-transition"
       frameborder="0"
       scrolling="no"
       :src="chatUrl"
@@ -31,25 +32,27 @@
       :height="height + 'px'"
     />
 
-    <v-card v-if="showJoins || showParts" height="200px">
-      <v-toolbar color="blue-grey darken-4" class="mb-1" height="36">
-        <small class="text-button">Chat Events</small>
-      </v-toolbar>
+    <v-expand-transition>
+      <v-card v-if="showJoins || showParts" height="200px">
+        <v-toolbar color="blue-grey darken-4" class="mb-1" height="36">
+          <small class="text-button">Chat Events</small>
+        </v-toolbar>
 
-      <v-card-text
-        v-html="
-          list.filter(o => {
-            if (showJoins && showParts) {
-              return true;
-            } else if (showJoins) {
-              return o.username.startsWith('+');
-            } else {
-              return o.username.startsWith('-');
-            }
-          }).map(o => `<span class='${o.username.startsWith('+') ? 'green--text' : 'red--text'} text--lighten-2'>${o.username.substring(1)}</span>`).join(', ')
-        "
-      />
-    </v-card>
+        <v-card-text
+          v-html="
+            list.filter(o => {
+              if (showJoins && showParts) {
+                return true;
+              } else if (showJoins) {
+                return o.username.startsWith('+');
+              } else {
+                return o.username.startsWith('-');
+              }
+            }).map(o => `<span class='${o.username.startsWith('+') ? 'green--text' : 'red--text'} text--lighten-2'>${o.username.substring(1)}</span>`).join(', ')
+          "
+        />
+      </v-card>
+    </v-expand-transition>
 
     <v-overlay v-model="dialog" color="black" absolute class="w-100 px-2">
       <v-textarea v-model="message" auto-grow rows="2" counter label="Bot message" />

@@ -28,103 +28,120 @@
               </template>
             </v-text-field>
 
-            <template v-if="!running">
-              <v-autocomplete
-                v-model="eligible"
-                filled
-                hide-details
-                multiple
-                :label="translate('eligible-to-enter')"
-                :items="eligibleItems"
-              />
-              <v-select
-                v-model="isTypeKeywords"
-                filled
-                :items="typeItems"
-                :label="translate('raffle-type')"
-                item-value="value"
-                hide-details
-              />
+            <v-autocomplete
+              v-model="eligible"
+              :disabled="running"
+              filled
+              hide-details
+              multiple
+              :label="translate('eligible-to-enter')"
+              :items="eligibleItems"
+            />
 
-              <template v-if="!isTypeKeywords">
-                <div class="pa-4">
-                  <div style="font-size: 12px;" class="pa-0 ma-0">
-                    {{ translate('raffle-tickets-range') }}
-                  </div>
-                  <v-range-slider
-                    v-model="range"
-                    filled
-                    :max="100000"
-                    :min="0"
-                    hide-details
-                    class="align-center mb-2"
-                  >
-                    <template #prepend>
-                      <v-text-field
-                        :value="range[0]"
-                        class="mt-0 pt-0"
-                        hide-details
-                        single-line
-                        type="number"
-                        style="width: 60px;"
-                        @change="$set(range, 0, $event)"
-                      />
-                    </template>
-                    <template #append>
-                      <v-text-field
-                        :value="range[1]"
-                        class="mt-0 pt-0"
-                        hide-details
-                        single-line
-                        type="number"
-                        style="width: 60px;"
-                        @change="$set(range, 1, $event)"
-                      />
-                    </template>
-                  </v-range-slider>
+            <v-select
+              v-model="isTypeKeywords"
+              :disabled="running"
+              filled
+              :items="typeItems"
+              :label="translate('raffle-type')"
+              item-value="value"
+              hide-details
+            />
+
+            <v-expand-transition>
+              <div v-if="!isTypeKeywords" class="pa-4">
+                <div style="font-size: 12px;" class="pa-0 ma-0">
+                  {{ translate('raffle-tickets-range') }}
                 </div>
-              </template>
-              <v-btn
-                color="success"
-                class="my-2"
-                :disabled="!valid"
-                block
-                @click="open"
-              >
-                Open raffle
-              </v-btn>
-            </template>
+                <v-range-slider
+                  v-model="range"
+                  :disabled="running"
+                  filled
+                  :max="100000"
+                  :min="0"
+                  hide-details
+                  class="align-center mb-2"
+                >
+                  <template #prepend>
+                    <v-text-field
+                      :value="range[0]"
+                      class="mt-0 pt-0"
+                      hide-details
+                      single-line
+                      type="number"
+                      style="width: 60px;"
+                      @change="$set(range, 0, $event)"
+                    />
+                  </template>
+                  <template #append>
+                    <v-text-field
+                      :value="range[1]"
+                      class="mt-0 pt-0"
+                      hide-details
+                      single-line
+                      type="number"
+                      style="width: 60px;"
+                      @change="$set(range, 1, $event)"
+                    />
+                  </template>
+                </v-range-slider>
+              </div>
+            </v-expand-transition>
 
-            <v-btn v-if="running" color="error" class="mb-2" block @click="close">
-              Close raffle
-            </v-btn>
-            <v-btn v-if="running" block @click="pickWinner">
-              Pick Winner
-            </v-btn>
+            <transition-group name="fade">
+              <div v-if="!running" key="open-raffle-button" style="width: 100%;">
+                <v-btn
+                  color="success"
+                  :disabled="!valid"
+                  block
+                  @click="open"
+                >
+                  Open raffle
+                </v-btn>
+              </div>
+              <div v-else key="running-raffle-buttons" style="width: 100%;">
+                <v-btn
+                  key="close-raffle-button"
+                  color="error"
+                  class="mb-2"
+                  block
+                  @click="close"
+                >
+                  Close raffle
+                </v-btn>
+                <v-btn block @click="pickWinner">
+                  Pick Winner
+                </v-btn>
+              </div>
+            </transition-group>
           </v-form>
         </v-tab-item>
         <v-tab-item>
           <v-text-field v-model="search" filled dense hide-details label="Search" />
           <v-list dense>
-            <v-list-item
-              v-for="participant of fParticipants"
-              :key="participant._id"
-              @click="toggleEligibility(participant)"
-            >
-              <v-icon v-if="participant.isEligible" class="pr-2" color="success">
-                {{ mdiCheckCircleOutline }}
-              </v-icon>
-              <v-icon v-else class="pr-2" color="error">
-                {{ mdiCheckboxBlankCircleOutline }}
-              </v-icon>
-              {{ participant.username }}
-            </v-list-item>
-            <v-list-item v-if="Math.abs(fParticipants.length - participants.length) > 0">
-              <v-icon class="pr-2">
-                {{ mdiEyeOff }}
-              </v-icon>
-              <span class="grey--text">{{ Math.abs(fParticipants.length - participants.length) }} {{ translate('hidden') }}</span>
-            </v-list-item>
+            <v-fade-transition>
+              <v-list-item
+                v-for="participant of fParticipants"
+                :key="participant._id"
+                @click="toggleEligibility(participant)"
+              >
+                <v-icon v-if="participant.isEligible" class="pr-2" color="success">
+                  {{ mdiCheckCircleOutline }}
+                </v-icon>
+                <v-icon v-else class="pr-2" color="error">
+                  {{ mdiCheckboxBlankCircleOutline }}
+                </v-icon>
+                {{ participant.username }}
+              </v-list-item>
+            </v-fade-transition>
+            <v-fade-transition>
+              <v-list-item v-if="Math.abs(fParticipants.length - participants.length) > 0">
+                <v-icon class="pr-2">
+                  {{ mdiEyeOff }}
+                </v-icon>
+                <span class="grey--text">{{ Math.abs(fParticipants.length - participants.length) }} {{ translate('hidden') }}</span>
+              </v-list-item>
+            </v-fade-transition>
           </v-list>
         </v-tab-item>
         <v-tab-item>
@@ -362,9 +379,9 @@ export default defineComponent({
 
     function toggleEligibility (participant: typeof participants.value[number]) {
       participant.isEligible = !participant.isEligible;
-      getSocket('/systems/raffles').emit('raffle::setEligibility', { id: participant.id, isEligible: participant.isEligible }, (err) => {
+      getSocket('/systems/raffles').emit('raffle::setEligibility', { id: participant.id, isEligible: participant.isEligible }, (err: string | null) => {
         if (err) {
-          return console.error(err);
+          return error(err);
         }
       });
     }

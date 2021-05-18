@@ -7,17 +7,21 @@
   >
     <v-card-text class="text-button pa-1 mb-1 text-center" style="font-size: 12px !important;">
       <v-row no-gutters>
-        <v-col v-if="editing" cols="auto" class="d-flex">
-          <v-simple-checkbox v-model="selected" />
-        </v-col>
+        <v-slide-x-transition>
+          <v-col v-if="editing" cols="auto" class="d-flex">
+            <v-simple-checkbox v-model="selected" />
+          </v-col>
+        </v-slide-x-transition>
         <v-col class="text-truncate">
           {{ item.title }}
         </v-col>
-        <v-col v-if="editing" cols="auto" class="d-flex">
-          <v-btn icon>
-            <v-icon>{{ mdiPencil }}</v-icon>
-          </v-btn>
-        </v-col>
+        <v-slide-x-reverse-transition>
+          <v-col v-if="editing" cols="auto" class="d-flex">
+            <v-btn icon>
+              <v-icon>{{ mdiPencil }}</v-icon>
+            </v-btn>
+          </v-col>
+        </v-slide-x-reverse-transition>
       </v-row>
     </v-card-text>
   </v-card>
