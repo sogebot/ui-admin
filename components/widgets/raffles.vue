@@ -13,10 +13,11 @@
       </v-tabs>
 
       <v-tabs-items v-model="tab" :style="{ height: height + 'px' }">
-        <v-tab-item class="pa-2">
+        <v-tab-item>
           <v-form v-model="valid" lazy-validation>
             <v-text-field
               v-model="keyword"
+              filled
               label="Raffle command"
               :rules="commandRule"
               :disabled="running"
@@ -30,6 +31,7 @@
             <template v-if="!running">
               <v-autocomplete
                 v-model="eligible"
+                filled
                 hide-details
                 multiple
                 :label="translate('eligible-to-enter')"
@@ -37,6 +39,7 @@
               />
               <v-select
                 v-model="isTypeKeywords"
+                filled
                 :items="typeItems"
                 :label="translate('raffle-type')"
                 item-value="value"
@@ -44,39 +47,42 @@
               />
 
               <template v-if="!isTypeKeywords">
-                <div style="font-size: 12px;" class="pa-0 ma-0">
-                  {{ translate('raffle-tickets-range') }}
+                <div class="pa-4">
+                  <div style="font-size: 12px;" class="pa-0 ma-0">
+                    {{ translate('raffle-tickets-range') }}
+                  </div>
+                  <v-range-slider
+                    v-model="range"
+                    filled
+                    :max="100000"
+                    :min="0"
+                    hide-details
+                    class="align-center mb-2"
+                  >
+                    <template #prepend>
+                      <v-text-field
+                        :value="range[0]"
+                        class="mt-0 pt-0"
+                        hide-details
+                        single-line
+                        type="number"
+                        style="width: 60px;"
+                        @change="$set(range, 0, $event)"
+                      />
+                    </template>
+                    <template #append>
+                      <v-text-field
+                        :value="range[1]"
+                        class="mt-0 pt-0"
+                        hide-details
+                        single-line
+                        type="number"
+                        style="width: 60px;"
+                        @change="$set(range, 1, $event)"
+                      />
+                    </template>
+                  </v-range-slider>
                 </div>
-                <v-range-slider
-                  v-model="range"
-                  :max="100000"
-                  :min="0"
-                  hide-details
-                  class="align-center mb-2"
-                >
-                  <template #prepend>
-                    <v-text-field
-                      :value="range[0]"
-                      class="mt-0 pt-0"
-                      hide-details
-                      single-line
-                      type="number"
-                      style="width: 60px;"
-                      @change="$set(range, 0, $event)"
-                    />
-                  </template>
-                  <template #append>
-                    <v-text-field
-                      :value="range[1]"
-                      class="mt-0 pt-0"
-                      hide-details
-                      single-line
-                      type="number"
-                      style="width: 60px;"
-                      @change="$set(range, 1, $event)"
-                    />
-                  </template>
-                </v-range-slider>
               </template>
               <v-btn
                 color="success"
