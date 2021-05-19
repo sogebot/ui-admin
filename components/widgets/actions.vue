@@ -5,6 +5,20 @@
         Actions
       </v-toolbar-title>
       <v-spacer />
+      <v-tooltip v-if="!isPopout" bottom>
+        <template #activator="{ on, attrs }">
+          <v-btn
+            icon
+            v-bind="attrs"
+            href="#/popout/actions"
+            target="_blank"
+            v-on="on"
+          >
+            <v-icon>{{ mdiOpenInNew }}</v-icon>
+          </v-btn>
+        </template>
+        <span>Popout</span>
+      </v-tooltip>
       <v-btn icon :color="editing ? 'primary' : 'secondary lighten-2'" @click="editing = !editing">
         <v-icon>{{ mdiCircleEditOutline }}</v-icon>
       </v-btn>
@@ -12,23 +26,29 @@
 
     <v-row dense>
       <v-col cols="12">
-        <v-expand-transition v-for="(item, idx) of items" :key="item.id + 'transition'">
-          <component
-            :is="item.type"
+        <v-expand-transition v-for="item of items" :key="item.id + 'transition'">
+          <action-button
+            v-show="!item.temporary"
             :key="item.id"
             :item="item"
             :editing="editing"
-            @update:item="updateItem(idx, $event)"
+            @save="refresh"
+            @selected="item.selected = $event"
           />
         </v-expand-transition>
       </v-col>
     </v-row>
     <v-fade-transition>
-      <v-row v-if="isAnySelected && editing">
+      <v-row v-if="editing">
         <v-col cols="12">
-          <v-btn color="error" block @click="deleteItems">
-            Delete
+          <v-btn color="success" block @click="addItem">
+            <v-icon>{{ mdiPlusThick }}</v-icon>
           </v-btn>
+          <v-fade-transition>
+            <v-btn v-if="isAnySelected" color="error" block @click="deleteItems">
+              <v-icon>{{ mdiDelete }}</v-icon>
+            </v-btn>
+          </v-fade-transition>
         </v-col>
       </v-row>
     </v-fade-transition>
@@ -36,18 +56,26 @@
 </template>
 
 <script lang="ts">
-import { mdiCircleEditOutline } from '@mdi/js';
+import {
+  mdiCircleEditOutline, mdiDelete, mdiOpenInNew, mdiPlusThick,
+} from '@mdi/js';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import {
   computed,
   defineAsyncComponent,
   defineComponent, onMounted, ref,
 } from '@vue/composition-api';
+import { v4 } from 'uuid';
+
+import type { QuickActions } from '.bot/src/bot/database/entity/dashboard';
+import { error } from '~/functions/error';
 
 export default defineComponent({
-  components: { custom: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/custom.vue') }) },
-  setup () {
-    const editing = ref(true);
+  components: { actionButton: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/button.vue') }) },
+  setup (_, ctx) {
+    const editing = ref(false);
     const height = ref(600);
+    const isPopout = computed(() => location.href.includes('popout'));
 
     const selectedItems = computed(() => {
       return items.value.filter(o => o.selected);
@@ -56,25 +84,7 @@ export default defineComponent({
       return selectedItems.value.length > 0;
     });
 
-    const items = ref([{
-      id:       '2f1e3ea3-3071-4781-948a-978e7b362ed5',
-      title:    'Add 5 to $_test',
-      color:    'green',
-      type:     'custom',
-      selected: false,
-    }, {
-      id:       '2f1e3ea3-3072-4781-948a-978e7b362ed5',
-      title:    'Run commercial 30s',
-      color:    'deep-orange',
-      type:     'custom',
-      selected: false,
-    }, {
-      id:       '2f1e3ea3-4072-4781-948a-978e7b362ed5',
-      title:    'PUBG Poll',
-      color:    'cyan',
-      type:     'custom',
-      selected: false,
-    }]);
+    const items = ref([] as (QuickActions.Item<QuickActions.Types> & { selected: boolean, temporary: boolean })[]);
 
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
@@ -84,16 +94,49 @@ export default defineComponent({
       height.value = Math.max(newHeight, 500);
     }
 
-    function updateItem (idx: number, item: typeof items.value[number]) {
-      items.value.splice(idx, 1, item);
+    function addItem () {
+      items.value.push({
+        id:        v4(),
+        selected:  false,
+        userId:    (ctx.root as any).$store.state.loggedUser.id,
+        order:     -1,
+        temporary: true,
+        type:      'command',
+        options:   {
+          label:   '',
+          color:   'blue',
+          command: '',
+        },
+      });
     }
 
     function deleteItems () {
+      const selected = items.value.filter(item => item.selected);
+      for (const item of selected) {
+        getSocket('/widgets/quickaction').emit('quickaction::remove', item.id);
+      }
       items.value = items.value.filter(item => !item.selected);
     }
 
+    const refresh = () => {
+      if (typeof (ctx.root as any).$store.state.loggedUser === 'undefined' || (ctx.root as any).$store.state.loggedUser === null) {
+        setTimeout(() => refresh(), 10);
+      } else {
+        getSocket('/widgets/quickaction').emit('quickactions::getAll', (ctx.root as any).$store.state.loggedUser.id, (err: string | null, data: QuickActions.Item<QuickActions.Types>[]) => {
+          if (err) {
+            error(err);
+            return;
+          }
+          items.value = data.map(o => ({
+            ...o, selected: items.value.find(b => b.id === o.id)?.selected ?? false, temporary: false,
+          }));
+        });
+      }
+    };
+
     onMounted(() => {
       setInterval(() => updateHeight(), 100);
+      refresh();
     });
 
     return {
@@ -103,13 +146,18 @@ export default defineComponent({
       editing,
       height,
       items,
+      isPopout,
 
       /* functions */
-      updateItem,
+      addItem,
       deleteItems,
+      refresh,
 
       /* icons */
       mdiCircleEditOutline,
+      mdiPlusThick,
+      mdiDelete,
+      mdiOpenInNew,
     };
   },
 });

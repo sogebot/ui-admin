@@ -2,6 +2,7 @@
   <v-dialog
     v-model="dialogController"
     fullscreen
+    persistent
     transition="dialog-bottom-transition"
   >
     <v-card :loading="isLoading" tile>

@@ -302,7 +302,6 @@ export default defineComponent({
     }
     function pickSelected () {
       const data = { username: selectedUsers.value.map(idx => fUsers.value[idx].username) };
-      debugger;
       getSocket('/systems/queue').emit('queue::pick', data, (err: string | null, users2: QueueInterface[]) => {
         if (err) {
           return error(err);

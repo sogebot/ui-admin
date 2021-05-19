@@ -4,7 +4,6 @@
       v-model="tab"
       height="36"
       background-color="blue-grey darken-4"
-      center-active
     >
       <v-tab>{{ translate('widget-title-eventlist') }}</v-tab>
       <v-tab v-if="$store.state.$systems.find(o => o.name === 'songs').enabled">
