@@ -61,7 +61,6 @@
 
 <script lang="ts">
 import { mdiClose, mdiPencil } from '@mdi/js';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent,
@@ -70,6 +69,7 @@ import {
 import { cloneDeep } from 'lodash-es';
 
 import type { QuickActions } from '.bot/src/bot/database/entity/dashboard';
+import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
@@ -102,18 +102,22 @@ export default defineComponent({
 
     const save = () => {
       EventBus.$emit(`quickaction::${props.item.id}::valid`);
-      ctx.root.$nextTick(() => {
+      ctx.root.$nextTick(async () => {
         if (valid.value) {
           isSaving.value = true;
-          getSocket('/widgets/quickaction').emit('quickaction::save', clonedItem.value, (err: null | string) => {
-            if (err) {
-              error(err);
-            } else {
-              dialog.value = false;
-            }
+          try {
+            await api.post<(QuickActions.Item<QuickActions.Types>)>
+              (ctx.root.$axios,
+              `/api/v1/quickaction`,
+              clonedItem.value,
+              { headers: { userId: (ctx.root as any).$store.state.loggedUser.id } });
+            dialog.value = false;
+          } catch (e) {
+            error(e);
+          } finally {
             isSaving.value = false;
             ctx.emit('save');
-          });
+          }
         }
       });
     };

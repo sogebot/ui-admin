@@ -59,7 +59,6 @@
 import {
   mdiCircleEditOutline, mdiDelete, mdiOpenInNew, mdiPlusThick,
 } from '@mdi/js';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import {
   computed,
   defineAsyncComponent,
@@ -68,6 +67,7 @@ import {
 import { v4 } from 'uuid';
 
 import type { QuickActions } from '.bot/src/bot/database/entity/dashboard';
+import api from '~/functions/api';
 import { error } from '~/functions/error';
 
 export default defineComponent({
@@ -113,24 +113,23 @@ export default defineComponent({
     function deleteItems () {
       const selected = items.value.filter(item => item.selected);
       for (const item of selected) {
-        getSocket('/widgets/quickaction').emit('quickaction::remove', item.id);
+        api.delete(ctx.root.$axios, `/api/v1/quickaction/${item.id}`, { headers: { userId: (ctx.root as any).$store.state.loggedUser.id } });
       }
       items.value = items.value.filter(item => !item.selected);
     }
 
-    const refresh = () => {
+    const refresh = async () => {
       if (typeof (ctx.root as any).$store.state.loggedUser === 'undefined' || (ctx.root as any).$store.state.loggedUser === null) {
         setTimeout(() => refresh(), 10);
       } else {
-        getSocket('/widgets/quickaction').emit('quickactions::getAll', (ctx.root as any).$store.state.loggedUser.id, (err: string | null, data: QuickActions.Item<QuickActions.Types>[]) => {
-          if (err) {
-            error(err);
-            return;
-          }
-          items.value = data.map(o => ({
+        try {
+          const response = await api.get<(QuickActions.Item<QuickActions.Types>)[]>(ctx.root.$axios, '/api/v1/quickaction', { headers: { userId: (ctx.root as any).$store.state.loggedUser.id } });
+          items.value = response.data.data.map(o => ({
             ...o, selected: items.value.find(b => b.id === o.id)?.selected ?? false, temporary: false,
           }));
-        });
+        } catch (e) {
+          error(e);
+        }
       }
     };
 

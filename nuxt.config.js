@@ -60,6 +60,8 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    '@nuxtjs/axios',
+    '@nuxtjs/proxy',
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
@@ -75,4 +77,9 @@ export default {
       });
     },
   },
+
+  axios: { proxy: true },
+
+  // enable api proxy
+  ...process.env.NODE_ENV === 'development' && { proxy: { '/api': 'http://localhost:20000' } },
 };
