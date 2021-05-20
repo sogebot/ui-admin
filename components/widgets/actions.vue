@@ -1,5 +1,5 @@
 <template>
-  <v-card id="c7eff6a7-dc62-4c0b-bad6-90df9d5b605f" width="100%" height="100%">
+  <v-card id="c7eff6a7-dc62-4c0b-bad6-90df9d5b605f" width="100%" height="100%" :loading="loading">
     <v-toolbar color="blue-grey darken-4" class="mb-1" height="36">
       <v-toolbar-title class="text-button">
         Actions
@@ -76,6 +76,7 @@ export default defineComponent({
     const editing = ref(false);
     const height = ref(600);
     const isPopout = computed(() => location.href.includes('popout'));
+    const loading = ref(true);
 
     const selectedItems = computed(() => {
       return items.value.filter(o => o.selected);
@@ -84,7 +85,7 @@ export default defineComponent({
       return selectedItems.value.length > 0;
     });
 
-    const items = ref([] as (QuickActions.Item<QuickActions.Types> & { selected: boolean, temporary: boolean })[]);
+    const items = ref([] as (QuickActions.Item & { selected: boolean, temporary: boolean })[]);
 
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
@@ -113,7 +114,7 @@ export default defineComponent({
     function deleteItems () {
       const selected = items.value.filter(item => item.selected);
       for (const item of selected) {
-        api.delete(ctx.root.$axios, `/api/v1/quickaction/${item.id}`, { headers: { userId: (ctx.root as any).$store.state.loggedUser.id } });
+        api.delete(ctx.root.$axios, `/api/v1/quickaction/${item.id}`);
       }
       items.value = items.value.filter(item => !item.selected);
     }
@@ -123,10 +124,11 @@ export default defineComponent({
         setTimeout(() => refresh(), 10);
       } else {
         try {
-          const response = await api.get<(QuickActions.Item<QuickActions.Types>)[]>(ctx.root.$axios, '/api/v1/quickaction', { headers: { userId: (ctx.root as any).$store.state.loggedUser.id } });
+          const response = await api.get<(QuickActions.Item)[]>(ctx.root.$axios, '/api/v1/quickaction');
           items.value = response.data.data.map(o => ({
             ...o, selected: items.value.find(b => b.id === o.id)?.selected ?? false, temporary: false,
           }));
+          loading.value = false;
         } catch (e) {
           error(e);
         }
@@ -146,6 +148,7 @@ export default defineComponent({
       height,
       items,
       isPopout,
+      loading,
 
       /* functions */
       addItem,

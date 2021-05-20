@@ -20,7 +20,7 @@ import {
 } from '~/functions/validators';
 
 type Props = {
-  item: QuickActions.Item<'command'>,
+  item: QuickActions.CommandItem
 };
 export default defineComponent({
   props: { item: Object },

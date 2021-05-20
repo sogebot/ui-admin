@@ -57,7 +57,7 @@ const api = {
     }
   },
 
-  post: async <T>(axios: NuxtAxiosInstance, url: string, data: T, options?: AxiosRequestConfig) => {
+  post: async <T>(axios: NuxtAxiosInstance, url: string, data?: T, options?: AxiosRequestConfig) => {
     try {
       await refreshToken(axios);
       await axios.post<PostRequest<T>>(url,

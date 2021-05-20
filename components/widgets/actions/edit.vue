@@ -81,7 +81,7 @@ import { cloneDeep } from 'lodash-es';
 import type { QuickActions } from '.bot/src/bot/database/entity/dashboard';
 
 type Props = {
-  item: QuickActions.Item<QuickActions.Types>,
+  item: QuickActions.Item,
 };
 
 export default defineComponent({

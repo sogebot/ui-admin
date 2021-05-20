@@ -3,7 +3,7 @@
     :color="item.options.color"
     elevation="2"
     width="100%"
-    @click="!editing ? () => {} : null"
+    @click="!editing ? trigger() : dialog = true"
   >
     <v-card-text class="text-button pa-1 mb-1 text-center" style="font-size: 12px !important;">
       <v-row no-gutters>
@@ -15,13 +15,6 @@
         <v-col class="text-truncate">
           {{ item.options.label }}
         </v-col>
-        <v-slide-x-reverse-transition>
-          <v-col v-if="editing" cols="auto" class="d-flex">
-            <v-btn icon @click="dialog = true">
-              <v-icon>{{ mdiPencil }}</v-icon>
-            </v-btn>
-          </v-col>
-        </v-slide-x-reverse-transition>
       </v-row>
     </v-card-text>
 
@@ -60,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import { mdiClose, mdiPencil } from '@mdi/js';
+import { mdiClose } from '@mdi/js';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent,
@@ -74,7 +67,7 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 type Props = {
-  item: QuickActions.Item<QuickActions.Types> & { selected: boolean },
+  item: QuickActions.Item & { selected: boolean },
 };
 
 export default defineComponent({
@@ -106,11 +99,7 @@ export default defineComponent({
         if (valid.value) {
           isSaving.value = true;
           try {
-            await api.post<(QuickActions.Item<QuickActions.Types>)>
-              (ctx.root.$axios,
-              `/api/v1/quickaction`,
-              clonedItem.value,
-              { headers: { userId: (ctx.root as any).$store.state.loggedUser.id } });
+            await api.post<QuickActions.Item>(ctx.root.$axios, `/api/v1/quickaction`, clonedItem.value);
             dialog.value = false;
           } catch (e) {
             error(e);
@@ -120,6 +109,11 @@ export default defineComponent({
           }
         }
       });
+    };
+
+    const trigger = () => {
+      console.log(`quickaction::trigger::${props.item.id}`);
+      api.post(ctx.root.$axios, `/api/v1/quickaction/${props.item.id}/trigger`);
     };
 
     return {
@@ -132,10 +126,10 @@ export default defineComponent({
 
       // fncs
       save,
+      trigger,
 
       /* icons */
       mdiClose,
-      mdiPencil,
 
       // others
       translate,
