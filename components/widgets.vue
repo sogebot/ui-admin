@@ -15,6 +15,9 @@
       <v-tab v-if="$store.state.$systems.find(o => o.name === 'raffles').enabled">
         {{ translate('widget-title-raffles') }}
       </v-tab>
+      <v-tab v-if="$store.state.$integrations.find(o => o.name === 'twitter').enabled">
+        {{ translate('widget-title-social') }}
+      </v-tab>
       <v-spacer />
       <v-tooltip v-if="!isPopout" bottom>
         <template #activator="{ on, attrs }">
@@ -44,6 +47,9 @@
       <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'raffles').enabled">
         <raffles />
       </v-tab-item>
+      <v-tab-item v-if="$store.state.$integrations.find(o => o.name === 'twitter').enabled">
+        <social />
+      </v-tab-item>
     </v-tabs-items>
   </div>
 </template>
@@ -62,6 +68,7 @@ export default defineComponent({
     ytplayer: defineAsyncComponent({ loader: () => import('~/components/widgets/ytplayer.vue') }),
     queue:    defineAsyncComponent({ loader: () => import('~/components/widgets/queue.vue') }),
     raffles:  defineAsyncComponent({ loader: () => import('~/components/widgets/raffles.vue') }),
+    social:   defineAsyncComponent({ loader: () => import('~/components/widgets/social.vue') }),
   },
   setup () {
     const tab = ref(Number(localStorage.dashboardTab));
