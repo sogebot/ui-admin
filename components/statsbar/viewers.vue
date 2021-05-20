@@ -4,7 +4,7 @@
     lg="2"
     md="4"
     sm="4"
-    style='padding: 2px;'
+    style="padding: 2px;"
   >
     <v-hover>
       <template #default="{ hover }">
@@ -23,12 +23,12 @@
               {{
                 Intl.NumberFormat($store.state.configuration.lang).format(
                   isStreamOnline
-                    ? viewers
+                    ? currentAnimated.value
                     : 0
                 )
               }}
             </template>
-            <small class="text-overline" v-else>
+            <small v-else class="text-overline">
               {{ translate('hidden') }}
             </small>
           </v-card-title>
@@ -55,7 +55,10 @@
 
 <script lang="ts">
 import translate from '@sogebot/ui-helpers/translate';
-import { defineComponent } from '@vue/composition-api';
+import {
+  defineComponent, ref, watch,
+} from '@vue/composition-api';
+import { TweenLite } from 'gsap';
 
 export default defineComponent({
   props: {
@@ -64,11 +67,20 @@ export default defineComponent({
     timestamp:      Number,
     viewers:        Number,
   },
-  setup (_, ctx) {
+  setup (props, ctx) {
+    const currentAnimated = ref({ value: 0 });
+
+    watch(() => props.viewers, (val) => {
+      val = val ?? 0;
+      TweenLite.to(currentAnimated.value, 0.5, { value: val, roundProps: 'value' });
+    });
+
     const toggleDisplay = () => {
       ctx.root.$store.commit('setUIStatsHidden', !ctx.root.$store.state.areUIStatsHidden);
     };
-    return { toggleDisplay, translate };
+    return {
+      toggleDisplay, translate, currentAnimated,
+    };
   },
 });
 </script>

@@ -64,6 +64,7 @@ const routeMapper = new Map<string, string>([
   ['stats-tips', 'tips'],
   ['stats-commandcount', 'commandcount'],
   ['stats-profiler', 'profiler'],
+  ['stats-api-explorer', 'api-explorer'],
 ]);
 
 export default defineComponent({

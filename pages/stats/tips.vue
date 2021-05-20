@@ -55,8 +55,8 @@
         {{ Intl.NumberFormat($store.state.configuration.lang, { style: 'currency', currency: item.currency }).format(item.amount) }}
       </template>
       <template #[`item.user`]="{ item }">
-        <NuxtLink :to="'/manage/viewers/' + item.user.userId">
-          {{ item.user.username }}&nbsp;<small class="text-muted">{{ item.user.userId }}</small>
+        <NuxtLink :to="'/manage/viewers/' + item.userId">
+          {{ item.username }}&nbsp;<small class="text-muted">{{ item.userId }}</small>
         </NuxtLink>
       </template>
     </v-data-table>

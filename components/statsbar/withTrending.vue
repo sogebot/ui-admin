@@ -4,7 +4,7 @@
     lg="2"
     md="4"
     sm="4"
-    style='padding: 2px;'
+    style="padding: 2px;"
   >
     <v-hover>
       <template #default="{ hover }">
@@ -15,9 +15,9 @@
           :loading="!isLoaded"
         >
           <v-card-title
+            :key="timestamp"
             class="px-1 py-0 text-truncate"
             style="font-size: 1rem; height: 32px;"
-            :key="timestamp"
           >
             <template v-if="!$store.state.areUIStatsHidden || !hide">
               <span
@@ -26,7 +26,7 @@
                   Intl.NumberFormat($store.state.configuration.lang, {
                     notation: $store.state.configuration.core.ui.shortennumbers ? 'compact' : 'standard',
                     maximumFractionDigits: $store.state.configuration.core.ui.shortennumbers ? 1 : 0,
-                  }).formatToParts(isStreamOnline || offline ? current || 0 : 0).reduce(numberReducer, '')
+                  }).formatToParts(isStreamOnline || offline ? currentAnimated.value || 0 : 0).reduce(numberReducer, '')
                 "
               />
               <span
@@ -35,7 +35,7 @@
                   Intl.NumberFormat($store.state.configuration.lang, {
                     style: 'currency',
                     currency: $store.state.configuration.currency,
-                  }).formatToParts(isStreamOnline || offline ? current || 0 : 0).reduce(numberReducer, '')
+                  }).formatToParts(isStreamOnline || offline ? currentAnimated.value || 0 : 0).reduce(numberReducer, '')
                 "
               />
               <span
@@ -45,7 +45,7 @@
                     ...Intl.NumberFormat($store.state.configuration.lang, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
-                    }).formatToParts((isStreamOnline || offline ? current || 0 : 0) / 1000 / 60 / 60),
+                    }).formatToParts((isStreamOnline || offline ? currentAnimated.value || 0 : 0) / 1000 / 60 / 60),
                     { type:'', value: ' '},
                     { type:'currency', value: 'h'}
                   ].reduce(numberReducer, '')"
@@ -54,36 +54,36 @@
                 {{
                   Intl.NumberFormat($store.state.configuration.lang).format(
                     isStreamOnline
-                      ? current
+                      ? currentAnimated.value
                       : 0
                   )
                 }}
               </span>
               <small
-                v-if="$store.state.configuration.core.ui.showdiff && isStreamOnline && current - average !== 0"
+                v-if="$store.state.configuration.core.ui.showdiff && isStreamOnline && currentAnimated.value - averageAnimated.value !== 0"
                 class="text-caption"
                 :class="{
-                  'green--text': isTrending(current, average),
-                  'red--text': !isTrending(current, average),
+                  'green--text': isTrending(currentAnimated.value, averageAnimated.value),
+                  'red--text': !isTrending(currentAnimated.value, averageAnimated.value),
                 }"
               >
                 <v-icon
                   :style="{
-                    'transform': isTrending(current, average) ? 'translateY(-7px)' : 'translateY(5px)',
+                    'transform': isTrending(currentAnimated.value, averageAnimated.value) ? 'translateY(-7px)' : 'translateY(5px)',
                   }"
                   x-small
-                  :color="isTrending(current, average) ? 'green' : 'red'"
-                >{{ isTrending(current, average) ? mdiTrendingUp : mdiTrendingDown }}</v-icon>
+                  :color="isTrending(currentAnimated.value, averageAnimated.value) ? 'green' : 'red'"
+                >{{ isTrending(currentAnimated.value, averageAnimated.value) ? mdiTrendingUp : mdiTrendingDown }}</v-icon>
 
                 <span
                   class="text-truncate"
                   style="font-size: 0.6rem; position: relative;"
                   :style="{
-                    'top': isTrending(current, average) ? '-7px' : '6px',
+                    'top': isTrending(currentAnimated.value, averageAnimated.value) ? '-7px' : '6px',
                   }"
                 >
-                  <span v-if="$store.state.configuration.core.ui.percentage && average === 0">
-                    <v-icon x-small :color="isTrending(current, average) ? 'green' : 'red'">{{ mdiInfinity }}</v-icon>%
+                  <span v-if="$store.state.configuration.core.ui.percentage && averageAnimated.value === 0">
+                    <v-icon x-small :color="isTrending(currentAnimated.value, averageAnimated.value) ? 'green' : 'red'">{{ mdiInfinity }}</v-icon>%
                   </span>
                   <span
                     v-else-if="type === 'bigNumber'"
@@ -92,7 +92,7 @@
                         style: $store.state.configuration.core.ui.percentage ? 'percent' : 'decimal',
                         notation: $store.state.configuration.core.ui.shortennumbers && !$store.state.configuration.core.ui.percentage ? 'compact' : 'standard',
                         maximumFractionDigits: $store.state.configuration.core.ui.shortennumbers && !$store.state.configuration.core.ui.percentage ? 1 : 0,
-                      }).format($store.state.configuration.core.ui.percentage ? Math.abs(current - average) / average : current - average)
+                      }).format($store.state.configuration.core.ui.percentage ? Math.abs(currentAnimated.value - averageAnimated.value) / averageAnimated.value : currentAnimated.value - averageAnimated.value)
                     "
                   />
                   <span
@@ -101,7 +101,7 @@
                       Intl.NumberFormat($store.state.configuration.lang, {
                         style: $store.state.configuration.core.ui.percentage ? 'percent' : 'currency',
                         currency: $store.state.configuration.currency,
-                      }).format($store.state.configuration.core.ui.percentage ? Math.abs(current - average) / (average || 1) : current - average)
+                      }).format($store.state.configuration.core.ui.percentage ? Math.abs(currentAnimated.value - averageAnimated.value) / (averageAnimated.value || 1) : currentAnimated.value - averageAnimated.value)
                     "
                   />
                   <template v-else-if="type === 'hours'">
@@ -111,7 +111,7 @@
                         [
                           ...Intl.NumberFormat($store.state.configuration.lang, {
                             style: 'percent',
-                          }).formatToParts(average / current),
+                          }).formatToParts(averageAnimated.value / currentAnimated.value),
                         ].reduce(numberReducer, '')
                       "
                     />
@@ -122,7 +122,7 @@
                           ...Intl.NumberFormat($store.state.configuration.lang, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
-                          }).formatToParts((current - average) / 1000 / 60 / 60),
+                          }).formatToParts((currentAnimated.value - averageAnimated.value) / 1000 / 60 / 60),
                           { type:'', value: ' '},
                           { type:'', value: 'h'}
                         ].reduce(numberReducer, '')
@@ -134,7 +134,7 @@
                     v-html="
                       Intl.NumberFormat($store.state.configuration.lang, {
                         style: $store.state.configuration.core.ui.percentage ? 'percent' : 'decimal'
-                      }).format($store.state.configuration.core.ui.percentage ? Math.abs(current - average) / (average || 1) : current - average)
+                      }).format($store.state.configuration.core.ui.percentage ? Math.abs(currentAnimated.value - averageAnimated.value) / (averageAnimated.value || 1) : currentAnimated.value - averageAnimated.value)
                     "
                   />
                 </span>
@@ -170,7 +170,10 @@ import {
   mdiInfinity, mdiTrendingDown, mdiTrendingUp,
 } from '@mdi/js';
 import translate from '@sogebot/ui-helpers/translate';
-import { defineComponent } from '@vue/composition-api';
+import {
+  defineComponent, ref, watch,
+} from '@vue/composition-api';
+import { TweenLite } from 'gsap';
 
 import { isTrending } from '~/functions/isTrending';
 
@@ -186,7 +189,9 @@ export default defineComponent({
     title:          String,
     type:           String,
   },
-  setup (_, ctx) {
+  setup (props, ctx) {
+    const currentAnimated = ref({ value: 0 });
+    const averageAnimated = ref({ value: 0 });
     const numberReducer = (out: string, item: any) => {
       if (['currency', 'compact'].includes(item.type)) {
         out += `<small class="text-muted">${item.value}</small>`;
@@ -196,12 +201,22 @@ export default defineComponent({
       return out;
     };
 
+    watch(() => props.current, (val) => {
+      val = val ?? 0;
+      TweenLite.to(currentAnimated.value, 0.5, { value: val, roundProps: 'value' });
+    });
+
+    watch(() => props.average, (val) => {
+      val = val ?? 0;
+      TweenLite.to(averageAnimated.value, 0.5, { value: val, roundProps: 'value' });
+    });
+
     const toggleDisplay = () => {
       ctx.root.$store.commit('setUIStatsHidden', !ctx.root.$store.state.areUIStatsHidden);
     };
 
     return {
-      toggleDisplay, numberReducer, translate, isTrending, mdiTrendingDown, mdiTrendingUp, mdiInfinity,
+      toggleDisplay, currentAnimated, numberReducer, translate, isTrending, mdiTrendingDown, mdiTrendingUp, mdiInfinity,
     };
   },
 });

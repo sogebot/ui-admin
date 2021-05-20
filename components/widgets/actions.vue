@@ -26,16 +26,20 @@
 
     <v-row dense>
       <v-col cols="12">
-        <v-expand-transition v-for="item of items" :key="item.id + 'transition'">
-          <action-button
-            v-show="!item.temporary"
-            :key="item.id"
-            :item="item"
-            :editing="editing"
-            @save="refresh"
-            @selected="item.selected = $event"
-          />
-        </v-expand-transition>
+        <template v-for="item of items">
+          <span :key="item.id + 'transition'">
+            <v-expand-transition>
+              <action-button
+                v-show="!item.temporary && item.show"
+                :key="item.id"
+                :item="item"
+                :editing="editing"
+                @save="refresh"
+                @selected="item.selected = $event"
+              />
+            </v-expand-transition>
+          </span>
+        </template>
       </v-col>
     </v-row>
     <v-fade-transition>
@@ -85,7 +89,7 @@ export default defineComponent({
       return selectedItems.value.length > 0;
     });
 
-    const items = ref([] as (QuickActions.Item & { selected: boolean, temporary: boolean })[]);
+    const items = ref([] as (QuickActions.Item & { selected: boolean, temporary: boolean, show: boolean })[]);
 
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
@@ -102,6 +106,7 @@ export default defineComponent({
         userId:    (ctx.root as any).$store.state.loggedUser.id,
         order:     -1,
         temporary: true,
+        show:      true,
         type:      'command',
         options:   {
           label:   '',
@@ -114,9 +119,12 @@ export default defineComponent({
     function deleteItems () {
       const selected = items.value.filter(item => item.selected);
       for (const item of selected) {
+        item.show = false;
         api.delete(ctx.root.$axios, `/api/v1/quickaction/${item.id}`);
       }
-      items.value = items.value.filter(item => !item.selected);
+      setTimeout(() => {
+        items.value = items.value.filter(item => !item.selected);
+      }, 1);
     }
 
     const refresh = async () => {
@@ -126,9 +134,18 @@ export default defineComponent({
         try {
           const response = await api.get<(QuickActions.Item)[]>(ctx.root.$axios, '/api/v1/quickaction');
           items.value = response.data.data.map(o => ({
-            ...o, selected: items.value.find(b => b.id === o.id)?.selected ?? false, temporary: false,
+            ...o, selected: items.value.find(b => b.id === o.id)?.selected ?? false, temporary: false, show: false,
           }));
-          loading.value = false;
+
+          setTimeout(() => {
+            ctx.root.$nextTick(() => {
+              // set as temporary false to show animation
+              for (const item of items.value) {
+                item.show = true;
+              }
+              loading.value = false;
+            });
+          }, 200);
         } catch (e) {
           error(e);
         }
