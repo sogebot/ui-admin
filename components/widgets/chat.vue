@@ -5,16 +5,16 @@
         Chat
       </v-toolbar-title>
       <v-spacer />
-      <v-btn icon @click="timestamp = Date.now()">
+      <v-btn icon height="36" width="36" @click="timestamp = Date.now()">
         <v-icon>{{ mdiRefresh }}</v-icon>
       </v-btn>
-      <v-btn icon :color="showJoins ? 'green lighten-1' : 'red lighten-1'" @click="showJoins = !showJoins">
+      <v-btn icon height="36" width="36" :color="showJoins ? 'green lighten-1' : 'red lighten-1'" @click="showJoins = !showJoins">
         <v-icon>{{ mdiAccountPlus }}</v-icon>
       </v-btn>
-      <v-btn icon :color="showParts ? 'green lighten-1' : 'red lighten-1'" @click="showParts = !showParts">
+      <v-btn icon height="36" width="36" :color="showParts ? 'green lighten-1' : 'red lighten-1'" @click="showParts = !showParts">
         <v-icon>{{ mdiAccountMinus }}</v-icon>
       </v-btn>
-      <v-btn icon @click="dialog = true">
+      <v-btn icon height="36" width="36" @click="dialog = true">
         <v-icon>{{ mdiCommentPlus }}</v-icon>
       </v-btn>
     </v-toolbar>

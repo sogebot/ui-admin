@@ -35,6 +35,8 @@
               <template #activator="{ on, attrs }">
                 <v-btn
                   icon
+                  height="36"
+                  width="36"
                   v-bind="attrs"
                   @click="clear"
                   v-on="on"
@@ -50,6 +52,8 @@
                 <v-btn
                   :color="locked ? 'red lighten-1' : 'green lighten-1'"
                   icon
+                  height="36"
+                  width="36"
                   v-bind="attrs"
                   @click="locked = !locked"
                   v-on="on"

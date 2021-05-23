@@ -2,7 +2,14 @@
   <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e4" width="100%" :loading="isLoading">
     <v-toolbar height="36" color="blue-grey darken-4" class="mb-1">
       <v-spacer />
-      <v-btn v-if="selected.length > 0" color="red" icon @click="removeSelected">
+      <v-btn
+        v-if="selected.length > 0"
+        color="red"
+        icon
+        height="36"
+        width="36"
+        @click="removeSelected"
+      >
         <v-icon>{{ mdiDelete }}</v-icon> {{ selected.length }}
       </v-btn>
 
@@ -17,6 +24,8 @@
             <template #activator="{ on, attrs }">
               <v-btn
                 icon
+                height="36"
+                width="36"
                 title="Filter alerts"
                 v-bind="attrs"
                 v-on="{...on, ...onTooltip}"
@@ -105,6 +114,8 @@
         <template #activator="{ on, attrs }">
           <v-btn
             icon
+            height="36"
+            width="36"
             v-bind="attrs"
             @click="emitSkipAlertEvent()"
             v-on="on"
@@ -117,7 +128,15 @@
 
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" :color="isTTSMuted ? 'grey' : 'white'" v-on="on" @click="isTTSMuted = !isTTSMuted">
+          <v-btn
+            icon
+            height="36"
+            width="36"
+            v-bind="attrs"
+            :color="isTTSMuted ? 'grey' : 'white'"
+            v-on="on"
+            @click="isTTSMuted = !isTTSMuted"
+          >
             <v-icon v-if="isTTSMuted">
               {{ mdiTextToSpeechOff }}
             </v-icon>
@@ -131,7 +150,15 @@
 
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" :color="isSoundMuted ? 'grey' : 'white'" v-on="on" @click="isSoundMuted = !isSoundMuted">
+          <v-btn
+            icon
+            height="36"
+            width="36"
+            v-bind="attrs"
+            :color="isSoundMuted ? 'grey' : 'white'"
+            v-on="on"
+            @click="isSoundMuted = !isSoundMuted"
+          >
             <v-icon v-if="isSoundMuted">
               {{ mdiVolumeMute }}
             </v-icon>
@@ -145,7 +172,15 @@
 
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" :color="areAlertsMuted ? 'grey' : 'white'" v-on="on" @click="areAlertsMuted = !areAlertsMuted">
+          <v-btn
+            icon
+            height="36"
+            width="36"
+            v-bind="attrs"
+            :color="areAlertsMuted ? 'grey' : 'white'"
+            v-on="on"
+            @click="areAlertsMuted = !areAlertsMuted"
+          >
             <v-icon v-if="areAlertsMuted">
               {{ mdiBellCancel }}
             </v-icon>
@@ -187,7 +222,14 @@
                 </v-list-item-content>
 
                 <v-list-item-action>
-                  <v-btn v-if="hover" icon style="transform: translateX(5px);" @click.stop="resendAlert(item.id)">
+                  <v-btn
+                    v-if="hover"
+                    icon
+                    height="36"
+                    width="36"
+                    style="transform: translateX(5px);"
+                    @click.stop="resendAlert(item.id)"
+                  >
                     <v-icon>{{ mdiRefresh }}</v-icon>
                   </v-btn>
                   <template v-else>

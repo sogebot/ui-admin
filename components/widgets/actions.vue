@@ -9,6 +9,8 @@
         <template #activator="{ on, attrs }">
           <v-btn
             icon
+            height="36"
+            width="36"
             v-bind="attrs"
             href="#/popout/actions"
             target="_blank"
@@ -19,7 +21,7 @@
         </template>
         <span>Popout</span>
       </v-tooltip>
-      <v-btn icon :color="editing ? 'primary' : 'secondary lighten-2'" @click="editing = !editing">
+      <v-btn icon height="36" width="36" :color="editing ? 'primary' : 'secondary lighten-2'" @click="editing = !editing">
         <v-icon>{{ mdiCircleEditOutline }}</v-icon>
       </v-btn>
     </v-toolbar>
