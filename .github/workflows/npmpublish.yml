@@ -16,7 +16,8 @@ jobs:
       - uses: actions/setup-node@v2.1.5
         with:
           node-version: 14
-      - uses: borales/actions-yarn@v2.0.0
+      - name: Install dependencies
+        uses: borales/actions-yarn@v2.0.0
         with:
           cmd: install # will run `yarn install` command
       - run: npm test
