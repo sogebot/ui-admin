@@ -84,7 +84,10 @@ export default {
   ...process.env.NODE_ENV === 'development' && {
     proxy: {
       '/api':         'http://localhost:20000',
-      '/credentials': 'http://localhost:3001',
+      '/credentials': {
+        changeOrigin: true,
+        target:       'http://localhost:3001',
+      },
     },
   },
 };
