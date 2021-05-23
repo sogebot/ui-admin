@@ -1,8 +1,11 @@
 {
   "name": "@sogebot/ui-admin",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "author": "sogehige@gmail.com",
   "description": "Nuxt.js version of ui-admin",
+  "resolutions": {
+    "@nuxtjs/vuetify/**/sass": "1.32.12"
+  },
   "scripts": {
     "postinstall": "npx simple-git-hooks",
     "prepublishOnly": "npm run generate",

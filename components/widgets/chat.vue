@@ -76,7 +76,7 @@ import {
 } from '@vue/composition-api';
 import {
   chunk, flatten, sortedUniq,
-} from 'lodash';
+} from 'lodash-es';
 
 import { error } from '~/functions/error';
 

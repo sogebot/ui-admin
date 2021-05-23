@@ -18,7 +18,7 @@ jobs:
         node-version: 14
     - name: Install dependencies
       run: |
-        npm install
+        yarn install --ignore-engines
     - name: Run eslint
       run: npm run lint
   build:
@@ -34,6 +34,6 @@ jobs:
           node-version: 14
       - name: Install dependencies
         run: |
-          npm install
+          yarn install --ignore-engines
       - name: Run build
         run: npm run build
