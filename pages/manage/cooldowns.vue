@@ -307,7 +307,7 @@ export default defineComponent({
     });
 
     const headers = [
-      { value: 'name', text: '!' + translate('command') + ' ' + translate('or') + ' ' + translate('keyword') },
+      { value: 'name', text: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group') },
       {
         value: 'count', text: translate('cooldown'), width: '7rem',
       },

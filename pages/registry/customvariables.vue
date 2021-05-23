@@ -134,7 +134,7 @@
               >
                 <v-card v-if="editItem">
                   <v-card-title>
-                    <span class="headline">Update item <code>{{ editItem.variableName }}</code></span>
+                    <span class="headline">Update item <span class="primary--text pl-1">{{ editItem.variableName }}</span></span>
                   </v-card-title>
 
                   <v-card-text :key="timestamp">
@@ -172,7 +172,7 @@
               {{ dayjs(item.changedAt).format('LL') }} {{ dayjs(item.changedAt).format('LTS') }}
             </template>
             <template #[`item.username`]="{ item }">
-              <NuxtLink :to="'/manage/viewers/' + item.quotedBy" v-if="item.username !== 'n/a'">
+              <NuxtLink v-if="item.username !== 'n/a'" :to="'/manage/viewers/' + item.quotedBy">
                 {{ item.username }}&nbsp;<small>{{ item.userId }}</small>
               </NuxtLink>
               <span v-else>Dashboard</span>
@@ -185,11 +185,7 @@
       <template #[`item.description`]="{ item }">
         <span
           v-if="item.description.length === 0"
-          class="grey--text"
-          :class="{
-            'text--darken-3': $vuetify.theme.dark,
-            'text--lighten-1': !$vuetify.theme.dark,
-          }"
+          class="grey--text text--darken-3"
         >No description set</span>
         {{ item.description }}
       </template>
@@ -242,7 +238,7 @@
             <v-btn
               icon
               :color="hover ? 'primary' : 'secondary lighten-3'"
-              @click="edit(item)"
+              @click.stop="edit(item)"
             >
               <v-icon>{{ mdiPencil }}</v-icon>
             </v-btn>
@@ -251,7 +247,7 @@
             <v-btn
               icon
               :color="hover ? 'primary' : 'secondary lighten-3'"
-              @click="clone(item)"
+              @click.stop="clone(item)"
             >
               <v-icon>{{ mdiContentCopy }}</v-icon>
             </v-btn>
@@ -282,6 +278,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiCog, mdiCogRefresh, mdiContentCopy, mdiExclamationThick, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
@@ -299,7 +296,6 @@ import { getPermissionName } from '~/functions/getPermissionName';
 import {
   minLength, required, restrictedChars, startsWith,
 } from '~/functions/validators';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/customvariables-newItem.vue') }) },

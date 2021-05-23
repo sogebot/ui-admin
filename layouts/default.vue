@@ -1,13 +1,18 @@
 <template>
-  <v-app id="app">
+  <v-app id="app" dark>
     <template v-if="$store.state.isUILoaded">
       <navbar />
       <v-main>
+        <span v-show="$route.name === 'index'">
+          <!-- dashboard needs to be visible all the time -->
+          <statsbar />
+        </span>
+        <dashboard v-show="$route.name === 'index'" />
         <nuxt />
         <snackbar />
       </v-main>
     </template>
-    <v-overlay :value="!$store.state.isUILoaded" :dark="$vuetify.theme.dark">
+    <v-overlay :value="!$store.state.isUILoaded" dark>
       <v-row>
         <v-col class="text-center">
           <v-progress-circular indeterminate size="48" />
@@ -23,13 +28,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api';
+import { defineAsyncComponent, defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   components: {
-    navbar:   () => import('../components/navbar/navbar.vue'),
-    snackbar: () => import('../components/snackbar.vue'),
+    navbar:    () => import('../components/navbar/navbar.vue'),
+    snackbar:  () => import('../components/snackbar.vue'),
+    dashboard: () => import('../components/dashboard.vue'),
+    statsbar:  defineAsyncComponent({ loader: () => import('~/components/statsbar.vue') }),
   },
-  middleware: ['isBotStarted', 'theme'],
+  middleware: ['isBotStarted'],
 });
 </script>

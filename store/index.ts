@@ -1,15 +1,16 @@
 export const state = () => ({
-  loggedUser:    null,
-  configuration: null,
-  currentGame:   '',
-  currentTitle:  '',
-  currentTags:   [],
-  loadingMsg:    '',
-  isUILoaded:    false,
-  isMobile:      false,
-  $core:         [],
-  $systems:      [],
-  $integrations: [],
+  loggedUser:       null,
+  configuration:    null,
+  currentGame:      '',
+  currentTitle:     '',
+  currentTags:      [],
+  loadingMsg:       '',
+  isUILoaded:       false,
+  areUIStatsHidden: localStorage.getItem('$store.areUIStatsHidden') === 'true',
+  isMobile:         false,
+  $core:            [],
+  $systems:         [],
+  $integrations:    [],
 });
 
 export const mutations = {
@@ -33,6 +34,10 @@ export const mutations = {
   },
   setUILoaded (storeState: { isUILoaded: boolean; }) {
     storeState.isUILoaded = true;
+  },
+  setUIStatsHidden (storeState: { areUIStatsHidden: boolean; }, value: boolean) {
+    localStorage.setItem('$store.areUIStatsHidden', String(value));
+    storeState.areUIStatsHidden = value;
   },
   setMobile (storeState: { isMobile: any; }, value: any) {
     storeState.isMobile = value;

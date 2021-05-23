@@ -1,9 +1,3 @@
 <template>
-  <v-container>
-    Nothing here yet
-  </v-container>
+  <span />
 </template>
-
-<script>
-export default {};
-</script>

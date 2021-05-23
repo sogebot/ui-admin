@@ -169,7 +169,7 @@ export default defineComponent({
   },
   props: { sum: Number, userId: String },
   setup (props, ctx) {
-    const bits = ref([] as UserInterface['bits']);
+    const bits = ref([] as UserBitInterface[]);
     const username = ref('');
     const dialog = ref(false);
     const timestamp = ref(Date.now());
@@ -185,7 +185,7 @@ export default defineComponent({
 
     watch(dialog, (val) => {
       if (val) {
-        socket.users.emit('viewers::findOne', props.userId, (error: null | string, viewer: UserInterface) => {
+        socket.users.emit('viewers::findOne', props.userId, (error: null | string, viewer: UserInterface & { bits: UserBitInterface[] }) => {
           if (error) {
             console.error(error);
             return;

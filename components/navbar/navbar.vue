@@ -11,7 +11,7 @@
       app
       bottom
     >
-      <div class="pt-1 text-center text-button">{{ name }}</div>
+      <v-toolbar dense class="text-button" color="primary">{{ name }}</v-toolbar>
       <user />
 
       <v-spacer />
@@ -38,6 +38,7 @@ const navmenu = defineAsyncComponent({ loader: () => import('./menu.vue') });
 const user = defineAsyncComponent({ loader: () => import('../user.vue') });
 
 const routeMapper = new Map<string, string>([
+  ['index', 'dashboard'],
   ['manage-alias', 'alias'],
   ['manage-botcommands', 'botcommands'],
   ['manage-commands', 'customcommands'],
@@ -63,6 +64,7 @@ const routeMapper = new Map<string, string>([
   ['stats-tips', 'tips'],
   ['stats-commandcount', 'commandcount'],
   ['stats-profiler', 'profiler'],
+  ['stats-api-explorer', 'api-explorer'],
 ]);
 
 export default defineComponent({
@@ -76,6 +78,7 @@ export default defineComponent({
     const drawer = ref(!(ctx.root as any).$vuetify.breakpoint.mobile);
 
     onMounted(() => {
+      console.debug('#route | ' + ctx.root.$route.name);
       const socket = getSocket('/', true);
       socket.emit('name', (recvName: string) => { name.value = recvName; });
       socket.emit('channelName', (recvName: string) => { channelName.value = recvName; });

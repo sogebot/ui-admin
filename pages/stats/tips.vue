@@ -55,8 +55,8 @@
         {{ Intl.NumberFormat($store.state.configuration.lang, { style: 'currency', currency: item.currency }).format(item.amount) }}
       </template>
       <template #[`item.user`]="{ item }">
-        <NuxtLink :to="'/manage/viewers/' + item.user.userId">
-          {{ item.user.username }}&nbsp;<small class="text-muted">{{ item.user.userId }}</small>
+        <NuxtLink :to="'/manage/viewers/' + item.userId">
+          {{ item.username }}&nbsp;<small class="text-muted">{{ item.userId }}</small>
         </NuxtLink>
       </template>
     </v-data-table>
@@ -87,15 +87,15 @@ export default defineComponent({
   setup () {
     const search = ref('');
     const selectedYear = ref(String((new Date()).getFullYear()));
-    const items = ref([] as Required<UserTipInterface>[]);
+    const items = ref([] as Required<UserTipInterface & { username: string }>[]);
     const fItems = computed(() => {
       if (search.value === '') {
         return items.value;
       } else {
         return items.value.filter((item) => {
           const message = item.message.toLowerCase().includes(search.value.toLowerCase());
-          const userid = item.user.userId.toLowerCase().includes(search.value.toLowerCase());
-          const username = item.user.username.toLowerCase().includes(search.value.toLowerCase());
+          const userid = item.userId.toLowerCase().includes(search.value.toLowerCase());
+          const username = item.username.toLowerCase().includes(search.value.toLowerCase());
           return message || userid || username;
         });
       }
@@ -115,7 +115,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      getSocket('/stats/tips').emit('generic::getAll', (err: string | null, val: Required<UserTipInterface>[]) => {
+      getSocket('/stats/tips').emit('generic::getAll', (err: string | null, val: Required<UserTipInterface & { username: string }>[]) => {
         if (err) {
           return console.error(err);
         }

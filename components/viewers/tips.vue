@@ -175,7 +175,7 @@ export default defineComponent({
   },
   props: { sum: Number, userId: String },
   setup (props, ctx) {
-    const tips = ref([] as UserInterface['tips']);
+    const tips = ref([] as UserTipInterface[]);
     const username = ref('');
     const dialog = ref(false);
     const timestamp = ref(Date.now());
@@ -228,7 +228,7 @@ export default defineComponent({
     watch(dialog, (val) => {
       if (val) {
         // load tips
-        getSocket('/core/users').emit('viewers::findOne', props.userId, (error: null | string, viewer: UserInterface) => {
+        getSocket('/core/users').emit('viewers::findOne', props.userId, (error: null | string, viewer: UserInterface & { tips: UserTipInterface[] }) => {
           if (error) {
             console.error(error);
             return;

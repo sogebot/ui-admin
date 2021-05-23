@@ -26,6 +26,7 @@ export default {
   css: [
     '@/assets/colors.scss',
     '@/assets/global.scss',
+    '@/assets/transitions.scss',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -50,11 +51,18 @@ export default {
   vuetify: {
     icons:      { iconfont: 'mdiSvg' },
     breakpoint: { mobileBreakpoint: 'sm' },
-    theme:      { options: { customProperties: true } },
+    theme:      {
+      options: { customProperties: true },
+      dark:    true,
+      themes:  { dark: { primary: '#FF9800' } },
+    },
   },
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [],
+  modules: [
+    '@nuxtjs/axios',
+    '@nuxtjs/proxy',
+  ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {},
@@ -69,4 +77,9 @@ export default {
       });
     },
   },
+
+  axios: { proxy: true },
+
+  // enable api proxy
+  ...process.env.NODE_ENV === 'development' && { proxy: { '/api': 'http://localhost:20000' } },
 };
