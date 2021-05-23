@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       uses: borales/actions-yarn@v2.0.0
       with:
-        cmd: install # will run `yarn install` command
+        cmd: install --ignore-engines # will run `yarn install` command
     - name: Run eslint
       run: npm run lint
   build:
@@ -36,6 +36,6 @@ jobs:
       - name: Install dependencies
         uses: borales/actions-yarn@v2.0.0
         with:
-          cmd: install # will run `yarn install` command
+          cmd: install --ignore-engines # will run `yarn install` command
       - name: Run build
         run: npm run build

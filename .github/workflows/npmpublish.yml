@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         uses: borales/actions-yarn@v2.0.0
         with:
-          cmd: install # will run `yarn install` command
+          cmd: install --ignore-engines # will run `yarn install` command
       - run: npm test
       - uses: JS-DevTools/npm-publish@v1.4.3
         with:
