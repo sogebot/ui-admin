@@ -20,7 +20,7 @@
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged",
-    "commit-msg": "npx commitlint -e \"$1\"",
+    "commit-msg": "node ./.bot/tools/pre-commit-message.js $1 $2 $3",
     "preserveUnused": true
   },
   "dependencies": {
@@ -43,8 +43,6 @@
     "url": "git+https://github.com/sogebot/ui-admin.git"
   },
   "devDependencies": {
-    "@commitlint/cli": "^12.1.4",
-    "@commitlint/config-conventional": "^12.1.4",
     "@mdi/js": "^5.9.55",
     "@nuxt/types": "^2.15.6",
     "@nuxt/typescript-build": "^2.1.0",
@@ -58,7 +56,7 @@
     "@types/vue-chartkick": "^0.5.1",
     "@vue/composition-api": "^1.0.0-rc.9",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.26.0",
+    "eslint": "^7.27.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-nuxt": "^2.0.0",
     "eslint-plugin-prettier": "^3.4.0",
