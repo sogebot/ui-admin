@@ -81,5 +81,10 @@ export default {
   axios: { proxy: true },
 
   // enable api proxy
-  ...process.env.NODE_ENV === 'development' && { proxy: { '/api': 'http://localhost:20000' } },
+  ...process.env.NODE_ENV === 'development' && {
+    proxy: {
+      '/api':         'http://localhost:20000',
+      '/credentials': 'http://localhost:3001',
+    },
+  },
 };
