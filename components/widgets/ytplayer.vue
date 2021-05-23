@@ -123,7 +123,7 @@ import {
   computed,
   defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@vue/composition-api';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 import Vue from 'vue';
 import VuePlyr from 'vue-plyr';
 

@@ -348,7 +348,7 @@ import {
   computed,
   defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
-import { uniq } from 'lodash';
+import { uniq } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 
 import type { GalleryInterface } from '.bot/src/bot/database/entity/gallery';
