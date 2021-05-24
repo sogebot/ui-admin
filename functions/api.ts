@@ -32,8 +32,11 @@ const refreshToken = async (axios: NuxtAxiosInstance) => {
 
 type GetRequest<T> = {
   data: T,
-  _count?: number,
-  _pagingCookie?: string,
+  paging: null | {
+    _limit: number,
+    _page: number,
+    count: number,
+  },
 };
 
 type PostRequest<T> = T;

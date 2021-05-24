@@ -88,7 +88,7 @@ export default defineComponent({
     const dialogController = ref(props.dialog);
     const isLoaded = ref(false);
     const isSaving = ref(false);
-    const items = ref([] as WidgetCustomInterface[]);
+    const items = ref([] as Omit<WidgetCustomInterface, 'userId'>[]);
     const valid = ref(true);
     const markedToDelete = ref([] as string[]);
 
@@ -110,7 +110,7 @@ export default defineComponent({
         });
       }
       for (const item of items.value) {
-        await api.post<WidgetCustomInterface>(ctx.root.$axios, `/api/v1/custom`, item);
+        await api.post<Omit<WidgetCustomInterface, 'userId'>>(ctx.root.$axios, `/api/v1/custom`, item);
       }
       markedToDelete.value = [];
       isSaving.value = false;
