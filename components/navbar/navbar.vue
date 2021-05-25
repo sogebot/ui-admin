@@ -59,6 +59,7 @@ const routeMapper = new Map<string, string>([
   ['registry-customvariables', 'custom-variables'],
   ['registry-textoverlay', 'textoverlay'],
   ['registry-gallery', 'gallery'],
+  ['registry-carousel', 'carousel'],
   ['stats-api', 'api'],
   ['stats-bits', 'bits'],
   ['stats-tips', 'tips'],

@@ -15,6 +15,7 @@
       :loading="state.loading !== ButtonStates.success || state.saving"
       :headers="headers"
       :items-per-page="-1"
+      hide-default-footer
       :items="items"
       sort-by="order"
       @current-items="saveCurrentItems"
@@ -119,57 +120,211 @@
 
       <template #[`item.showOnlyOncePerStream`]="{ item }">
         <v-simple-checkbox
-          v-if="item.id !== 'last'"
+
           v-model="item.showOnlyOncePerStream"
           @click="update(item, true, 'showOnlyOncePerStream')"
         />
       </template>
 
       <template #[`item.drag`]="{ item }">
-        <v-icon v-if="item.id !== 'last'" :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, item.id)">
+        <v-icon :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, item.id)">
           {{ mdiDrag }}
         </v-icon>
       </template>
 
       <template #[`item.waitBefore`]="{ item }">
-        {{ item.id !== 'last' ? item.waitBefore : '' }}
+        <v-edit-dialog
+
+          persistent
+          large
+          :return-value.sync="item.waitBefore"
+          @save="update(item, true, 'waitBefore')"
+        >
+          {{ item.waitBefore }}
+          <template #input>
+            <v-text-field
+              v-model="item.waitBefore"
+              :rules="rules.waitBefore"
+              single-line
+              counter
+            >
+              <template #append>
+                ms
+              </template>
+            </v-text-field>
+          </template>
+        </v-edit-dialog>
       </template>
 
       <template #[`item.waitAfter`]="{ item }">
-        {{ item.id !== 'last' ? item.waitAfter : '' }}
+        <v-edit-dialog
+
+          persistent
+          large
+          :return-value.sync="item.waitAfter"
+          @save="update(item, true, 'waitAfter')"
+        >
+          {{ item.waitAfter }}
+          <template #input>
+            <v-text-field
+              v-model="item.waitAfter"
+              :rules="rules.waitAfter"
+              single-line
+              counter
+            >
+              <template #append>
+                ms
+              </template>
+            </v-text-field>
+          </template>
+        </v-edit-dialog>
       </template>
 
       <template #[`item.duration`]="{ item }">
-        {{ item.id !== 'last' ? item.duration : '' }}
+        <v-edit-dialog
+
+          persistent
+          large
+          :return-value.sync="item.duration"
+          @save="update(item, true, 'duration')"
+        >
+          {{ item.duration }}
+          <template #input>
+            <v-text-field
+              v-model="item.duration"
+              :rules="rules.duration"
+              single-line
+              counter
+            >
+              <template #append>
+                ms
+              </template>
+            </v-text-field>
+          </template>
+        </v-edit-dialog>
       </template>
 
       <template #[`item.animationInDuration`]="{ item }">
-        {{ item.id !== 'last' ? item.animationInDuration : '' }}
+        <v-edit-dialog
+
+          persistent
+          large
+          :return-value.sync="item.animationInDuration"
+          @save="update(item, true, 'animationInDuration')"
+        >
+          {{ item.animationInDuration }}
+          <template #input>
+            <v-text-field
+              v-model="item.animationInDuration"
+              :rules="rules.animationInDuration"
+              single-line
+              counter
+            >
+              <template #append>
+                ms
+              </template>
+            </v-text-field>
+          </template>
+        </v-edit-dialog>
       </template>
 
       <template #[`item.animationIn`]="{ item }">
-        {{ item.id !== 'last' ? item.animationIn : '' }}
+        <v-edit-dialog
+
+          persistent
+          large
+          :return-value.sync="item.animationIn"
+          @save="update(item, true, 'animationIn')"
+        >
+          {{ item.animationIn }}
+          <template #input>
+            <v-select
+              v-model="item.animationIn"
+              :items="animationInOptions"
+            />
+          </template>
+        </v-edit-dialog>
       </template>
 
       <template #[`item.animationOutDuration`]="{ item }">
-        {{ item.id !== 'last' ? item.animationOutDuration : '' }}
+        <v-edit-dialog
+
+          persistent
+          large
+          :return-value.sync="item.animationOutDuration"
+          @save="update(item, true, 'animationOutDuration')"
+        >
+          {{ item.animationOutDuration }}
+          <template #input>
+            <v-text-field
+              v-model="item.animationOutDuration"
+              :rules="rules.animationOutDuration"
+              single-line
+              counter
+            >
+              <template #append>
+                ms
+              </template>
+            </v-text-field>
+          </template>
+        </v-edit-dialog>
       </template>
 
       <template #[`item.animationOut`]="{ item }">
-        {{ item.id !== 'last' ? item.animationOut : '' }}
+        <v-edit-dialog
+
+          persistent
+          large
+          :return-value.sync="item.animationOut"
+          @save="update(item, true, 'animationOut')"
+        >
+          {{ item.animationOut }}
+          <template #input>
+            <v-select
+              v-model="item.animationOut"
+              :items="animationOutOptions"
+            />
+          </template>
+        </v-edit-dialog>
       </template>
 
       <template #[`item.image`]="{ item }">
         <v-img
-          v-if="item.id !== 'last'"
+
           :id="item.id"
           contain
           :src="item.imageUrl"
           max-height="75px"
           max-width="150px"
+          @click.stop="imageShow = item.imageUrl"
         />
       </template>
+
+      <template #[`body.append`]>
+        <tr v-if="state.dragging">
+          <td colspan="10" style="height: 10px;" />
+        </tr>
+      </template>
     </v-data-table>
+
+    <v-overlay v-model="imageShowOverlay" @click.native="closeOverlay">
+      <v-progress-circular
+        v-if="isImageLoading"
+        indeterminate
+        color="primary darken-1"
+        size="128"
+        style="position: fixed;
+          left: 50%;
+          top: 50%;
+          transform: translateX(-50%), translateY(-50%);"
+      />
+      <v-img
+        v-if="imageShow"
+        contain
+        :src="imageShow"
+        @load="isImageLoading = false"
+      />
+    </v-overlay>
   </v-container>
 </template>
 
@@ -189,6 +344,7 @@ import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
+import { minValue, required } from '~/functions/validators';
 
 function handleDragStart (e: DragEvent, id: string) {
   EventBus.$emit(`carousel::dragstart`);
@@ -247,9 +403,38 @@ function handleDragStart (e: DragEvent, id: string) {
 export default defineComponent({
   setup (_, ctx) {
     const items = ref([] as CarouselInterface[]);
+
+    const imageShowOverlay = ref(false);
+    const imageShow = ref(null as null | string);
+    const isImageLoading = ref(false);
+
     const search = ref('');
-    const rules = {};
+    const rules = {
+      waitBefore:           [required, minValue(0)],
+      waitAfter:            [required, minValue(0)],
+      duration:             [required, minValue(0)],
+      animationOutDuration: [required, minValue(0)],
+      animationInDuration:  [required, minValue(0)],
+    };
     const timestamp = ref(Date.now());
+
+    const animationInOptions = [
+      { value: 'fadeIn', text: 'fadeIn' },
+      { value: 'blurIn', text: 'blurIn' },
+      { value: 'slideUp', text: 'slideUp' },
+      { value: 'slideDown', text: 'slideDown' },
+      { value: 'slideLeft', text: 'slideLeft' },
+      { value: 'slideRight', text: 'slideRight' },
+    ];
+
+    const animationOutOptions = [
+      { value: 'fadeOut', text: 'fadeOut' },
+      { value: 'blurOut', text: 'blurOut' },
+      { value: 'slideUp', text: 'slideUp' },
+      { value: 'slideDown', text: 'slideDown' },
+      { value: 'slideLeft', text: 'slideLeft' },
+      { value: 'slideRight', text: 'slideRight' },
+    ];
 
     const uploadedFiles = ref(0);
     const isUploadingNum = ref(0);
@@ -288,52 +473,43 @@ export default defineComponent({
         value: 'drag', text: '', sortable: false,
       },
       {
-        value: 'image', text: 'image', sortable: false,
+        value: 'image', text: '', sortable: false,
       },
       {
-        value: 'waitBefore', text: 'waitBefore', sortable: false,
+        value: 'waitBefore', text: translate('page.settings.overlays.carousel.titles.waitBefore'), sortable: false,
       },
       {
-        value: 'waitAfter', text: 'waitAfter', sortable: false,
+        value: 'waitAfter', text: translate('page.settings.overlays.carousel.titles.waitAfter'), sortable: false,
       },
       {
-        value: 'duration', text: 'duration', sortable: false,
+        value: 'duration', text: translate('page.settings.overlays.carousel.titles.duration'), sortable: false,
       },
       {
-        value: 'animationInDuration', text: 'animationInDuration', sortable: false,
+        value: 'animationInDuration', text: translate('page.settings.overlays.carousel.titles.animationInDuration'), sortable: false,
       },
       {
-        value: 'animationIn', text: 'animationIn', sortable: false,
+        value: 'animationIn', text: translate('page.settings.overlays.carousel.titles.animationIn'), sortable: false,
       },
       {
-        value: 'animationOutDuration', text: 'animationOutDuration', sortable: false,
+        value: 'animationOutDuration', text: translate('page.settings.overlays.carousel.titles.animationOutDuration'), sortable: false,
       },
       {
-        value: 'animationOut', text: 'animationOut', sortable: false,
+        value: 'animationOut', text: translate('page.settings.overlays.carousel.titles.animationOut'), sortable: false,
       },
       {
-        value: 'showOnlyOncePerStream', text: 'showOnlyOncePerStream', sortable: false,
+        value: 'showOnlyOncePerStream', text: translate('page.settings.overlays.carousel.titles.showOnlyOncePerStream'), sortable: false,
       },
     ];
 
-    watch(() => state.value.dragging, (val) => {
-      if (val) {
-        items.value.push({
-          id:                    'last',
-          order:                 items.value.length,
-          type:                  '',
-          waitBefore:            0,
-          waitAfter:             0,
-          duration:              0,
-          animationInDuration:   0,
-          animationIn:           '',
-          animationOut:          '',
-          animationOutDuration:  0,
-          showOnlyOncePerStream: false,
-          base64:                '',
-        });
-      } else {
-        items.value = items.value.filter(o => o.id !== 'last');
+    watch(imageShowOverlay, (val) => {
+      if (!val) {
+        imageShow.value = null;
+      }
+    });
+    watch(imageShow, (val) => {
+      if (val !== null) {
+        imageShowOverlay.value = true;
+        isImageLoading.value = true;
       }
     });
 
@@ -416,6 +592,11 @@ export default defineComponent({
         }
       }
 
+      // update all instantly
+      for (const i of [item, ...(multi ? selected.value : [])]) {
+        (i as any)[attr] = item[attr];
+      }
+
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
@@ -466,6 +647,10 @@ export default defineComponent({
       }
     };
 
+    function closeOverlay () {
+      imageShowOverlay.value = false;
+    }
+
     return {
       // refs
       timestamp,
@@ -481,11 +666,17 @@ export default defineComponent({
       translate,
       saveSuccess,
       rules,
+      imageShowOverlay,
+      imageShow,
+      isImageLoading,
+      animationInOptions,
+      animationOutOptions,
 
       // functions
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       filesChange,
       handleDragStart,
+      closeOverlay,
 
       // icons
       mdiMagnify,
