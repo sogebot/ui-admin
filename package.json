@@ -1,6 +1,6 @@
 {
   "name": "@sogebot/ui-admin",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "author": "sogehige@gmail.com",
   "description": "Nuxt.js version of ui-admin",
   "resolutions": {
