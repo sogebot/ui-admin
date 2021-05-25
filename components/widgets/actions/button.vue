@@ -67,7 +67,7 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 type Props = {
-  item: QuickActions.Item & { selected: boolean },
+  item: QuickActions.Item & { selected: boolean, temporary: boolean, show: boolean },
 };
 
 export default defineComponent({
@@ -99,7 +99,9 @@ export default defineComponent({
         if (valid.value) {
           isSaving.value = true;
           try {
-            await api.post<QuickActions.Item>(ctx.root.$axios, `/api/v1/quickaction`, clonedItem.value);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { selected, temporary, show, ...item } = clonedItem.value;
+            await api.post<QuickActions.Item>(ctx.root.$axios, `/api/v1/quickaction`, item);
             dialog.value = false;
           } catch (e) {
             error(e);
