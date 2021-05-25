@@ -383,6 +383,11 @@ export default defineComponent({
         }
       }
 
+      // update all instantly
+      for (const i of [item, ...(multi ? selected.value : [])]) {
+        (i as any)[attr] = item[attr];
+      }
+
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {

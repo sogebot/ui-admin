@@ -29,9 +29,9 @@
       show-expand
       :sort-desc="true"
       :items-per-page="-1"
+      :items="fItems"
       @current-items="saveCurrentItems"
       @click:row="addToSelectedItem"
-      :items="fItems"
     >
       <template #top>
         <v-sheet
@@ -410,6 +410,11 @@ export default defineComponent({
             return;
           }
         }
+      }
+
+      // update all instantly
+      for (const i of [item, ...(multi ? selected.value : [])]) {
+        (i as any)[attr] = item[attr];
       }
 
       await Promise.all(

@@ -18,7 +18,14 @@
         <v-icon>{{ mdiCommentPlus }}</v-icon>
       </v-btn>
     </v-toolbar>
-    <v-alert v-if="!isHttps" color="error">
+    <v-alert
+      v-if="!isHttps"
+      border="left"
+      color="red"
+      :icon="mdiExclamationThick"
+      text
+      type="success"
+    >
       You need to run bot on HTTPS on port 443 with valid certificate for this embed to be working
     </v-alert>
 
@@ -68,7 +75,7 @@
 
 <script lang="ts">
 import {
-  mdiAccountMinus, mdiAccountPlus, mdiClose, mdiCommentPlus, mdiRefresh,
+  mdiAccountMinus, mdiAccountPlus, mdiClose, mdiCommentPlus, mdiExclamationThick, mdiRefresh,
 } from '@mdi/js';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import {
@@ -194,6 +201,7 @@ export default defineComponent({
       mdiCommentPlus,
       mdiAccountPlus,
       mdiAccountMinus,
+      mdiExclamationThick,
     };
   },
 });

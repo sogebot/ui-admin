@@ -25,9 +25,9 @@
       :search="search"
       :loading="state.loading !== ButtonStates.success"
       :headers="headers"
-      @current-items="saveCurrentItems"
       :items-per-page="-1"
       :items="fItems"
+      @current-items="saveCurrentItems"
       @click:row="addToSelectedItem"
     >
       <template #top>
@@ -404,6 +404,11 @@ export default defineComponent({
             return;
           }
         }
+      }
+
+      // update all instantly
+      for (const i of [item, ...(multi ? selected.value : [])]) {
+        (i as any)[attr] = item[attr];
       }
 
       await Promise.all(
