@@ -39,9 +39,30 @@ type GetRequest<T> = {
   },
 };
 
+type GetOneRequest<T> = T;
+
 type PostRequest<T> = T;
 
+type PatchRequest<T> = T;
+
 const api = {
+  getOne: async <T>(axios: NuxtAxiosInstance, url: string, id: string, options?: AxiosRequestConfig) => {
+    try {
+      await refreshToken(axios);
+      const data = await axios.get<GetOneRequest<T>>(url + '/' + id,
+        {
+          ...options,
+          headers: {
+            ...(options?.headers ?? {}),
+            Authorization: 'Bearer ' + localStorage.accessToken,
+          },
+        });
+      return data;
+    } catch (e) {
+      console.error(e);
+      throw e; // rethrow
+    }
+  },
   get: async <T>(axios: NuxtAxiosInstance, url: string, options?: AxiosRequestConfig) => {
     try {
       await refreshToken(axios);
@@ -60,10 +81,10 @@ const api = {
     }
   },
 
-  post: async <T>(axios: NuxtAxiosInstance, url: string, data?: T, options?: AxiosRequestConfig) => {
+  patch: async <T, R = T>(axios: NuxtAxiosInstance, url: string, data?: Partial<T>, options?: AxiosRequestConfig) => {
     try {
       await refreshToken(axios);
-      await axios.post<PostRequest<T>>(url,
+      const response = await axios.patch<PatchRequest<R>>(url,
         data,
         {
           ...options,
@@ -72,7 +93,26 @@ const api = {
             Authorization: 'Bearer ' + localStorage.accessToken,
           },
         });
-      return data;
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      throw e; // rethrow
+    }
+  },
+
+  post: async <T, R = T>(axios: NuxtAxiosInstance, url: string, data?: T, options?: AxiosRequestConfig) => {
+    try {
+      await refreshToken(axios);
+      const response = await axios.post<PostRequest<R>>(url,
+        data,
+        {
+          ...options,
+          headers: {
+            ...(options?.headers ?? {}),
+            Authorization: 'Bearer ' + localStorage.accessToken,
+          },
+        });
+      return response.data;
     } catch (e) {
       console.error(e);
       throw e; // rethrow
