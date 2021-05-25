@@ -164,7 +164,7 @@
           v-if="item.id !== 'last'"
           :id="item.id"
           contain
-          :src="'data:' + item.type + ';base64,' + item.base64"
+          :src="item.imageUrl"
           max-height="75px"
           max-width="150px"
         />
