@@ -20,7 +20,15 @@ jobs:
       - name: "Setup Node.js"
         uses: "actions/setup-node@v2.1.5"
         with:
-          node-version: 14
+          node-version:
+
+      - name: Temporarily disable "include administrators" branch protection
+        uses: benjefferies/branch-protection-bot@master
+        if: always()
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          branch: main
+
       - name: "Automated Version Bump"
         uses: "phips28/gh-action-bump-version@master"
         with:
@@ -31,3 +39,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: "cat package.json"
         run: cat ./package.json
+
+      - name: Enable "include administrators" branch protection
+        uses: benjefferies/branch-protection-bot@master
+        if: always()  # Force to always run this step to ensure "include administrators" is always turned back on
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          branch: main
