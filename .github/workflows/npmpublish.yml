@@ -9,15 +9,35 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@master
+
       - name: Checkout submodules
         uses: textbook/git-checkout-submodule-action@master
+
       - uses: actions/setup-node@v2.1.5
         with:
           node-version: 14
+
       - run: yarn install --ignore-engines
+
       - run: npm test
+
+      - name: Temporarily disable "include administrators" branch protection
+        uses: benjefferies/branch-protection-bot@master
+        if: always()
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+
       - uses: JS-DevTools/npm-publish@v1.4.3
         with:
           token: ${{ secrets.NPM_TOKEN }}
+
+      - name: Enable "include administrators" branch protection
+        uses: benjefferies/branch-protection-bot@master
+        if: always()  # Force to always run this step to ensure "include administrators" is always turned back on
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          owner: benjefferies
+          repo: branch-protection-bot
