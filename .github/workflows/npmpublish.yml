@@ -29,6 +29,7 @@ jobs:
         if: always()
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
+          branch: main
 
       - uses: JS-DevTools/npm-publish@v1.4.3
         with:
@@ -39,5 +40,4 @@ jobs:
         if: always()  # Force to always run this step to ensure "include administrators" is always turned back on
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
-          owner: benjefferies
-          repo: branch-protection-bot
+          branch: main
