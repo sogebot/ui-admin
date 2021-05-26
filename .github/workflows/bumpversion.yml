@@ -22,12 +22,18 @@ jobs:
         with:
           node-version: 14
 
+      - uses: peterjgrainger/action-create-branch@v2.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: 'version-bump'
+
       - name: "Automated Version Bump"
         uses: "phips28/gh-action-bump-version@master"
         with:
           skip-tag:  'true'
           tag-prefix: ''
-          target-branch: 'versionBump'
+          target-branch: 'version-bump'
           commit-message: 'build: {{version}}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
