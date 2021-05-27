@@ -122,14 +122,20 @@
       </template>
 
       <template #[`item.display.type`]="{ item }">
-        <v-row v-for="key of Object.keys(item.display)" :key="key" dense>
-          <v-col class="font-weight-bold pa-0">
-            {{ translate('registry.goals.input.' + key + '.title') }}:
-          </v-col>
-          <v-col class="pa-0">
-            {{ item.display[key] }}
-          </v-col>
-        </v-row>
+        <v-simple-table dense :class="{'primary--text': selected.find(o => o.id === item.id)}" class="transparent">
+          <template #default>
+            <tbody>
+              <tr v-for="key of Object.keys(item.display)" :key="key" dense>
+                <td>
+                  {{ translate('registry.goals.input.' + key + '.title') }}
+                </td>
+                <td>
+                  {{ item.display[key] }}
+                </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
       </template>
 
       <template #[`item.actions`]="{ item }">
@@ -148,58 +154,63 @@
       </template>
 
       <template #expanded-item="{ headers, item }">
-        <td :colspan="headers.length">
-          <v-list v-for="goal of item.goals" :key="goal.id">
-            <v-list-item-title>{{ goal.name }}</v-list-item-title>
-            <v-list-item-content>
-              <v-simple-table dense>
-                <template #default>
-                  <tbody>
-                    <tr>
-                      <td>
-                        {{ translate('registry.goals.input.type.title') }}
-                      </td>
-                      <td>
-                        {{ goal.type }}
-                      </td>
-                    </tr>
+        <td :colspan="headers.length" class="py-2">
+          <template v-for="(goal, idx) of item.goals">
+            <v-simple-table :key="goal.id" dense>
+              <template #default>
+                <thead>
+                  <tr>
+                    <td colspan="2" class="text-h6">
+                      {{ goal.name }}
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      {{ translate('registry.goals.input.type.title') }}
+                    </td>
+                    <td>
+                      {{ goal.type }}
+                    </td>
+                  </tr>
 
-                    <tr v-if="goal.type === 'tips'">
-                      <td>
-                        {{ translate('registry.goals.input.countBitsAsTips.title') }}
-                      </td>
-                      <td>
-                        {{ !!goal.countBitsAsTips }}
-                      </td>
-                    </tr>
+                  <tr v-if="goal.type === 'tips'">
+                    <td>
+                      {{ translate('registry.goals.input.countBitsAsTips.title') }}
+                    </td>
+                    <td>
+                      {{ !!goal.countBitsAsTips }}
+                    </td>
+                  </tr>
 
-                    <tr>
-                      <td>
-                        {{ translate('registry.goals.input.goalAmount.title') }}
-                      </td>
-                      <td>
-                        {{ goal.goalAmount }}
-                      </td>
-                    </tr>
+                  <tr>
+                    <td>
+                      {{ translate('registry.goals.input.goalAmount.title') }}
+                    </td>
+                    <td>
+                      {{ goal.goalAmount }}
+                    </td>
+                  </tr>
 
-                    <tr>
-                      <td>
-                        {{ translate('registry.goals.input.endAfter.title') }}
-                      </td>
-                      <td>
-                        <v-icon v-if="goal.endAfterIgnore">
-                          {{ mdiInfinity }}
-                        </v-icon>
-                        <template v-else>
-                          {{ new Date(goal.endAfter).toLocaleString() }}
-                        </template>
-                      </td>
-                    </tr>
-                  </tbody>
-                </template>
-              </v-simple-table>
-            </v-list-item-content>
-          </v-list>
+                  <tr>
+                    <td>
+                      {{ translate('registry.goals.input.endAfter.title') }}
+                    </td>
+                    <td>
+                      <v-icon v-if="goal.endAfterIgnore">
+                        {{ mdiInfinity }}
+                      </v-icon>
+                      <template v-else>
+                        {{ new Date(goal.endAfter).toLocaleString() }}
+                      </template>
+                    </td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+            <v-divider v-if="idx < item.goals.length - 1" :key="goal.id + 'divider'" class="ma-4" />
+          </template>
         </td>
       </template>
     </v-data-table>
