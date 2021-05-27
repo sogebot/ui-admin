@@ -1415,10 +1415,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.12.tgz#431ec342a7195622f86688bbda82e3166ce8cb28"
   integrity sha512-6RglhutqrGFMO1MNUXp95RBuYIuc8wTnMAV5MUhLmjTOy78ncwOw7RgeQ/HeymkKXRhZd0s2DNrM1rL7unk3MQ==
 
-"@sogebot/ui-helpers@^1.10.0":
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/@sogebot/ui-helpers/-/ui-helpers-1.10.0.tgz#c7e2a77fddc4f39ff0452bff1e1f28aa9cd0af69"
-  integrity sha512-3xCSkUIHvP8LTtHF1uKQ1WltXTmyOqwuysSU/WogM+C17Ckr274w7MfoRVp5ccFGQlyyqx7w+qNK3w1VNeFKWg==
+"@sogebot/ui-helpers@^1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@sogebot/ui-helpers/-/ui-helpers-1.11.0.tgz#4193eab1dd17bde7a306cb27a4f4cf61a7936258"
+  integrity sha512-826jYvCeQLHFm0qRrXNonvr4C+2Glf5GZezj8N7lDwwDL8RVReYSeLmgzvTQVgETpSZE8cvrKsr5PAdVqSZLhw==
   dependencies:
     axios "^0.21.1"
     dayjs "^1.10.4"

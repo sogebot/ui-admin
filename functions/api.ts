@@ -1,5 +1,6 @@
 import { NuxtAxiosInstance } from '@nuxtjs/axios';
 import { AxiosRequestConfig } from 'axios';
+import { debounce } from 'lodash-es';
 
 const redirectLogin = () => {
   if (window.location.href.includes('popout')) {
@@ -9,7 +10,7 @@ const redirectLogin = () => {
   }
 };
 
-const refreshToken = async (axios: NuxtAxiosInstance) => {
+const refreshToken = debounce(async (axios: NuxtAxiosInstance) => {
   try {
     const token = localStorage.getItem('refreshToken');
     if (token === '' || token === null) {
@@ -28,7 +29,7 @@ const refreshToken = async (axios: NuxtAxiosInstance) => {
     localStorage.setItem('userType', 'unauthorized');
     redirectLogin();
   }
-};
+}, 1000, { leading: true });
 
 type GetRequest<T> = {
   data: T,

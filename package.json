@@ -1,6 +1,6 @@
 {
   "name": "@sogebot/ui-admin",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "author": "sogehige@gmail.com",
   "description": "Nuxt.js version of ui-admin",
   "resolutions": {
@@ -28,7 +28,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.13.4",
     "@nuxtjs/proxy": "^2.1.0",
-    "@sogebot/ui-helpers": "^1.10.0",
+    "@sogebot/ui-helpers": "^1.11.0",
     "chart.js": "^2.9.4",
     "core-js": "^3.12.1",
     "gsap": "^3.6.1",
