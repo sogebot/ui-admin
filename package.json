@@ -6,6 +6,10 @@
   "resolutions": {
     "@nuxtjs/vuetify/**/sass": "1.32.12"
   },
+  "engines": {
+    "npm": "please-use-yarn",
+    "yarn": ">= 1.19.1"
+  },
   "scripts": {
     "prepublishOnly": "npm run generate",
     "dev": "nuxt",
