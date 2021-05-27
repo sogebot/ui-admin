@@ -13,14 +13,14 @@ import {
 } from '@vue/composition-api';
 import { cloneDeep } from 'lodash-es';
 
-import type { QuickActions } from '.bot/src/bot/database/entity/dashboard';
+import type { CommandItem } from '.bot/src/bot/database/entity/dashboard';
 import { EventBus } from '~/functions/event-bus';
 import {
   minLength, required, startsWith,
 } from '~/functions/validators';
 
 type Props = {
-  item: QuickActions.CommandItem
+  item: CommandItem
 };
 export default defineComponent({
   props: { item: Object },
