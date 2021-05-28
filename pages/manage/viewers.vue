@@ -979,14 +979,6 @@ export default defineComponent({
 </script>
 
 <style>
-.timePicker .v-picker__title {
-  padding: 9px;
-}
-
-.timePicker .v-time-picker-title__time {
-  font-size: 50px !important;
-}
-
 .dividerEdit .v-small-dialog__activator__content {
   width: 100%;
   transform: translateY(-4px);

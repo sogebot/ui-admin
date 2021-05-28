@@ -81,37 +81,10 @@
                 </v-dialog>
               </template>
 
-              <v-dialog v-model="newDialog" fullscreen>
-                <template #activator="{ on, attrs }">
-                  <v-btn color="primary" v-bind="attrs" v-on="on">
-                    New Item
-                  </v-btn>
-                </template>
-
-                <v-card>
-                  <v-card-title>
-                    <span class="headline">New item</span>
-                  </v-card-title>
-
-                  <v-card-text :key="timestamp">
-                    <new-item :rules="rules" @close="newDialog = false" @save="saveSuccess" />
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
-
-              <v-dialog v-model="editDialog" fullscreen>
-                <v-card v-if="editItem">
-                  <v-card-title>
-                    <span class="headline">Update item <span
-                      class="primary--text pl-1"
-                    >{{ editItem.variableName }}</span></span>
-                  </v-card-title>
-
-                  <v-card-text :key="timestamp">
-                    <new-item :item="editItem" :rules="rules" @close="editItem = null" @save="saveSuccess" />
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
+              <!-- create dialog -->
+              <new-item activator />
+              <!-- update dialog -->
+              <new-item />
             </v-col>
           </v-row>
         </v-sheet>
@@ -145,9 +118,16 @@
               <v-icon>{{ mdiPencil }}</v-icon>
             </v-btn>
           </v-hover>
+
           <v-hover v-slot="{ hover }">
             <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" @click.stop="clone(item)">
               <v-icon>{{ mdiContentCopy }}</v-icon>
+            </v-btn>
+          </v-hover>
+
+          <v-hover v-slot="{ hover }">
+            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" :href="'/overlays/goals/' + item.id" @click.stop>
+              <v-icon>{{ mdiLink }}</v-icon>
             </v-btn>
           </v-hover>
         </div>
@@ -219,12 +199,11 @@
 
 <script lang="ts">
 import {
-  mdiCheckBoxMultipleOutline, mdiContentCopy, mdiInfinity, mdiMagnify, mdiPencil,
+  mdiCheckBoxMultipleOutline, mdiContentCopy, mdiInfinity, mdiLink, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  computed,
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
 import { v4 } from 'uuid';
@@ -236,43 +215,23 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/customvariables-newItem.vue') }) },
+  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/goals-newItem.vue') }) },
   setup (_, ctx) {
-    const rules = { };
-
     const items = ref([] as GoalGroupInterface[]);
-    const editItem = ref(null as null | GoalGroupInterface);
     const search = ref('');
 
     const selected = ref([] as GoalGroupInterface[]);
     const expanded = ref([] as GoalGroupInterface[]);
     const currentItems = ref([] as GoalGroupInterface[]);
     const deleteDialog = ref(false);
-    const newDialog = ref(false);
     const selectable = ref(false);
     const saveCurrentItems = (value: GoalGroupInterface[]) => {
       currentItems.value = value;
     };
-    const editDialog = computed({
-      get () {
-        return !!editItem.value;
-      },
-      set (value) {
-        if (!value) {
-          editItem.value = null;
-        }
-      },
-    });
     watch(selectable, (val) => {
       if (!val) {
         selected.value = [];
       }
-    });
-
-    const timestamp = ref(Date.now());
-
-    watch(newDialog, () => {
-      timestamp.value = Date.now();
     });
 
     const state = ref({ loading: ButtonStates.progress } as {
@@ -299,6 +258,7 @@ export default defineComponent({
 
     onMounted(() => {
       refresh();
+      EventBus.$on('goals::refresh', refresh);
     });
 
     const refresh = () => {
@@ -315,13 +275,6 @@ export default defineComponent({
         })
         .catch(err => error(err))
         .finally(() => (state.value.loading = ButtonStates.success));
-    };
-
-    const saveSuccess = () => {
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
-      editItem.value = null;
-      newDialog.value = false;
     };
 
     const deleteSelected = async () => {
@@ -360,13 +313,12 @@ export default defineComponent({
     };
 
     const edit = (item: GoalGroupInterface) => {
-      editItem.value = item;
+      EventBus.$emit('goals::updateDlgShow', item);
     };
 
     return {
       // refs
       edit,
-      editItem,
       items,
       search,
       state,
@@ -375,13 +327,8 @@ export default defineComponent({
       selected,
       deleteSelected,
       selectable,
-      newDialog,
       deleteDialog,
       translate,
-      saveSuccess,
-      editDialog,
-      timestamp,
-      rules,
       currentItems,
       expanded,
 
@@ -396,6 +343,7 @@ export default defineComponent({
       mdiContentCopy,
       mdiPencil,
       mdiInfinity,
+      mdiLink,
 
       // others
       ButtonStates,
