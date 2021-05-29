@@ -10,6 +10,9 @@ const minValue = (value: number) => {
 const maxValue = (value: number) => {
   return (v?: string) => Number(v) <= value || 'Max value of this value is ' + value;
 };
+const isHexColor = (v?: string) => {
+  return String(v).match(/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/g) || 'Expecting hexadecimal color in format #000 or #000000';
+};
 
 const startsWith = (chars: string[]) => {
   return (v?: string) => {
@@ -57,5 +60,5 @@ const expectedValuesCount = (count: number) => {
 };
 
 export {
-  expectedValuesCount, mustBeCompliant, isValidRegex, required, minLength, maxValue, startsWith, minValue, restrictedChars,
+  isHexColor, expectedValuesCount, mustBeCompliant, isValidRegex, required, minLength, maxValue, startsWith, minValue, restrictedChars,
 };

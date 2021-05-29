@@ -10,40 +10,23 @@
 
     <v-card :loading="isLoading">
       <v-toolbar dense color="dark">
-        <v-btn
-          icon
-          @click="dialog = false"
-        >
+        <v-btn icon @click="dialog = false">
           <v-icon>{{ mdiClose }}</v-icon>
         </v-btn>
         <span v-if="!$route.query._id" class="headline">New Item</span>
         <span v-else class="headline">Edit Item</span>
         <v-spacer />
-        <v-btn
-          text
-          :loading="isSaving"
-          :disabled="!valid1 || !valid2"
-          @click="save"
-        >
+        <v-btn text :loading="isSaving" :disabled="!valid1 || !valid2" @click="save">
           {{ translate('dialog.buttons.saveChanges.idle') }}
         </v-btn>
       </v-toolbar>
 
       <v-stepper v-model="stepper" vertical dark class="transparent" elevation="0">
-        <v-stepper-step
-          :complete="stepper > 1"
-          step="1"
-          editable
-          :rules="[() => valid1]"
-        >
+        <v-stepper-step :complete="stepper > 1" step="1" editable :rules="[() => valid1]">
           {{ translate('registry.goals.groupSettings') }}
         </v-stepper-step>
         <v-stepper-content :step="1">
-          <v-form
-            ref="form1"
-            v-model="valid1"
-            lazy-validation
-          >
+          <v-form ref="form1" v-model="valid1" lazy-validation>
             <v-text-field
               v-model="item.name"
               :rules="rules.name"
@@ -107,20 +90,11 @@
           </v-form>
         </v-stepper-content>
 
-        <v-stepper-step
-          :complete="stepper > 2"
-          step="2"
-          editable
-          :rules="[() => valid2]"
-        >
+        <v-stepper-step :complete="stepper > 2" step="2" editable :rules="[() => valid2]">
           {{ translate('registry.goals.goals') }}
         </v-stepper-step>
         <v-stepper-content :step="2">
-          <v-form
-            ref="form2"
-            v-model="valid2"
-            lazy-validation
-          >
+          <v-form ref="form2" v-model="valid2" lazy-validation>
             <v-row no-gutters>
               <v-col cols="11">
                 <v-tabs ref="tabs" v-model="selectedTab" show-arrows center-active>
@@ -159,53 +133,168 @@
 
                     <v-divider class="py-2" />
 
-                    <v-select
-                      v-model="goal.type"
-                      :label="translate('registry.goals.input.type.title')"
-                      :items="goalType"
-                    />
+                    <v-expansion-panels>
+                      <v-expansion-panel>
+                        <v-expansion-panel-header>
+                          Goal settings
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                          <v-select
+                            v-model="goal.type"
+                            :label="translate('registry.goals.input.type.title')"
+                            :items="goalType"
+                          />
 
-                    <v-checkbox
-                      v-if="goal.type === 'tips'"
-                      v-model="goal.countBitsAsTips"
-                      :label="translate('registry.goals.input.countBitsAsTips.title')"
-                    />
+                          <v-checkbox
+                            v-if="goal.type === 'tips'"
+                            v-model="goal.countBitsAsTips"
+                            :label="translate('registry.goals.input.countBitsAsTips.title')"
+                          />
 
-                    <v-text-field
-                      :id="goal.id + '|goalAmount'"
-                      v-model="goal.goalAmount"
-                      :rules="rules.goalAmount"
-                      :label="translate('registry.goals.input.goalAmount.title')"
-                    />
+                          <v-text-field
+                            :id="goal.id + '|goalAmount'"
+                            v-model="goal.goalAmount"
+                            :rules="rules.goalAmount"
+                            :label="translate('registry.goals.input.goalAmount.title')"
+                          />
 
-                    <v-text-field
-                      v-if="!goal.type.includes('current')"
-                      :id="goal.id + '|currentAmount'"
-                      v-model="goal.currentAmount"
-                      :rules="rules.currentAmount"
-                      :label="translate('registry.goals.input.currentAmount.title')"
-                    />
+                          <v-text-field
+                            v-if="!goal.type.includes('current')"
+                            :id="goal.id + '|currentAmount'"
+                            v-model="goal.currentAmount"
+                            :rules="rules.currentAmount"
+                            :label="translate('registry.goals.input.currentAmount.title')"
+                          />
 
-                    <v-checkbox
-                      v-model="goal.endAfterIgnore"
-                      :label="translate('registry.goals.input.endAfterIgnore.title')"
-                    />
-                    <v-expand-transition>
-                      <div v-if="!goal.endAfterIgnore">
-                        <v-subheader class="pa-0" style="font-size: 12px;">
-                          {{ translate('registry.goals.input.endAfter.title') }}
-                        </v-subheader>
-                        <datetime :input.sync="goal.endAfter" />
-                      </div>
-                    </v-expand-transition>
-
-                    <v-divider class="py-2" />
-
-                    <v-select
-                      v-model="goal.display"
-                      :label="translate('registry.goals.display')"
-                      :items="displayType"
-                    />
+                          <v-checkbox
+                            v-model="goal.endAfterIgnore"
+                            :label="translate('registry.goals.input.endAfterIgnore.title')"
+                          />
+                          <v-expand-transition>
+                            <div v-if="!goal.endAfterIgnore">
+                              <v-subheader class="pa-0" style="font-size: 12px;">
+                                {{ translate('registry.goals.input.endAfter.title') }}
+                              </v-subheader>
+                              <datetime :input.sync="goal.endAfter" />
+                            </div>
+                          </v-expand-transition>
+                        </v-expansion-panel-content>
+                      </v-expansion-panel>
+                      <v-expansion-panel>
+                        <v-expansion-panel-header>Display Settings</v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                          <v-select
+                            v-model="goal.display"
+                            :label="translate('registry.goals.display')"
+                            :items="displayType"
+                          />
+                          <v-expand-transition>
+                            <div v-if="goal.display === 'custom'">
+                              <v-tabs v-model="customTab">
+                                <v-tab>HTML</v-tab>
+                                <v-tab>JS</v-tab>
+                                <v-tab>CSS</v-tab>
+                              </v-tabs>
+                              <v-tabs-items v-model="customTab">
+                                <v-tab-item>
+                                  <codemirror
+                                    v-model="goal.customizationHtml"
+                                    class="w-100"
+                                    :options="{
+                                      tabSize: 4,
+                                      mode: 'text/html',
+                                      theme: 'base16-dark',
+                                      lineNumbers: true,
+                                      line: true,
+                                    }"
+                                  />
+                                </v-tab-item>
+                                <v-tab-item>
+                                  <codemirror
+                                    v-model="goal.customizationJs"
+                                    class="w-100"
+                                    :options="{
+                                      tabSize: 4,
+                                      mode: 'text/javascript',
+                                      theme: 'base16-dark',
+                                      lineNumbers: true,
+                                      line: true,
+                                    }"
+                                  />
+                                </v-tab-item>
+                                <v-tab-item>
+                                  <codemirror
+                                    v-model="goal.customizationCss"
+                                    class="w-100"
+                                    :options="{
+                                      tabSize: 4,
+                                      mode: 'text/css',
+                                      theme: 'base16-dark',
+                                      lineNumbers: true,
+                                      line: true,
+                                    }"
+                                  />
+                                </v-tab-item>
+                              </v-tabs-items>
+                            </div>
+                          </v-expand-transition>
+                        </v-expansion-panel-content>
+                      </v-expansion-panel>
+                      <v-expansion-panel>
+                        <v-expansion-panel-header>
+                          {{ translate('registry.goals.fontSettings') }}
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                          laboris nisi ut aliquip ex ea commodo consequat.
+                        </v-expansion-panel-content>
+                      </v-expansion-panel>
+                      <v-expansion-panel>
+                        <v-expansion-panel-header>
+                          {{ translate('registry.goals.barSettings') }}
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                          <v-row>
+                            <v-col cols="3">
+                              <v-text-field
+                                :id="goal.id + '|borderPx'"
+                                v-model="goal.customizationBar.borderPx"
+                                type="number"
+                                min="0"
+                                :hint="translate('registry.goals.input.borderPx.help')"
+                                :rules="rules.borderPx"
+                                :label="translate('registry.goals.input.borderPx.title')"
+                              >
+                                <template #append>
+                                  px
+                                </template>
+                              </v-text-field>
+                            </v-col>
+                            <v-col cols="3">
+                              <v-text-field
+                                :id="goal.id + '|barHeight'"
+                                v-model="goal.customizationBar.height"
+                                min="1"
+                                :hint="translate('registry.goals.input.barHeight.help')"
+                                type="number"
+                                :rules="rules.barHeight"
+                                :label="translate('registry.goals.input.barHeight.title')"
+                              >
+                                <template #append>
+                                  px
+                                </template>
+                              </v-text-field>
+                            </v-col>
+                            <v-col cols="6">
+                              <color :id="goal.id + '|color'" v-model="goal.customizationBar.color" :label="translate('registry.goals.input.color.title')" :rules="rules.color" />
+                              <color :id="goal.id + '|borderColor'" v-model="goal.customizationBar.borderColor" :label="translate('registry.goals.input.borderColor.title')" :rules="rules.color" />
+                              <color :id="goal.id + '|backgroundColor'" v-model="goal.customizationBar.backgroundColor" :label="translate('registry.goals.input.backgroundColor.title')" :rules="rules.color" />
+                            </v-col>
+                          </v-row>
+                        </v-expansion-panel-content>
+                      </v-expansion-panel>
+                    </v-expansion-panels>
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer />
@@ -234,12 +323,20 @@ import {
 } from '@vue/composition-api';
 import { cloneDeep } from 'lodash-es';
 import { v4 } from 'uuid';
+import { codemirror } from 'vue-codemirror';
+import 'codemirror/mode/javascript/javascript.js';
+import 'codemirror/mode/htmlmixed/htmlmixed.js';
+import 'codemirror/mode/css/css.js';
+import 'codemirror/theme/base16-dark.css';
+import 'codemirror/lib/codemirror.css';
 
 import { GoalGroupInterface, GoalInterface } from '~/.bot/src/bot/database/entity/goal';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
-import { minValue, required } from '~/functions/validators';
+import {
+  isHexColor, minValue, required,
+} from '~/functions/validators';
 
 type Props = {
   editItem?: GoalGroupInterface, activator: boolean
@@ -258,8 +355,12 @@ const emptyItem: GoalGroupInterface = {
 };
 
 export default defineComponent({
-  components: { datetime: defineAsyncComponent({ loader: () => import('~/components/datetime.vue') }) },
-  props:      { editItem: Object, activator: Boolean },
+  components: {
+    codemirror,
+    datetime: defineAsyncComponent({ loader: () => import('~/components/datetime.vue') }),
+    color:    defineAsyncComponent({ loader: () => import('~/components/form/color.vue') }),
+  },
+  props: { editItem: Object, activator: Boolean },
   setup (props: Props, ctx) {
     const dialog = ref(
       (!props.activator && ctx.root.$route.query._action === 'create')
@@ -277,6 +378,7 @@ export default defineComponent({
     const isLoading = ref(false);
 
     const selectedTab = ref(0);
+    const customTab = ref(0);
 
     const item = ref(cloneDeep(props.editItem ? props.editItem : emptyItem) as GoalGroupInterface);
 
@@ -288,6 +390,9 @@ export default defineComponent({
       name:                  [required],
       spaceBetweenGoalsInPx: [required, minValue(0)],
       goalAmount:            [required, minValue(1)],
+      borderPx:              [required, minValue(0)],
+      barHeight:             [required, minValue(1)],
+      color:                 [required, isHexColor],
       currentAmount:         [required, minValue(0)],
       durationMs:            [required, minValue(1000)],
       animationInMs:         [required, minValue(1000)],
@@ -504,6 +609,7 @@ export default defineComponent({
       groupType,
       goalType,
       rules,
+      customTab,
       selectedTab,
       tabs,
 
