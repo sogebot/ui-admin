@@ -1415,12 +1415,13 @@
   resolved "https://registry.npmjs.org/@polka/url/-/url-1.0.0-next.12.tgz"
   integrity sha512-6RglhutqrGFMO1MNUXp95RBuYIuc8wTnMAV5MUhLmjTOy78ncwOw7RgeQ/HeymkKXRhZd0s2DNrM1rL7unk3MQ==
 
-"@sogebot/ui-helpers@^1.11.0":
-  version "1.11.0"
-  resolved "https://registry.npmjs.org/@sogebot/ui-helpers/-/ui-helpers-1.11.0.tgz"
-  integrity sha512-826jYvCeQLHFm0qRrXNonvr4C+2Glf5GZezj8N7lDwwDL8RVReYSeLmgzvTQVgETpSZE8cvrKsr5PAdVqSZLhw==
+"@sogebot/ui-helpers@^1.14.1":
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/@sogebot/ui-helpers/-/ui-helpers-1.14.1.tgz#c6a30a0c007ec30852cc5364d01605baf7defc5b"
+  integrity sha512-Mn75BW/6CFAUMtBaqFKFlEfFsAPaoMRaqDs0ZwujPEj5hlGTl4NkIdH7SR4hz3RGoU1tr5XoOJU9QjvqjctReA==
   dependencies:
     axios "^0.21.1"
+    color "3.1.3"
     dayjs "^1.10.4"
     lodash-es "^4.17.21"
     socket.io "^4.0.1"
@@ -3242,9 +3243,9 @@ color-string@^1.5.4:
     color-name "^1.0.0"
     simple-swizzle "^0.2.2"
 
-color@^3.0.0:
+color@3.1.3, color@^3.0.0:
   version "3.1.3"
-  resolved "https://registry.npmjs.org/color/-/color-3.1.3.tgz"
+  resolved "https://registry.yarnpkg.com/color/-/color-3.1.3.tgz#ca67fb4e7b97d611dcde39eceed422067d91596e"
   integrity sha512-xgXAcTHa2HeFCGLE9Xs/R82hujGtu9Jd9x4NW3T34+OMs7VoPsjwzRczKHvTAHeJwWFwX5j15+MgAppE8ztObQ==
   dependencies:
     color-convert "^1.9.1"

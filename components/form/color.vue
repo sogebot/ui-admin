@@ -1,5 +1,5 @@
 <template>
-  <v-text-field v-model="model" :rules="rules.color" :label="label">
+  <v-text-field :id="id + '|' + uuid" v-model="model" :rules="rules.color" :label="label">
     <template #prepend>
       <v-menu
         v-model="menu"
@@ -28,20 +28,31 @@
 <script lang="ts">
 import {
   defineComponent,
+  onMounted,
   ref,
   watch,
 } from '@vue/composition-api';
+import { v4 } from 'uuid';
+
+import { isHexColor, required } from '~/functions/validators';
 
 export default defineComponent({
   props: {
     value: String,
     label: String,
-    rules: Array,
+    id:    String,
   },
   setup (props, ctx) {
     const model = ref(props.value);
     const picker = ref(props.value);
     const menu = ref(false);
+    const uuid = ref(v4());
+
+    const rules = { color: [required, isHexColor] };
+
+    onMounted(() => {
+      uuid.value = v4();
+    });
 
     watch(picker, (val) => {
       model.value = (val as any).hex ? (val as any).hex : val;
@@ -52,6 +63,8 @@ export default defineComponent({
       model,
       menu,
       picker,
+      rules,
+      uuid,
     };
   },
 });

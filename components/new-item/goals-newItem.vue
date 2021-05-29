@@ -240,17 +240,15 @@
                           </v-expand-transition>
                         </v-expansion-panel-content>
                       </v-expansion-panel>
-                      <v-expansion-panel>
+                      <v-expansion-panel :disabled="goal.display === 'custom'">
                         <v-expansion-panel-header>
                           {{ translate('registry.goals.fontSettings') }}
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                          laboris nisi ut aliquip ex ea commodo consequat.
+                          <font :id="goal.id" v-model="goal.customizationFont" />
                         </v-expansion-panel-content>
                       </v-expansion-panel>
-                      <v-expansion-panel>
+                      <v-expansion-panel :disabled="goal.display === 'custom'">
                         <v-expansion-panel-header>
                           {{ translate('registry.goals.barSettings') }}
                         </v-expansion-panel-header>
@@ -287,9 +285,9 @@
                               </v-text-field>
                             </v-col>
                             <v-col cols="6">
-                              <color :id="goal.id + '|color'" v-model="goal.customizationBar.color" :label="translate('registry.goals.input.color.title')" :rules="rules.color" />
-                              <color :id="goal.id + '|borderColor'" v-model="goal.customizationBar.borderColor" :label="translate('registry.goals.input.borderColor.title')" :rules="rules.color" />
-                              <color :id="goal.id + '|backgroundColor'" v-model="goal.customizationBar.backgroundColor" :label="translate('registry.goals.input.backgroundColor.title')" :rules="rules.color" />
+                              <color :id="goal.id + '|color'" v-model="goal.customizationBar.color" :label="translate('registry.goals.input.color.title')" />
+                              <color :id="goal.id + '|borderColor'" v-model="goal.customizationBar.borderColor" :label="translate('registry.goals.input.borderColor.title')" />
+                              <color :id="goal.id + '|backgroundColor'" v-model="goal.customizationBar.backgroundColor" :label="translate('registry.goals.input.backgroundColor.title')" />
                             </v-col>
                           </v-row>
                         </v-expansion-panel-content>
@@ -334,9 +332,7 @@ import { GoalGroupInterface, GoalInterface } from '~/.bot/src/bot/database/entit
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
-import {
-  isHexColor, minValue, required,
-} from '~/functions/validators';
+import { minValue, required } from '~/functions/validators';
 
 type Props = {
   editItem?: GoalGroupInterface, activator: boolean
@@ -359,6 +355,7 @@ export default defineComponent({
     codemirror,
     datetime: defineAsyncComponent({ loader: () => import('~/components/datetime.vue') }),
     color:    defineAsyncComponent({ loader: () => import('~/components/form/color.vue') }),
+    font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
   },
   props: { editItem: Object, activator: Boolean },
   setup (props: Props, ctx) {
@@ -392,7 +389,6 @@ export default defineComponent({
       goalAmount:            [required, minValue(1)],
       borderPx:              [required, minValue(0)],
       barHeight:             [required, minValue(1)],
-      color:                 [required, isHexColor],
       currentAmount:         [required, minValue(0)],
       durationMs:            [required, minValue(1000)],
       animationInMs:         [required, minValue(1000)],
