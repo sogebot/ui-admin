@@ -1333,7 +1333,7 @@
     webpack-node-externals "^3.0.0"
     webpackbar "^4.0.0"
 
-"@nuxtjs/axios@^5.13.4":
+"@nuxtjs/axios@^5.13.5":
   version "5.13.5"
   resolved "https://registry.yarnpkg.com/@nuxtjs/axios/-/axios-5.13.5.tgz#eddea8a6b8cc1e758bdd5adaeaa377104ebe6965"
   integrity sha512-GyeuiseDCwfRGDQH/gK+lngCseZS3SQm3q6xqiVx5xQnzCqokojN3uJkNB0DdHCowBP1aim+mDhu3spzcCnyBg==
@@ -1344,7 +1344,7 @@
     consola "^2.15.3"
     defu "^5.0.0"
 
-"@nuxtjs/eslint-config-typescript@^6.0.0":
+"@nuxtjs/eslint-config-typescript@^6.0.1":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/@nuxtjs/eslint-config-typescript/-/eslint-config-typescript-6.0.1.tgz#11e91a5e25aca6855ec7525080da694c4b3cd4d4"
   integrity sha512-ZK/C2ZtXrc2FlQwssc3gqc3K9RAtGF+OLGXRDtDxyrlhgPwAC4bc9McBGqUokdbE+pup0OA38PylPOhbWHZkrg==
@@ -1415,12 +1415,13 @@
   resolved "https://registry.npmjs.org/@polka/url/-/url-1.0.0-next.12.tgz"
   integrity sha512-6RglhutqrGFMO1MNUXp95RBuYIuc8wTnMAV5MUhLmjTOy78ncwOw7RgeQ/HeymkKXRhZd0s2DNrM1rL7unk3MQ==
 
-"@sogebot/ui-helpers@^1.11.0":
-  version "1.13.0"
-  resolved "https://registry.yarnpkg.com/@sogebot/ui-helpers/-/ui-helpers-1.13.0.tgz#dacc8f028365c4a2c9663ff54afa4ea9e4f8f0b7"
-  integrity sha512-AKWht69hvkJVf0C99ngrjXxwT9eeJ5a2xOV7GFiIhtw1h7dAWQIxsYK0ymJ35P1FpHqm/m97FZNP0aJHc+DbYw==
+"@sogebot/ui-helpers@^1.14.1":
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/@sogebot/ui-helpers/-/ui-helpers-1.14.1.tgz#c6a30a0c007ec30852cc5364d01605baf7defc5b"
+  integrity sha512-Mn75BW/6CFAUMtBaqFKFlEfFsAPaoMRaqDs0ZwujPEj5hlGTl4NkIdH7SR4hz3RGoU1tr5XoOJU9QjvqjctReA==
   dependencies:
     axios "^0.21.1"
+    color "3.1.3"
     dayjs "^1.10.4"
     lodash-es "^4.17.21"
     socket.io "^4.0.1"
@@ -2016,7 +2017,7 @@
   optionalDependencies:
     prettier "^1.18.2"
 
-"@vue/composition-api@^1.0.0-rc.9":
+"@vue/composition-api@^1.0.0-rc.10":
   version "1.0.0-rc.10"
   resolved "https://registry.yarnpkg.com/@vue/composition-api/-/composition-api-1.0.0-rc.10.tgz#a98e2b810613531bbbbd3b4c0a9fc46198cc931d"
   integrity sha512-ftm4OU8H1Ipw64gxIVqzlCW9lJrtr9iOJME0/KJ/fWmVGy55Qbd0uIgIttOkCdLL94A5cjTSbJFTQhu9jBDRXw==
@@ -3242,9 +3243,9 @@ color-string@^1.5.4:
     color-name "^1.0.0"
     simple-swizzle "^0.2.2"
 
-color@^3.0.0:
+color@3.1.3, color@^3.0.0:
   version "3.1.3"
-  resolved "https://registry.npmjs.org/color/-/color-3.1.3.tgz"
+  resolved "https://registry.yarnpkg.com/color/-/color-3.1.3.tgz#ca67fb4e7b97d611dcde39eceed422067d91596e"
   integrity sha512-xgXAcTHa2HeFCGLE9Xs/R82hujGtu9Jd9x4NW3T34+OMs7VoPsjwzRczKHvTAHeJwWFwX5j15+MgAppE8ztObQ==
   dependencies:
     color-convert "^1.9.1"
@@ -3404,7 +3405,12 @@ core-js@^2.6.5:
   resolved "https://registry.npmjs.org/core-js/-/core-js-2.6.12.tgz"
   integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
 
-core-js@^3.12.1, core-js@^3.8.1:
+core-js@^3.13.1:
+  version "3.13.1"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.13.1.tgz#30303fabd53638892062d8b4e802cac7599e9fb7"
+  integrity sha512-JqveUc4igkqwStL2RTRn/EPFGBOfEZHxJl/8ej1mXJR75V3go2mFF4bmUYkEIT1rveHKnkUlcJX/c+f1TyIovQ==
+
+core-js@^3.8.1:
   version "3.13.0"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.13.0.tgz#58ca436bf01d6903aee3d364089868d0d89fe58d"
   integrity sha512-iWDbiyha1M5vFwPFmQnvRv+tJzGbFAm6XimJUT0NgHYW3xZEs1SkCAcasWSVFxpI2Xb/V1DDJckq3v90+bQnog==
@@ -4349,6 +4355,16 @@ eslint-plugin-vue@^7.1.0, eslint-plugin-vue@^7.9.0:
   version "7.9.0"
   resolved "https://registry.npmjs.org/eslint-plugin-vue/-/eslint-plugin-vue-7.9.0.tgz"
   integrity sha512-2Q0qQp5+5h+pZvJKCbG1/jCRUYrdgAz5BYKGyTlp2NU8mx09u3Hp7PsH6d5qef6ojuPoCXMnrbbDxeoplihrSw==
+  dependencies:
+    eslint-utils "^2.1.0"
+    natural-compare "^1.4.0"
+    semver "^7.3.2"
+    vue-eslint-parser "^7.6.0"
+
+eslint-plugin-vue@^7.10.0:
+  version "7.10.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-vue/-/eslint-plugin-vue-7.10.0.tgz#251749aa99e089e085275f011042c6e74189f89a"
+  integrity sha512-xdr6e4t/L2moRAeEQ9HKgge/hFq+w9v5Dj+BA54nTAzSFdUyKLiSOdZaRQjCHMY0Pk2WaQBFH9QiWG60xiC+6A==
   dependencies:
     eslint-utils "^2.1.0"
     natural-compare "^1.4.0"
@@ -10292,7 +10308,7 @@ vuetify-loader@^1.6.0:
     file-loader "^6.2.0"
     loader-utils "^2.0.0"
 
-vuetify@^2.4.2, vuetify@^2.5.0:
+vuetify@^2.4.2, vuetify@^2.5.1:
   version "2.5.1"
   resolved "https://registry.npmjs.org/vuetify/-/vuetify-2.5.1.tgz"
   integrity sha512-L7bn8yVMXbt1QeTGaLTeyKE/tvhRUtGm5aQdCzUGu6lsGgEm7H707I4fjHftGNGNmmrUr3pmjpVrtqx65BMpUw==

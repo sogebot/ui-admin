@@ -49,20 +49,7 @@
             >
               {{ dayjs(item.tippedAt).format('LL') }} {{ dayjs(item.tippedAt).format('LTS') }}
               <template #input>
-                <v-time-picker
-                  :key="userId + 'tippedAtTime' + timestamp"
-                  :use-seconds="true"
-                  class="timePicker"
-                  :value="(item.tippedAt > 0 ? item.tippedAt : Date.now()) | timeToTime"
-                  @input="value => setAttr(item, 'tippedAtTime', value)"
-                />
-
-                <v-date-picker
-                  :key="userId + 'tippedAtDate' + timestamp"
-                  :max="new Date().toISOString()"
-                  :value="(item.tippedAt > 0 ? item.tippedAt : Date.now()) | timeToDate"
-                  @input="value => setAttr(item, 'tippedAtDate', value)"
-                />
+                <datetime :key="userId + 'tipepdAt'" :input.sync="item.tippedAt" />
               </template>
             </v-edit-dialog>
           </template>
@@ -154,6 +141,7 @@ import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
+  defineAsyncComponent,
   defineComponent, ref, watch,
 } from '@vue/composition-api';
 import { capitalize, orderBy } from 'lodash-es';
@@ -162,18 +150,9 @@ import { v4 as uuid } from 'uuid';
 import type { UserInterface, UserTipInterface } from '.bot/src/bot/database/entity/user';
 import { minValue, required } from '~/functions/validators';
 
-const timeToDate = (value: number) => {
-  return new Date(value).toISOString().substr(0, 10);
-};
-const timeToTime = (value: number) => {
-  return dayjs(value).format('HH:mm:ss');
-};
 export default defineComponent({
-  filters: {
-    timeToDate,
-    timeToTime,
-  },
-  props: { sum: Number, userId: String },
+  components: { datetime: defineAsyncComponent({ loader: () => import('~/components/datetime.vue') }) },
+  props:      { sum: Number, userId: String },
   setup (props, ctx) {
     const tips = ref([] as UserTipInterface[]);
     const username = ref('');
@@ -254,32 +233,6 @@ export default defineComponent({
       tips.value.splice(tips.value.findIndex(o => o.id === item.id), 1);
     };
 
-    const setAttr = (item: any, attr: any, value: any) => {
-      if (['tippedAtDate'].includes(attr)) {
-        (item as any)[attr.replace('Date', '')] = Date.parse(`${value} ${timeToTime(item.tippedAt ?? 0)}`);
-        const time = timeToTime(item[attr.replace('Date', '')] ?? Date.now());
-        if (time.includes('00:')) {
-          // we need to +1 day as day is setting back
-          const dateToUpdate = new Date(Date.parse(value));
-          dateToUpdate.setDate(dateToUpdate.getDate() + 1);
-          value = timeToDate(dateToUpdate.getTime());
-        }
-        (item as any)[attr.replace('Date', '')] = Date.parse(`${value} ${time}`);
-      } else if (['tippedAtTime'].includes(attr)) {
-        const attrValue = item[attr.replace('Time', '')] === 0 ? Date.now() : item[attr.replace('Time', '')];
-        let date = timeToDate(attrValue);
-        if (value.includes('00:')) {
-          // we need to +1 day as day is setting back
-          const dateToUpdate = new Date(Date.parse(date));
-          dateToUpdate.setDate(dateToUpdate.getDate() + 1);
-          date = timeToDate(dateToUpdate.getTime());
-        }
-        (item as any)[attr.replace('Time', '')] = Date.parse(`${date} ${value}`);
-      } else {
-        throw new Error('Unknown attr ' + attr);
-      }
-    };
-
     return {
       orderBy,
       translate,
@@ -293,7 +246,6 @@ export default defineComponent({
       headers,
       uuid,
       dayjs,
-      setAttr,
       timestamp,
       currencyItems,
       currencyBackup,

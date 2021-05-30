@@ -60,6 +60,7 @@ const routeMapper = new Map<string, string>([
   ['registry-textoverlay', 'textoverlay'],
   ['registry-gallery', 'gallery'],
   ['registry-carousel', 'carousel'],
+  ['registry-goals', 'goals'],
   ['stats-api', 'api'],
   ['stats-bits', 'bits'],
   ['stats-tips', 'tips'],

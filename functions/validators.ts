@@ -1,6 +1,6 @@
 import XRegExp from 'xregexp';
 
-const required = (v?: string) => String(v).length > 0 || 'This value is required';
+const required = (v?: string) => String(v).trim().length > 0 || 'This value is required';
 const minLength = (length: number) => {
   return (v?: string) => (typeof v === 'string' && v.length >= length) || 'Min length of this value is ' + length;
 };
@@ -9,6 +9,9 @@ const minValue = (value: number) => {
 };
 const maxValue = (value: number) => {
   return (v?: string) => Number(v) <= value || 'Max value of this value is ' + value;
+};
+const isHexColor = (v?: string) => {
+  return String(v).match(/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/g) !== null || 'Expecting hexadecimal color in format #000 or #000000';
 };
 
 const startsWith = (chars: string[]) => {
@@ -57,5 +60,5 @@ const expectedValuesCount = (count: number) => {
 };
 
 export {
-  expectedValuesCount, mustBeCompliant, isValidRegex, required, minLength, maxValue, startsWith, minValue, restrictedChars,
+  isHexColor, expectedValuesCount, mustBeCompliant, isValidRegex, required, minLength, maxValue, startsWith, minValue, restrictedChars,
 };
