@@ -3,11 +3,15 @@
   "version": "0.0.21",
   "author": "sogehige@gmail.com",
   "description": "Nuxt.js version of ui-admin",
+  "resolutions": {
+    "@nuxtjs/vuetify/**/sass": "1.32.12"
+  },
   "engines": {
     "npm": "please-use-yarn",
     "yarn": ">= 1.19.1"
   },
   "scripts": {
+    "release": "standard-version",
     "prepublishOnly": "npm run generate",
     "dev": "nuxt",
     "build": "nuxt build",
@@ -66,6 +70,7 @@
     "eslint-plugin-vue": "^7.10.0",
     "lint-staged": "^11.0.0",
     "simple-git-hooks": "^2.4.1",
+    "standard-version": "^9.3.0",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "typeorm": "^0.2.32",
