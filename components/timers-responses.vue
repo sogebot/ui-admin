@@ -160,7 +160,6 @@ export default defineComponent({
     };
 
     const remove = (idx: number) => {
-      console.log({ idx });
       responsesUpdated.value.splice(idx, 1);
     };
 

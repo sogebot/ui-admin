@@ -97,19 +97,25 @@
           <v-form ref="form2" v-model="valid2" lazy-validation>
             <v-row no-gutters>
               <v-col cols="11">
-                <v-tabs ref="tabs" v-model="selectedTab" show-arrows center-active>
-                  <v-tab v-for="goal of item.goals" :key="goal.id">
-                    <span :class="{'red--text': hasError(goal.id)}">
-                      <v-icon v-if="hasError(goal.id)" color="red">{{ mdiExclamationThick }}</v-icon>
-                      <span v-if="goal.name.trim().length === 0">
-                        &lt;untitled&gt;
+                <v-fade-transition leave-absolute>
+                  <v-alert v-if="item.goals.length === 0" text color="info" border="left" class="ma-0">
+                    There are no goals.
+                    Create a new goal using the <b>+</b> button on the right.
+                  </v-alert>
+                  <v-tabs v-else ref="tabs" v-model="selectedTab" show-arrows center-active>
+                    <v-tab v-for="goal of item.goals" :key="goal.id">
+                      <span :class="{'red--text': hasError(goal.id)}">
+                        <v-icon v-if="hasError(goal.id)" color="red">{{ mdiExclamationThick }}</v-icon>
+                        <span v-if="goal.name.trim().length === 0">
+                          &lt;untitled&gt;
+                        </span>
+                        <span v-else>
+                          {{ goal.name }}
+                        </span>
                       </span>
-                      <span v-else>
-                        {{ goal.name }}
-                      </span>
-                    </span>
-                  </v-tab>
-                </v-tabs>
+                    </v-tab>
+                  </v-tabs>
+                </v-fade-transition>
               </v-col>
               <v-col cols="1" class="text-center" align-self="center">
                 <v-btn icon @click="addItem">
@@ -171,11 +177,8 @@
                             :label="translate('registry.goals.input.endAfterIgnore.title')"
                           />
                           <v-expand-transition>
-                            <div v-if="!goal.endAfterIgnore">
-                              <v-subheader class="pa-0" style="font-size: 12px;">
-                                {{ translate('registry.goals.input.endAfter.title') }}
-                              </v-subheader>
-                              <datetime :input.sync="goal.endAfter" />
+                            <div v-show="!goal.endAfterIgnore">
+                              <datetime v-model.number="goal.endAfter" :label="translate('registry.goals.input.endAfter.title')" />
                             </div>
                           </v-expand-transition>
                         </v-expansion-panel-content>
@@ -353,7 +356,7 @@ const emptyItem: GoalGroupInterface = {
 export default defineComponent({
   components: {
     codemirror,
-    datetime: defineAsyncComponent({ loader: () => import('~/components/datetime.vue') }),
+    datetime: defineAsyncComponent({ loader: () => import('~/components/form/datetime.vue') }),
     color:    defineAsyncComponent({ loader: () => import('~/components/form/color.vue') }),
     font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
   },

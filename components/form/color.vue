@@ -57,7 +57,7 @@ export default defineComponent({
     watch(picker, (val) => {
       model.value = (val as any).hex ? (val as any).hex : val;
     });
-    watch(model, val => ctx.emit('update:value', val));
+    watch(model, val => ctx.emit('input', val));
 
     return {
       model,

@@ -10,7 +10,6 @@
     </v-col>
     <v-col>
       <v-date-picker
-        :max="new Date().toISOString()"
         :value="(change > 0 ? change : Date.now()) | timeToDate"
         @input="value => change = setAttr(change, 'date', value)"
       />
@@ -33,12 +32,12 @@ export default defineComponent({
     timeToDate,
     timeToTime,
   },
-  props: { input: Number },
-  setup (props: { input: number }, ctx) {
-    const change = ref(props.input);
+  props: { value: Number },
+  setup (props: { value: number }, ctx) {
+    const change = ref(props.value);
 
     watch(change, (val) => {
-      ctx.emit('update:input', val);
+      ctx.emit('input', Number(val));
     });
 
     return { change, setAttr };

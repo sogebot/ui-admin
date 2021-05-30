@@ -11,7 +11,6 @@ export function setAttr (currentValue: number | string, type: 'time' | 'date', v
   if (typeof currentValue === 'string') {
     currentValue = new Date(currentValue).getTime();
   }
-
   if (type === 'date') {
     currentValue = Date.parse(`${value} ${timeToTime(currentValue ?? 0)}`);
     const time = timeToTime(currentValue ?? Date.now());

@@ -95,7 +95,7 @@
       </template>
 
       <template #[`item.display.type`]="{ item }">
-        <v-simple-table dense :class="{'primary--text': selected.find(o => o.id === item.id)}" class="transparent">
+        <v-simple-table dense class="transparent">
           <template #default>
             <tbody>
               <tr v-for="key of Object.keys(item.display)" :key="key" dense>
@@ -182,7 +182,7 @@
                         {{ mdiInfinity }}
                       </v-icon>
                       <template v-else>
-                        {{ new Date(goal.endAfter).toLocaleString() }}
+                        {{ dayjs(goal.endAfter).format('LL') }} {{ dayjs(goal.endAfter).format('LTS') }}
                       </template>
                     </td>
                   </tr>
@@ -202,6 +202,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiContentCopy, mdiInfinity, mdiLink, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
@@ -346,6 +347,7 @@ export default defineComponent({
       mdiLink,
 
       // others
+      dayjs,
       ButtonStates,
     };
   },
