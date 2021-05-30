@@ -1416,9 +1416,9 @@
   integrity sha512-6RglhutqrGFMO1MNUXp95RBuYIuc8wTnMAV5MUhLmjTOy78ncwOw7RgeQ/HeymkKXRhZd0s2DNrM1rL7unk3MQ==
 
 "@sogebot/ui-helpers@^1.11.0":
-  version "1.11.0"
-  resolved "https://registry.npmjs.org/@sogebot/ui-helpers/-/ui-helpers-1.11.0.tgz"
-  integrity sha512-826jYvCeQLHFm0qRrXNonvr4C+2Glf5GZezj8N7lDwwDL8RVReYSeLmgzvTQVgETpSZE8cvrKsr5PAdVqSZLhw==
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/@sogebot/ui-helpers/-/ui-helpers-1.13.0.tgz#dacc8f028365c4a2c9663ff54afa4ea9e4f8f0b7"
+  integrity sha512-AKWht69hvkJVf0C99ngrjXxwT9eeJ5a2xOV7GFiIhtw1h7dAWQIxsYK0ymJ35P1FpHqm/m97FZNP0aJHc+DbYw==
   dependencies:
     axios "^0.21.1"
     dayjs "^1.10.4"
