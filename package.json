@@ -27,11 +27,11 @@
     "preserveUnused": true
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.13.4",
+    "@nuxtjs/axios": "^5.13.5",
     "@nuxtjs/proxy": "^2.1.0",
     "@sogebot/ui-helpers": "^1.14.1",
     "chart.js": "^2.9.4",
-    "core-js": "^3.12.1",
+    "core-js": "^3.13.1",
     "gsap": "^3.6.1",
     "nuxt": "^2.15.6",
     "uuid": "^8.3.2",
@@ -49,7 +49,7 @@
     "@mdi/js": "^5.9.55",
     "@nuxt/types": "^2.15.6",
     "@nuxt/typescript-build": "^2.1.0",
-    "@nuxtjs/eslint-config-typescript": "^6.0.0",
+    "@nuxtjs/eslint-config-typescript": "^6.0.1",
     "@nuxtjs/eslint-module": "^3.0.2",
     "@nuxtjs/stylelint-module": "^4.0.0",
     "@nuxtjs/vuetify": "^1.11.3",
@@ -57,18 +57,18 @@
     "@types/lodash-es": "^4.17.4",
     "@types/uuid": "^8.3.0",
     "@types/vue-chartkick": "^0.5.1",
-    "@vue/composition-api": "^1.0.0-rc.9",
+    "@vue/composition-api": "^1.0.0-rc.10",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.27.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-nuxt": "^2.0.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-vue": "^7.9.0",
+    "eslint-plugin-vue": "^7.10.0",
     "lint-staged": "^11.0.0",
     "simple-git-hooks": "^2.4.1",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "typeorm": "^0.2.32",
-    "vuetify": "^2.5.0"
+    "vuetify": "^2.5.1"
   }
 }
