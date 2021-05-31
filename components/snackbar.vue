@@ -1,49 +1,41 @@
 <template>
-  <v-snackbar
-    v-model="snack"
-    :timeout="5000"
-    :color="snackColor"
-  >
-    <div v-html="snackText" />
-
-    <template #action="{ attrs }">
-      <v-btn
-        v-bind="attrs"
-        text
-        @click="snack = false"
-      >
-        Close
-      </v-btn>
+  <v-snackbars :objects.sync="snacks">
+    <template #default="{ message }">
+      <div v-html="message" />
     </template>
-  </v-snackbar>
+  </v-snackbars>
 </template>
 
 <script lang="ts">
 import {
-  defineComponent, onMounted, ref,
+  defineComponent,
+  onMounted,
+  ref,
 } from '@vue/composition-api';
+import VSnackbars from 'v-snackbars';
 
 import { EventBus } from '../functions/event-bus';
 
 export default defineComponent({
+  components: { 'v-snackbars': VSnackbars },
   setup () {
-    const snack = ref(false);
-    const snackColor = ref('');
-    const snackText = ref('');
+    const snacks = ref([] as {
+      timeout: number,
+      color: string,
+      message: string,
+    } []);
 
     onMounted(() => {
-      EventBus.$on('snack', (color: string, text:string) => {
-        snack.value = true;
-        snackColor.value = color;
-        snackText.value = text;
+      EventBus.$on('snack', (color: string, message: string) => {
+        snacks.value.push({
+          color,
+          message,
+          timeout: 5000,
+        });
       });
     });
 
-    return {
-      snack,
-      snackColor,
-      snackText,
-    };
+    return { snacks };
   },
 });
 </script>

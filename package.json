@@ -39,6 +39,7 @@
     "gsap": "^3.6.1",
     "nuxt": "^2.15.6",
     "uuid": "^8.3.2",
+    "v-snackbars": "^3.2.4",
     "vue-chartkick": "^0.6.1",
     "vue-codemirror": "^4.0.6",
     "vue-plyr": "^7.0.0",
