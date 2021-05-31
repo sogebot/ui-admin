@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.23](https://github.com/sogebot/ui-admin/compare/v0.0.22...v0.0.23) (2021-05-31)
+
+
+### Features
+
+* **snack:** add multiple snackbars at once ([a711347](https://github.com/sogebot/ui-admin/commit/a71134766bfc741eea3d6a124f9b63b1cbb68d70)), closes [#3](https://github.com/sogebot/ui-admin/issues/3)
+
 ### 0.0.22 (2021-05-30)
 
 
