@@ -20,7 +20,7 @@ export default {
     }],
   },
 
-  env: { isNuxtDev: process.env.NODE_ENV === 'development' },
+  env: { isNuxtDev: process.env.NODE_ENV === 'development', BUILD: 'web' },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [

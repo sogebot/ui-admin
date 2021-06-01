@@ -58,10 +58,212 @@
             <v-expand-transition>
               <div v-if="!item.advancedMode">
                 <v-card-title>{{ translate('integrations.obswebsocket.actions') }}</v-card-title>
+                <v-card-text>
+                  <v-row
+                    v-for="(task, index) of item.simpleModeTasks"
+                    :key="task.id"
+                    class="p-2"
+                  >
+                    <v-col v-if="task.event === 'SetCurrentScene'">
+                      <v-row align="end">
+                        <v-col>
+                          <v-select
+                            v-model="task.args.sceneName"
+                            :label="translate('integrations.obswebsocket.SetCurrentScene.name')"
+                            :items="availableScenes"
+                            hide-details
+                          >
+                            <template #append-outer>
+                              <v-btn
+                                color="error"
+                                small
+                                @click="deleteAction(index)"
+                              >
+                                {{ translate('dialog.buttons.delete') }}
+                              </v-btn>
+                            </template>
+                          </v-select>
+                        </v-col>
+                      </v-row>
+                    </v-col>
 
-                <v-row>
-                  <v-btn />
-                </v-row>
+                    <v-col v-else-if="task.event === 'Log'">
+                      <v-row align="end">
+                        <v-col>
+                          <v-text-field
+                            v-model="task.args.logMessage"
+                            :label="translate('integrations.obswebsocket.Log.name')"
+                            hide-details
+                          >
+                            <template #append-outer>
+                              <v-btn
+                                color="error"
+                                small
+                                @click="deleteAction(index)"
+                              >
+                                {{ translate('dialog.buttons.delete') }}
+                              </v-btn>
+                            </template>
+                          </v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+
+                    <v-col v-else-if="task.event === 'WaitMs'">
+                      <v-row align="end">
+                        <v-col>
+                          <v-text-field
+                            v-model="task.args.miliseconds"
+                            :label="translate('integrations.obswebsocket.WaitMs.name')"
+                            type="number"
+                            min="0"
+                            hide-details
+                          >
+                            <template #append-outer>
+                              <v-btn
+                                color="error"
+                                small
+                                @click="deleteAction(index)"
+                              >
+                                {{ translate('dialog.buttons.delete') }}
+                              </v-btn>
+                            </template>
+                          </v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+
+                    <v-col
+                      v-else-if="
+                        [ 'StartReplayBuffer', 'StopReplayBuffer', 'SaveReplayBuffer',
+                          'StartRecording', 'StopRecording', 'PauseRecording', 'ResumeRecording' ].includes(task.event)"
+                      class="pa-0"
+                    >
+                      <v-row no-gutters align="center">
+                        <v-col>
+                          <v-subheader>{{ translate('integrations.obswebsocket.' + task.event + '.name') }}</v-subheader>
+                        </v-col>
+                        <v-col cols="auto" class="pr-3">
+                          <v-btn
+                            color="error"
+                            small
+                            @click="deleteAction(index)"
+                          >
+                            {{ translate('dialog.buttons.delete') }}
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+
+                    <v-col v-else-if="task.event === 'SetMute'">
+                      <v-row align="end">
+                        <v-col>
+                          <v-select
+                            v-model="task.args.source"
+                            :label="translate('integrations.obswebsocket.SetMute.name')"
+                            :items="availableAudioSources"
+                            hide-details
+                          >
+                            <template #append-outer>
+                              <v-btn
+                                :color="task.args.mute ? 'error' : 'success'"
+                                small
+                                class="mr-2"
+                                @click="task.args.mute = !task.args.mute"
+                              >
+                                {{ translate('integrations.obswebsocket.' + (task.args.mute ? 'mute' : 'unmute')) }}
+                              </v-btn>
+
+                              <v-btn
+                                color="error"
+                                small
+                                @click="deleteAction(index)"
+                              >
+                                {{ translate('dialog.buttons.delete') }}
+                              </v-btn>
+                            </template>
+                          </v-select>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+
+                    <v-col v-else-if="task.event === 'SetVolume'">
+                      <v-row align="end">
+                        <v-col>
+                          <v-select
+                            v-model="task.args.source"
+                            :label="translate('integrations.obswebsocket.SetVolume.name')"
+                            :items="availableAudioSources"
+                            hide-details
+                          />
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                            v-model.number="task.args.volume"
+                            type="number"
+                            min="-100"
+                            max="0"
+                            step="0.1"
+                            class="mr-2"
+                            small
+                            hide-details
+                          >
+                            <template #append>
+                              dB
+                            </template>
+                            <template #append-outer>
+                              <v-btn
+                                color="error"
+                                small
+                                @click="deleteAction(index)"
+                              >
+                                {{ translate('dialog.buttons.delete') }}
+                              </v-btn>
+                            </template>
+                          </v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+
+                    <v-col
+                      v-else
+                      class="pa-0"
+                    >
+                      <v-row no-gutters align="center">
+                        <v-col>
+                          <v-subheader>Unknown task <em>{{ task.event }}</em></v-subheader>
+                        </v-col>
+                        <v-col cols="auto" class="pr-3">
+                          <v-btn
+                            color="error"
+                            small
+                            @click="deleteAction(index)"
+                          >
+                            {{ translate('dialog.buttons.delete') }}
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                  </v-row>
+
+                  <v-row>
+                    <v-col cols="auto">
+                      <v-autocomplete
+                        v-model="actionToAdd"
+                        :items="Object.keys(availableActions).map(o => ({
+                          value: o, text: translate('integrations.obswebsocket.' + o + '.name')
+                        }))"
+                        label="Select action to add"
+                      >
+                        <template #append-outer>
+                          <v-btn icon @click="addAction(actionToAdd)">
+                            <v-icon>{{ mdiPlus }}</v-icon>
+                          </v-btn>
+                        </template>
+                      </v-autocomplete>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
               </div>
             </v-expand-transition>
           </v-form>
@@ -82,6 +284,7 @@ import {
 } from '@vue/composition-api';
 import { cloneDeep } from 'lodash-es';
 // import highlighting library (you can use any library you want just return html string)
+import ObsWebSocket from 'obs-websocket-js';
 import { highlight, languages } from 'prismjs';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
@@ -92,9 +295,9 @@ import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/themes/prism-tomorrow.css'; // import syntax highlighting styles
 
-import { availableActions } from '.bot/src/bot/helpers/obswebsocket/actions';
-import type { Source, Type } from '.bot/src/bot/helpers/obswebsocket/sources';
 import { OBSWebsocketInterface } from '~/.bot/src/bot/database/entity/obswebsocket';
+import { availableActions } from '~/.bot/src/bot/helpers/obswebsocket/actions';
+import type { Source, Type } from '~/.bot/src/bot/helpers/obswebsocket/sources';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -140,10 +343,13 @@ export default defineComponent({
     const sourceTypes = ref([] as Type[]);
     const availableAudioSources = computed(() => {
       const audioTypeId = sourceTypes.value.filter(type => type.caps.hasAudio).map(type => type.typeId);
-      return availableSources.value
-        .filter(source => audioTypeId.includes(source.typeId))
-        .map(source => ({ value: source.name, text: source.name }));
+      return [
+        { value: '', text: translate('integrations.obswebsocket.noSourceSelected') },
+        ...availableSources.value
+          .filter(source => audioTypeId.includes(source.typeId))
+          .map(source => ({ value: source.name, text: source.name }))];
     });
+    const actionToAdd = ref(Object.keys(availableActions)[0]);
 
     watch(dialog, (val) => {
       if (!watcher.value) {
@@ -186,6 +392,9 @@ export default defineComponent({
     });
 
     const initial = () => {
+      refreshScenes();
+      refreshSources();
+
       if (ctx.root.$route.query._id) {
         // load initial item
         isLoading.value = true;
@@ -227,7 +436,6 @@ export default defineComponent({
         isSaving.value = true;
         api.patch(ctx.root.$axios, `/api/v1/integration/obswebsocket/${item.value.id ?? v4()}`, item.value)
           .then((response) => {
-            console.log({ response });
             ctx.root.$router.push({ query: { _id: response.id ?? '' } });
             EventBus.$emit('snack', 'success', 'Data saved.');
             EventBus.$emit('integrations::obswebsocket::refresh');
@@ -273,6 +481,32 @@ export default defineComponent({
       });
     };
 
+    const refreshScenes = () => {
+      api.get<ObsWebSocket.Scene[]>(ctx.root.$axios, '/api/v1/integration/obswebsocket/listScene')
+        .then((response) => {
+          availableScenes.value = [{ value: '', text: translate('integrations.obswebsocket.noSceneSelected') }, ...response.data.data.map((scene) => {
+            return {
+              value: scene.name,
+              text:  scene.name,
+            };
+          })];
+        });
+    };
+
+    const refreshSources = () => {
+      api.get<{ sources: Source[], types: Type[] }>(ctx.root.$axios, '/api/v1/integration/obswebsocket/sources')
+        .then((response) => {
+          availableSources.value = response.data.data.sources;
+          sourceTypes.value = response.data.data.types;
+        });
+    };
+
+    const deleteAction = (idx: number) => {
+      if (item.value) {
+        item.value.simpleModeTasks.splice(idx, 1);
+      }
+    };
+
     return {
       // refs
       dialog,
@@ -284,6 +518,7 @@ export default defineComponent({
       item,
       rules,
 
+      actionToAdd,
       availableScenes,
       availableSources,
       availableActions,
@@ -294,6 +529,7 @@ export default defineComponent({
       save,
       highlighter,
       addAction,
+      deleteAction,
 
       // others
       translate,
