@@ -1,14 +1,11 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.goals') }}
+      {{ translate('menu.obswebsocket') }}
     </h2>
 
     <v-data-table
       v-model="selected"
-      show-expand
-      :expanded="expanded"
-      :single-expand="true"
       calculate-widths
       :show-select="selectable"
       :search="search"
@@ -90,25 +87,8 @@
         </v-sheet>
       </template>
 
-      <template #[`item.items`]="{ item }">
-        {{ item.goals.map(o => o.name). join(', ') }}
-      </template>
-
-      <template #[`item.display.type`]="{ item }">
-        <v-simple-table dense class="transparent">
-          <template #default>
-            <tbody>
-              <tr v-for="key of Object.keys(item.display)" :key="key" dense>
-                <td>
-                  {{ translate('registry.goals.input.' + key + '.title') }}
-                </td>
-                <td>
-                  {{ item.display[key] }}
-                </td>
-              </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
+      <template #[`item.command`]="{ item }">
+        <code>{{ command }} {{ item.id }}</code>
       </template>
 
       <template #[`item.actions`]="{ item }">
@@ -118,80 +98,22 @@
               <v-icon>{{ mdiPencil }}</v-icon>
             </v-btn>
           </v-hover>
-
           <v-hover v-slot="{ hover }">
-            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" @click.stop="clone(item)">
-              <v-icon>{{ mdiContentCopy }}</v-icon>
-            </v-btn>
-          </v-hover>
-
-          <v-hover v-slot="{ hover }">
-            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" :href="'/overlays/goals/' + item.id" @click.stop>
-              <v-icon>{{ mdiLink }}</v-icon>
+            <v-btn
+              icon
+              :color="hover ? 'primary' : 'secondary lighten-3'"
+              :disabled="copied===item.id"
+              @click.stop="copied=item.id"
+            >
+              <v-icon v-if="copied !== item.id">
+                {{ mdiClipboard }}
+              </v-icon>
+              <v-icon v-else>
+                {{ mdiClipboardCheck }}
+              </v-icon>
             </v-btn>
           </v-hover>
         </div>
-      </template>
-
-      <template #expanded-item="{ headers, item }">
-        <td :colspan="headers.length" class="py-2">
-          <template v-for="(goal, idx) of item.goals">
-            <v-simple-table :key="goal.id" dense>
-              <template #default>
-                <thead>
-                  <tr>
-                    <td colspan="2" class="text-h6">
-                      {{ goal.name }}
-                    </td>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      {{ translate('registry.goals.input.type.title') }}
-                    </td>
-                    <td>
-                      {{ goal.type }}
-                    </td>
-                  </tr>
-
-                  <tr v-if="goal.type === 'tips'">
-                    <td>
-                      {{ translate('registry.goals.input.countBitsAsTips.title') }}
-                    </td>
-                    <td>
-                      {{ !!goal.countBitsAsTips }}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      {{ translate('registry.goals.input.goalAmount.title') }}
-                    </td>
-                    <td>
-                      {{ goal.goalAmount }}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      {{ translate('registry.goals.input.endAfter.title') }}
-                    </td>
-                    <td>
-                      <v-icon v-if="goal.endAfterIgnore">
-                        {{ mdiInfinity }}
-                      </v-icon>
-                      <template v-else>
-                        {{ dayjs(goal.endAfter).format('LL') }} {{ dayjs(goal.endAfter).format('LTS') }}
-                      </template>
-                    </td>
-                  </tr>
-                </tbody>
-              </template>
-            </v-simple-table>
-            <v-divider v-if="idx < item.goals.length - 1" :key="goal.id + 'divider'" class="ma-4" />
-          </template>
-        </td>
       </template>
     </v-data-table>
   </v-container>
@@ -199,39 +121,48 @@
 
 <script lang="ts">
 import {
-  mdiCheckBoxMultipleOutline, mdiContentCopy, mdiInfinity, mdiLink, mdiMagnify, mdiPencil,
+  mdiCheckBoxMultipleOutline, mdiClipboard, mdiClipboardCheck, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
-import { v4 } from 'uuid';
 
-import type { GoalGroupInterface } from '.bot/src/bot/database/entity/goal';
+import type { OBSWebsocketInterface } from '.bot/src/bot/database/entity/obswebsocket';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/goals-newItem.vue') }) },
+  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/obswebsocket-newItem.vue') }) },
   setup (_, ctx) {
-    const items = ref([] as GoalGroupInterface[]);
+    const items = ref([] as OBSWebsocketInterface[]);
     const search = ref('');
 
-    const selected = ref([] as GoalGroupInterface[]);
-    const expanded = ref([] as GoalGroupInterface[]);
-    const currentItems = ref([] as GoalGroupInterface[]);
+    const command = ref('!obsws run');
+    const selected = ref([] as OBSWebsocketInterface[]);
+    const currentItems = ref([] as OBSWebsocketInterface[]);
     const deleteDialog = ref(false);
+    const copied = ref('');
     const selectable = ref(false);
-    const saveCurrentItems = (value: GoalGroupInterface[]) => {
+    const saveCurrentItems = (value: OBSWebsocketInterface[]) => {
       currentItems.value = value;
     };
     watch(selectable, (val) => {
       if (!val) {
         selected.value = [];
+      }
+    });
+
+    watch(copied, (val) => {
+      if (val.length > 0) {
+        EventBus.$emit('snack', 'success', 'Command copied to clipboard.');
+        navigator.clipboard.writeText(`${command.value} ${val}`);
+        setTimeout(() => {
+          copied.value = '';
+        }, 1000);
       }
     });
 
@@ -241,29 +172,23 @@ export default defineComponent({
 
     const headers = [
       { value: 'name', text: translate('timers.dialog.name') },
-      { value: 'display.type', text: translate('registry.goals.input.displayAs.title') },
-      {
-        value: 'items', text: 'Items', sortable: false,
-      },
+      { value: 'command', text: translate('integrations.obswebsocket.command') },
       {
         value: 'actions', text: '', sortable: false,
       },
-      { text: '', value: 'data-table-expand' },
     ];
 
     const headersDelete = [
-      { value: 'name', text: translate('timers.dialog.name') },
-      { value: 'display.type', text: translate('registry.goals.input.displayAs.title') },
-      { value: 'items', text: 'Items' },
+      { value: 'name', text: 'Name' },
     ];
 
     onMounted(() => {
       refresh();
-      EventBus.$on('goals::refresh', refresh);
+      EventBus.$on('integrations::obswebsocket::refresh', refresh);
     });
 
     const refresh = () => {
-      api.get<GoalGroupInterface[]>(ctx.root.$axios, '/api/v1/registry/goals')
+      api.get<OBSWebsocketInterface[]>(ctx.root.$axios, '/api/v1/integration/obswebsocket')
         .then((response) => {
           items.value = response.data.data;
           // we also need to reset selection values
@@ -283,7 +208,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve) => {
-            api.delete(ctx.root.$axios, `/api/v1/registry/goals/${item.id}`)
+            api.delete(ctx.root.$axios, `/api/v1/integration/obswebsocket/${item.id}`)
               .finally(() => resolve(true));
           });
         }),
@@ -294,27 +219,8 @@ export default defineComponent({
       selected.value = [];
     };
 
-    const clone = (group: GoalGroupInterface) => {
-      const clonedGroupId = v4();
-      const clonedGroup = {
-        ...group,
-        id:    clonedGroupId,
-        name:  group.name + ' (clone)',
-        goals: group.goals.map(goal => ({
-          ...goal, id: v4(), groupId: clonedGroupId,
-        })),
-      };
-
-      api.post(ctx.root.$axios, '/api/v1/registry/goals', clonedGroup)
-        .then(() => {
-          EventBus.$emit('snack', 'success', 'Data cloned.');
-        })
-        .catch(err => error(err))
-        .finally(refresh);
-    };
-
-    const edit = (item: GoalGroupInterface) => {
-      EventBus.$emit('goals::updateDlgShow', item);
+    const edit = (item: OBSWebsocketInterface) => {
+      EventBus.$emit('integrations::obswebsocket::updateDlgShow', item);
     };
 
     return {
@@ -331,23 +237,21 @@ export default defineComponent({
       deleteDialog,
       translate,
       currentItems,
-      expanded,
+      copied,
+      command,
 
       // functions
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
-      clone,
       saveCurrentItems,
 
       // icons
       mdiMagnify,
       mdiCheckBoxMultipleOutline,
-      mdiContentCopy,
       mdiPencil,
-      mdiInfinity,
-      mdiLink,
+      mdiClipboard,
+      mdiClipboardCheck,
 
       // others
-      dayjs,
       ButtonStates,
     };
   },

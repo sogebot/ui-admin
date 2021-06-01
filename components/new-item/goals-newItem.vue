@@ -202,7 +202,6 @@
                                 <v-tab-item>
                                   <codemirror
                                     v-model="goal.customizationHtml"
-                                    class="w-100"
                                     :options="{
                                       tabSize: 4,
                                       mode: 'text/html',
@@ -215,7 +214,6 @@
                                 <v-tab-item>
                                   <codemirror
                                     v-model="goal.customizationJs"
-                                    class="w-100"
                                     :options="{
                                       tabSize: 4,
                                       mode: 'text/javascript',
@@ -228,7 +226,6 @@
                                 <v-tab-item>
                                   <codemirror
                                     v-model="goal.customizationCss"
-                                    class="w-100"
                                     :options="{
                                       tabSize: 4,
                                       mode: 'text/css',
@@ -553,7 +550,6 @@ export default defineComponent({
         isSaving.value = true;
         api.patch(ctx.root.$axios, `/api/v1/registry/goals/${item.value.id ?? v4()}`, item.value)
           .then((response) => {
-            console.log({ response });
             ctx.root.$router.replace({ query: { _id: response.id ?? '' } });
             EventBus.$emit('snack', 'success', 'Data saved.');
             EventBus.$emit('goals::refresh');
