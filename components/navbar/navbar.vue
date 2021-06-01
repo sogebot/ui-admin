@@ -61,6 +61,7 @@ const routeMapper = new Map<string, string>([
   ['registry-gallery', 'gallery'],
   ['registry-carousel', 'carousel'],
   ['registry-goals', 'goals'],
+  ['registry-obswebsocket', 'obswebsocket'],
   ['stats-api', 'api'],
   ['stats-bits', 'bits'],
   ['stats-tips', 'tips'],
