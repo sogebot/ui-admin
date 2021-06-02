@@ -128,17 +128,11 @@
           </v-combobox>
 
           <template v-if="type === 'eval'">
-            <codemirror
+            <prism-editor
               v-model="evalValue"
-              class="w-100"
-              :options="{
-                tabSize: 4,
-                mode : 'javascript',
-                theme: 'base16-dark',
-                lineNumbers: true,
-                line: true,
-                matchBrackets: true
-              }"
+              line-numbers
+              :tab-size="4"
+              :highlight="highlighterJS"
             />
 
             <v-text-field
@@ -320,19 +314,14 @@ import {
   computed,
   defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
-import 'codemirror/mode/javascript/javascript.js';
-import 'codemirror/mode/xml/xml.js';
-import 'codemirror/mode/css/css.js';
-import 'codemirror/theme/base16-dark.css';
-import 'codemirror/lib/codemirror.css';
 import { v4 } from 'uuid';
-import { codemirror } from 'vue-codemirror';
 
 import type { VariableInterface } from '.bot/src/bot/database/entity/variable';
 import type { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { origin } from '~/functions/origin';
+import { highlighterJS, PrismEditor } from '~/functions/prismjs';
 import { minValue, required } from '~/functions/validators';
 
 type Props = {
@@ -341,7 +330,7 @@ type Props = {
 };
 
 export default defineComponent({
-  components: { codemirror },
+  components: { PrismEditor },
   props:      { rules: Object, item: Object },
   setup (props: Props, ctx) {
     const computedRules = {
@@ -633,6 +622,7 @@ export default defineComponent({
       urlsHeaders,
       origin,
       link,
+      highlighterJS,
     };
   },
 });

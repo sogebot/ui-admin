@@ -53,7 +53,7 @@
                   style="border: 1px solid gray;"
                   line-numbers
                   :tab-size="4"
-                  :highlight="highlighter"
+                  :highlight="highlighterJS"
                 />
               </div>
             </v-expand-transition>
@@ -288,15 +288,8 @@ import {
 import { cloneDeep } from 'lodash-es';
 // import highlighting library (you can use any library you want just return html string)
 import ObsWebSocket from 'obs-websocket-js';
-import { highlight, languages } from 'prismjs';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
-import { PrismEditor } from 'vue-prism-editor';
-import 'vue-prism-editor/dist/prismeditor.min.css'; // import the styles somewhere
-
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/themes/prism-tomorrow.css'; // import syntax highlighting styles
 
 import { OBSWebsocketInterface } from '~/.bot/src/bot/database/entity/obswebsocket';
 import { availableActions } from '~/.bot/src/bot/helpers/obswebsocket/actions';
@@ -304,6 +297,7 @@ import type { Source, Type } from '~/.bot/src/bot/helpers/obswebsocket/sources';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
+import { highlighterJS, PrismEditor } from '~/functions/prismjs';
 import { required } from '~/functions/validators';
 
 type Props = {
@@ -322,9 +316,6 @@ export default defineComponent({
   components: { PrismEditor },
   props:      { editItem: Object, activator: Boolean },
   setup (props: Props, ctx) {
-    const highlighter = (code: string) => {
-      return highlight(code, languages.js, 'javascript'); // returns html
-    };
     const dialog = ref(
       (!props.activator && ctx.root.$route.query._action === 'create')
       || (props.activator && typeof ctx.root.$route.query._id !== 'undefined'),
@@ -543,7 +534,7 @@ export default defineComponent({
 
       // functions
       save,
-      highlighter,
+      highlighterJS,
       addAction,
       deleteAction,
       test,

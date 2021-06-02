@@ -200,39 +200,30 @@
                               </v-tabs>
                               <v-tabs-items v-model="customTab">
                                 <v-tab-item>
-                                  <codemirror
+                                  <prism-editor
                                     v-model="goal.customizationHtml"
-                                    :options="{
-                                      tabSize: 4,
-                                      mode: 'text/html',
-                                      theme: 'base16-dark',
-                                      lineNumbers: true,
-                                      line: true,
-                                    }"
+                                    style="border: 1px solid gray;"
+                                    line-numbers
+                                    :tab-size="4"
+                                    :highlight="highlighterHTML"
                                   />
                                 </v-tab-item>
                                 <v-tab-item>
-                                  <codemirror
+                                  <prism-editor
                                     v-model="goal.customizationJs"
-                                    :options="{
-                                      tabSize: 4,
-                                      mode: 'text/javascript',
-                                      theme: 'base16-dark',
-                                      lineNumbers: true,
-                                      line: true,
-                                    }"
+                                    style="border: 1px solid gray;"
+                                    line-numbers
+                                    :tab-size="4"
+                                    :highlight="highlighterJS"
                                   />
                                 </v-tab-item>
                                 <v-tab-item>
-                                  <codemirror
+                                  <prism-editor
                                     v-model="goal.customizationCss"
-                                    :options="{
-                                      tabSize: 4,
-                                      mode: 'text/css',
-                                      theme: 'base16-dark',
-                                      lineNumbers: true,
-                                      line: true,
-                                    }"
+                                    style="border: 1px solid gray;"
+                                    line-numbers
+                                    :tab-size="4"
+                                    :highlight="highlighterCSS"
                                   />
                                 </v-tab-item>
                               </v-tabs-items>
@@ -321,17 +312,14 @@ import {
 } from '@vue/composition-api';
 import { cloneDeep } from 'lodash-es';
 import { v4 } from 'uuid';
-import { codemirror } from 'vue-codemirror';
-import 'codemirror/mode/javascript/javascript.js';
-import 'codemirror/mode/htmlmixed/htmlmixed.js';
-import 'codemirror/mode/css/css.js';
-import 'codemirror/theme/base16-dark.css';
-import 'codemirror/lib/codemirror.css';
 
 import { GoalGroupInterface, GoalInterface } from '~/.bot/src/bot/database/entity/goal';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
+import {
+  highlighterCSS, highlighterHTML, highlighterJS, PrismEditor,
+} from '~/functions/prismjs';
 import { minValue, required } from '~/functions/validators';
 
 type Props = {
@@ -352,7 +340,7 @@ const emptyItem: GoalGroupInterface = {
 
 export default defineComponent({
   components: {
-    codemirror,
+    PrismEditor,
     datetime: defineAsyncComponent({ loader: () => import('~/components/form/datetime.vue') }),
     color:    defineAsyncComponent({ loader: () => import('~/components/form/color.vue') }),
     font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
@@ -617,6 +605,9 @@ export default defineComponent({
 
       // others
       translate,
+      highlighterJS,
+      highlighterCSS,
+      highlighterHTML,
 
       // icons
       mdiClose,

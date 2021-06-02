@@ -81,48 +81,32 @@
       </v-stepper-content>
 
       <v-stepper-content :step="3">
-        <codemirror
+        <prism-editor
           v-model="html"
-          class="w-100"
-          :options="{
-            tabSize: 4,
-            mode : 'xml',
-            htmlMode: true,
-            theme: 'base16-dark',
-            lineNumbers: true,
-            line: true,
-            matchBrackets: true
-          }"
+          style="border: 1px solid gray;"
+          line-numbers
+          :tab-size="4"
+          :highlight="highlighterHTML"
         />
       </v-stepper-content>
 
       <v-stepper-content :step="4">
-        <codemirror
+        <prism-editor
           v-model="js"
-          class="w-100"
-          :options="{
-            tabSize: 4,
-            mode : 'javascript',
-            theme: 'base16-dark',
-            lineNumbers: true,
-            line: true,
-            matchBrackets: true
-          }"
+          style="border: 1px solid gray;"
+          line-numbers
+          :tab-size="4"
+          :highlight="highlighterJS"
         />
       </v-stepper-content>
 
       <v-stepper-content :step="5">
-        <codemirror
+        <prism-editor
           v-model="css"
-          class="w-100"
-          :options="{
-            tabSize: 4,
-            mode : 'text/css',
-            theme: 'base16-dark',
-            lineNumbers: true,
-            line: true,
-            matchBrackets: true
-          }"
+          style="border: 1px solid gray;"
+          line-numbers
+          :tab-size="4"
+          :highlight="highlighterCSS"
         />
       </v-stepper-content>
 
@@ -160,14 +144,12 @@
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { defineComponent, ref } from '@vue/composition-api';
-import 'codemirror/mode/javascript/javascript.js';
-import 'codemirror/mode/xml/xml.js';
-import 'codemirror/mode/css/css.js';
-import 'codemirror/lib/codemirror.css';
 import { v4 } from 'uuid';
-import { codemirror } from 'vue-codemirror';
 
 import type { TextInterface } from '.bot/src/bot/database/entity/text';
+import {
+  highlighterCSS, highlighterHTML, highlighterJS, PrismEditor,
+} from '~/functions/prismjs';
 
 type Props = {
   rules: Record<string, any[]>,
@@ -175,7 +157,7 @@ type Props = {
 };
 
 export default defineComponent({
-  components: { codemirror },
+  components: { PrismEditor },
   props:      { rules: Object, item: Object },
   setup (props: Props, ctx) {
     const e1 = ref(1);
@@ -247,6 +229,9 @@ export default defineComponent({
       valid1,
       closeDlg,
       validateForm,
+      highlighterJS,
+      highlighterCSS,
+      highlighterHTML,
     };
   },
 });
