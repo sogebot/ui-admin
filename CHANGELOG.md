@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.24](https://github.com/sogebot/ui-admin/compare/v0.0.23...v0.0.24) (2021-06-02)
+
+
+### Features
+
+* **obswebsocket:** add obswebsocket registry ([#48](https://github.com/sogebot/ui-admin/issues/48)) ([1553e35](https://github.com/sogebot/ui-admin/commit/1553e3572f40e749cca09010715f15969265a370))
+
 ### [0.0.23](https://github.com/sogebot/ui-admin/compare/v0.0.22...v0.0.23) (2021-05-31)
 
 
