@@ -16,6 +16,9 @@
         <span v-if="!$route.query._id" class="headline">New Item</span>
         <span v-else class="headline">Edit Item</span>
         <v-spacer />
+        <v-btn text :loading="isTesting" :disabled="!valid1" @click="test">
+          {{ translate('dialog.buttons.test.idle') }}
+        </v-btn>
         <v-btn text :loading="isSaving" :disabled="!valid1" @click="save">
           {{ translate('dialog.buttons.saveChanges.idle') }}
         </v-btn>
@@ -332,6 +335,7 @@ export default defineComponent({
     const valid1 = ref(true);
 
     const isSaving = ref(false);
+    const isTesting = ref(false);
     const isLoading = ref(false);
 
     const item = ref(cloneDeep(props.editItem ? props.editItem : emptyItem) as OBSWebsocketInterface);
@@ -507,10 +511,22 @@ export default defineComponent({
       }
     };
 
+    const test = () => {
+      isTesting.value = true;
+      api.post(ctx.root.$axios, '/api/v1/integration/obswebsocket/trigger',
+        item.value.advancedMode
+          ? item.value.advancedModeCode
+          : item.value.simpleModeTasks)
+        .then(() => EventBus.$emit('snack', 'success', 'Test done!'))
+        .catch(() => EventBus.$emit('snack', 'error', 'Something went wrong. Check the logs.'))
+        .finally(() => (isTesting.value = false));
+    };
+
     return {
       // refs
       dialog,
       isSaving,
+      isTesting,
       isLoading,
       closeDlg,
       form1,
@@ -530,6 +546,7 @@ export default defineComponent({
       highlighter,
       addAction,
       deleteAction,
+      test,
 
       // others
       translate,
