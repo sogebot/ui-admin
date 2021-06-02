@@ -3,13 +3,6 @@
   "version": "0.0.23",
   "author": "sogehige@gmail.com",
   "description": "Nuxt.js version of ui-admin",
-  "resolutions": {
-    "@nuxtjs/vuetify/**/sass": "1.32.12"
-  },
-  "engines": {
-    "npm": "please-use-yarn",
-    "yarn": ">= 1.19.1"
-  },
   "scripts": {
     "postinstall": "patch-package",
     "release": "standard-version",
@@ -82,7 +75,7 @@
     "standard-version": "^9.3.0",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
-    "typeorm": "^0.2.32",
-    "vuetify": "^2.5.1"
+    "typeorm": "^0.2.33",
+    "vuetify": "^2.5.3"
   }
 }
