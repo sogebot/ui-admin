@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.25](https://github.com/sogebot/ui-admin/compare/v0.0.24...v0.0.25) (2021-06-02)
+
+
+### Bug Fixes
+
+* **prismjs:** replace codemirror with prismjs ([#52](https://github.com/sogebot/ui-admin/issues/52)) ([fd87618](https://github.com/sogebot/ui-admin/commit/fd876189fe322baf7cf6dc5af015ee1dd8f93fc6))
+
 ### [0.0.24](https://github.com/sogebot/ui-admin/compare/v0.0.23...v0.0.24) (2021-06-02)
 
 
