@@ -515,13 +515,14 @@ export default defineComponent({
 
     onMounted(() => {
       refresh();
+      EventBus.$off(`carousel::dragdrop`).$off(`carousel::dragstart`);
       EventBus.$on(`carousel::dragstart`, () => {
         state.value.dragging = true;
       });
       EventBus.$on(`carousel::dragstop`, () => {
         state.value.dragging = false;
       });
-      EventBus.$on(`carousel::dragdrop`, (data: {id: string, offsetId?: string}) => {
+      EventBus.$on(`carousel::dragdrop`, async (data: {id: string, offsetId?: string}) => {
         // reorder items
         // remove id
         const draggedItem = items.value.find(item => item.id === data.id);
@@ -543,11 +544,12 @@ export default defineComponent({
             items.value[i].order = i;
           }
           state.value.saving = true;
-          Promise.all(
+          await Promise.all(
             items.value.map((item) => {
               return api.patch<{ order: number }>(ctx.root.$axios, `/api/v1/carousel/${item.id}`, { order: item.order });
             }),
-          ).then(saveSuccess);
+          );
+          saveSuccess();
         }
       });
     });
