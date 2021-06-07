@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.26](https://github.com/sogebot/ui-admin/compare/v0.0.25...v0.0.26) (2021-06-07)
+
+
+### Bug Fixes
+
+* **user:** update logout path ([d81cc73](https://github.com/sogebot/ui-admin/commit/d81cc7355e2d88b63e1229df0ffe573c01b38828))
+
 ### [0.0.25](https://github.com/sogebot/ui-admin/compare/v0.0.24...v0.0.25) (2021-06-02)
 
 
