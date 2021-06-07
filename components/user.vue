@@ -209,7 +209,7 @@ export default defineComponent({
       localStorage.setItem('userType', 'unauthorized');
       window.location.assign(window.location.origin + '/credentials/login#error=logged+out');
     };
-    const login = () => window.location.assign(window.location.origin + '/login');
+    const login = () => window.location.assign(window.location.origin + '/credentials/login');
     const refreshViewer = () => {
       if (typeof (context.root as any).$store.state.loggedUser === 'undefined' || (context.root as any).$store.state.loggedUser === null) {
         return;
