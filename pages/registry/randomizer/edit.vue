@@ -56,12 +56,13 @@
         </v-form>
 
         <v-expansion-panels>
+          <position v-if="item.type === 'simple'" v-model="item.position" />
           <v-expansion-panel>
             <v-expansion-panel-header>
               {{ translate('registry.goals.fontSettings') }}
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <font :id="item.id" v-model="item.customizationFont" />
+              <font v-model="item.customizationFont" />
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -135,7 +136,10 @@ const emptyItem: RandomizerInterface = {
 };
 
 export default defineComponent({
-  components: { font: defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }) },
+  components: {
+    font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
+    position: defineAsyncComponent({ loader: () => import('~/components/form/expansion/position.vue') }),
+  },
   setup (_, ctx) {
     const stepper = ref(1);
 
