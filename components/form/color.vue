@@ -1,28 +1,51 @@
 <template>
-  <v-text-field :id="id + '|' + uuid" v-model="model" :rules="rules.color" :label="label">
-    <template #prepend>
-      <v-menu
-        v-model="menu"
-        offset-overflow
-        :close-on-content-click="false"
-        transition="scale-transition"
-        min-width="auto"
-      >
-        <template #activator="{ on, attrs }">
-          <v-btn
-            v-bind="attrs"
-            width="75"
-            height="25"
-            elevation="2"
-            :color="model"
-            v-on="on"
-          />
-        </template>
+  <div>
+    <v-menu
+      v-if="onlyColor"
+      v-model="menu"
+      offset-overflow
+      :close-on-content-click="false"
+      transition="scale-transition"
+      min-width="auto"
+    >
+      <template #activator="{ on, attrs }">
+        <v-btn
+          v-bind="attrs"
+          width="75"
+          height="25"
+          elevation="2"
+          :color="model"
+          v-on="on"
+        />
+      </template>
 
-        <v-color-picker v-model="picker" mode="hexa" />
-      </v-menu>
-    </template>
-  </v-text-field>
+      <v-color-picker v-model="picker" mode="hexa" />
+    </v-menu>
+    <v-text-field v-if="!onlyColor" :id="id + '|' + uuid" v-model="model" :rules="rules.color" :label="label">
+      <template #prepend>
+        <v-menu
+          v-model="menu"
+          offset-overflow
+          :close-on-content-click="false"
+          transition="scale-transition"
+          min-width="auto"
+        >
+          <template #activator="{ on, attrs }">
+            <v-btn
+              v-bind="attrs"
+              width="75"
+              height="25"
+              elevation="2"
+              :color="model"
+              v-on="on"
+            />
+          </template>
+
+          <v-color-picker v-model="picker" mode="hexa" />
+        </v-menu>
+      </template>
+    </v-text-field>
+  </div>
 </template>
 
 <script lang="ts">
@@ -38,9 +61,10 @@ import { isHexColor, required } from '~/functions/validators';
 
 export default defineComponent({
   props: {
-    value: String,
-    label: String,
-    id:    String,
+    value:     String,
+    label:     String,
+    onlyColor: Boolean,
+    id:        String,
   },
   setup (props, ctx) {
     const model = ref(props.value);

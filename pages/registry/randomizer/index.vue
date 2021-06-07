@@ -77,10 +77,9 @@
                 </v-dialog>
               </template>
 
-              <!-- create dialog -->
-              <new-item activator />
-              <!-- update dialog -->
-              <new-item />
+              <v-btn color="primary" to="/registry/randomizer/new" nuxt>
+                New Item
+              </v-btn>
             </v-col>
           </v-row>
         </v-sheet>
@@ -97,7 +96,7 @@
       <template #[`item.actions`]="{ item }">
         <div style="width: max-content;">
           <v-hover v-slot="{ hover }">
-            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" @click.stop="edit(item)">
+            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" nuxt :to="'/registry/randomizer/' + item.id" @click.stop>
               <v-icon>{{ mdiPencil }}</v-icon>
             </v-btn>
           </v-hover>
@@ -122,12 +121,6 @@
               <v-icon>{{ mdiContentCopy }}</v-icon>
             </v-btn>
           </v-hover>
-
-          <v-hover v-slot="{ hover }">
-            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" :href="'/overlays/goals/' + item.id" @click.stop>
-              <v-icon>{{ mdiLink }}</v-icon>
-            </v-btn>
-          </v-hover>
         </div>
       </template>
     </v-data-table>
@@ -136,13 +129,13 @@
 
 <script lang="ts">
 import {
-  mdiCheckBoxMultipleOutline, mdiContentCopy, mdiEye, mdiEyeOff, mdiLink, mdiMagnify, mdiPencil, mdiPlay,
+  mdiCheckBoxMultipleOutline, mdiContentCopy, mdiEye, mdiEyeOff, mdiMagnify, mdiPencil, mdiPlay,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
 import { orderBy } from 'lodash-es';
 import { v4 } from 'uuid';
@@ -156,7 +149,6 @@ import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/goals-newItem.vue') }) },
   setup (_, ctx) {
     const items = ref([] as RandomizerInterface[]);
     const search = ref('');
@@ -277,10 +269,6 @@ export default defineComponent({
         .finally(refresh);
     };
 
-    const edit = (item: RandomizerInterface) => {
-      EventBus.$emit('goals::updateDlgShow', item);
-    };
-
     const toggleVisibility = async (item: Required<RandomizerInterface>) => {
       item.isShown = !item.isShown;
       await new Promise((resolve) => {
@@ -312,7 +300,6 @@ export default defineComponent({
 
     return {
       // refs
-      edit,
       items,
       search,
       state,
@@ -340,7 +327,6 @@ export default defineComponent({
       mdiCheckBoxMultipleOutline,
       mdiContentCopy,
       mdiPencil,
-      mdiLink,
       mdiEye,
       mdiEyeOff,
       mdiPlay,

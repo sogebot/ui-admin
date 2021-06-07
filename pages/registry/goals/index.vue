@@ -4,6 +4,8 @@
       {{ translate('menu.goals') }}
     </h2>
 
+    <new-item />
+
     <v-data-table
       v-model="selected"
       show-expand
@@ -81,10 +83,9 @@
                 </v-dialog>
               </template>
 
-              <!-- create dialog -->
-              <new-item activator />
-              <!-- update dialog -->
-              <new-item />
+              <v-btn color="primary" to="/registry/goals/new" nuxt>
+                New Item
+              </v-btn>
             </v-col>
           </v-row>
         </v-sheet>
@@ -114,7 +115,7 @@
       <template #[`item.actions`]="{ item }">
         <div style="width: max-content;">
           <v-hover v-slot="{ hover }">
-            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" @click.stop="edit(item)">
+            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" nuxt :to="'/registry/goals/' + item.id" @click.stop>
               <v-icon>{{ mdiPencil }}</v-icon>
             </v-btn>
           </v-hover>
@@ -205,7 +206,7 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
 import { v4 } from 'uuid';
 
@@ -216,7 +217,6 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/goals-newItem.vue') }) },
   setup (_, ctx) {
     const items = ref([] as GoalGroupInterface[]);
     const search = ref('');
@@ -313,13 +313,8 @@ export default defineComponent({
         .finally(refresh);
     };
 
-    const edit = (item: GoalGroupInterface) => {
-      EventBus.$emit('goals::updateDlgShow', item);
-    };
-
     return {
       // refs
-      edit,
       items,
       search,
       state,

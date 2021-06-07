@@ -75,6 +75,16 @@ export default {
         path:       '/manage/viewers/:id',
         components: { default: resolve(__dirname, 'pages/manage/viewers') },
       });
+      routes.push({
+        name:       'RegistryRandomizerEdit',
+        path:       '/registry/randomizer/:id',
+        components: { default: resolve(__dirname, 'pages/registry/randomizer/edit') },
+      });
+      routes.push({
+        name:       'RegistryGoalsEdit',
+        path:       '/registry/goals/:id',
+        components: { default: resolve(__dirname, 'pages/registry/goals/edit') },
+      });
     },
   },
 
