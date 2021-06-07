@@ -30,6 +30,11 @@
             :label="translate('registry.randomizer.form.type')"
             :items="typeItems"
           />
+          <v-select
+            v-model="item.permissionId"
+            :label="translate('registry.randomizer.form.permission')"
+            :items="permissionItems"
+          />
 
           <v-expand-transition>
             <div v-if="item.type === 'wheelOfFortune'">
@@ -57,6 +62,7 @@
 
         <v-expansion-panels>
           <position v-if="item.type === 'simple'" v-model="item.position" />
+          <tts v-model="item.tts" />
           <v-expansion-panel>
             <v-expansion-panel-header>
               {{ translate('registry.goals.fontSettings') }}
@@ -84,14 +90,17 @@ import {
   mdiClose, mdiExclamationThick, mdiPlus,
 } from '@mdi/js';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
+  computed,
   defineAsyncComponent,
   defineComponent, onMounted, ref,
 } from '@vue/composition-api';
 import { cloneDeep } from 'lodash-es';
 import { v4 } from 'uuid';
 
+import { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
 import { RandomizerInterface } from '~/.bot/src/bot/database/entity/randomizer';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
@@ -139,6 +148,7 @@ export default defineComponent({
   components: {
     font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
     position: defineAsyncComponent({ loader: () => import('~/components/form/expansion/position.vue') }),
+    tts:      defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
   },
   setup (_, ctx) {
     const stepper = ref(1);
@@ -150,8 +160,16 @@ export default defineComponent({
     const isLoading = ref(false);
 
     const item = ref(cloneDeep(emptyItem) as RandomizerInterface);
+    const permissions = ref([] as PermissionsInterface[]);
 
     const typeItems = [{ text: translate('registry.randomizer.form.simple'), value: 'simple' }, { text: translate('registry.randomizer.form.wheelOfFortune'), value: 'wheelOfFortune' }];
+    const permissionItems = computed(() => {
+      return permissions.value.map(o => ({
+        text:     o.name,
+        value:    o.id,
+        disabled: false,
+      }));
+    });
 
     const rules = { name: [required], command: [required, startsWith(['!']), minLength(3)] };
 
@@ -168,6 +186,13 @@ export default defineComponent({
             ctx.root.$router.push({ path: '/registry/randomizer' });
             EventBus.$emit('snack', 'error', 'Data not found.');
           });
+
+        getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
+          if (err) {
+            return error(err);
+          }
+          permissions.value = data;
+        });
       }
     });
 
@@ -203,6 +228,7 @@ export default defineComponent({
       item,
       stepper,
       typeItems,
+      permissionItems,
       rules,
 
       // functions

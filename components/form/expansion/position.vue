@@ -63,7 +63,7 @@
         </template>
       </v-slider>
 
-      <div class="m-auto py-4" style="width: 50%; margin: auto;">
+      <div class="m-auto py-4" style="width: 25%; margin: auto;">
         <v-responsive :aspect-ratio="16/9" style="overflow: visible;">
           <v-sheet ref="example" class="fill-height" style="position: relative;" elevation="2" color="grey darken-4">
             <v-icon ref="anchor" color="primary" style="position: absolute;" x-small :style="positionGenerator('anchor')">

@@ -245,8 +245,8 @@
             }"
             class="mt-4 pb-4"
           >
-            <div :style="{lineHeight: (model.size + 15) + 'px', height: (model.size + 30) + 'px', width: '90%' }">
-              <div class="text-truncate text-center">
+            <div :style="{lineHeight: (model.size + 15) + 'px', width: '90%' }">
+              <div class="text-center" style="overflow: visible !important;">
                 The quick brown fox jumps over the lazy dog
               </div>
             </div>
