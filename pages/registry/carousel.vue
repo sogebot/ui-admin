@@ -346,6 +346,8 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { minValue, required } from '~/functions/validators';
 
+const originalWidths: string[] = [];
+
 function handleDragStart (e: DragEvent, id: string) {
   EventBus.$emit(`carousel::dragstart`);
   // we want to select first tr
@@ -353,12 +355,23 @@ function handleDragStart (e: DragEvent, id: string) {
   for (const el of (e as any).path as unknown as HTMLElement[]) {
     if (el.tagName === 'TR') {
       element = el;
+
+      // set widths
+      originalWidths.length = 0;
+      for (const cell of element.children) {
+        originalWidths.push(`${parseInt(window.getComputedStyle(cell).width)}px`);
+      }
       document.onmouseup = handleDragEnd;
       break;
     }
   }
   // enable mouse move listener
   function elementDrag (ev: MouseEvent) {
+    for (let i = 0; i < element.children.length; i++) {
+      // Set the width as the original cell
+      (element.children[i] as HTMLElement).style.minWidth = originalWidths[i];
+      (element.children[i] as HTMLElement).style.overflow = 'hidden';
+    }
     element.style.opacity = '0.8';
     element.style.zIndex = String(9999);
     element.style.top = ev.pageY + 'px';
