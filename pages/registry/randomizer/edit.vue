@@ -60,8 +60,8 @@
           </v-expand-transition>
         </v-form>
 
-        <v-expansion-panels>
-          <position v-if="item.type === 'simple'" v-model="item.position" />
+        <v-expansion-panels :value="3">
+          <position v-model="item.position" :disabled="item.type !== 'simple'" />
           <tts v-model="item.tts" />
           <v-expansion-panel>
             <v-expansion-panel-header>
@@ -69,6 +69,19 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <font v-model="item.customizationFont" />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel>
+            <v-expansion-panel-header v-slot="{open}">
+              {{ translate('registry.randomizer.form.options') }}
+              <div style="text-align: right;">
+                <v-btn v-if="open" icon @click.stop="addOption">
+                  <v-icon>{{ mdiPlus }}</v-icon>
+                </v-btn>
+              </div>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <options-table v-model="item.items" />
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -89,6 +102,7 @@
 import {
   mdiClose, mdiExclamationThick, mdiPlus,
 } from '@mdi/js';
+import { getRandomColor } from '@sogebot/ui-helpers/colors';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -146,9 +160,10 @@ const emptyItem: RandomizerInterface = {
 
 export default defineComponent({
   components: {
-    font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
-    position: defineAsyncComponent({ loader: () => import('~/components/form/expansion/position.vue') }),
-    tts:      defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
+    font:         defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
+    position:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/position.vue') }),
+    tts:          defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
+    optionsTable: defineAsyncComponent({ loader: () => import('~/components/randomizer/table.vue') }),
   },
   setup (_, ctx) {
     const stepper = ref(1);
@@ -219,6 +234,22 @@ export default defineComponent({
       ctx.root.$router.push({ path: '/registry/randomizer' });
     };
 
+    const addOption = () => {
+      if (item.value.items) {
+        item.value.items.push({
+          id:              v4(),
+          name:            '',
+          color:           getRandomColor(),
+          numOfDuplicates: 1,
+          minimalSpacing:  1,
+          groupId:         null,
+          randomizer:      undefined,
+          randomizerId:    undefined,
+          order:           item.value.items.length,
+        });
+      }
+    };
+
     return {
       // refs
       isSaving,
@@ -234,6 +265,7 @@ export default defineComponent({
       // functions
       save,
       goBack,
+      addOption,
 
       // others
       translate,

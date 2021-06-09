@@ -21,7 +21,15 @@
 
       <v-color-picker v-model="picker" mode="hexa" />
     </v-menu>
-    <v-text-field v-if="!onlyColor" :id="id + '|' + uuid" v-model="model" :rules="rules.color" :label="label">
+    <v-text-field
+      v-if="!onlyColor"
+      :id="id + '|' + uuid"
+      v-model="model"
+      :hide-details="hideDetails"
+      :dense="dense"
+      :rules="rules.color"
+      :label="label"
+    >
       <template #prepend>
         <v-menu
           v-model="menu"
@@ -44,11 +52,18 @@
           <v-color-picker v-model="picker" mode="hexa" />
         </v-menu>
       </template>
+      <template #append>
+        <v-btn v-if="randomizer" icon @click="model = getRandomColor()">
+          <v-icon>{{ mdiDiceMultiple }}</v-icon>
+        </v-btn>
+      </template>
     </v-text-field>
   </div>
 </template>
 
 <script lang="ts">
+import { mdiDiceMultiple } from '@mdi/js';
+import { getRandomColor } from '@sogebot/ui-helpers/colors';
 import {
   defineComponent,
   onMounted,
@@ -61,10 +76,13 @@ import { isHexColor, required } from '~/functions/validators';
 
 export default defineComponent({
   props: {
-    value:     String,
-    label:     String,
-    onlyColor: Boolean,
-    id:        String,
+    value:       String,
+    label:       String,
+    onlyColor:   Boolean,
+    id:          String,
+    hideDetails: Boolean,
+    dense:       Boolean,
+    randomizer:  Boolean,
   },
   setup (props, ctx) {
     const model = ref(props.value);
@@ -89,6 +107,8 @@ export default defineComponent({
       picker,
       rules,
       uuid,
+      mdiDiceMultiple,
+      getRandomColor,
     };
   },
 });

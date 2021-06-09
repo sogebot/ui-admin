@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panel>
+  <v-expansion-panel :disabled="disabled">
     <v-expansion-panel-header>
       {{ translate('dialog.position.settings') }}
     </v-expansion-panel-header>
@@ -95,10 +95,11 @@ import type { RandomizerInterface } from '~/.bot/src/bot/database/entity/randomi
 
 interface Props {
   value: RandomizerInterface['position'];
+  disabled: boolean,
 }
 
 export default defineComponent({
-  props: { value: Object },
+  props: { value: Object, disabled: Boolean },
   setup (props: Props, ctx) {
     const model = reactive(props.value);
     const uuid = ref(v4());
