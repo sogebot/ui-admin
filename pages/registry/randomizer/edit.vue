@@ -84,6 +84,35 @@
               <options-table v-model="item.items" />
             </v-expansion-panel-content>
           </v-expansion-panel>
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              {{ translate('registry.randomizer.form.probability') }}
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <div v-for="(uitem, index) of Array.from(new Set(item.items.map(o => o.name)))" :key="'probability' + index + uitem">
+                {{ uitem }} &nbsp;
+                <strong>{{ Number((generateItems(item.items).filter(o => o.name === uitem).length / generateItems(item.items).length) * 100).toFixed(2) }}%</strong>
+              </div>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              {{ translate('registry.randomizer.form.generatedOptionsPreview') }}
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-alert v-if="generateItems(item.items).length === 0" text color="error">
+                {{ translate('registry.randomizer.form.optionsAreEmpty') }}
+              </v-alert>
+              <div
+                v-for="(item, index) of generateItems(item.items)"
+                v-else
+                :key="index + item.id"
+                :style="{ color: getContrastColor(item.color), 'background-color': item.color, 'min-width': 'fit-content' }"
+              >
+                {{ item.name }}
+              </div>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
         </v-expansion-panels>
       </v-container>
     </v-fade-transition>
@@ -102,7 +131,7 @@
 import {
   mdiClose, mdiExclamationThick, mdiPlus,
 } from '@mdi/js';
-import { getRandomColor } from '@sogebot/ui-helpers/colors';
+import { getContrastColor, getRandomColor } from '@sogebot/ui-helpers/colors';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -111,11 +140,13 @@ import {
   defineAsyncComponent,
   defineComponent, onMounted, ref,
 } from '@vue/composition-api';
-import { cloneDeep } from 'lodash-es';
+import {
+  cloneDeep, isEqual, orderBy,
+} from 'lodash-es';
 import { v4 } from 'uuid';
 
 import { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
-import { RandomizerInterface } from '~/.bot/src/bot/database/entity/randomizer';
+import { RandomizerInterface, RandomizerItemInterface } from '~/.bot/src/bot/database/entity/randomizer';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -220,7 +251,6 @@ export default defineComponent({
           .then((response) => {
             ctx.root.$router.push({ params: { id: response.id ?? '' } });
             EventBus.$emit('snack', 'success', 'Data saved.');
-            EventBus.$emit('goals::refresh');
           })
           .catch((e) => {
             console.error(e.response.data);
@@ -250,6 +280,48 @@ export default defineComponent({
       }
     };
 
+    const generateItems = (items: Required<RandomizerItemInterface>[], generatedItems: Required<RandomizerItemInterface>[] = []) => {
+      const beforeItems = cloneDeep(orderBy(items, 'order'));
+      items = cloneDeep(orderBy(items, 'order'));
+      items = items.filter(o => o.numOfDuplicates > 0);
+
+      const countGroupItems = (item2: RandomizerItemInterface, count = 0): number => {
+        const child = items.find(o => o.groupId === item2.id);
+        if (child) {
+          return countGroupItems(child, count + 1);
+        } else {
+          return count;
+        }
+      };
+      const haveMinimalSpacing = (item2: Required<RandomizerItemInterface>) => {
+        const lastIdx = generatedItems.map(o => o.name).lastIndexOf(item2.name);
+        const currentIdx = generatedItems.length;
+        return lastIdx === -1 || lastIdx + item2.minimalSpacing + countGroupItems(item2) < currentIdx;
+      };
+      const addGroupItems = (item2: RandomizerItemInterface, _generatedItems: RandomizerItemInterface[]) => {
+        const child = items.find(o => o.groupId === item2.id);
+        if (child) {
+          _generatedItems.push(child);
+          addGroupItems(child, _generatedItems);
+        }
+      };
+
+      for (const item2 of items) {
+        if (item2.numOfDuplicates > 0 && haveMinimalSpacing(item2) && !item2.groupId /* is not grouped or is parent of group */) {
+          generatedItems.push(item2);
+          item2.numOfDuplicates--;
+          addGroupItems(item2, generatedItems);
+        }
+      }
+
+      // run next iteration if some items are still there and that any change was made
+      // so we don't have infinite loop when e.g. minimalspacing is not satisfied
+      if (items.filter(o => o.numOfDuplicates > 0).length > 0 && !isEqual(items.filter(o => o.numOfDuplicates > 0), beforeItems)) {
+        generateItems(items, generatedItems);
+      }
+      return generatedItems;
+    };
+
     return {
       // refs
       isSaving,
@@ -266,9 +338,11 @@ export default defineComponent({
       save,
       goBack,
       addOption,
+      generateItems,
 
       // others
       translate,
+      getContrastColor,
 
       // icons
       mdiClose,

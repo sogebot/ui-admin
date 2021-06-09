@@ -86,7 +86,7 @@
       </template>
 
       <template #[`item.items`]="{ item }">
-        {{ Array.from(new Set(orderBy(item.items, 'order').map(o => o.name))).join(', ') }}}
+        {{ Array.from(new Set(orderBy(item.items, 'order').map(o => o.name))).join(', ') }}
       </template>
 
       <template #[`item.permissionId`]="{ item }">
