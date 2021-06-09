@@ -1,15 +1,11 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.goals') }}
+      {{ translate('menu.randomizer') }}
     </h2>
 
     <v-data-table
       v-model="selected"
-      show-expand
-      :expanded="expanded"
-      :single-expand="true"
-      calculate-widths
       :show-select="selectable"
       :search="search"
       :loading="state.loading !== ButtonStates.success"
@@ -81,41 +77,42 @@
                 </v-dialog>
               </template>
 
-              <!-- create dialog -->
-              <new-item activator />
-              <!-- update dialog -->
-              <new-item />
+              <v-btn color="primary" to="/registry/randomizer/new" nuxt>
+                New Item
+              </v-btn>
             </v-col>
           </v-row>
         </v-sheet>
       </template>
 
       <template #[`item.items`]="{ item }">
-        {{ item.goals.map(o => o.name). join(', ') }}
+        {{ Array.from(new Set(orderBy(item.items, 'order').map(o => o.name))).join(', ') }}
       </template>
 
-      <template #[`item.display.type`]="{ item }">
-        <v-simple-table dense class="transparent">
-          <template #default>
-            <tbody>
-              <tr v-for="key of Object.keys(item.display)" :key="key" dense>
-                <td>
-                  {{ translate('registry.goals.input.' + key + '.title') }}
-                </td>
-                <td>
-                  {{ item.display[key] }}
-                </td>
-              </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
+      <template #[`item.permissionId`]="{ item }">
+        {{ getPermissionName(item.permissionId, permissions) }}
       </template>
 
       <template #[`item.actions`]="{ item }">
         <div style="width: max-content;">
           <v-hover v-slot="{ hover }">
-            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" @click.stop="edit(item)">
+            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" nuxt :to="'/registry/randomizer/' + item.id" @click.stop>
               <v-icon>{{ mdiPencil }}</v-icon>
+            </v-btn>
+          </v-hover>
+
+          <v-hover v-slot="{ hover }">
+            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" @click.stop="toggleVisibility(item)">
+              <v-icon>{{ item.isShown ? mdiEye : mdiEyeOff }}</v-icon>
+            </v-btn>
+          </v-hover>
+
+          <v-hover v-slot="{ hover }">
+            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" :disabled="spin" @click.stop="startSpin">
+              <v-icon v-if="!spin">
+                {{ mdiPlay }}
+              </v-icon>
+              <v-progress-circular v-else indeterminate size="20" />
             </v-btn>
           </v-hover>
 
@@ -124,74 +121,7 @@
               <v-icon>{{ mdiContentCopy }}</v-icon>
             </v-btn>
           </v-hover>
-
-          <v-hover v-slot="{ hover }">
-            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" :href="'/overlays/goals/' + item.id" @click.stop>
-              <v-icon>{{ mdiLink }}</v-icon>
-            </v-btn>
-          </v-hover>
         </div>
-      </template>
-
-      <template #expanded-item="{ headers, item }">
-        <td :colspan="headers.length" class="py-2">
-          <template v-for="(goal, idx) of item.goals">
-            <v-simple-table :key="goal.id" dense>
-              <template #default>
-                <thead>
-                  <tr>
-                    <td colspan="2" class="text-h6">
-                      {{ goal.name }}
-                    </td>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      {{ translate('registry.goals.input.type.title') }}
-                    </td>
-                    <td>
-                      {{ goal.type }}
-                    </td>
-                  </tr>
-
-                  <tr v-if="goal.type === 'tips'">
-                    <td>
-                      {{ translate('registry.goals.input.countBitsAsTips.title') }}
-                    </td>
-                    <td>
-                      {{ !!goal.countBitsAsTips }}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      {{ translate('registry.goals.input.goalAmount.title') }}
-                    </td>
-                    <td>
-                      {{ goal.goalAmount }}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      {{ translate('registry.goals.input.endAfter.title') }}
-                    </td>
-                    <td>
-                      <v-icon v-if="goal.endAfterIgnore">
-                        {{ mdiInfinity }}
-                      </v-icon>
-                      <template v-else>
-                        {{ dayjs(goal.endAfter).format('LL') }} {{ dayjs(goal.endAfter).format('LTS') }}
-                      </template>
-                    </td>
-                  </tr>
-                </tbody>
-              </template>
-            </v-simple-table>
-            <v-divider v-if="idx < item.goals.length - 1" :key="goal.id + 'divider'" class="ma-4" />
-          </template>
-        </td>
       </template>
     </v-data-table>
   </v-container>
@@ -199,34 +129,37 @@
 
 <script lang="ts">
 import {
-  mdiCheckBoxMultipleOutline, mdiContentCopy, mdiInfinity, mdiLink, mdiMagnify, mdiPencil,
+  mdiCheckBoxMultipleOutline, mdiContentCopy, mdiEye, mdiEyeOff, mdiMagnify, mdiPencil, mdiPlay,
 } from '@mdi/js';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
+import { orderBy } from 'lodash-es';
 import { v4 } from 'uuid';
 
-import type { GoalGroupInterface } from '.bot/src/bot/database/entity/goal';
+import type { RandomizerInterface } from '.bot/src/bot/database/entity/randomizer';
+import { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
+import { getPermissionName } from '~/functions/getPermissionName';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/goals-newItem.vue') }) },
   setup (_, ctx) {
-    const items = ref([] as GoalGroupInterface[]);
+    const items = ref([] as RandomizerInterface[]);
     const search = ref('');
 
-    const selected = ref([] as GoalGroupInterface[]);
-    const expanded = ref([] as GoalGroupInterface[]);
-    const currentItems = ref([] as GoalGroupInterface[]);
+    const selected = ref([] as RandomizerInterface[]);
+    const permissions = ref([] as PermissionsInterface[]);
+    const currentItems = ref([] as RandomizerInterface[]);
     const deleteDialog = ref(false);
+    const spin = ref(false);
     const selectable = ref(false);
-    const saveCurrentItems = (value: GoalGroupInterface[]) => {
+    const saveCurrentItems = (value: RandomizerInterface[]) => {
       currentItems.value = value;
     };
     watch(selectable, (val) => {
@@ -241,9 +174,10 @@ export default defineComponent({
 
     const headers = [
       { value: 'name', text: translate('timers.dialog.name') },
-      { value: 'display.type', text: translate('registry.goals.input.displayAs.title') },
+      { value: 'command', text: translate('registry.randomizer.form.command') },
+      { value: 'permissionId', text: translate('registry.randomizer.form.permission') },
       {
-        value: 'items', text: 'Items', sortable: false,
+        value: 'items', text: translate('registry.randomizer.form.options'), sortable: false,
       },
       {
         value: 'actions', text: '', sortable: false,
@@ -253,7 +187,7 @@ export default defineComponent({
 
     const headersDelete = [
       { value: 'name', text: translate('timers.dialog.name') },
-      { value: 'display.type', text: translate('registry.goals.input.displayAs.title') },
+      { value: 'command', text: translate('registry.randomizer.form.command') },
       { value: 'items', text: 'Items' },
     ];
 
@@ -262,20 +196,34 @@ export default defineComponent({
       EventBus.$on('goals::refresh', refresh);
     });
 
-    const refresh = () => {
-      api.get<GoalGroupInterface[]>(ctx.root.$axios, '/api/v1/registry/goals')
-        .then((response) => {
-          items.value = response.data.data;
-          // we also need to reset selection values
-          if (selected.value.length > 0) {
-            selected.value.forEach((selectedItem, index) => {
-              selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
-              selected.value[index] = selectedItem;
-            });
-          }
-        })
-        .catch(err => error(err))
-        .finally(() => (state.value.loading = ButtonStates.success));
+    const refresh = async () => {
+      await Promise.all([
+        new Promise<void>((resolve) => {
+          api.get<RandomizerInterface[]>(ctx.root.$axios, '/api/v1/registry/randomizer')
+            .then((response) => {
+              items.value = response.data.data;
+              // we also need to reset selection values
+              if (selected.value.length > 0) {
+                selected.value.forEach((selectedItem, index) => {
+                  selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
+                  selected.value[index] = selectedItem;
+                });
+              }
+            })
+            .catch(err => error(err))
+            .finally(() => resolve());
+        }),
+        new Promise<void>((resolve) => {
+          getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
+            if (err) {
+              return console.error(err);
+            }
+            permissions.value = data;
+            resolve();
+          });
+        }),
+      ]);
+      state.value.loading = ButtonStates.success;
     };
 
     const deleteSelected = async () => {
@@ -283,7 +231,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve) => {
-            api.delete(ctx.root.$axios, `/api/v1/registry/goals/${item.id}`)
+            api.delete(ctx.root.$axios, `/api/v1/registry/randomizer/${item.id}`)
               .finally(() => resolve(true));
           });
         }),
@@ -294,18 +242,26 @@ export default defineComponent({
       selected.value = [];
     };
 
-    const clone = (group: GoalGroupInterface) => {
-      const clonedGroupId = v4();
-      const clonedGroup = {
-        ...group,
-        id:    clonedGroupId,
-        name:  group.name + ' (clone)',
-        goals: group.goals.map(goal => ({
-          ...goal, id: v4(), groupId: clonedGroupId,
-        })),
+    const clone = (item: Required<RandomizerInterface>) => {
+      const clonedItemId = v4();
+
+      const clonedItemsRemapId = new Map();
+      // remap items ids
+      const clonedItems = item.items.map((o) => {
+        clonedItemsRemapId.set(o.id, v4());
+        return { ...o, id: clonedItemsRemapId.get(o.id) };
+      });
+
+      const clonedItem = {
+        ...item,
+        id:      clonedItemId,
+        name:    item.name + ' (clone)',
+        command: `!${Math.random().toString(36).substr(2, 5)}`,
+        // we need to do another .map as we need to find groupId
+        items:   clonedItems.map(o => ({ ...o, groupId: o.groupId === null ? o.groupId : clonedItemsRemapId.get(o.groupId) })),
       };
 
-      api.post(ctx.root.$axios, '/api/v1/registry/goals', clonedGroup)
+      api.post(ctx.root.$axios, '/api/v1/registry/randomizer', clonedItem)
         .then(() => {
           EventBus.$emit('snack', 'success', 'Data cloned.');
         })
@@ -313,13 +269,37 @@ export default defineComponent({
         .finally(refresh);
     };
 
-    const edit = (item: GoalGroupInterface) => {
-      EventBus.$emit('goals::updateDlgShow', item);
+    const toggleVisibility = async (item: Required<RandomizerInterface>) => {
+      item.isShown = !item.isShown;
+      await new Promise((resolve) => {
+        api.post<void>(ctx.root.$axios, '/api/v1/registry/randomizer/hideall')
+          .finally(() => resolve(true));
+      });
+      await new Promise((resolve) => {
+        api.patch<RandomizerInterface>(ctx.root.$axios, '/api/v1/registry/randomizer/' + item.id, { isShown: item.isShown }).finally(() => resolve(true));
+      });
+      for (const i of items.value) {
+        if (i.id === item.id) {
+          i.isShown = item.isShown;
+        } else {
+          i.isShown = false;
+        }
+      }
+      EventBus.$emit('snack', 'success', 'Visibility changed.');
+    };
+
+    const startSpin = () => {
+      spin.value = true;
+      getSocket('/registries/randomizer').emit('randomizer::startSpin', () => {
+        return true;
+      });
+      setTimeout(() => {
+        spin.value = false;
+      }, 5000);
     };
 
     return {
       // refs
-      edit,
       items,
       search,
       state,
@@ -331,23 +311,28 @@ export default defineComponent({
       deleteDialog,
       translate,
       currentItems,
-      expanded,
+      permissions,
+      spin,
 
       // functions
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       clone,
       saveCurrentItems,
+      getPermissionName,
+      toggleVisibility,
+      startSpin,
 
       // icons
       mdiMagnify,
       mdiCheckBoxMultipleOutline,
       mdiContentCopy,
       mdiPencil,
-      mdiInfinity,
-      mdiLink,
+      mdiEye,
+      mdiEyeOff,
+      mdiPlay,
 
       // others
-      dayjs,
+      orderBy,
       ButtonStates,
     };
   },

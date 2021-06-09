@@ -3,11 +3,13 @@
     <template v-if="$store.state.isUILoaded">
       <navbar />
       <v-main>
-        <span v-show="$route.name === 'index'">
-          <!-- dashboard needs to be visible all the time -->
-          <statsbar />
-        </span>
-        <dashboard v-show="$route.name === 'index'" />
+        <!-- dashboard needs to be visible all the time -->
+        <v-fade-transition>
+          <statsbar v-show="$route.name === 'index'" />
+        </v-fade-transition>
+        <v-fade-transition>
+          <dashboard v-show="$route.name === 'index'" />
+        </v-fade-transition>
         <nuxt />
         <snackbar />
       </v-main>

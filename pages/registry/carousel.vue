@@ -290,7 +290,6 @@
 
       <template #[`item.image`]="{ item }">
         <v-img
-
           :id="item.id"
           contain
           :src="item.imageUrl"
@@ -347,6 +346,7 @@ import { EventBus } from '~/functions/event-bus';
 import { minValue, required } from '~/functions/validators';
 
 const originalWidths: string[] = [];
+let originalHeight = 0;
 
 function handleDragStart (e: DragEvent, id: string) {
   EventBus.$emit(`carousel::dragstart`);
@@ -361,6 +361,7 @@ function handleDragStart (e: DragEvent, id: string) {
       for (const cell of element.children) {
         originalWidths.push(`${parseInt(window.getComputedStyle(cell).width)}px`);
       }
+      originalHeight = Number(window.getComputedStyle(element).height.replace('px', '')) + 10;
       document.onmouseup = handleDragEnd;
       break;
     }
@@ -369,14 +370,16 @@ function handleDragStart (e: DragEvent, id: string) {
   function elementDrag (ev: MouseEvent) {
     for (let i = 0; i < element.children.length; i++) {
       // Set the width as the original cell
+      (element.children[i] as HTMLElement).style.maxWidth = originalWidths[i];
       (element.children[i] as HTMLElement).style.minWidth = originalWidths[i];
       (element.children[i] as HTMLElement).style.overflow = 'hidden';
     }
+    // we need to dynamically move elements up if reached bottom
     element.style.opacity = '0.8';
     element.style.zIndex = String(9999);
-    element.style.top = ev.pageY + 'px';
-    element.style.left = (ev.pageX - 250) + 'px';
-    element.style.position = 'absolute';
+    element.style.top = (ev.clientY + originalHeight - 100) + 'px';
+    element.style.left = (ev.clientX + 5) + 'px';
+    element.style.position = 'fixed';
   }
 
   function handleDragEnd (ev: MouseEvent) {

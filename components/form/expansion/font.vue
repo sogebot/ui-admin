@@ -234,8 +234,6 @@
             </v-tabs-items>
           </v-expand-transition>
 
-          <color v-if="typeof model.color === 'undefined'" v-model="exampleColor" label="Example Color" />
-
           <v-sheet
             :style="{
               color: typeof model.color === 'undefined' ? exampleColor : model.color,
@@ -247,11 +245,12 @@
             }"
             class="mt-4 pb-4"
           >
-            <div :style="{lineHeight: (model.size + 15) + 'px', height: (model.size + 30) + 'px', width: '90%' }">
-              <div class="text-truncate text-center">
+            <div :style="{lineHeight: (model.size + 15) + 'px', width: '90%' }">
+              <div class="text-center" style="overflow: visible !important;">
                 The quick brown fox jumps over the lazy dog
               </div>
             </div>
+            <color v-if="typeof model.color === 'undefined'" v-model="exampleColor" style="width: 100px;" only-color label="Example Color" />
           </v-sheet>
         </v-card-text>
       </v-card>
@@ -337,7 +336,7 @@ export default defineComponent({
   },
   setup (props: Props, ctx) {
     const selectedTab = ref(0);
-    const exampleColor = ref('#000000');
+    const exampleColor = ref('#ffffff');
     const model = ref(props.value);
     const fonts = ref([] as {
       text: string;value: string
