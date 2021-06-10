@@ -95,58 +95,11 @@
                 </v-dialog>
               </template>
 
-              <v-btn>
-                Tester
+              <test-dialog />
+
+              <v-btn color="primary" to="/registry/alerts/new" nuxt>
+                New Item
               </v-btn>
-
-              <v-dialog
-                v-model="newDialog"
-                fullscreen
-              >
-                <template #activator="{ on, attrs }">
-                  <v-btn
-                    color="primary"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    New Item
-                  </v-btn>
-                </template>
-
-                <v-card>
-                  <v-card-title>
-                    <span class="headline">New item</span>
-                  </v-card-title>
-
-                  <v-card-text :key="timestamp">
-                    <new-item
-                      :rules="rules"
-                      @close="newDialog = false"
-                      @save="saveSuccess"
-                    />
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
-
-              <v-dialog
-                v-model="editDialog"
-                fullscreen
-              >
-                <v-card v-if="editItem">
-                  <v-card-title>
-                    <span class="headline">Update item <span class="primary--text pl-1">{{ editItem.name }}</span></span>
-                  </v-card-title>
-
-                  <v-card-text :key="timestamp">
-                    <new-item
-                      :item="editItem"
-                      :rules="rules"
-                      @close="editItem = null"
-                      @save="saveSuccess"
-                    />
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
             </v-col>
           </v-row>
         </v-sheet>
@@ -190,11 +143,7 @@
 
       <template #[`item.actions`]="{ item }">
         <v-hover v-slot="{ hover }">
-          <v-btn
-            icon
-            :color="hover ? 'primary' : 'secondary lighten-3'"
-            @click.stop="edit(item)"
-          >
+          <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" nuxt :to="'/registry/alerts/' + item.id" @click.stop>
             <v-icon>{{ mdiPencil }}</v-icon>
           </v-btn>
         </v-hover>
@@ -228,23 +177,23 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  computed,
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
+import { v4 } from 'uuid';
 
 import type { AlertInterface } from '.bot/src/bot/database/entity/alert';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import api from '~/functions/api';
+import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/textoverlay-newItem.vue') }) },
+  components: { 'test-dialog': defineAsyncComponent({ loader: () => import('~/components/registry/alerts/test-dialog.vue') }) },
   setup (_, ctx) {
     const rules = { name: [required] };
 
     const items = ref([] as AlertInterface[]);
-    const editItem = ref(null as null | AlertInterface);
     const search = ref('');
 
     const selected = ref([] as AlertInterface[]);
@@ -253,28 +202,11 @@ export default defineComponent({
       currentItems.value = value;
     };
     const deleteDialog = ref(false);
-    const newDialog = ref(false);
     const selectable = ref(false);
-    const editDialog = computed({
-      get () {
-        return !!editItem.value;
-      },
-      set (value) {
-        if (!value) {
-          editItem.value = null;
-        }
-      },
-    });
     watch(selectable, (val) => {
       if (!val) {
         selected.value = [];
       }
-    });
-
-    const timestamp = ref(Date.now());
-
-    watch(newDialog, () => {
-      timestamp.value = Date.now();
     });
 
     const state = ref({ loading: ButtonStates.progress } as {
@@ -313,8 +245,6 @@ export default defineComponent({
     const saveSuccess = () => {
       refresh();
       EventBus.$emit('snack', 'success', 'Data updated.');
-      editItem.value = null;
-      newDialog.value = false;
     };
 
     const deleteSelected = () => {
@@ -337,8 +267,103 @@ export default defineComponent({
       selected.value = [];
     };
 
-    const clone = (item: AlertInterface) => {
-      return item;
+    const clone = (item: Required<AlertInterface>) => {
+      const mediaMap = new Map() as Map<string, string>;
+      const clonedItem = {
+        ...item,
+        id:        v4(),
+        updatedAt: Date.now(),
+        name:      item.name + ' (clone)',
+        follows:   item.follows.map((o) => {
+          mediaMap.set(o.soundId, v4());
+          mediaMap.set(o.imageId, v4());
+          return {
+            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
+          };
+        }),
+        subs: item.subs.map((o) => {
+          mediaMap.set(o.soundId, v4());
+          mediaMap.set(o.imageId, v4());
+          return {
+            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
+          };
+        }),
+        subgifts: item.subgifts.map((o) => {
+          mediaMap.set(o.soundId, v4());
+          mediaMap.set(o.imageId, v4());
+          return {
+            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
+          };
+        }),
+        subcommunitygifts: item.subcommunitygifts.map((o) => {
+          mediaMap.set(o.soundId, v4());
+          mediaMap.set(o.imageId, v4());
+          return {
+            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
+          };
+        }),
+        hosts: item.hosts.map((o) => {
+          mediaMap.set(o.soundId, v4());
+          mediaMap.set(o.imageId, v4());
+          return {
+            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
+          };
+        }),
+        raids: item.raids.map((o) => {
+          mediaMap.set(o.soundId, v4());
+          mediaMap.set(o.imageId, v4());
+          return {
+            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
+          };
+        }),
+        tips: item.tips.map((o) => {
+          mediaMap.set(o.soundId, v4());
+          mediaMap.set(o.imageId, v4());
+          return {
+            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
+          };
+        }),
+        cheers: item.cheers.map((o) => {
+          mediaMap.set(o.soundId, v4());
+          mediaMap.set(o.imageId, v4());
+          return {
+            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
+          };
+        }),
+        resubs: item.resubs.map((o) => {
+          mediaMap.set(o.soundId, v4());
+          mediaMap.set(o.imageId, v4());
+          return {
+            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
+          };
+        }),
+        cmdredeems: item.cmdredeems.map((o) => {
+          mediaMap.set(o.soundId, v4());
+          mediaMap.set(o.imageId, v4());
+          return {
+            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
+          };
+        }),
+        rewardredeems: item.rewardredeems.map((o) => {
+          mediaMap.set(o.soundId, v4());
+          mediaMap.set(o.imageId, v4());
+          return {
+            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
+          };
+        }),
+      } as AlertInterface;
+
+      api.post(ctx.root.$axios, '/api/v1/registry/alerts', clonedItem)
+        .then(async () => {
+          for (const mediaId of mediaMap.keys()) {
+            await new Promise<void>((resolve) => {
+              api.post(ctx.root.$axios, '/api/v1/registry/alerts/media/?_action=clone', { 0: mediaId, 1: mediaMap.get(mediaId) }).then(() => resolve());
+            });
+          }
+          EventBus.$emit('snack', 'success', 'Data cloned.');
+        })
+        .catch(err => error(err))
+        .finally(refresh);
     };
 
     const link = (item: AlertInterface) => {
@@ -346,14 +371,8 @@ export default defineComponent({
       EventBus.$emit('snack', 'success', 'Link copied to clipboard.');
     };
 
-    const edit = (item: AlertInterface) => {
-      editItem.value = item;
-    };
-
     return {
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
-      edit,
-      editItem,
       items,
       search,
       state,
@@ -362,12 +381,9 @@ export default defineComponent({
       selected,
       deleteSelected,
       selectable,
-      newDialog,
       deleteDialog,
       translate,
       saveSuccess,
-      editDialog,
-      timestamp,
       rules,
       mdiMagnify,
       mdiCheckBoxMultipleOutline,
