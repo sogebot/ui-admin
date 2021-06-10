@@ -63,6 +63,7 @@ const routeMapper = new Map<string, string>([
   ['registry-goals', 'goals'],
   ['registry-obswebsocket', 'obswebsocket'],
   ['registry-randomizer', 'randomizer'],
+  ['registry-alerts', 'alerts'],
   ['stats-api', 'api'],
   ['stats-bits', 'bits'],
   ['stats-tips', 'tips'],

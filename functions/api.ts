@@ -50,7 +50,7 @@ const api = {
   getOne: async <T>(axios: NuxtAxiosInstance, url: string, id: string, options?: AxiosRequestConfig) => {
     try {
       await refreshToken(axios);
-      const data = await axios.get<GetOneRequest<T>>(url + '/' + id,
+      const data = await axios.get<GetOneRequest<T>>(url + (id.length > 0 ? '/' + id : ''),
         {
           ...options,
           headers: {

@@ -295,7 +295,7 @@ import {
 import { get } from 'lodash-es';
 
 import type { EventListInterface } from '~/.bot/src/bot/database/entity/eventList';
-import { error } from '~/functions/error';
+import api from '~/functions/api';
 
 export default defineComponent({
   setup (_, ctx) {
@@ -389,9 +389,9 @@ export default defineComponent({
     }
 
     watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
-      getSocket('/registries/alerts').emit('alerts::areAlertsMuted', val[0]);
-      getSocket('/registries/alerts').emit('alerts::areAlertsMuted', val[1]);
-      getSocket('/registries/alerts').emit('alerts::areAlertsMuted', val[2]);
+      api.post(ctx.root.$axios, '/api/v1/alerts/settings?name=areAlertsMuted', { value: val[0] });
+      api.post(ctx.root.$axios, '/api/v1/alerts/settings?name=isTTSMuted', { value: val[1] });
+      api.post(ctx.root.$axios, '/api/v1/alerts/settings?name=isSoundMuted', { value: val[2] });
     });
 
     function updateHeight () {
@@ -461,24 +461,12 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      getSocket('/registries/alerts').emit('alerts::areAlertsMuted', null, (err: string, val: boolean) => {
-        if (err) {
-          return error(err);
-        }
-        areAlertsMuted.value = val;
-      });
-      getSocket('/registries/alerts').emit('alerts::isTTSMuted', null, (err: string, val: boolean) => {
-        if (err) {
-          return error(err);
-        }
-        isTTSMuted.value = val;
-      });
-      getSocket('/registries/alerts').emit('alerts::isSoundMuted', null, (err: string, val: boolean) => {
-        if (err) {
-          return error(err);
-        }
-        isSoundMuted.value = val;
-      });
+      api.getOne<boolean>(ctx.root.$axios, '/api/v1/alerts/settings?name=areAlertsMuted', '')
+        .then(response => (areAlertsMuted.value = response.data));
+      api.getOne<boolean>(ctx.root.$axios, '/api/v1/alerts/settings?name=isTTSMuted', '')
+        .then(response => (isTTSMuted.value = response.data));
+      api.getOne<boolean>(ctx.root.$axios, '/api/v1/alerts/settings?name=isSoundMuted', '')
+        .then(response => (isSoundMuted.value = response.data));
       getSocket('/widgets/eventlist').on('askForGet', () => getSocket('/widgets/eventlist').emit('eventlist::get', 100));
       getSocket('/widgets/eventlist').on('update', (values: any) => {
         isLoading.value = false;
