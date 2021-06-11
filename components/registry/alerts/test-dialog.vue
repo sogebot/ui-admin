@@ -14,7 +14,7 @@
 
     <v-card>
       <v-card-text>
-        <v-row class="py-1">
+        <v-row class="py-1 pb-4">
           <v-col>
             <v-autocomplete
               v-model="event"
@@ -24,6 +24,8 @@
             />
           </v-col>
         </v-row>
+
+        <v-divider class="py-2" />
 
         <v-row v-if="event !== 'rewardredeems'" class="py-1">
           <v-col cols="auto" align-self="center">
@@ -42,7 +44,12 @@
         </v-row>
 
         <v-row v-if="event === 'rewardredeems'" class="py-1">
-          Reward button missing!!!
+          <v-col>
+            <rewards
+              :value.sync="reward"
+              :state="null"
+            />
+          </v-col>
         </v-row>
 
         <v-row v-if="haveRecipient" class="py-1">
@@ -150,12 +157,13 @@ import { generateUsername } from '@sogebot/ui-helpers/generateUsername';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  computed, defineComponent, ref,
+  computed, defineAsyncComponent, defineComponent, ref,
 } from '@vue/composition-api';
 
 import type { EmitData } from '.bot/src/bot/database/entity/alert';
 
 export default defineComponent({
+  components: { rewards: defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }) },
   setup (_, ctx) {
     const events = ['follows', 'cheers', 'tips', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'hosts', 'raids', 'cmdredeems', 'rewardredeems'] as const;
 
