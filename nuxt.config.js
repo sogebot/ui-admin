@@ -76,6 +76,11 @@ export default {
         components: { default: resolve(__dirname, 'pages/manage/viewers') },
       });
       routes.push({
+        name:       'RegistryAlertsEdit',
+        path:       '/registry/alerts/:id',
+        components: { default: resolve(__dirname, 'pages/registry/alerts/edit') },
+      });
+      routes.push({
         name:       'RegistryRandomizerEdit',
         path:       '/registry/randomizer/:id',
         components: { default: resolve(__dirname, 'pages/registry/randomizer/edit') },

@@ -50,6 +50,9 @@ const api = {
   getOne: async <T>(axios: NuxtAxiosInstance, url: string, id: string, options?: AxiosRequestConfig) => {
     try {
       await refreshToken(axios);
+      if (url.endsWith('/')) {
+        url = url.slice(0, -1);
+      }
       const data = await axios.get<GetOneRequest<T>>(url + (id.length > 0 ? '/' + id : ''),
         {
           ...options,

@@ -389,9 +389,9 @@ export default defineComponent({
     }
 
     watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
-      api.post(ctx.root.$axios, '/api/v1/alerts/settings?name=areAlertsMuted', { value: val[0] });
-      api.post(ctx.root.$axios, '/api/v1/alerts/settings?name=isTTSMuted', { value: val[1] });
-      api.post(ctx.root.$axios, '/api/v1/alerts/settings?name=isSoundMuted', { value: val[2] });
+      api.post(ctx.root.$axios, '/api/v1/registry/alerts/settings?name=areAlertsMuted', { value: val[0] });
+      api.post(ctx.root.$axios, '/api/v1/registry/alerts/settings?name=isTTSMuted', { value: val[1] });
+      api.post(ctx.root.$axios, '/api/v1/registry/alerts/settings?name=isSoundMuted', { value: val[2] });
     });
 
     function updateHeight () {
@@ -461,11 +461,11 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      api.getOne<boolean>(ctx.root.$axios, '/api/v1/alerts/settings?name=areAlertsMuted', '')
+      api.getOne<boolean>(ctx.root.$axios, '/api/v1/registry/alerts/settings?name=areAlertsMuted', '')
         .then(response => (areAlertsMuted.value = response.data));
-      api.getOne<boolean>(ctx.root.$axios, '/api/v1/alerts/settings?name=isTTSMuted', '')
+      api.getOne<boolean>(ctx.root.$axios, '/api/v1/registry/alerts/settings?name=isTTSMuted', '')
         .then(response => (isTTSMuted.value = response.data));
-      api.getOne<boolean>(ctx.root.$axios, '/api/v1/alerts/settings?name=isSoundMuted', '')
+      api.getOne<boolean>(ctx.root.$axios, '/api/v1/registry/alerts/settings?name=isSoundMuted', '')
         .then(response => (isSoundMuted.value = response.data));
       getSocket('/widgets/eventlist').on('askForGet', () => getSocket('/widgets/eventlist').emit('eventlist::get', 100));
       getSocket('/widgets/eventlist').on('update', (values: any) => {

@@ -228,7 +228,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      api.get<AlertInterface[]>(ctx.root.$axios, '/api/v1/alerts/')
+      api.get<AlertInterface[]>(ctx.root.$axios, '/api/v1/registry/alerts/')
         .then((response) => {
           items.value = response.data.data;
           // we also need to reset selection values
