@@ -13,7 +13,9 @@
       bottom
     >
       <v-toolbar dense class="text-button" color="primary">
-        <span v-if="!miniVariant || $vuetify.breakpoint.mobile">{{ name }}</span>
+        <v-slide-x-transition leave-absolute>
+          <span v-if="!miniVariant || $vuetify.breakpoint.mobile">{{ name }}</span>
+        </v-slide-x-transition>
         <template v-if="!$vuetify.breakpoint.mobile">
           <v-spacer v-if="!miniVariant" />
           <v-btn icon small class="ma-auto" @click="miniVariant = !miniVariant">
