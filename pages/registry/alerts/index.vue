@@ -247,20 +247,18 @@ export default defineComponent({
       EventBus.$emit('snack', 'success', 'Data updated.');
     };
 
-    const deleteSelected = () => {
+    const deleteSelected = async () => {
       deleteDialog.value = false;
-      /* await Promise.all(
+      await Promise.allSettled(
         selected.value.map((item) => {
-          return new Promise((resolve, reject) => {
-            getSocket('/registries/text').emit('text::remove', item, (err: string | null) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
+          return new Promise((resolve) => {
+            api.delete(ctx.root.$axios, `/api/v1/registry/alerts/${item.id}`)
+              .then(() => {
+                resolve(true);
+              });
           });
         }),
-      ); */
+      );
       refresh();
 
       EventBus.$emit('snack', 'success', 'Data removed.');
@@ -357,7 +355,15 @@ export default defineComponent({
         .then(async () => {
           for (const mediaId of mediaMap.keys()) {
             await new Promise<void>((resolve) => {
-              api.post(ctx.root.$axios, '/api/v1/registry/alerts/media/?_action=clone', { 0: mediaId, 1: mediaMap.get(mediaId) }).then(() => resolve());
+              // we need to get data first -> then upload new
+              fetch(`/api/v1/registry/alerts/media/${mediaId}`)
+                .then(response => response.blob())
+                .then(async (data) => {
+                  const fd = new FormData();
+                  fd.append('file', data);
+                  await api.put(ctx.root.$axios, `/api/v1/registry/alerts/media/${mediaMap.get(mediaId)}`, fd);
+                  resolve();
+                });
             });
           }
           EventBus.$emit('snack', 'success', 'Data cloned.');

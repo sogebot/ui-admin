@@ -104,6 +104,25 @@ const api = {
     }
   },
 
+  put: async <T, R = T>(axios: NuxtAxiosInstance, url: string, data?: T, options?: AxiosRequestConfig) => {
+    try {
+      await refreshToken(axios);
+      const response = await axios.put<PostRequest<R>>(url,
+        data,
+        {
+          ...options,
+          headers: {
+            ...(options?.headers ?? {}),
+            Authorization: 'Bearer ' + localStorage.accessToken,
+          },
+        });
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      throw e; // rethrow
+    }
+  },
+
   post: async <T, R = T>(axios: NuxtAxiosInstance, url: string, data?: T, options?: AxiosRequestConfig) => {
     try {
       await refreshToken(axios);

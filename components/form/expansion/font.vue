@@ -15,7 +15,7 @@
       <v-select
         v-if="model.align"
         v-model="model.align"
-        :label="translate('registry.alerts.align.name')"
+        :label="translate('registry.alerts.font.align.name')"
         :items="alignItems"
       />
       <v-slider

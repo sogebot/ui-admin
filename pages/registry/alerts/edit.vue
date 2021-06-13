@@ -64,6 +64,8 @@
             :label="translate('registry.alerts.customProfanityList.name')"
             :hint="translate('registry.alerts.customProfanityList.help')"
             persistent-hint
+            rows="1"
+            auto-grow
             placeholder="example, kitty, zebra, horse"
           />
         </v-form>
@@ -87,6 +89,72 @@
           </v-expansion-panel>
           <tts v-model="item.tts" />
         </v-expansion-panels>
+
+        <v-tabs
+          v-model="tabs"
+          class="pt-2"
+          centered
+        >
+          <v-tab
+            v-for="event in supportedEvents"
+            :key="'event-tab-' + event"
+          >
+            <v-badge color="accent" :content="item[event].length" :value="item[event].length">
+              {{ translate('registry.alerts.event.' + event) }}
+            </v-badge>
+          </v-tab>
+        </v-tabs>
+        <v-tabs-items v-model="tabs">
+          <v-tab-item
+            v-for="event in supportedEvents"
+            :key="'event-tab-children-' + event"
+          >
+            <v-tabs
+              vertical
+            >
+              <template v-for="(alert, idx) of item[event]">
+                <v-tab
+                  :key="'event-tab-items-' + alert.id"
+                  class="mr-4"
+                >
+                  <v-badge
+                    :color="alert.enabled ? 'green': 'red'"
+                    dot
+                    inline
+                    left
+                  >
+                    <div class="text-truncate" style="width: 200px; max-width: 200px;">
+                      <template v-if="alert.title.length > 0">
+                        {{ alert.title }}
+                      </template>
+                      <template v-else>
+                        Variant {{ idx + 1 }}
+                      </template>
+                    </div>
+                  </v-badge>
+                  <v-spacer />
+                  <v-btn icon class="ml-4" small>
+                    <v-icon small>
+                      {{ mdiContentCopy }}
+                    </v-icon>
+                  </v-btn>
+                </v-tab>
+
+                <v-tab-item :key="'event-tab-items-content-' + alert.id">
+                  <form-follow
+                    v-if="['cmdredeems', 'follows', 'subs', 'subgifts', 'subcommunitygifts', 'raids', 'hosts'].includes(event)"
+                    :value="alert"
+                    @input="alert = $event"
+                  />
+                </v-tab-item>
+              </template>
+
+              <v-btn color="success" class="my-1 mr-4" width="300px" @click="newAlert(event)">
+                <v-icon>{{ mdiPlus }}</v-icon>
+              </v-btn>
+            </v-tabs>
+          </v-tab-item>
+        </v-tabs-items>
       </v-container>
     </v-fade-transition>
 
@@ -102,7 +170,7 @@
 
 <script lang="ts">
 import {
-  mdiClose, mdiExclamationThick, mdiPlus,
+  mdiClose, mdiContentCopy, mdiExclamationThick, mdiPlus,
 } from '@mdi/js';
 import { getContrastColor } from '@sogebot/ui-helpers/colors';
 import translate from '@sogebot/ui-helpers/translate';
@@ -113,7 +181,9 @@ import {
 import { cloneDeep } from 'lodash-es';
 import { v4 } from 'uuid';
 
-import { AlertInterface } from '~/.bot/src/bot/database/entity/alert';
+import {
+  AlertInterface, AlertMediaInterface, CommonSettingsInterface,
+} from '~/.bot/src/bot/database/entity/alert';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -179,13 +249,16 @@ const emptyItem: AlertInterface = {
   rewardredeems:     [],
 };
 
+const supportedEvents = ['follows', 'cheers', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'tips', 'hosts', 'raids', 'cmdredeems', 'rewardredeems'] as const;
+
 export default defineComponent({
   components: {
-    font: defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
-    tts:  defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
+    'form-follow': defineAsyncComponent({ loader: () => import('~/components/registry/alerts/forms/follows.vue') }),
+    font:          defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
+    tts:           defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
   },
   setup (_, ctx) {
-    const stepper = ref(1);
+    const tabs = ref(null);
 
     const form1 = ref(null);
     const valid1 = ref(true);
@@ -237,6 +310,197 @@ export default defineComponent({
       }
     };
 
+    const newAlert = async (event: typeof supportedEvents[number]) => {
+      const defaultAudio = '456968__funwithsound__success-resolution-video-game-fanfare-sound-effect.mp3';
+      const defaultImage = 'cow01.gif';
+
+      const [defaultAudioId, defaultImageId] = await Promise.all([
+        new Promise<string>((resolve) => {
+          fetch('/_static/' + defaultAudio)
+            .then(response => response.blob())
+            .then((data) => {
+              const fd = new FormData();
+              fd.append('file', data);
+              api.post<FormData, AlertMediaInterface>(ctx.root.$axios, '/api/v1/registry/alerts/media/', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+                .then((data2) => {
+                  resolve(data2.id);
+                });
+            });
+        }),
+        new Promise<string>((resolve) => {
+          fetch('/_static/' + defaultImage)
+            .then(response => response.blob())
+            .then((data) => {
+              const fd = new FormData();
+              fd.append('file', data);
+              api.post<FormData, AlertMediaInterface>(ctx.root.$axios, '/api/v1/registry/alerts/media/', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+                .then((data2) => {
+                  resolve(data2.id);
+                });
+            });
+        }),
+      ]);
+      const _default: CommonSettingsInterface = {
+        messageTemplate: '',
+
+        id:                   v4(),
+        title:                '',
+        filter:               null,
+        variantAmount:        2,
+        enabled:              true,
+        layout:               '1',
+        animationInDuration:  1000,
+        animationOutDuration: 1000,
+        animationIn:          'fadeIn',
+        animationOut:         'fadeOut',
+        animationText:        'wiggle',
+        animationTextOptions: {
+          speed:            'slow',
+          characters:       '█▓░ </>',
+          maxTimeToDecrypt: 4000,
+        },
+        imageId:      defaultImageId,
+        imageOptions: {
+          translateX: 0,
+          translateY: 0,
+          scale:      100,
+        },
+        soundId:            defaultAudioId,
+        soundVolume:        20,
+        alertDurationInMs:  10000,
+        alertTextDelayInMs: 1500,
+        enableAdvancedMode: false,
+        advancedMode:       {
+          html: null,
+          css:  '',
+          js:   null,
+        },
+        tts: {
+          enabled:         false,
+          skipUrls:        true,
+          keepAlertShown:  false,
+          minAmountToPlay: 0,
+        },
+        font: null, // no override
+      };
+
+      switch (event) {
+        case 'follows':
+          item.value.follows.push({
+            ..._default,
+            messageTemplate: '{name} is now following!',
+          });
+          break;
+        case 'cheers':
+          item.value.cheers.push({
+            ..._default,
+            messageTemplate: '{name} cheered! x{amount}',
+            message:         {
+              minAmountToShow: 0,
+              allowEmotes:     {
+                twitch: true, ffz: true, bttv: true,
+              },
+              font: null,
+            },
+          });
+          break;
+        case 'subcommunitygifts':
+          item.value.subcommunitygifts.push({
+            ..._default,
+            messageTemplate: '{name} just gifted {amount} subscribes!',
+          });
+          break;
+        case 'subgifts':
+          item.value.subgifts.push({
+            ..._default,
+            messageTemplate: '{name} just gifted sub to {recipient}! {amount} {monthsName}',
+          });
+          break;
+        case 'rewardredeems':
+          item.value.rewardredeems.push({
+            ..._default,
+            message: {
+              minAmountToShow: 0,
+              allowEmotes:     {
+                twitch: true, ffz: true, bttv: true,
+              },
+              font: null,
+            },
+            messageTemplate: '{name} was redeemed by {recipient}!',
+            rewardId:        null,
+          });
+          break;
+        case 'cmdredeems':
+          item.value.cmdredeems.push({
+            ..._default,
+            // eslint-disable-next-line no-template-curly-in-string
+            messageTemplate: '{name} was redeemed by {recipient} for x${amount}!',
+          });
+          break;
+        case 'subs':
+          item.value.subs.push({
+            ..._default,
+            messageTemplate: '{name} just subscribed!',
+          });
+          break;
+        case 'resubs':
+          item.value.resubs.push({
+            ..._default,
+            messageTemplate: '{name} just resubscribed! {amount} {monthsName}',
+            message:         {
+              allowEmotes: {
+                twitch: true, ffz: true, bttv: true,
+              },
+              font: {
+                align:       'left',
+                family:      'PT Sans',
+                size:        12,
+                borderPx:    2,
+                borderColor: '#000000',
+                weight:      500,
+                color:       '#ffffff',
+                shadow:      [],
+              },
+            },
+          });
+          break;
+        case 'tips':
+          item.value.tips.push({
+            ..._default,
+            messageTemplate: '{name} donated {amount}{currency}!',
+            message:         {
+              minAmountToShow: 0,
+              allowEmotes:     {
+                twitch: true, ffz: true, bttv: true,
+              },
+              font: {
+                align:       'left',
+                family:      'PT Sans',
+                size:        12,
+                borderPx:    2,
+                borderColor: '#000000',
+                weight:      500,
+                color:       '#ffffff',
+                shadow:      [],
+              },
+            },
+          });
+          break;
+        case 'hosts':
+          item.value.hosts.push({
+            ..._default,
+            messageTemplate: '{name} is now hosting my stream with {amount} viewers!',
+          });
+          break;
+        case 'raids':
+          item.value.raids.push({
+            ..._default,
+            messageTemplate: '{name} is raiding with a party of {amount} raiders!',
+          });
+          break;
+      }
+    };
+
     const goBack = () => {
       ctx.root.$router.push({ path: '/registry/alerts' });
     };
@@ -248,8 +512,9 @@ export default defineComponent({
       form1,
       valid1,
       item,
-      stepper,
+      tabs,
       profanityFilterTypeOptions,
+      supportedEvents,
 
       // rules
       required,
@@ -257,6 +522,7 @@ export default defineComponent({
       // functions
       save,
       goBack,
+      newAlert,
 
       // others
       translate,
@@ -266,6 +532,7 @@ export default defineComponent({
       mdiClose,
       mdiPlus,
       mdiExclamationThick,
+      mdiContentCopy,
     };
   },
 });
