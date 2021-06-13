@@ -10,6 +10,8 @@
       :placeholder="translate('registry.alerts.title.placeholder')"
       :label="translate('registry.alerts.title.name')"
     />
+
+    <query-filter v-model="model.filter" :rules="[['username', 'string']]" />
     {{ model }}
   </v-form>
 </template>
@@ -17,6 +19,7 @@
 <script lang="ts">
 import translate from '@sogebot/ui-helpers/translate';
 import {
+  defineAsyncComponent,
   defineComponent, ref, watch,
 } from '@vue/composition-api';
 
@@ -27,7 +30,8 @@ type Props = {
 };
 
 export default defineComponent({
-  props: { value: Object },
+  components: { queryFilter: defineAsyncComponent(() => import('~/components/registry/alerts/inputs/query-filter.vue')) },
+  props:      { value: Object },
   setup (props: Props, ctx) {
     const valid = ref(true);
     const model = ref(props.value);
