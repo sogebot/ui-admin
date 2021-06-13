@@ -27,6 +27,7 @@ export default {
     '@/assets/colors.scss',
     '@/assets/global.scss',
     '@/assets/transitions.scss',
+    '@/assets/letter-animations.scss',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins

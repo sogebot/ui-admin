@@ -12,6 +12,22 @@
     />
 
     <query-filter v-model="model.filter" :rules="[['username', 'string']]" />
+    <variant v-model="model.variantAmount" />
+
+    <v-text-field
+      v-model="model.messageTemplate"
+      :placeholder="translate('registry.alerts.messageTemplate.placeholder')"
+      :label="translate('registry.alerts.messageTemplate.name')"
+      :hint="translate('registry.alerts.messageTemplate.help')"
+      persistent-hint
+    />
+
+    <v-expansion-panels>
+      <text-animation
+        :animation.sync="model.animationText"
+        :animation-options.sync="model.animationTextOptions"
+      />
+    </v-expansion-panels>
     {{ model }}
   </v-form>
 </template>
@@ -30,8 +46,12 @@ type Props = {
 };
 
 export default defineComponent({
-  components: { queryFilter: defineAsyncComponent(() => import('~/components/registry/alerts/inputs/query-filter.vue')) },
-  props:      { value: Object },
+  components: {
+    queryFilter:   defineAsyncComponent(() => import('~/components/registry/alerts/inputs/query-filter.vue')),
+    variant:       defineAsyncComponent(() => import('~/components/registry/alerts/inputs/variant.vue')),
+    textAnimation: defineAsyncComponent(() => import('~/components/registry/alerts/inputs/text-animation.vue')),
+  },
+  props: { value: Object },
   setup (props: Props, ctx) {
     const valid = ref(true);
     const model = ref(props.value);
