@@ -22,12 +22,120 @@
       persistent-hint
     />
 
-    <v-expansion-panels>
+    <v-slider
+      v-model.number="model.alertDurationInMs"
+      class="pt-4"
+      :label="translate('registry.alerts.alertDurationInMs.name')"
+      min="0"
+      max="60000"
+      step="500"
+      :thumb-size="0"
+      thumb-label="always"
+    >
+      <template #thumb-label="{ value }">
+        <div style="transform: translateY(-8px);">
+          {{ value / 1000 }}s
+        </div>
+      </template>
+    </v-slider>
+
+    <v-slider
+      v-model.number="model.alertTextDelayInMs"
+      :label="translate('registry.alerts.alertTextDelayInMs.name')"
+      min="0"
+      max="60000"
+      step="500"
+      :thumb-size="0"
+      thumb-label="always"
+    >
+      <template #thumb-label="{ value }">
+        <div style="transform: translateY(-8px);">
+          {{ value / 1000 }}s
+        </div>
+      </template>
+    </v-slider>
+
+    <v-slider
+      v-model.number="model.soundVolume"
+      :label="translate('registry.alerts.soundVolume.name')"
+      min="0"
+      max="100"
+      step="1"
+      :thumb-size="0"
+      thumb-label="always"
+    >
+      <template #thumb-label="{ value }">
+        <div style="transform: translateY(-8px);">
+          {{ value }}%
+        </div>
+      </template>
+    </v-slider>
+
+    <v-expansion-panels class="py-4">
       <text-animation
         :animation.sync="model.animationText"
         :animation-options.sync="model.animationTextOptions"
       />
+      <animation-in
+        :animation.sync="model.animationIn"
+        :animation-duration.sync="model.animationInDuration"
+      />
+      <animation-out
+        :animation.sync="model.animationOut"
+        :animation-duration.sync="model.animationOutDuration"
+      />
     </v-expansion-panels>
+
+    <v-checkbox
+      v-model="model.enableAdvancedMode"
+      :label="translate('registry.alerts.enableAdvancedMode')"
+    />
+
+    <v-expand-transition>
+      <div v-show="model.enableAdvancedMode">
+        <v-tabs v-model="customTab">
+          <v-tab>HTML</v-tab>
+          <v-tab>JS</v-tab>
+          <v-tab>CSS</v-tab>
+        </v-tabs>
+        <v-tabs-items v-model="customTab">
+          <v-tab-item>
+            <prism-editor
+              v-model="model.advancedMode.html"
+              style="border: 1px solid gray;"
+              line-numbers
+              :tab-size="4"
+              :highlight="highlighterHTML"
+            />
+          </v-tab-item>
+          <v-tab-item>
+            <prism-editor
+              v-model="model.advancedMode.js"
+              style="border: 1px solid gray;"
+              line-numbers
+              :tab-size="4"
+              :highlight="highlighterJS"
+            />
+          </v-tab-item>
+          <v-tab-item>
+            <prism-editor
+              v-model="model.advancedMode.css"
+              style="border: 1px solid gray;"
+              line-numbers
+              :tab-size="4"
+              :highlight="highlighterCSS"
+            />
+          </v-tab-item>
+        </v-tabs-items>
+        <v-btn
+          class="ml-auto"
+          @click="revertCode"
+        >
+          {{ translate('registry.alerts.revertcode') }}
+        </v-btn>
+      </div>
+    </v-expand-transition>
+
     {{ model }}
   </v-form>
 </template>
@@ -40,6 +148,9 @@ import {
 } from '@vue/composition-api';
 
 import type { CommonSettingsInterface } from '~/.bot/src/bot/database/entity/alert';
+import {
+  highlighterCSS, highlighterHTML, highlighterJS, PrismEditor,
+} from '~/functions/prismjs';
 
 type Props = {
   value: CommonSettingsInterface,
@@ -47,23 +158,50 @@ type Props = {
 
 export default defineComponent({
   components: {
+    PrismEditor,
     queryFilter:   defineAsyncComponent(() => import('~/components/registry/alerts/inputs/query-filter.vue')),
     variant:       defineAsyncComponent(() => import('~/components/registry/alerts/inputs/variant.vue')),
     textAnimation: defineAsyncComponent(() => import('~/components/registry/alerts/inputs/text-animation.vue')),
+    animationIn:   defineAsyncComponent(() => import('~/components/registry/alerts/inputs/animation-in.vue')),
+    animationOut:  defineAsyncComponent(() => import('~/components/registry/alerts/inputs/animation-out.vue')),
   },
   props: { value: Object },
   setup (props: Props, ctx) {
     const valid = ref(true);
     const model = ref(props.value);
+    const customTab = ref(0);
 
     watch(model, (val) => {
       ctx.emit('input', val);
     }, { deep: true });
 
+    const revertCode = () => {
+      if (customTab.value === 2) {
+        model.value.advancedMode.css = '';
+      } else if (customTab.value === 1) {
+        fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/alerts-js.txt')
+          .then(response => response.text())
+          .then(data => (model.value.advancedMode.js = data));
+      } else if (customTab.value === 0) {
+        fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/alerts.txt')
+          .then(response => response.text())
+          .then(data => (model.value.advancedMode.html = data));
+      }
+    };
+
     return {
       // ref
       valid,
       model,
+      customTab,
+
+      // functions
+      revertCode,
+
+      // prism
+      highlighterCSS,
+      highlighterHTML,
+      highlighterJS,
 
       // others
       translate,

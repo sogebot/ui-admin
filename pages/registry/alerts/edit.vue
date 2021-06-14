@@ -314,7 +314,7 @@ export default defineComponent({
       const defaultAudio = '456968__funwithsound__success-resolution-video-game-fanfare-sound-effect.mp3';
       const defaultImage = 'cow01.gif';
 
-      const [defaultAudioId, defaultImageId] = await Promise.all([
+      const [defaultAudioId, defaultImageId, defaultJs, defaultHtml] = await Promise.all([
         new Promise<string>((resolve) => {
           fetch('/_static/' + defaultAudio)
             .then(response => response.blob())
@@ -338,6 +338,16 @@ export default defineComponent({
                   resolve(data2.id);
                 });
             });
+        }),
+        new Promise<string>((resolve) => {
+          fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/alerts-js.txt')
+            .then(response => response.text())
+            .then(data => resolve(data));
+        }),
+        new Promise<string>((resolve) => {
+          fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/alerts.txt')
+            .then(response => response.text())
+            .then(data => resolve(data));
         }),
       ]);
       const _default: CommonSettingsInterface = {
@@ -371,9 +381,9 @@ export default defineComponent({
         alertTextDelayInMs: 1500,
         enableAdvancedMode: false,
         advancedMode:       {
-          html: null,
+          html: defaultHtml,
           css:  '',
-          js:   null,
+          js:   defaultJs,
         },
         tts: {
           enabled:         false,
