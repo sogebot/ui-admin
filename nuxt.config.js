@@ -99,7 +99,10 @@ export default {
   // enable api proxy
   ...process.env.NODE_ENV === 'development' && {
     proxy: {
-      '/api':         'http://localhost:20000',
+      '/api': {
+        changeOrigin: true,
+        target:       'http://localhost:20000',
+      },
       '/credentials': {
         changeOrigin: true,
         target:       'http://localhost:3001',

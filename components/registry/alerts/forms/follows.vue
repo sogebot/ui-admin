@@ -100,6 +100,76 @@
           />
         </v-expansion-panel-content>
       </v-expansion-panel>
+      <v-expansion-panel>
+        <v-expansion-panel-header>
+          {{ translate('registry.alerts.image.setting') }}
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <media
+            v-model="model.imageId"
+            type="image"
+            :volume="model.soundVolume"
+            class="pb-2"
+          />
+          <v-slider
+            v-model.number="model.imageOptions.scale"
+            :label="translate('registry.alerts.scale.name')"
+            min="0"
+            max="500"
+            step="1"
+            :thumb-size="0"
+            thumb-label="always"
+          >
+            <template #thumb-label="{ value }">
+              <div style="transform: translateY(-8px);">
+                {{ value }}%
+              </div>
+            </template>
+          </v-slider>
+          <v-slider
+            v-model.number="model.imageOptions.translateX"
+            :label="translate('registry.alerts.translateX.name')"
+            min="-500"
+            max="500"
+            step="1"
+            :thumb-size="0"
+            thumb-label="always"
+          >
+            <template #thumb-label="{ value }">
+              <div style="transform: translateY(-8px);">
+                {{ value }}px
+              </div>
+            </template>
+          </v-slider>
+          <v-slider
+            v-model.number="model.imageOptions.translateY"
+            :label="translate('registry.alerts.translateY.name')"
+            min="-500"
+            max="500"
+            step="1"
+            :thumb-size="0"
+            thumb-label="always"
+          >
+            <template #thumb-label="{ value }">
+              <div style="transform: translateY(-8px);">
+                {{ value }}px
+              </div>
+            </template>
+          </v-slider>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+      <v-expansion-panel>
+        <v-expansion-panel-header>
+          {{ translate('registry.alerts.sound.setting') }}
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <media
+            v-model="model.soundId"
+            type="audio"
+            :volume="model.soundVolume"
+          />
+        </v-expansion-panel-content>
+      </v-expansion-panel>
     </v-expansion-panels>
 
     <v-checkbox
@@ -151,8 +221,6 @@
         </v-btn>
       </div>
     </v-expand-transition>
-
-    {{ model }}
   </v-form>
 </template>
 
@@ -184,6 +252,7 @@ export default defineComponent({
     animationIn:   defineAsyncComponent(() => import('~/components/registry/alerts/inputs/animation-in.vue')),
     animationOut:  defineAsyncComponent(() => import('~/components/registry/alerts/inputs/animation-out.vue')),
     layoutPicker:  defineAsyncComponent(() => import('~/components/registry/alerts/inputs/layout-picker.vue')),
+    media:         defineAsyncComponent(() => import('~/components/registry/alerts/inputs/media.vue')),
   },
   props: { value: Object, parent: Object },
   setup (props: Props, ctx) {

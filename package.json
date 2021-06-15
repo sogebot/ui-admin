@@ -37,6 +37,7 @@
     "shortid": "^2.2.16",
     "uuid": "^8.3.2",
     "v-snackbars": "^3.2.4",
+    "vue-audio-visual": "^2.2.2",
     "vue-chartkick": "^0.6.1",
     "vue-plyr": "^7.0.0",
     "vue-prism-editor": "^1.2.2",

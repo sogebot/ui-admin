@@ -138,6 +138,11 @@
                       {{ mdiContentCopy }}
                     </v-icon>
                   </v-btn>
+                  <v-btn icon small>
+                    <v-icon color="red">
+                      {{ mdiDelete }}
+                    </v-icon>
+                  </v-btn>
                 </v-tab>
 
                 <v-tab-item :key="'event-tab-items-content-' + alert.id">
@@ -150,7 +155,7 @@
                 </v-tab-item>
               </template>
 
-              <v-btn color="success" class="my-1 mr-4" width="300px" @click="newAlert(event)">
+              <v-btn color="success" class="my-1 mr-4" width="320px" @click="newAlert(event)">
                 <v-icon>{{ mdiPlus }}</v-icon>
               </v-btn>
             </v-tabs>
@@ -171,7 +176,7 @@
 
 <script lang="ts">
 import {
-  mdiClose, mdiContentCopy, mdiExclamationThick, mdiPlus,
+  mdiClose, mdiContentCopy, mdiDelete, mdiExclamationThick, mdiPlus,
 } from '@mdi/js';
 import { getContrastColor } from '@sogebot/ui-helpers/colors';
 import translate from '@sogebot/ui-helpers/translate';
@@ -544,6 +549,7 @@ export default defineComponent({
       mdiPlus,
       mdiExclamationThick,
       mdiContentCopy,
+      mdiDelete,
     };
   },
 });
