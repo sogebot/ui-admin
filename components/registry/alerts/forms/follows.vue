@@ -71,7 +71,11 @@
       </template>
     </v-slider>
 
-    <v-expansion-panels class="py-4">
+    <v-expand-transition>
+      <layout-picker v-if="!model.enableAdvancedMode" v-model="model.layout" />
+    </v-expand-transition>
+
+    <v-expansion-panels>
       <text-animation
         :animation.sync="model.animationText"
         :animation-options.sync="model.animationTextOptions"
@@ -84,6 +88,18 @@
         :animation.sync="model.animationOut"
         :animation-duration.sync="model.animationOutDuration"
       />
+      <v-expansion-panel>
+        <v-expansion-panel-header>
+          {{ translate('registry.goals.fontSettings') }}
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <font
+            v-model="model.font"
+            :parent="parent.font"
+            :is-child="true"
+          />
+        </v-expansion-panel-content>
+      </v-expansion-panel>
     </v-expansion-panels>
 
     <v-checkbox
@@ -147,25 +163,29 @@ import {
   defineComponent, ref, watch,
 } from '@vue/composition-api';
 
-import type { CommonSettingsInterface } from '~/.bot/src/bot/database/entity/alert';
+import type { AlertInterface, CommonSettingsInterface } from '~/.bot/src/bot/database/entity/alert';
 import {
   highlighterCSS, highlighterHTML, highlighterJS, PrismEditor,
 } from '~/functions/prismjs';
 
 type Props = {
   value: CommonSettingsInterface,
+  parent: AlertInterface,
+
 };
 
 export default defineComponent({
   components: {
     PrismEditor,
     queryFilter:   defineAsyncComponent(() => import('~/components/registry/alerts/inputs/query-filter.vue')),
+    font:          defineAsyncComponent(() => import('~/components/form/expansion/font.vue')),
     variant:       defineAsyncComponent(() => import('~/components/registry/alerts/inputs/variant.vue')),
     textAnimation: defineAsyncComponent(() => import('~/components/registry/alerts/inputs/text-animation.vue')),
     animationIn:   defineAsyncComponent(() => import('~/components/registry/alerts/inputs/animation-in.vue')),
     animationOut:  defineAsyncComponent(() => import('~/components/registry/alerts/inputs/animation-out.vue')),
+    layoutPicker:  defineAsyncComponent(() => import('~/components/registry/alerts/inputs/layout-picker.vue')),
   },
-  props: { value: Object },
+  props: { value: Object, parent: Object },
   setup (props: Props, ctx) {
     const valid = ref(true);
     const model = ref(props.value);

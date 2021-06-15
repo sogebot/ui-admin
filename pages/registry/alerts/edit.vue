@@ -144,6 +144,7 @@
                   <form-follow
                     v-if="['cmdredeems', 'follows', 'subs', 'subgifts', 'subcommunitygifts', 'raids', 'hosts'].includes(event)"
                     :value="alert"
+                    :parent="item"
                     @input="alert = $event"
                   />
                 </v-tab-item>
