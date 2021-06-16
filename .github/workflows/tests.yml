@@ -18,9 +18,8 @@ jobs:
         node-version: 14
         check-latest: true
     - name: Install dependencies
-      run:
-        - npm -v
-        - npm install
+      run: |
+        npm -v && npm install
     - name: Run eslint
       run: npm run lint
   build:
@@ -34,9 +33,8 @@ jobs:
       - uses: actions/setup-node@v2.1.5
         with:
           node-version: 14
-          check-latest: true
       - name: Install dependencies
-        - npm -v
-        - npm install
+        run: |
+          npm -v && npm install
       - name: Run build
         run: npm run build
