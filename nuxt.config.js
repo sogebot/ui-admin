@@ -27,6 +27,7 @@ export default {
     '@/assets/colors.scss',
     '@/assets/global.scss',
     '@/assets/transitions.scss',
+    '@/assets/letter-animations.scss',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -65,7 +66,7 @@ export default {
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: { },
+  build: {},
 
   router: {
     mode: 'hash',
@@ -74,6 +75,11 @@ export default {
       routes.push({
         path:       '/manage/viewers/:id',
         components: { default: resolve(__dirname, 'pages/manage/viewers') },
+      });
+      routes.push({
+        name:       'RegistryAlertsEdit',
+        path:       '/registry/alerts/:id',
+        components: { default: resolve(__dirname, 'pages/registry/alerts/edit') },
       });
       routes.push({
         name:       'RegistryRandomizerEdit',
@@ -93,7 +99,10 @@ export default {
   // enable api proxy
   ...process.env.NODE_ENV === 'development' && {
     proxy: {
-      '/api':         'http://localhost:20000',
+      '/api': {
+        changeOrigin: true,
+        target:       'http://localhost:20000',
+      },
       '/credentials': {
         changeOrigin: true,
         target:       'http://localhost:3001',

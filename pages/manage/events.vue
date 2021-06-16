@@ -202,8 +202,7 @@
                     />
                     <rewards
                       v-if="defKey === 'titleOfReward'"
-                      :rules="rules"
-                      :value.sync="item.definitions[defKey]"
+                      v-model="item.definitions[defKey]"
                     />
                     <v-text-field
                       v-else-if="typeof item.definitions[defKey] === 'string'"
@@ -332,7 +331,6 @@ export default defineComponent({
       runAfterXMinutes:  [required, minValue(1)],
       runEveryXMinutes:  [required, minValue(1)],
       viewersAtLeast:    [required, minValue(0)],
-      titleOfReward:     [required],
 
       // operation definitions
       messageToSend:        [required],

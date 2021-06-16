@@ -50,7 +50,10 @@ const api = {
   getOne: async <T>(axios: NuxtAxiosInstance, url: string, id: string, options?: AxiosRequestConfig) => {
     try {
       await refreshToken(axios);
-      const data = await axios.get<GetOneRequest<T>>(url + '/' + id,
+      if (url.endsWith('/')) {
+        url = url.slice(0, -1);
+      }
+      const data = await axios.get<GetOneRequest<T>>(url + (id.length > 0 ? '/' + id : ''),
         {
           ...options,
           headers: {
@@ -86,6 +89,25 @@ const api = {
     try {
       await refreshToken(axios);
       const response = await axios.patch<PatchRequest<R>>(url,
+        data,
+        {
+          ...options,
+          headers: {
+            ...(options?.headers ?? {}),
+            Authorization: 'Bearer ' + localStorage.accessToken,
+          },
+        });
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      throw e; // rethrow
+    }
+  },
+
+  put: async <T, R = T>(axios: NuxtAxiosInstance, url: string, data?: T, options?: AxiosRequestConfig) => {
+    try {
+      await refreshToken(axios);
+      const response = await axios.put<PostRequest<R>>(url,
         data,
         {
           ...options,

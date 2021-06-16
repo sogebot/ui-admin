@@ -16,9 +16,13 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: 14
+        check-latest: true
+    - name: Install latest npm
+      run: |
+        npm install -g npm@latest
     - name: Install dependencies
       run: |
-        npm install
+        npm -v && npm ci
     - name: Run eslint
       run: npm run lint
   build:
@@ -32,8 +36,11 @@ jobs:
       - uses: actions/setup-node@v2.1.5
         with:
           node-version: 14
+      - name: Install latest npm
+        run: |
+          npm install -g npm@latest
       - name: Install dependencies
         run: |
-          npm install
+          npm -v && npm ci
       - name: Run build
         run: npm run build

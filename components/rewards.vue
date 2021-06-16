@@ -1,14 +1,15 @@
 <template>
   <v-select
     v-model="selectedReward"
+    :outlined="outlined"
     :label="capitalize(translate('event'))"
     :items="rewardItems"
     :hint="`${translate('events.myRewardIsNotListed')} ${translate('events.redeemAndClickRefreshToSeeReward')}`"
     persistent-hint
-    :rules="rules.titleOfReward"
+    :rules="[required]"
   >
     <template #append-outer>
-      <v-btn @click="refreshRedeemedRewards()">
+      <v-btn class="fill-height" @click="refreshRedeemedRewards()">
         <v-icon :class="{ spin: progress.redeemRewards === ButtonStates.progress }">
           {{ mdiSync }}
         </v-icon>
@@ -29,16 +30,17 @@ import {
 import { capitalize } from 'lodash-es';
 
 import { error } from '~/functions/error';
+import { required } from '~/functions/validators';
 
 interface Props {
   value: string;
-  rules: any;
+  outlined: boolean;
 }
 
 export default defineComponent({
   props: {
-    value: String,
-    rules: Object,
+    value:    String,
+    outlined: Boolean,
   },
   setup (props: Props, ctx) {
     const redeemRewards = ref([] as string[]);
@@ -79,7 +81,7 @@ export default defineComponent({
     });
 
     watch(selectedReward, (val) => {
-      ctx.emit('update:value', val);
+      ctx.emit('input', val);
     });
 
     return {
@@ -94,6 +96,7 @@ export default defineComponent({
       translate,
       ButtonStates,
       mdiSync,
+      required,
     };
   },
 });

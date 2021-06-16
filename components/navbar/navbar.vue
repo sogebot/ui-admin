@@ -9,15 +9,32 @@
     <v-navigation-drawer
       v-model="drawer"
       app
+      :mini-variant.sync="miniVariant"
       bottom
     >
-      <v-toolbar dense class="text-button" color="primary">{{ name }}</v-toolbar>
+      <v-toolbar dense class="text-button" color="primary">
+        <v-slide-x-transition leave-absolute>
+          <span v-if="!miniVariant || $vuetify.breakpoint.mobile">{{ name }}</span>
+        </v-slide-x-transition>
+        <template v-if="!$vuetify.breakpoint.mobile">
+          <v-spacer v-if="!miniVariant" />
+          <v-btn icon small class="ma-auto" @click="miniVariant = !miniVariant">
+            <v-icon
+              small
+              style="transition-property: all; transition-duration: 0.5s;"
+              :style="{ 'transform': miniVariant ? 'rotate(180deg)' : 'inherit' }"
+            >
+              {{ mdiArrowCollapseLeft }}
+            </v-icon>
+          </v-btn>
+        </template>
+      </v-toolbar>
       <user />
 
       <v-spacer />
       <navmenu />
       <template #append>
-        <div class="text-center text-caption">
+        <div v-if="!miniVariant" class="text-center text-caption">
           <a href="https://github.com/sogehige/SogeBot">GitHub</a> |
           <a href="https://github.com/sogehige/SogeBot/issues">Issues</a> |
           <a href="https://github.com/sogehige/SogeBot/blob/master/LICENSE">GPL-3.0 License</a>
@@ -28,6 +45,7 @@
 </template>
 
 <script lang="ts">
+import { mdiArrowCollapseLeft } from '@mdi/js';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
@@ -63,6 +81,7 @@ const routeMapper = new Map<string, string>([
   ['registry-goals', 'goals'],
   ['registry-obswebsocket', 'obswebsocket'],
   ['registry-randomizer', 'randomizer'],
+  ['registry-alerts', 'alerts'],
   ['stats-api', 'api'],
   ['stats-bits', 'bits'],
   ['stats-tips', 'tips'],
@@ -80,6 +99,7 @@ export default defineComponent({
     const name = ref('');
     const channelName = ref('');
     const drawer = ref(!(ctx.root as any).$vuetify.breakpoint.mobile);
+    const miniVariant = ref(false);
 
     onMounted(() => {
       console.debug('#route | ' + ctx.root.$route.name);
@@ -89,7 +109,7 @@ export default defineComponent({
     });
 
     return {
-      name, channelName, drawer, translate, routeMapper,
+      name, channelName, drawer, translate, routeMapper, miniVariant, mdiArrowCollapseLeft,
     };
   },
   head () {
