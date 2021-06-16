@@ -22,7 +22,7 @@ jobs:
         npm install -g npm@latest
     - name: Install dependencies
       run: |
-        npm -v && npm install
+        npm -v && npm ci
     - name: Run eslint
       run: npm run lint
   build:
@@ -41,6 +41,6 @@ jobs:
           npm install -g npm@latest
       - name: Install dependencies
         run: |
-          npm -v && npm install
+          npm -v && npm ci
       - name: Run build
         run: npm run build
