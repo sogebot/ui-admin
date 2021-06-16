@@ -17,6 +17,9 @@ jobs:
       with:
         node-version: 14
         check-latest: true
+    - name: Install latest npm
+      run: |
+        npm install -g npm@latest
     - name: Install dependencies
       run: |
         npm -v && npm install
@@ -33,6 +36,9 @@ jobs:
       - uses: actions/setup-node@v2.1.5
         with:
           node-version: 14
+      - name: Install latest npm
+        run: |
+          npm install -g npm@latest
       - name: Install dependencies
         run: |
           npm -v && npm install
