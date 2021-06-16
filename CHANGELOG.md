@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.28](https://github.com/sogebot/ui-admin/compare/v0.0.27...v0.0.28) (2021-06-16)
+
+
+### Features
+
+* add alert registry ([#66](https://github.com/sogebot/ui-admin/issues/66)) ([1e50a9c](https://github.com/sogebot/ui-admin/commit/1e50a9c9372b2a06d047ed2b73b012d0cb010d11))
+* add randomizer registry ([#59](https://github.com/sogebot/ui-admin/issues/59)) ([31edfd9](https://github.com/sogebot/ui-admin/commit/31edfd98760814367b67cb71a496f5c1b4d6fec8))
+
+
+### Bug Fixes
+
+* **carousel:** set correct dragging width ([1602e0d](https://github.com/sogebot/ui-admin/commit/1602e0d06839fcc72032bbbee4debb5ddf870db6))
+* **carousel:** trigger success snack only once on reorder ([a3b20f4](https://github.com/sogebot/ui-admin/commit/a3b20f426da36a693b920a5e6604658a1e5361fd))
+* **deps:** bump @nuxtjs/axios from 5.13.5 to 5.13.6 ([#53](https://github.com/sogebot/ui-admin/issues/53)) ([9365fb7](https://github.com/sogebot/ui-admin/commit/9365fb73666538c77ea810e289b7d6cc5791e327))
+
 ### [0.0.27](https://github.com/sogebot/ui-admin/compare/v0.0.26...v0.0.27) (2021-06-07)
 
 
