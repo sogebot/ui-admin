@@ -73,8 +73,8 @@
             />
             <rewards
               v-if="defKey === 'titleOfReward'"
+              v-model="definitions[defKey]"
               :rules="rules"
-              :value.sync="definitions[defKey]"
             />
             <v-text-field
               v-else-if="typeof definitions[defKey] === 'string'"

@@ -14,6 +14,12 @@
     <query-filter v-model="model.filter" :rules="[['username', 'string']]" />
     <variant v-model="model.variantAmount" />
 
+    <rewards
+      v-if="model.rewardId !== undefined"
+      v-model="model.rewardId"
+      :state="null"
+    />
+
     <v-text-field
       v-model="model.messageTemplate"
       :placeholder="translate('registry.alerts.messageTemplate.placeholder')"
@@ -100,6 +106,60 @@
           />
         </v-expansion-panel-content>
       </v-expansion-panel>
+      <v-expansion-panel v-if="model.message">
+        <v-expansion-panel-header>
+          {{ translate('registry.alerts.message.setting') }}
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <font
+            v-model="model.message.font"
+            :parent="parent.fontMessage"
+            :is-child="true"
+          >
+            <v-text-field
+              v-if="model.message.minAmountToShow !== undefined"
+              v-model="model.message.minAmountToShow"
+              type="number"
+              :label="translate('registry.alerts.minAmountToShow.name')"
+              min="0"
+              :placeholder="translate('registry.alerts.minAmountToShow.placeholder')"
+            />
+
+            <v-row v-if="model.message.allowEmotes !== undefined" class="pb-4">
+              <v-col cols="auto">
+                <label class="v-label theme--dark">
+                  {{ translate('registry.alerts.allowEmotes.name') }}
+                </label>
+              </v-col>
+              <v-col cols="auto">
+                <v-checkbox
+                  v-model="model.message.allowEmotes.twitch"
+                  label="Twitch"
+                  class="pa-0 ma-0"
+                  hide-details
+                />
+              </v-col>
+              <v-col cols="auto">
+                <v-checkbox
+                  v-model="model.message.allowEmotes.ffz"
+                  label="FrankenFaceZ"
+                  class="pa-0 ma-0"
+                  hide-details
+                />
+              </v-col>
+              <v-col cols="auto">
+                <v-checkbox
+                  v-model="model.message.allowEmotes.bttv"
+                  label="BetterTTV"
+                  class="pa-0 ma-0"
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+          </font>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+      <tts v-model="model.tts" />
       <v-expansion-panel>
         <v-expansion-panel-header>
           {{ translate('registry.alerts.image.setting') }}
@@ -252,7 +312,9 @@ export default defineComponent({
     animationIn:   defineAsyncComponent(() => import('~/components/registry/alerts/inputs/animation-in.vue')),
     animationOut:  defineAsyncComponent(() => import('~/components/registry/alerts/inputs/animation-out.vue')),
     layoutPicker:  defineAsyncComponent(() => import('~/components/registry/alerts/inputs/layout-picker.vue')),
+    tts:           defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
     media:         defineAsyncComponent(() => import('~/components/registry/alerts/inputs/media.vue')),
+    rewards:       defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }),
   },
   props: { value: Object, parent: Object },
   setup (props: Props, ctx) {

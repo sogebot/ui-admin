@@ -416,6 +416,7 @@ export default defineComponent({
         fonts.value.push(font);
       }
       if (model.value) {
+        console.log(model.value);
         loadFont(model.value.family);
       }
     });

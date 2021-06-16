@@ -81,7 +81,7 @@ export default defineComponent({
     });
 
     watch(selectedReward, (val) => {
-      ctx.emit('update:value', val);
+      ctx.emit('input', val);
     });
 
     return {

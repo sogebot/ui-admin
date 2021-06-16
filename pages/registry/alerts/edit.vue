@@ -90,77 +90,86 @@
           <tts v-model="item.tts" />
         </v-expansion-panels>
 
-        <v-tabs
-          v-model="tabs"
-          class="pt-2"
-          centered
-        >
-          <v-tab
-            v-for="event in supportedEvents"
-            :key="'event-tab-' + event"
+        <v-container fluid>
+          <v-tabs
+            v-model="tabs"
+            show-arrows="always"
+            class="pt-2"
+            center-active
           >
-            <v-badge color="accent" :content="item[event].length" :value="item[event].length">
-              {{ translate('registry.alerts.event.' + event) }}
-            </v-badge>
-          </v-tab>
-        </v-tabs>
-        <v-tabs-items v-model="tabs">
-          <v-tab-item
-            v-for="event in supportedEvents"
-            :key="'event-tab-children-' + event"
-          >
-            <v-tabs
-              vertical
+            <v-tab
+              v-for="event in supportedEvents"
+              :key="'event-tab-' + event"
             >
-              <template v-for="(alert, idx) of item[event]">
-                <v-tab
-                  :key="'event-tab-items-' + alert.id"
-                  class="mr-4"
-                >
-                  <v-badge
-                    :color="alert.enabled ? 'green': 'red'"
-                    dot
-                    inline
-                    left
+              <v-badge color="accent" :content="item[event].length" :value="item[event].length">
+                {{ translate('registry.alerts.event.' + event) }}
+              </v-badge>
+            </v-tab>
+          </v-tabs>
+          <v-tabs-items v-model="tabs">
+            <v-tab-item
+              v-for="event in supportedEvents"
+              :key="'event-tab-children-' + event"
+            >
+              <v-row>
+                <v-col cols="auto">
+                  <v-tabs
+                    v-model="variantTabs[event]"
+                    vertical
                   >
-                    <div class="text-truncate" style="width: 200px; max-width: 200px;">
-                      <template v-if="alert.title.length > 0">
-                        {{ alert.title }}
-                      </template>
-                      <template v-else>
-                        Variant {{ idx + 1 }}
-                      </template>
-                    </div>
-                  </v-badge>
-                  <v-spacer />
-                  <v-btn icon class="ml-4" small>
-                    <v-icon small>
-                      {{ mdiContentCopy }}
-                    </v-icon>
-                  </v-btn>
-                  <v-btn icon small>
-                    <v-icon color="red">
-                      {{ mdiDelete }}
-                    </v-icon>
-                  </v-btn>
-                </v-tab>
+                    <template v-for="(alert, idx) of item[event]">
+                      <v-tab
+                        :key="'event-tab-items-' + alert.id"
+                      >
+                        <v-badge
+                          :color="alert.enabled ? 'green': 'red'"
+                          dot
+                          inline
+                          left
+                        >
+                          <div class="text-truncate" style="width: 200px; max-width: 200px;">
+                            <template v-if="alert.title.length > 0">
+                              {{ alert.title }}
+                            </template>
+                            <template v-else>
+                              Variant {{ idx + 1 }}
+                            </template>
+                          </div>
+                        </v-badge>
+                        <v-spacer />
+                        <v-btn icon class="ml-4" small @click="duplicateVariant(event, idx)">
+                          <v-icon small color="white">
+                            {{ mdiContentCopy }}
+                          </v-icon>
+                        </v-btn>
+                        <v-btn icon small @click="removeVariant(event, idx)">
+                          <v-icon color="red">
+                            {{ mdiDelete }}
+                          </v-icon>
+                        </v-btn>
+                      </v-tab>
+                    </template>
 
-                <v-tab-item :key="'event-tab-items-content-' + alert.id">
-                  <form-follow
-                    v-if="['cmdredeems', 'follows', 'subs', 'subgifts', 'subcommunitygifts', 'raids', 'hosts'].includes(event)"
-                    :value="alert"
-                    :parent="item"
-                    @input="alert = $event"
-                  />
-                </v-tab-item>
-              </template>
-
-              <v-btn color="success" class="my-1 mr-4" width="320px" @click="newAlert(event)">
-                <v-icon>{{ mdiPlus }}</v-icon>
-              </v-btn>
-            </v-tabs>
-          </v-tab-item>
-        </v-tabs-items>
+                    <v-btn color="success" class="my-1" @click="newAlert(event)">
+                      <v-icon>{{ mdiPlus }}</v-icon>
+                    </v-btn>
+                  </v-tabs>
+                </v-col>
+                <v-col>
+                  <v-tabs-items v-model="variantTabs[event]">
+                    <v-tab-item v-for="alert of item[event]" :key="'event-tab-items-content-' + alert.id">
+                      <formEdit
+                        :value="alert"
+                        :parent="item"
+                        @input="alert = $event"
+                      />
+                    </v-tab-item>
+                  </v-tabs-items>
+                </v-col>
+              </v-row>
+            </v-tab-item>
+          </v-tabs-items>
+        </v-container>
       </v-container>
     </v-fade-transition>
 
@@ -259,12 +268,15 @@ const supportedEvents = ['follows', 'cheers', 'subs', 'resubs', 'subcommunitygif
 
 export default defineComponent({
   components: {
-    'form-follow': defineAsyncComponent({ loader: () => import('~/components/registry/alerts/forms/follows.vue') }),
-    font:          defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
-    tts:           defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
+    formEdit: defineAsyncComponent({ loader: () => import('~/components/registry/alerts/form.vue') }),
+    font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
+    tts:      defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
   },
   setup (_, ctx) {
     const tabs = ref(null);
+    const variantTabs = ref(
+      supportedEvents.map(ev => ({ [ev]: 0 })),
+    );
 
     const form1 = ref(null);
     const valid1 = ref(true);
@@ -288,7 +300,8 @@ export default defineComponent({
         isLoading.value = true;
         api.getOne<AlertInterface>(ctx.root.$axios, `/api/v1/registry/alerts`, String(ctx.root.$route.params.id) ?? '')
           .then((response) => {
-            item.value = response.data;
+            console.log(response.data);
+            item.value = cloneDeep(response.data);
             isLoading.value = false;
           })
           .catch(() => {
@@ -521,6 +534,42 @@ export default defineComponent({
       ctx.root.$router.push({ path: '/registry/alerts' });
     };
 
+    const removeVariant = (event: keyof typeof supportedEvents, idx: number) => {
+      (item.value as any)[event].splice(idx, 1);
+    };
+
+    const duplicateVariant = async (event: keyof typeof supportedEvents, idx: number) => {
+      console.log('Duplicating variant');
+      const newVariant = cloneDeep((item.value as any)[event][idx]);
+      newVariant.id = v4();
+      newVariant.title = '';
+
+      // remap image and sound
+      const mediaMap = new Map<string, string>();
+      const soundId = newVariant.soundId;
+      const imageId = newVariant.imageId;
+      newVariant.soundId = v4();
+      newVariant.imageId = v4();
+      mediaMap.set(soundId, newVariant.soundId);
+      mediaMap.set(imageId, newVariant.imageId);
+
+      for (const mediaId of mediaMap.keys()) {
+        await new Promise<void>((resolve) => {
+        // we need to get data first -> then upload new
+          fetch(`/api/v1/registry/alerts/media/${mediaId}`)
+            .then(response => response.blob())
+            .then(async (data) => {
+              const fd = new FormData();
+              fd.append('file', data);
+              await api.put(ctx.root.$axios, `/api/v1/registry/alerts/media/${mediaMap.get(mediaId)}`, fd);
+              resolve();
+            });
+        });
+      }
+
+      (item.value as any)[event].push(newVariant as any);
+    };
+
     return {
       // refs
       isSaving,
@@ -529,6 +578,7 @@ export default defineComponent({
       valid1,
       item,
       tabs,
+      variantTabs,
       profanityFilterTypeOptions,
       supportedEvents,
 
@@ -539,6 +589,8 @@ export default defineComponent({
       save,
       goBack,
       newAlert,
+      removeVariant,
+      duplicateVariant,
 
       // others
       translate,

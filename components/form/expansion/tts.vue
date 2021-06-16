@@ -75,6 +75,7 @@
         <v-text-field
           v-if="!isUndefined(model.minAmountToPlay)"
           v-model="model.minAmountToPlay"
+          :label="translate('registry.alerts.minAmountToPlay.name')"
           type="number"
           min="0"
         />

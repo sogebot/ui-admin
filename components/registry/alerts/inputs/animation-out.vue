@@ -4,7 +4,7 @@
     <v-expansion-panel-content>
       <v-row>
         <v-col>
-          <v-select v-model="animType" :items="options" :label="translate('registry.alerts.animationOut.type')">
+          <v-select v-model="animType" :items="options" :label="translate('type')">
             <template #append-outer>
               <v-btn icon @click="test = true">
                 <v-icon>{{ mdiPlay }}</v-icon>
@@ -12,7 +12,7 @@
             </template>
           </v-select>
 
-          <v-text-field v-model.number="animDuration" type="number" min="100" :label="translate('registry.alerts.animationOut.duration')" />
+          <v-text-field v-model.number="animDuration" type="number" min="100" :label="translate('duration')" />
         </v-col>
         <v-col class="ma-auto" cols="auto">
           <v-sheet

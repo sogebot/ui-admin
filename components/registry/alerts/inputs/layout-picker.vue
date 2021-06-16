@@ -37,7 +37,7 @@ import {
 export default defineComponent({
   props: { value: String },
   setup (props, ctx) {
-    const model = ref(props.value);
+    const model = ref(Number(props.value));
     watch(model, (val) => {
       ctx.emit('input', String(Number(val) + 1));
     });

@@ -46,7 +46,7 @@
         <v-row v-if="event === 'rewardredeems'" class="py-1">
           <v-col>
             <rewards
-              :value.sync="reward"
+              v-model="reward"
               :state="null"
             />
           </v-col>
