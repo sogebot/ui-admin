@@ -20,13 +20,25 @@
                 {{ translate('core.permissions.permissionsGroups') }}
               </v-toolbar-title>
               <v-spacer />
-              <v-btn icon :loading="isCreating" @click="addNewPermissionGroup">
+              <v-btn icon :loading="state.saving" @click="addNewPermissionGroup">
                 <v-icon>{{ mdiPlus }}</v-icon>
               </v-btn>
             </v-toolbar>
             <v-card-text class="pa-0">
-              <v-tabs v-model="tab" vertical>
-                <v-tab v-for="permission of permissions" :key="permission.id" style="text-align: left; justify-content: normal; max-width: none;" nuxt :to="&quot;/settings/permissions/&quot; + permission.id">
+              <v-tabs ref="tabsRef" v-model="tab" vertical>
+                <v-tab
+                  v-for="permission of permissions"
+                  :id="permission.id"
+                  :key="permission.id"
+                  :disabled="state.saving"
+                  style="text-align: left; justify-content: normal; max-width: none;"
+                  nuxt
+                  :to="'/settings/permissions/' + permission.id"
+                >
+                  {{ permission.order }}
+                  <v-icon v-if="permission.id !== defaultPermissions.VIEWERS && permission.id !== defaultPermissions.CASTERS" :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, permission.id)">
+                    {{ mdiDrag }}
+                  </v-icon>
                   <v-icon left small>
                     {{ permission.isWaterfallAllowed ? mdiGreaterThanOrEqual : mdiEqual }}
                   </v-icon>
@@ -56,14 +68,15 @@
 
 <script lang="ts">
 import {
-  mdiCog, mdiEqual, mdiGreaterThanOrEqual, mdiPlus,
+  mdiCog, mdiDrag, mdiEqual, mdiGreaterThanOrEqual, mdiPlus,
 } from '@mdi/js';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
-import { sortBy } from 'lodash';
+import { cloneDeep, sortBy } from 'lodash';
+import shortid from 'shortid';
 import { v4 } from 'uuid';
 
 import type { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
@@ -71,12 +84,107 @@ import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
+const originalWidths: string[] = [];
+let originalHeight = 0;
+let afterElement: Element | null = null;
+
+function handleDragStart (e: DragEvent) {
+  EventBus.$emit(`carousel::dragstart`);
+  // we want to select first tr
+  let element: HTMLElement;
+  for (const el of (e as any).path as unknown as HTMLElement[]) {
+    if (el.tagName === 'A') {
+      element = el;
+
+      // set widths
+      for (const cell of element.children) {
+        originalWidths.push(`${parseInt(window.getComputedStyle(cell).width)}px`);
+      }
+      originalHeight = Number(window.getComputedStyle(element).height.replace('px', '')) + 10;
+      afterElement = element.nextElementSibling;
+      document.onmouseup = handleDragEnd;
+      break;
+    }
+  }
+
+  // enable mouse move listener
+  function elementDrag (ev: MouseEvent) {
+    for (let i = 0; i < element.children.length; i++) {
+      // Set the width as the original cell
+      (element.children[i] as HTMLElement).style.maxWidth = originalWidths[i];
+      (element.children[i] as HTMLElement).style.minWidth = originalWidths[i];
+      (element.children[i] as HTMLElement).style.overflow = 'hidden';
+    }
+
+    // we need to move element under app
+    document.getElementById('app')?.appendChild(element);
+
+    // we need to dynamically move elements up if reached bottom
+    element.style.opacity = '0.8';
+    element.style.zIndex = String(9999);
+    element.style.top = (ev.clientY + originalHeight - 70) + 'px';
+    element.style.left = (ev.clientX + 5) + 'px';
+    element.style.position = 'fixed';
+    originalWidths.length = 0;
+  }
+
+  function handleDragEnd (ev: MouseEvent) {
+    let parent: null | Element = null;
+    let elFromPoint = document.elementFromPoint(ev.clientX, ev.clientY);
+
+    if (elFromPoint) {
+      if (elFromPoint.tagName !== 'A') {
+        while (!parent) {
+          const parentElement: HTMLElement | null = elFromPoint?.parentElement;
+          if (parentElement) {
+            if (parentElement.tagName === 'A') {
+              parent = parentElement;
+            } else {
+              elFromPoint = parentElement;
+            }
+          } else {
+            break;
+          }
+        }
+      } else {
+        parent = elFromPoint;
+      }
+    }
+    if (parent && parent.id !== defaultPermissions.CASTERS) {
+      try {
+        parent.parentNode?.insertBefore(element, parent);
+        EventBus.$emit(`permissions::dragdrop`);
+      } catch (err) {
+        // we need to return it back to same place
+        error(err);
+      }
+    } else {
+      afterElement?.parentNode?.insertBefore(element, afterElement);
+      // we need to return it into same place
+    }
+
+    element.style.position = 'inherit';
+    element.style.opacity = '1';
+    element.style.top = 'inherit';
+    element.style.left = 'inherit';
+    document.onmousemove = null;
+    document.onmouseup = null;
+    EventBus.$emit(`permissions::dragstop`);
+  }
+  document.onmousemove = elementDrag;
+}
+
 export default defineComponent({
   setup (_, ctx) {
     const isLoading = ref(true);
-    const isCreating = ref(false);
     const tab = ref(0);
     const permissions = ref([] as PermissionsInterface[]);
+    const tabsRef = ref(null as any);
+
+    const state = ref({ dragging: false, saving: false } as {
+      dragging: boolean;
+      saving: boolean;
+    });
 
     watch(() => ctx.root.$route.params.id, (val?: string) => {
       if (!val && !isLoading.value) {
@@ -89,6 +197,35 @@ export default defineComponent({
       EventBus
         .$off('settings::permissions::refresh')
         .$on('settings::permissions::refresh', refresh);
+
+      EventBus.$off(`permissions::dragdrop`).$off(`permissions::dragstart`);
+      EventBus.$on(`permissions::dragstart`, () => {
+        state.value.dragging = true;
+      });
+      EventBus.$on(`permissions::dragstop`, () => {
+        state.value.dragging = false;
+      });
+      EventBus.$on(`permissions::dragdrop`, async () => {
+        state.value.saving = true;
+        // we need to go through 'A', get list of Ids and resave
+        const potentiallyAnchors = tabsRef.value.$el.children[0].children[1].children[0].children as HTMLCollection;
+        let i = 0;
+        await Promise.all(
+          [...potentiallyAnchors].map((el) => {
+            return new Promise((resolve) => {
+              if (el.tagName === 'A') {
+                const permission = permissions.value.find(o => o.id === el.id);
+                if (permission) {
+                  permission.order = i++;
+                }
+              }
+              resolve(true);
+            });
+          }),
+        );
+        reorder();
+        state.value.saving = false;
+      });
     });
 
     const refresh = () => {
@@ -104,36 +241,39 @@ export default defineComponent({
     };
 
     const reorder = () => {
-      isCreating.value = true;
+      state.value.saving = true;
       // update orders
-      const permissionsToReorder = sortBy(permissions.value.filter(o => o.id !== defaultPermissions.VIEWERS, 'order'));
-      for (let i = 0; i < permissionsToReorder.length; i++) {
-        permissionsToReorder[i].order = i;
-      }
-      const viewers = permissions.value.find(o => o.id === defaultPermissions.VIEWERS);
+      const viewers = cloneDeep(permissions.value.find(o => o.id === defaultPermissions.VIEWERS));
+      permissions.value = sortBy(permissions.value.filter(o => o.id !== defaultPermissions.VIEWERS), 'order', 'asc');
+
       if (viewers) {
-        viewers.order = permissions.value.length - 1;
+        viewers.order = permissions.value.length;
+        permissions.value.push(viewers);
       }
-      for (const permission of permissions.value) {
-        api.patch(ctx.root.$axios, '/api/v1/settings/permissions/' + permission.id, permission)
-          .then(() => {
-            EventBus.$emit('settings::permissions::refresh');
-          })
-          .catch((e) => {
-            error(e);
-          })
-          .finally(() => {
-            isCreating.value = false;
-            refresh();
+
+      Promise.all(
+        permissions.value.map((permission) => {
+          return new Promise((resolve) => {
+            api.patch(ctx.root.$axios, '/api/v1/settings/permissions/' + permission.id, permission)
+              .catch((err) => {
+                error(err);
+              })
+              .finally(() => {
+                resolve(true);
+              });
           });
-      }
+        }),
+      ).then(() => {
+        state.value.saving = false;
+        refresh();
+      });
     };
     const addNewPermissionGroup = () => {
-      isCreating.value = true;
+      state.value.saving = true;
       const id = v4();
       const data: PermissionsInterface = {
         id,
-        name:               '',
+        name:               shortid.generate(),
         isCorePermission:   false,
         isWaterfallAllowed: true,
         automation:         'none',
@@ -142,32 +282,32 @@ export default defineComponent({
         excludeUserIds:     [],
         filters:            [],
       };
-      api.post(ctx.root.$axios, '/api/v1/settings/permissions', data)
-        .then(() => {
-          permissions.value.push(data);
-          isCreating.value = false;
-          reorder();
-        });
+      permissions.value.push(data);
+      reorder(); // include save
     };
 
     return {
       // refs
       isLoading,
-      isCreating,
       permissions,
       tab,
+      state,
+      tabsRef,
 
       // functions
       addNewPermissionGroup,
+      handleDragStart,
 
       // others
       translate,
+      defaultPermissions,
 
       // icons
       mdiGreaterThanOrEqual,
       mdiEqual,
       mdiCog,
       mdiPlus,
+      mdiDrag,
     };
   },
 });

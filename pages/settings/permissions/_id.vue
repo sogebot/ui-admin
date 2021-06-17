@@ -14,43 +14,45 @@
         </v-row>
       </v-overlay>
       <template v-else>
-        <v-text-field
-          v-model="model.name"
-          :label="translate('core.permissions.name')"
-          :rules="[required]"
-        />
+        <v-form v-model="valid" lazy-validation>
+          <v-text-field
+            v-model="model.name"
+            :label="translate('core.permissions.name')"
+            :rules="[required]"
+          />
 
-        <v-select
-          v-if="!model.isCorePermission"
-          v-model="model.automation"
-          :label="translate('core.permissions.baseUsersSet')"
-          :items="automationItems"
-        />
+          <v-select
+            v-if="!model.isCorePermission"
+            v-model="model.automation"
+            :label="translate('core.permissions.baseUsersSet')"
+            :items="automationItems"
+          />
 
-        <v-checkbox
-          v-if="!model.isCorePermission"
-          v-model="model.isWaterfallAllowed"
-          :label="translate('core.permissions.allowHigherPermissions')"
-        />
+          <v-checkbox
+            v-if="!model.isCorePermission"
+            v-model="model.isWaterfallAllowed"
+            :label="translate('core.permissions.allowHigherPermissions')"
+          />
 
-        <userslist
-          v-if="!model.isCorePermission"
-          v-model="model.userIds"
-          :label="translate('core.permissions.manuallyAddedUsers')"
-        />
+          <userslist
+            v-if="!model.isCorePermission"
+            v-model="model.userIds"
+            :label="translate('core.permissions.manuallyAddedUsers')"
+          />
 
-        <userslist
-          v-if="!model.isCorePermission"
-          v-model="model.excludeUserIds"
-          :label="translate('core.permissions.manuallyExcludedUsers')"
-        />
+          <userslist
+            v-if="!model.isCorePermission"
+            v-model="model.excludeUserIds"
+            :label="translate('core.permissions.manuallyExcludedUsers')"
+          />
 
-        <filters
-          v-if="!model.isCorePermission"
-          v-model="model.filters"
-        />
+          <filters
+            v-if="!model.isCorePermission"
+            v-model="model.filters"
+          />
 
-        <test :permission="model.id" />
+          <test :permission="model.id" />
+        </v-form>
       </template>
     </v-card-text>
 
@@ -59,7 +61,7 @@
         {{ translate('delete') }}
       </v-btn>
       <v-spacer />
-      <v-btn :loading="isSaving" @click="save">
+      <v-btn :loading="isSaving" :disabled="!valid" @click="save">
         {{ translate('dialog.buttons.saveChanges.idle') }}
       </v-btn>
     </v-card-actions>
@@ -88,6 +90,7 @@ export default defineComponent({
     const model = ref(null as PermissionsInterface | null);
     const isRemoving = ref(false);
     const isSaving = ref(false);
+    const valid = ref(true);
 
     const automationItems = ['none', 'casters', 'moderators', 'subscribers', 'vip', 'viewers', 'followers']
       .map(o => ({ value: o, text: translate('core.permissions.' + o) }));
@@ -110,7 +113,7 @@ export default defineComponent({
     };
 
     const save = () => {
-      if (model.value && model.value.id) {
+      if (model.value && model.value.id && valid) {
         isSaving.value = true;
         api.patch(ctx.root.$axios, '/api/v1/settings/permissions/' + model.value.id, model.value)
           .then(() => {
@@ -139,6 +142,7 @@ export default defineComponent({
       automationItems,
       isRemoving,
       isSaving,
+      valid,
 
       // functions
       save,
