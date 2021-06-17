@@ -214,13 +214,11 @@ export default defineComponent({
             .finally(() => resolve());
         }),
         new Promise<void>((resolve) => {
-          getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
-            if (err) {
-              return console.error(err);
-            }
-            permissions.value = data;
-            resolve();
-          });
+          api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+            .then((response) => {
+              permissions.value = response.data.data;
+              resolve();
+            });
         }),
       ]);
       state.value.loading = ButtonStates.success;

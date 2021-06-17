@@ -120,6 +120,7 @@
                     <template v-for="(alert, idx) of item[event]">
                       <v-tab
                         :key="'event-tab-items-' + alert.id"
+                        style="text-align: left; justify-content: normal;"
                       >
                         <v-badge
                           :color="alert.enabled ? 'green': 'red'"

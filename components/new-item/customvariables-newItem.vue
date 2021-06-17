@@ -318,6 +318,7 @@ import { v4 } from 'uuid';
 
 import type { VariableInterface } from '.bot/src/bot/database/entity/variable';
 import type { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
+import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { origin } from '~/functions/origin';
@@ -458,12 +459,8 @@ export default defineComponent({
           });
       }
 
-      getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
-        if (err) {
-          return error(err);
-        }
-        permissions.value = data;
-      });
+      api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+        .then(response => (permissions.value = response.data.data));
     });
 
     const newItem = async () => {

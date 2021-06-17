@@ -190,6 +190,7 @@ import { capitalize, orderBy } from 'lodash-es';
 import type { KeywordInterface } from '.bot/src/bot/database/entity/keyword';
 import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
+import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
@@ -202,10 +203,10 @@ export default defineComponent({
     newItem:   defineAsyncComponent({ loader: () => import('~/components/new-item/keyword-newItem.vue') }),
     responses: defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
   },
-  setup () {
+  setup (_, ctx) {
     const search = ref('');
     const items = ref([] as Required<KeywordInterface>[]);
-    const permissions = ref([] as Required<PermissionsInterface>[]);
+    const permissions = ref([] as PermissionsInterface[]);
 
     const timestamp = ref(Date.now());
     const selected = ref([] as KeywordInterface[]);
@@ -251,13 +252,11 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
-        if (err) {
-          return error(err);
-        }
-        permissions.value = data;
-        state.value.loadingPrm = ButtonStates.success;
-      });
+      api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+        .then((response) => {
+          permissions.value = response.data.data;
+          state.value.loadingPrm = ButtonStates.success;
+        });
       getSocket('/systems/keywords').emit('generic::getAll', (err: string | null, keywordsGetAll: Required<KeywordInterface>[]) => {
         if (err) {
           return error(err);

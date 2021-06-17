@@ -133,7 +133,6 @@ import {
 } from '@mdi/js';
 import { getContrastColor, getRandomColor } from '@sogebot/ui-helpers/colors';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
@@ -233,12 +232,10 @@ export default defineComponent({
             EventBus.$emit('snack', 'error', 'Data not found.');
           });
 
-        getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
-          if (err) {
-            return error(err);
-          }
-          permissions.value = data;
-        });
+        api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+          .then((response) => {
+            permissions.value = response.data.data;
+          });
       }
     });
 
