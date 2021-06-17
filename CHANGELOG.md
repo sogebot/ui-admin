@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.29](https://github.com/sogebot/ui-admin/compare/v0.0.28...v0.0.29) (2021-06-17)
+
+
+### Features
+
+* **settings:** add permissions ([#68](https://github.com/sogebot/ui-admin/issues/68)) ([26f128b](https://github.com/sogebot/ui-admin/commit/26f128b96fd46939bd51983c0dd00abc2986e97d))
+
 ### [0.0.28](https://github.com/sogebot/ui-admin/compare/v0.0.27...v0.0.28) (2021-06-16)
 
 
