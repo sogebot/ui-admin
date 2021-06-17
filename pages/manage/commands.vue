@@ -221,6 +221,7 @@ import { capitalize, orderBy } from 'lodash-es';
 import type { CommandsInterface } from '.bot/src/bot/database/entity/commands';
 import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
+import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
@@ -239,12 +240,12 @@ export default defineComponent({
     'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/command-newItem.vue') }),
     responses:  defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
   },
-  setup () {
+  setup (_, ctx) {
     const rules = { command: [startsWith(['!']), required, minLength(2)] };
 
     const search = ref('');
     const items = ref([] as Required<CommandsInterfaceUI>[]);
-    const permissions = ref([] as Required<PermissionsInterface>[]);
+    const permissions = ref([] as PermissionsInterface[]);
 
     const selected = ref([] as CommandsInterfaceUI[]);
     const currentItems = ref([] as CommandsInterfaceUI[]);
@@ -297,13 +298,11 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
-        if (err) {
-          return error(err);
-        }
-        permissions.value = data;
-        state.value.loadingPrm = ButtonStates.success;
-      });
+      api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+        .then((response) => {
+          permissions.value = response.data.data;
+          state.value.loadingPrm = ButtonStates.success;
+        });
       getSocket('/systems/customcommands').emit('generic::getAll', (err: string | null, commands: Required<CommandsInterface>[], countArg: { command: string; count: number }[]) => {
         if (err) {
           return error(err);

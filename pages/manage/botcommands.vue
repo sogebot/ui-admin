@@ -101,6 +101,7 @@ import {
 import { capitalize, orderBy } from 'lodash-es';
 
 import type { PermissionsInterface } from '.bot/src//bot/database/entity/permissions';
+import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
@@ -118,12 +119,12 @@ type CommandsInterface = {
 };
 
 export default defineComponent({
-  setup () {
+  setup (_, ctx) {
     const rules = { command: [startsWith(['!']), required, minLength(2)] };
 
     const search = ref('');
     const items = ref([] as CommandsInterface[]);
-    const permissions = ref([] as Required<PermissionsInterface>[]);
+    const permissions = ref([] as PermissionsInterface[]);
 
     const selected = ref([] as CommandsInterface[]);
 
@@ -162,13 +163,11 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      getSocket('/core/permissions').emit('permissions', (err: string | null, data: Readonly<Required<PermissionsInterface>>[]) => {
-        if (err) {
-          return error(err);
-        }
-        permissions.value = data;
-        state.value.loadingPrm = ButtonStates.success;
-      });
+      api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+        .then((response) => {
+          permissions.value = response.data.data;
+          state.value.loadingPrm = ButtonStates.success;
+        });
       getSocket('/core/general').emit('generic::getCoreCommands', (err: string | null, commands: Required<CommandsInterface>[]) => {
         if (err) {
           return error(err);
