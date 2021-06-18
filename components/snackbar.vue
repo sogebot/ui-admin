@@ -11,7 +11,7 @@ import {
   defineComponent,
   onMounted,
   ref,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
 import VSnackbars from 'v-snackbars';
 
 import { EventBus } from '../functions/event-bus';

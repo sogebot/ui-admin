@@ -331,12 +331,12 @@
 import {
   mdiCheckBoxMultipleOutline, mdiDrag, mdiMagnify,
 } from '@mdi/js';
+import {
+  defineComponent, onMounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 
 import type { CarouselInterface } from '.bot/src/bot/database/entity/carousel';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
@@ -417,7 +417,7 @@ function handleDragStart (e: DragEvent, id: string) {
 }
 
 export default defineComponent({
-  setup (_, ctx) {
+  setup () {
     const items = ref([] as CarouselInterface[]);
 
     const imageShowOverlay = ref(false);
@@ -562,7 +562,7 @@ export default defineComponent({
           state.value.saving = true;
           await Promise.all(
             items.value.map((item) => {
-              return api.patch<{ order: number }>(ctx.root.$axios, `/api/v1/carousel/${item.id}`, { order: item.order });
+              return api.patch<{ order: number }>(useContext().$axios, `/api/v1/carousel/${item.id}`, { order: item.order });
             }),
           );
           saveSuccess();
@@ -571,7 +571,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      api.get<CarouselInterface[]>(ctx.root.$axios, `/api/v1/carousel/`)
+      api.get<CarouselInterface[]>(useContext().$axios, `/api/v1/carousel/`)
         .then(response => (items.value = response.data.data))
         .then(() => (state.value.loading = ButtonStates.success));
     };
@@ -585,7 +585,7 @@ export default defineComponent({
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        api.delete(ctx.root.$axios, `/api/v1/carousel/${item.id}`).catch(() => {
+        api.delete(useContext().$axios, `/api/v1/carousel/${item.id}`).catch(() => {
           return true;
         });
       });
@@ -619,7 +619,7 @@ export default defineComponent({
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-            api.patch<CarouselInterface>(ctx.root.$axios, `/api/v1/carousel/${itemToUpdate.id}`, { [attr]: item[attr] }).then(() => {
+            api.patch<CarouselInterface>(useContext().$axios, `/api/v1/carousel/${itemToUpdate.id}`, { [attr]: item[attr] }).then(() => {
               resolve(true);
             });
           });
@@ -642,10 +642,10 @@ export default defineComponent({
         console.debug(`upload::${filesUpload[i].name}`);
         fd.append('file', filesUpload[i]);
         await new Promise((resolve) => {
-          api.post<FormData, string>(ctx.root.$axios, '/api/v1/carousel/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+          api.post<FormData, string>(useContext().$axios, '/api/v1/carousel/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
             .then((id) => {
               console.debug(`done::${filesUpload[i].name}::${id}`);
-              api.getOne<CarouselInterface>(ctx.root.$axios, `/api/v1/carousel`, id)
+              api.getOne<CarouselInterface>(useContext().$axios, `/api/v1/carousel`, id)
                 .then((response) => {
                   console.debug('Uploaded', response.data.id);
                   uploadedFiles.value++;

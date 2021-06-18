@@ -117,12 +117,12 @@
 
 <script lang="ts">
 import { mdiCheck, mdiClose } from '@mdi/js';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
-  defineComponent, ref, watch,
-} from '@vue/composition-api';
+  defineComponent, ref, useStore, watch,
+} from '@nuxtjs/composition-api';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import { debounce, orderBy } from 'lodash-es';
 
 import type { CacheTitlesInterface } from '.bot/src/bot/database/entity/cacheTitles';
@@ -132,6 +132,7 @@ export default defineComponent({
   props: { dialog: Boolean },
   setup (props, ctx) {
     const cachedSearch = new Map<string, string[]>();
+    const store = useStore<any>();
 
     const selectedGameIdx = ref(0);
     const selectedGame = computed(() => {
@@ -208,8 +209,8 @@ export default defineComponent({
 
     watch(() => props.dialog, (val) => {
       dialogController.value = val;
-      title.value = ctx.root.$store.state.currentTitle;
-      setGame(ctx.root.$store.state.currentGame);
+      title.value = store.state.currentTitle;
+      setGame(store.state.currentGame);
       isLoading.value = true;
       getSocket('/').emit('getUserTwitchGames', (values: CacheTitlesInterface[]) => {
         console.groupCollapsed('panel::stats::getUserTwitchGames');
@@ -252,9 +253,9 @@ export default defineComponent({
         title: title.value,
         tags:  [],
       };
-      ctx.root.$store.commit('setCurrentGame', emit.game);
-      ctx.root.$store.commit('setCurrentTitle', emit.title);
-      ctx.root.$store.commit('setCurrentTags', emit.tags);
+      store.commit('setCurrentGame', emit.game);
+      store.commit('setCurrentTitle', emit.title);
+      store.commit('setCurrentTags', emit.tags);
 
       getSocket('/').emit('updateGameAndTitle', emit, (err: string | null) => {
         isSaving.value = false;

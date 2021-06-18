@@ -65,14 +65,14 @@
 
 <script lang="ts">
 import { mdiMagnify } from '@mdi/js';
+import {
+  computed,
+  defineComponent, onMounted, ref,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  computed,
-  defineComponent, onMounted, ref,
-} from '@vue/composition-api';
 import Chart from 'chart.js';
 import { capitalize, orderBy } from 'lodash-es';
 import Vue from 'vue';

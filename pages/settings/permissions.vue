@@ -70,11 +70,14 @@
 import {
   mdiCog, mdiDrag, mdiEqual, mdiGreaterThanOrEqual, mdiPlus,
 } from '@mdi/js';
-import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
-import translate from '@sogebot/ui-helpers/translate';
+import {
+  useContext, useRoute, useRouter,
+} from '@nuxtjs/composition-api';
 import {
   defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
+import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep, sortBy } from 'lodash';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
@@ -175,7 +178,7 @@ function handleDragStart (e: DragEvent) {
 }
 
 export default defineComponent({
-  setup (_, ctx) {
+  setup () {
     const isLoading = ref(true);
     const tab = ref(0);
     const permissions = ref([] as PermissionsInterface[]);
@@ -186,7 +189,7 @@ export default defineComponent({
       saving: boolean;
     });
 
-    watch(() => ctx.root.$route.params.id, (val?: string) => {
+    watch(() => useRoute().value.params.id, (val?: string) => {
       if (!val && !isLoading.value) {
         refresh();
       }
@@ -229,13 +232,13 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+      api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
         .then((response) => {
           permissions.value = response.data.data;
           isLoading.value = false;
 
-          if (!ctx.root.$route.params.id) {
-            ctx.root.$router.replace('/settings/permissions/' + permissions.value[0].id);
+          if (!useRoute().value.params.id) {
+            useRouter().replace('/settings/permissions/' + permissions.value[0].id);
           }
         });
     };
@@ -254,7 +257,7 @@ export default defineComponent({
       Promise.all(
         permissions.value.map((permission) => {
           return new Promise((resolve) => {
-            api.patch(ctx.root.$axios, '/api/v1/settings/permissions/' + permission.id, permission)
+            api.patch(useContext().$axios, '/api/v1/settings/permissions/' + permission.id, permission)
               .catch((err) => {
                 error(err);
               })

@@ -281,13 +281,13 @@
 import {
   mdiCheckBoxMultipleOutline, mdiClockOutline, mdiLink, mdiMagnify, mdiMusic, mdiSkipNext, mdiSkipPrevious, mdiVolumeHigh,
 } from '@mdi/js';
+import {
+  computed, defineComponent, onMounted, ref, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  computed, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 
 import type { SongPlaylistInterface } from '.bot/src/bot/database/entity/song';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';

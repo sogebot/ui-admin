@@ -16,13 +16,13 @@
 
 <script lang="ts">
 import { mdiCalendar } from '@mdi/js';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import {
   defineComponent,
   onMounted,
   ref,
   watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { v4 } from 'uuid';
 
 import { required } from '~/functions/validators';

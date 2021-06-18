@@ -29,10 +29,10 @@
 </template>
 
 <script lang="ts">
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 
 export default defineComponent({
   props: { value: String },

@@ -162,10 +162,10 @@
 
 <script lang="ts">
 import { mdiCog, mdiDelete } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed, defineAsyncComponent, defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 
 import type { CommonSettingsInterface } from '~/.bot/src/bot/database/entity/alert';
 

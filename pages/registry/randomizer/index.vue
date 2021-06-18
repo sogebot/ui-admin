@@ -131,12 +131,13 @@
 import {
   mdiCheckBoxMultipleOutline, mdiContentCopy, mdiEye, mdiEyeOff, mdiMagnify, mdiPencil, mdiPlay,
 } from '@mdi/js';
+import {
+  defineComponent, onMounted, ref, useContext,
+  watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { orderBy } from 'lodash-es';
 import { v4 } from 'uuid';
 
@@ -149,7 +150,7 @@ import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
 
 export default defineComponent({
-  setup (_, ctx) {
+  setup () {
     const items = ref([] as RandomizerInterface[]);
     const search = ref('');
 
@@ -199,7 +200,7 @@ export default defineComponent({
     const refresh = async () => {
       await Promise.all([
         new Promise<void>((resolve) => {
-          api.get<RandomizerInterface[]>(ctx.root.$axios, '/api/v1/registry/randomizer')
+          api.get<RandomizerInterface[]>(useContext().$axios, '/api/v1/registry/randomizer')
             .then((response) => {
               items.value = response.data.data;
               // we also need to reset selection values
@@ -214,7 +215,7 @@ export default defineComponent({
             .finally(() => resolve());
         }),
         new Promise<void>((resolve) => {
-          api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+          api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
             .then((response) => {
               permissions.value = response.data.data;
               resolve();
@@ -229,7 +230,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve) => {
-            api.delete(ctx.root.$axios, `/api/v1/registry/randomizer/${item.id}`)
+            api.delete(useContext().$axios, `/api/v1/registry/randomizer/${item.id}`)
               .finally(() => resolve(true));
           });
         }),
@@ -259,7 +260,7 @@ export default defineComponent({
         items:   clonedItems.map(o => ({ ...o, groupId: o.groupId === null ? o.groupId : clonedItemsRemapId.get(o.groupId) })),
       };
 
-      api.post(ctx.root.$axios, '/api/v1/registry/randomizer', clonedItem)
+      api.post(useContext().$axios, '/api/v1/registry/randomizer', clonedItem)
         .then(() => {
           EventBus.$emit('snack', 'success', 'Data cloned.');
         })
@@ -270,11 +271,11 @@ export default defineComponent({
     const toggleVisibility = async (item: Required<RandomizerInterface>) => {
       item.isShown = !item.isShown;
       await new Promise((resolve) => {
-        api.post<void>(ctx.root.$axios, '/api/v1/registry/randomizer/hideall')
+        api.post<void>(useContext().$axios, '/api/v1/registry/randomizer/hideall')
           .finally(() => resolve(true));
       });
       await new Promise((resolve) => {
-        api.patch<RandomizerInterface>(ctx.root.$axios, '/api/v1/registry/randomizer/' + item.id, { isShown: item.isShown }).finally(() => resolve(true));
+        api.patch<RandomizerInterface>(useContext().$axios, '/api/v1/registry/randomizer/' + item.id, { isShown: item.isShown }).finally(() => resolve(true));
       });
       for (const i of items.value) {
         if (i.id === item.id) {

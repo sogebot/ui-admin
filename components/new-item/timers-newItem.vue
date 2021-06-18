@@ -32,9 +32,9 @@
 </template>
 
 <script lang="ts">
+import { defineComponent, ref } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { defineComponent, ref } from '@vue/composition-api';
 import { capitalize } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 

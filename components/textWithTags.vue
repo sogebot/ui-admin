@@ -6,8 +6,8 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { defineComponent } from '@vue/composition-api';
 import {
   isNil, keys, sortBy,
 } from 'lodash-es';

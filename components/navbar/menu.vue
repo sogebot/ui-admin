@@ -47,11 +47,11 @@
 import {
   mdiCog, mdiExclamationThick, mdiFormatListBulletedSquare, mdiInformationVariant, mdiViewDashboard, mdiWrench,
 } from '@mdi/js';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, onMounted, ref,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 
 type menuType = { category?: string; name: string; id: string; this: any | null }[];
 type menuWithEnabled = Omit<menuType[number], 'this'> & { enabled: boolean };

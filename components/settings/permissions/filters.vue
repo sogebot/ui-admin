@@ -52,10 +52,10 @@
 
 <script lang="ts">
 import { mdiDelete } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 
 import type { PermissionFiltersInterface } from '~/.bot/src/bot/database/entity/permissions';
 

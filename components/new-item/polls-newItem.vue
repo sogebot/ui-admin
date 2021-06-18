@@ -51,11 +51,11 @@
 </template>
 
 <script lang="ts">
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed, defineComponent, ref,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash-es';
 
 import type { PollInterface } from '.bot/src/bot/database/entity/poll';

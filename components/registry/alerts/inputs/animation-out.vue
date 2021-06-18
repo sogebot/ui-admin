@@ -31,11 +31,11 @@
 
 <script lang="ts">
 import { mdiPlay } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 
 require('animate.css');
 

@@ -10,7 +10,7 @@
 <script lang="ts">
 import {
   defineComponent, onMounted, onUnmounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
 import { cloneDeep } from 'lodash-es';
 
 import type { CommandItem } from '.bot/src/bot/database/entity/dashboard';

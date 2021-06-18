@@ -169,10 +169,10 @@
 import {
   mdiInfinity, mdiTrendingDown, mdiTrendingUp,
 } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineComponent, ref, watch,
-} from '@vue/composition-api';
+  defineComponent, ref, useStore, watch,
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 import { TweenLite } from 'gsap';
 
 import { isTrending } from '~/functions/isTrending';
@@ -189,9 +189,11 @@ export default defineComponent({
     title:          String,
     type:           String,
   },
-  setup (props, ctx) {
+  setup (props) {
     const currentAnimated = ref({ value: 0 });
     const averageAnimated = ref({ value: 0 });
+    const store = useStore<any>();
+
     const numberReducer = (out: string, item: any) => {
       if (['currency', 'compact'].includes(item.type)) {
         out += `<small class="text-muted">${item.value}</small>`;
@@ -212,7 +214,7 @@ export default defineComponent({
     });
 
     const toggleDisplay = () => {
-      ctx.root.$store.commit('setUIStatsHidden', !ctx.root.$store.state.areUIStatsHidden);
+      store.commit('setUIStatsHidden', !store.state.areUIStatsHidden);
     };
 
     return {

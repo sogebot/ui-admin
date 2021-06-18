@@ -54,11 +54,11 @@
 
 <script lang="ts">
 import { mdiClose } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent,
-  defineComponent, ref, watch,
-} from '@vue/composition-api';
+  defineComponent, nextTick, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep } from 'lodash-es';
 
 import type { QuickActions } from '.bot/src/bot/database/entity/dashboard';
@@ -95,13 +95,13 @@ export default defineComponent({
 
     const save = () => {
       EventBus.$emit(`quickaction::${props.item.id}::valid`);
-      ctx.root.$nextTick(async () => {
+      nextTick(async () => {
         if (valid.value) {
           isSaving.value = true;
           try {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { selected, temporary, show, ...item } = clonedItem.value;
-            await api.post<QuickActions.Item>(ctx.root.$axios, `/api/v1/quickaction`, item);
+            await api.post<QuickActions.Item>(useContext().$axios, `/api/v1/quickaction`, item);
             dialog.value = false;
           } catch (e) {
             error(e);
@@ -115,7 +115,7 @@ export default defineComponent({
 
     const trigger = () => {
       console.log(`quickaction::trigger::${props.item.id}`);
-      api.post(ctx.root.$axios, `/api/v1/quickaction/${props.item.id}/trigger`);
+      api.post(useContext().$axios, `/api/v1/quickaction/${props.item.id}/trigger`);
     };
 
     return {

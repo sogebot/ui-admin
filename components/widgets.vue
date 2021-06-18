@@ -62,11 +62,11 @@
 
 <script lang="ts">
 import { mdiOpenInNew } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineAsyncComponent, defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 
 export default defineComponent({
   components: {

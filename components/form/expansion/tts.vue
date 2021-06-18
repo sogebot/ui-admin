@@ -119,11 +119,11 @@
 
 <script lang="ts">
 import { mdiPlay } from '@mdi/js';
+import {
+  defineComponent, onMounted, ref, useMeta, useStore, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 
 import type { AlertInterface, CommonSettingsInterface } from '~/.bot/src/bot/database/entity/alert';
 
@@ -164,7 +164,8 @@ export default defineComponent({
 
     onMounted(() => {
       state.value.loaded = ButtonStates.progress;
-      if (ctx.root.$store.state.configuration.integrations.ResponsiveVoice.api.key.trim().length === 0) {
+      const store = useStore<any>();
+      if (store.state.configuration.integrations.ResponsiveVoice.api.key.trim().length === 0) {
         state.value.loaded = ButtonStates.fail;
       } else {
         initResponsiveVoice();
@@ -200,6 +201,15 @@ export default defineComponent({
       }
     }
 
+    useMeta({
+      script: [
+        {
+          hid: 'responsivevoice',
+          src: 'https://code.responsivevoice.org/responsivevoice.js?key=' + useStore<any>().state.configuration.integrations.ResponsiveVoice.api.key,
+        },
+      ],
+    });
+
     return {
       voices,
       isUndefined,
@@ -212,15 +222,6 @@ export default defineComponent({
       speak,
     };
   },
-  head () {
-    return {
-      script: [
-        {
-          hid: 'responsivevoice',
-          src: 'https://code.responsivevoice.org/responsivevoice.js?key=' + this.$store.state.configuration.integrations.ResponsiveVoice.api.key,
-        },
-      ],
-    };
-  },
+  head: {}, // enable useMeta
 });
 </script>

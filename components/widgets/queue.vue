@@ -161,13 +161,13 @@
 import {
   mdiBackspace, mdiLock, mdiLockOpen,
 } from '@mdi/js';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import { debounce } from 'lodash-es';
 
 import { QueueInterface } from '.bot/src/bot/database/entity/queue';

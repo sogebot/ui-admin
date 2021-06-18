@@ -68,8 +68,8 @@ import {
 import {
   computed,
   defineAsyncComponent,
-  defineComponent, onMounted, ref,
-} from '@vue/composition-api';
+  defineComponent, nextTick, onMounted, ref, useContext, useStore,
+} from '@nuxtjs/composition-api';
 import { v4 } from 'uuid';
 
 import type { QuickActions } from '.bot/src/bot/database/entity/dashboard';
@@ -78,7 +78,7 @@ import { error } from '~/functions/error';
 
 export default defineComponent({
   components: { actionButton: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/button.vue') }) },
-  setup (_, ctx) {
+  setup () {
     const editing = ref(false);
     const height = ref(600);
     const isPopout = computed(() => location.href.includes('popout'));
@@ -105,7 +105,7 @@ export default defineComponent({
       items.value.push({
         id:        v4(),
         selected:  false,
-        userId:    (ctx.root as any).$store.state.loggedUser.id,
+        userId:    useStore<any>().state.loggedUser.id,
         order:     -1,
         temporary: true,
         show:      true,
@@ -122,7 +122,7 @@ export default defineComponent({
       const selected = items.value.filter(item => item.selected);
       for (const item of selected) {
         item.show = false;
-        api.delete(ctx.root.$axios, `/api/v1/quickaction/${item.id}`);
+        api.delete(useContext().$axios, `/api/v1/quickaction/${item.id}`);
       }
       setTimeout(() => {
         items.value = items.value.filter(item => !item.selected);
@@ -130,17 +130,17 @@ export default defineComponent({
     }
 
     const refresh = async () => {
-      if (typeof (ctx.root as any).$store.state.loggedUser === 'undefined' || (ctx.root as any).$store.state.loggedUser === null) {
+      if (useStore<any>().state.loggedUser === 'undefined' || useStore<any>().state.loggedUser === null) {
         setTimeout(() => refresh(), 10);
       } else {
         try {
-          const response = await api.get<(QuickActions.Item)[]>(ctx.root.$axios, '/api/v1/quickaction');
+          const response = await api.get<(QuickActions.Item)[]>(useContext().$axios, '/api/v1/quickaction');
           items.value = response.data.data.map(o => ({
             ...o, selected: items.value.find(b => b.id === o.id)?.selected ?? false, temporary: false, show: false,
           }));
 
           setTimeout(() => {
-            ctx.root.$nextTick(() => {
+            nextTick(() => {
               // set as temporary false to show animation
               for (const item of items.value) {
                 item.show = true;

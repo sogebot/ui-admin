@@ -577,15 +577,16 @@
 import {
   mdiCheckBoxMultipleOutline, mdiClose, mdiDotsVertical, mdiLock, mdiLockOff, mdiMagnify, mdiRefresh,
 } from '@mdi/js';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineAsyncComponent,
   defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { useRoute, useStore } from '@nuxtjs/composition-api';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash-es';
 
 import type { EventListInterface } from '.bot/src/bot/database/entity/eventList';
@@ -614,7 +615,8 @@ export default defineComponent({
     bits:            defineAsyncComponent({ loader: () => import('~/components/viewers/bits.vue') }),
     FilterButton:    defineAsyncComponent({ loader: () => import('~/components/viewers/filterButton.vue') }),
   },
-  setup (_, ctx) {
+  setup () {
+    const store = useStore<any>();
     const rules = {
       messages:                  [minValue(0), required],
       points:                    [minValue(0), required],
@@ -624,7 +626,7 @@ export default defineComponent({
       subscribeStreak:           [minValue(0), required],
     };
 
-    const search = ref(ctx.root.$route.params.id ? ctx.root.$route.params.id : '');
+    const search = ref(useRoute().value.params.id ? useRoute().value.params.id : '');
     const history = ref([] as EventListInterface[]);
     const items = ref([] as UserInterface[]);
     const selected = ref([] as UserInterface[]);
@@ -919,7 +921,7 @@ export default defineComponent({
     };
 
     const watchedTimeFormat = (value: number) => {
-      return Intl.NumberFormat((ctx.root.$store.state.configuration ?? { lang: 'en' }).lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value / 1000 / 60 / 60);
+      return Intl.NumberFormat((store.state.configuration ?? { lang: 'en' }).lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value / 1000 / 60 / 60);
     };
 
     return {

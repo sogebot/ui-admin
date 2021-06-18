@@ -91,13 +91,13 @@
 import {
   mdiArrowRightBold, mdiMagnify, mdiMinus, mdiPlus,
 } from '@mdi/js';
+import {
+  computed,
+  defineComponent, onMounted, ref, useContext,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  computed,
-  defineComponent, onMounted, ref,
-} from '@vue/composition-api';
 import { capitalize, orderBy } from 'lodash-es';
 
 import type { PermissionsInterface } from '.bot/src//bot/database/entity/permissions';
@@ -119,7 +119,7 @@ type CommandsInterface = {
 };
 
 export default defineComponent({
-  setup (_, ctx) {
+  setup () {
     const rules = { command: [startsWith(['!']), required, minLength(2)] };
 
     const search = ref('');
@@ -163,7 +163,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+      api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
         .then((response) => {
           permissions.value = response.data.data;
           state.value.loadingPrm = ButtonStates.success;

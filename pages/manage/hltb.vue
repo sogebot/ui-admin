@@ -242,14 +242,14 @@
 import {
   mdiCheckBoxMultipleOutline, mdiMagnify, mdiRefresh,
 } from '@mdi/js';
+import {
+  computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getTime, timestampToObject } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { cloneDeep, debounce } from 'lodash-es';
 
 import { HowLongToBeatGameInterface, HowLongToBeatGameItemInterface } from '.bot/src/bot/database/entity/howLongToBeatGame';

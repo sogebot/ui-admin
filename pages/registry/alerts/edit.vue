@@ -188,12 +188,12 @@
 import {
   mdiClose, mdiContentCopy, mdiDelete, mdiExclamationThick, mdiPlus,
 } from '@mdi/js';
-import { getContrastColor } from '@sogebot/ui-helpers/colors';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent,
-  defineComponent, onMounted, ref,
-} from '@vue/composition-api';
+  defineComponent, onMounted, ref, useContext, useRoute, useRouter,
+} from '@nuxtjs/composition-api';
+import { getContrastColor } from '@sogebot/ui-helpers/colors';
+import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep } from 'lodash-es';
 import { v4 } from 'uuid';
 
@@ -273,7 +273,7 @@ export default defineComponent({
     font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
     tts:      defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
   },
-  setup (_, ctx) {
+  setup () {
     const tabs = ref(null);
     const variantTabs = ref(
       supportedEvents.map(ev => ({ [ev]: 0 })),
@@ -296,17 +296,17 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      if (ctx.root.$route.params.id && ctx.root.$route.params.id !== 'new') {
+      if (useRoute().value.params.id && useRoute().value.params.id !== 'new') {
         // load initial item
         isLoading.value = true;
-        api.getOne<AlertInterface>(ctx.root.$axios, `/api/v1/registry/alerts`, String(ctx.root.$route.params.id) ?? '')
+        api.getOne<AlertInterface>(useContext().$axios, `/api/v1/registry/alerts`, String(useRoute().value.params.id) ?? '')
           .then((response) => {
             console.log(response.data);
             item.value = cloneDeep(response.data);
             isLoading.value = false;
           })
           .catch(() => {
-            ctx.root.$router.push({ path: '/registry/alerts' });
+            useRouter().push({ path: '/registry/alerts' });
             EventBus.$emit('snack', 'error', 'Data not found.');
           });
       }
@@ -317,9 +317,9 @@ export default defineComponent({
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
         isSaving.value = true;
-        api.patch(ctx.root.$axios, `/api/v1/registry/alerts/${item.value.id ?? v4()}`, item.value)
+        api.patch(useContext().$axios, `/api/v1/registry/alerts/${item.value.id ?? v4()}`, item.value)
           .then((response) => {
-            ctx.root.$router.push({ params: { id: response.id ?? '' } });
+            useRouter().push({ params: { id: response.id ?? '' } });
             EventBus.$emit('snack', 'success', 'Data saved.');
           })
           .catch((e) => {
@@ -341,7 +341,7 @@ export default defineComponent({
             .then((data) => {
               const fd = new FormData();
               fd.append('file', data);
-              api.post<FormData, AlertMediaInterface>(ctx.root.$axios, '/api/v1/registry/alerts/media/', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+              api.post<FormData, AlertMediaInterface>(useContext().$axios, '/api/v1/registry/alerts/media/', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
                 .then((data2) => {
                   resolve(data2.id);
                 });
@@ -353,7 +353,7 @@ export default defineComponent({
             .then((data) => {
               const fd = new FormData();
               fd.append('file', data);
-              api.post<FormData, AlertMediaInterface>(ctx.root.$axios, '/api/v1/registry/alerts/media/', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+              api.post<FormData, AlertMediaInterface>(useContext().$axios, '/api/v1/registry/alerts/media/', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
                 .then((data2) => {
                   resolve(data2.id);
                 });
@@ -532,7 +532,7 @@ export default defineComponent({
     };
 
     const goBack = () => {
-      ctx.root.$router.push({ path: '/registry/alerts' });
+      useRouter().push({ path: '/registry/alerts' });
     };
 
     const removeVariant = (event: keyof typeof supportedEvents, idx: number) => {
@@ -562,7 +562,7 @@ export default defineComponent({
             .then(async (data) => {
               const fd = new FormData();
               fd.append('file', data);
-              await api.put(ctx.root.$axios, `/api/v1/registry/alerts/media/${mediaMap.get(mediaId)}`, fd);
+              await api.put(useContext().$axios, `/api/v1/registry/alerts/media/${mediaMap.get(mediaId)}`, fd);
               resolve();
             });
         });

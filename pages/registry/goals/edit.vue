@@ -309,11 +309,14 @@
 import {
   mdiClose, mdiExclamationThick, mdiPlus,
 } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
+import {
+  useContext, useRoute, useRouter,
+} from '@nuxtjs/composition-api';
 import {
   defineAsyncComponent,
   defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep } from 'lodash-es';
 import { v4 } from 'uuid';
 
@@ -345,7 +348,7 @@ export default defineComponent({
     color:    defineAsyncComponent({ loader: () => import('~/components/form/color.vue') }),
     font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
   },
-  setup (_, ctx) {
+  setup () {
     const stepper = ref(1);
 
     const form1 = ref(null);
@@ -407,16 +410,16 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      if (ctx.root.$route.params.id && ctx.root.$route.params.id !== 'new') {
+      if (useRoute().value.params.id && useRoute().value.params.id !== 'new') {
         // load initial item
         isLoading.value = true;
-        api.getOne<GoalGroupInterface>(ctx.root.$axios, `/api/v1/registry/goals/`, String(ctx.root.$route.params.id) ?? '')
+        api.getOne<GoalGroupInterface>(useContext().$axios, `/api/v1/registry/goals/`, String(useRoute().value.params.id) ?? '')
           .then((response) => {
             item.value = response.data;
             isLoading.value = false;
           })
           .catch(() => {
-            ctx.root.$router.push({ path: '/registry/goals' });
+            useRouter().push({ path: '/registry/goals' });
             EventBus.$emit('snack', 'error', 'Data not found.');
           });
       }
@@ -501,9 +504,9 @@ export default defineComponent({
         && (form2.value as unknown as HTMLFormElement).validate()
       ) {
         isSaving.value = true;
-        api.patch(ctx.root.$axios, `/api/v1/registry/goals/${item.value.id ?? v4()}`, item.value)
+        api.patch(useContext().$axios, `/api/v1/registry/goals/${item.value.id ?? v4()}`, item.value)
           .then((response) => {
-            ctx.root.$router.push({ params: { id: response.id ?? '' } });
+            useRouter().push({ params: { id: response.id ?? '' } });
             EventBus.$emit('snack', 'success', 'Data saved.');
             EventBus.$emit('goals::refresh');
           })
@@ -538,7 +541,7 @@ export default defineComponent({
     };
 
     const goBack = () => {
-      ctx.root.$router.push({ path: '/registry/goals' });
+      useRouter().push({ path: '/registry/goals' });
     };
 
     return {

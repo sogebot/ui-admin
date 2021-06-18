@@ -46,13 +46,13 @@
 
 <script lang="ts">
 import { mdiMinusThick, mdiPlusThick } from '@mdi/js';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent,
   onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import Chart from 'chart.js';
 import { capitalize, orderBy } from 'lodash-es';
 import Vue from 'vue';

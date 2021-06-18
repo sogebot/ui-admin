@@ -92,13 +92,13 @@
 <script lang="ts">
 
 import { mdiLink, mdiMagnify } from '@mdi/js';
+import {
+  computed, defineComponent, onMounted, ref,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  computed, defineComponent, onMounted, ref,
-} from '@vue/composition-api';
 import { escapeRegExp, isNil } from 'lodash-es';
 
 import type { HighlightInterface } from '.bot/src/bot/database/entity/highlight';

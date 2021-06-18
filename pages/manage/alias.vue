@@ -281,12 +281,12 @@
 import {
   mdiCheckBoxMultipleOutline, mdiMagnify, mdiMinus, mdiPlus,
 } from '@mdi/js';
+import {
+  computed, defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { capitalize, orderBy } from 'lodash-es';
 
 import type { AliasInterface } from '.bot/src/bot/database/entity/alias';
@@ -305,7 +305,7 @@ type AliasInterfaceUI = AliasInterface & { groupToBeShownInTable: null | string 
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/alias-newItem.vue') }) },
-  setup (_, ctx) {
+  setup () {
     const timestamp = ref(Date.now());
 
     const selected = ref([] as AliasInterfaceUI[]);
@@ -350,7 +350,7 @@ export default defineComponent({
     };
 
     const truncateLength = computed(() => {
-      const breakpoint = (ctx.root as any).$vuetify.breakpoint;
+      const breakpoint = useContext().$vuetify.breakpoint;
       if (breakpoint.mobile) {
         return 50;
       } else {
@@ -423,7 +423,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+      api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
         .then((response) => {
           permissions.value = response.data.data;
           state.value.loadingPrm = ButtonStates.success;

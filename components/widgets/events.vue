@@ -285,20 +285,21 @@ import {
   mdiSkipNext, mdiTelevision, mdiTextToSpeech, mdiTextToSpeechOff,
   mdiVolumeHigh, mdiVolumeMute, mdiYoutubeSubscription,
 } from '@mdi/js';
+import {
+  computed,
+  defineComponent, onMounted, ref, useContext, useStore, watch,
+} from '@nuxtjs/composition-api';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  computed,
-  defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { get } from 'lodash-es';
 
 import type { EventListInterface } from '~/.bot/src/bot/database/entity/eventList';
 import api from '~/functions/api';
 
 export default defineComponent({
-  setup (_, ctx) {
+  setup () {
+    const store = useStore<any>();
     const areAlertsMuted = ref(false);
     const isTTSMuted = ref(false);
     const isSoundMuted = ref(false);
@@ -389,9 +390,9 @@ export default defineComponent({
     }
 
     watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
-      api.post(ctx.root.$axios, '/api/v1/registry/alerts/settings?name=areAlertsMuted', { value: val[0] });
-      api.post(ctx.root.$axios, '/api/v1/registry/alerts/settings?name=isTTSMuted', { value: val[1] });
-      api.post(ctx.root.$axios, '/api/v1/registry/alerts/settings?name=isSoundMuted', { value: val[2] });
+      api.post(useContext().$axios, '/api/v1/registry/alerts/settings?name=areAlertsMuted', { value: val[0] });
+      api.post(useContext().$axios, '/api/v1/registry/alerts/settings?name=isTTSMuted', { value: val[1] });
+      api.post(useContext().$axios, '/api/v1/registry/alerts/settings?name=isSoundMuted', { value: val[2] });
     });
 
     function updateHeight () {
@@ -421,7 +422,7 @@ export default defineComponent({
       }
 
       const values = JSON.parse(event.values_json);
-      const formattedAmount = Intl.NumberFormat(ctx.root.$store.state.configuration.lang, { style: 'currency', currency: get(values, 'currency', 'USD') }).format(get(values, 'amount', '0'));
+      const formattedAmount = Intl.NumberFormat(store.state.configuration.lang, { style: 'currency', currency: get(values, 'currency', 'USD') }).format(get(values, 'amount', '0'));
       t = t.replace('$formatted_amount', '<strong style="font-size: 1rem">' + formattedAmount + '</strong>');
       t = t.replace('$viewers', '<strong style="font-size: 1rem">' + get(values, 'viewers', '0') + '</strong>');
       t = t.replace('$tier', `${translate('tier')} <strong style="font-size: 1rem">${get(values, 'tier', 'n/a')}</strong>`);
@@ -461,11 +462,11 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      api.getOne<boolean>(ctx.root.$axios, '/api/v1/registry/alerts/settings?name=areAlertsMuted', '')
+      api.getOne<boolean>(useContext().$axios, '/api/v1/registry/alerts/settings?name=areAlertsMuted', '')
         .then(response => (areAlertsMuted.value = response.data));
-      api.getOne<boolean>(ctx.root.$axios, '/api/v1/registry/alerts/settings?name=isTTSMuted', '')
+      api.getOne<boolean>(useContext().$axios, '/api/v1/registry/alerts/settings?name=isTTSMuted', '')
         .then(response => (isTTSMuted.value = response.data));
-      api.getOne<boolean>(ctx.root.$axios, '/api/v1/registry/alerts/settings?name=isSoundMuted', '')
+      api.getOne<boolean>(useContext().$axios, '/api/v1/registry/alerts/settings?name=isSoundMuted', '')
         .then(response => (isSoundMuted.value = response.data));
       getSocket('/widgets/eventlist').on('askForGet', () => getSocket('/widgets/eventlist').emit('eventlist::get', 100));
       getSocket('/widgets/eventlist').on('update', (values: any) => {

@@ -159,13 +159,12 @@
 import {
   mdiEarth, mdiLogin, mdiLogout, mdiShield,
 } from '@mdi/js';
+import {
+  computed, defineComponent, onMounted, onUnmounted, ref,
+} from '@nuxtjs/composition-api';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import type { Ref } from '@vue/composition-api';
-import {
-  computed, defineComponent, onMounted, onUnmounted, ref,
-} from '@vue/composition-api';
 
 import type { PermissionsInterface } from '../.bot/src/bot/database/entity/permissions';
 import type { UserInterface } from '../.bot/src/bot/database/entity/user';
@@ -176,7 +175,7 @@ export default defineComponent({
   setup (_props, context) {
     const menu = ref(false);
     const isViewerLoaded = ref(false);
-    const viewer: Ref<(Required<UserInterface> & { aggregatedTips: number; aggregatedBits: number; permission: PermissionsInterface }) | null> = ref(null);
+    const viewer = ref(null as (Required<UserInterface> & { aggregatedTips: number; aggregatedBits: number; permission: PermissionsInterface }) | null);
     const viewerIs = computed(() => {
       const status: string[] = [];
       const isArray = ['isFollower', 'isSubscriber', 'isVIP'] as const;

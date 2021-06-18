@@ -36,9 +36,9 @@
 </template>
 
 <script lang="ts">
+import { defineComponent, ref } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { defineComponent, ref } from '@vue/composition-api';
 import { v4 as uuid } from 'uuid';
 
 import type { CommandsInterface } from '.bot/src/bot/database/entity/commands';

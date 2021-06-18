@@ -13,11 +13,11 @@
 </template>
 
 <script lang="ts">
-import { getCurrentIP } from '@sogebot/ui-helpers/getCurrentIP';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { getCurrentIP } from '@sogebot/ui-helpers/getCurrentIP';
+import translate from '@sogebot/ui-helpers/translate';
 
 export default defineComponent({
   props: { opts: Object },

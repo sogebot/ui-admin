@@ -152,19 +152,20 @@
 
 <script lang="ts">
 import { mdiDiceMultiple } from '@mdi/js';
+import {
+  computed, defineAsyncComponent, defineComponent, ref, useStore,
+} from '@nuxtjs/composition-api';
 import { shuffle } from '@sogebot/ui-helpers/array';
 import { generateUsername } from '@sogebot/ui-helpers/generateUsername';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  computed, defineAsyncComponent, defineComponent, ref,
-} from '@vue/composition-api';
 
 import type { EmitData } from '.bot/src/bot/database/entity/alert';
 
 export default defineComponent({
   components: { rewards: defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }) },
-  setup (_, ctx) {
+  setup () {
+    const store = useStore<any>();
     const events = ['follows', 'cheers', 'tips', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'hosts', 'raids', 'cmdredeems', 'rewardredeems'] as const;
 
     const dialog = ref(false);
@@ -190,7 +191,7 @@ export default defineComponent({
     const haveAmount = computed(() => {
       return amountLabel.value !== null;
     });
-    const currency = ref(ctx.root.$store.state.configuration.currency);
+    const currency = ref(store.state.configuration.currency);
     const amountLabel = computed(() => {
       switch (event.value) {
         case 'hosts':

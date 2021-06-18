@@ -137,13 +137,13 @@
 
 <script lang="ts">
 import { mdiDelete } from '@mdi/js';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent,
   defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 

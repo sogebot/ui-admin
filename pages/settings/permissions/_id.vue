@@ -69,10 +69,13 @@
 </template>
 
 <script lang="ts">
-import translate from '@sogebot/ui-helpers/translate';
+import {
+  useContext, useRoute, useRouter,
+} from '@nuxtjs/composition-api';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 
 import { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
 import api from '~/functions/api';
@@ -86,7 +89,7 @@ export default defineComponent({
     filters:   defineAsyncComponent(() => import('~/components/settings/permissions/filters.vue')),
     test:      defineAsyncComponent(() => import('~/components/settings/permissions/test.vue')),
   },
-  setup (_, ctx) {
+  setup () {
     const model = ref(null as PermissionsInterface | null);
     const isRemoving = ref(false);
     const isSaving = ref(false);
@@ -98,24 +101,24 @@ export default defineComponent({
     const refresh = (val?: string) => {
       model.value = null;
       if (val) {
-        api.getOne<PermissionsInterface>(ctx.root.$axios, '/api/v1/settings/permissions/', val)
+        api.getOne<PermissionsInterface>(useContext().$axios, '/api/v1/settings/permissions/', val)
           .then(response => (model.value = response.data));
       }
     };
 
     const remove = (id: string) => {
       isRemoving.value = true;
-      api.delete(ctx.root.$axios, '/api/v1/settings/permissions/' + id)
+      api.delete(useContext().$axios, '/api/v1/settings/permissions/' + id)
         .then(() => {
           isRemoving.value = false;
-          ctx.root.$router.push('/settings/permissions');
+          useRouter().push('/settings/permissions');
         });
     };
 
     const save = () => {
       if (model.value && model.value.id && valid) {
         isSaving.value = true;
-        api.patch(ctx.root.$axios, '/api/v1/settings/permissions/' + model.value.id, model.value)
+        api.patch(useContext().$axios, '/api/v1/settings/permissions/' + model.value.id, model.value)
           .then(() => {
             EventBus.$emit('settings::permissions::refresh');
           })
@@ -128,12 +131,12 @@ export default defineComponent({
       }
     };
 
-    watch(() => ctx.root.$route.params.id, (val) => {
+    watch(() => useRoute().value.params.id, (val) => {
       refresh(val);
     });
 
     onMounted(() => {
-      refresh(ctx.root.$route.params.id);
+      refresh(useRoute().value.params.id);
     });
 
     return {

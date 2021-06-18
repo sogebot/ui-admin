@@ -61,12 +61,12 @@
 </template>
 
 <script lang="ts">
+import {
+  defineComponent, onMounted, ref, useStore,
+} from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { getUsernameById } from '@sogebot/ui-helpers/userById';
-import {
-  defineComponent, onMounted, ref,
-} from '@vue/composition-api';
 import { capitalize } from 'lodash-es';
 
 import type { QuotesInterface } from '.bot/src/bot/database/entity/quotes';
@@ -78,9 +78,10 @@ export default defineComponent({
     const tagsInput = ref([] as string[]);
     const quotedBy = ref('');
     const tagsSearch = ref('');
+    const store = useStore<any>();
 
     onMounted(async () => {
-      quotedBy.value = await getUsernameById(ctx.root.$store.state.loggedUser.id);
+      quotedBy.value = await getUsernameById(store.state.loggedUser.id);
     });
     const newItemSaving = ref(false);
     const valid = ref(true);
@@ -95,7 +96,7 @@ export default defineComponent({
             id:        undefined,
             createdAt: Date.now(),
             tags:      tagsInput.value,
-            quotedBy:  ctx.root.$store.state.loggedUser.id,
+            quotedBy:  store.state.loggedUser.id,
             quote:     quote.value,
           };
           console.log('Saving', { item });

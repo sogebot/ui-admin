@@ -45,10 +45,10 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@nuxtjs/composition-api';
 import { getTime } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { defineComponent } from '@vue/composition-api';
 import { capitalize } from 'lodash-es';
 
 export default defineComponent({

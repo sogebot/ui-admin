@@ -69,10 +69,10 @@
 import {
   mdiClose, mdiDelete, mdiExclamationThick,
 } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+  defineComponent, onMounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
 import { WidgetCustomInterface } from '~/.bot/src/bot/database/entity/widget';
@@ -97,7 +97,7 @@ export default defineComponent({
     });
 
     const refresh = async () => {
-      const response = await api.get<WidgetCustomInterface[]>(ctx.root.$axios, `/api/v1/custom`);
+      const response = await api.get<WidgetCustomInterface[]>(useContext().$axios, `/api/v1/custom`);
       items.value = response.data.data;
       isLoaded.value = true;
     };
@@ -105,12 +105,12 @@ export default defineComponent({
     const save = async () => {
       isSaving.value = true;
       for (const id of markedToDelete.value) {
-        api.delete<WidgetCustomInterface>(ctx.root.$axios, `/api/v1/custom/${id}`).catch(() => {
+        api.delete<WidgetCustomInterface>(useContext().$axios, `/api/v1/custom/${id}`).catch(() => {
           return true;
         });
       }
       for (const item of items.value) {
-        await api.post<Omit<WidgetCustomInterface, 'userId'>>(ctx.root.$axios, `/api/v1/custom`, item);
+        await api.post<Omit<WidgetCustomInterface, 'userId'>>(useContext().$axios, `/api/v1/custom`, item);
       }
       markedToDelete.value = [];
       isSaving.value = false;

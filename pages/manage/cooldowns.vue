@@ -245,12 +245,12 @@
 
 <script lang="ts">
 import { mdiCheckBoxMultipleOutline, mdiMagnify } from '@mdi/js';
+import {
+  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { capitalize } from 'lodash-es';
 
 import type { CooldownInterface } from '.bot/src/bot/database/entity/cooldown';

@@ -16,7 +16,7 @@
     "lint": "npm run lint:js && npm run lint:style"
   },
   "lint-staged": {
-    "*.{ts,js,vue}": "eslint --fix",
+    "*.{ts,js,vue}": "eslint --quiet --fix",
     "*.{css,vue}": "stylelint"
   },
   "simple-git-hooks": {
@@ -52,6 +52,7 @@
     "@mdi/js": "^5.9.55",
     "@nuxt/types": "^2.15.7",
     "@nuxt/typescript-build": "^2.1.0",
+    "@nuxtjs/composition-api": "^0.24.4",
     "@nuxtjs/eslint-config-typescript": "^6.0.1",
     "@nuxtjs/eslint-module": "^3.0.2",
     "@nuxtjs/stylelint-module": "^4.0.0",
@@ -62,7 +63,6 @@
     "@types/shortid": "^0.0.29",
     "@types/uuid": "^8.3.0",
     "@types/vue-chartkick": "^0.5.1",
-    "@vue/composition-api": "^1.0.0-rc.11",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.3.0",

@@ -9,11 +9,11 @@
 </template>
 
 <script lang="ts">
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineComponent,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 
 export default defineComponent({
   setup () {

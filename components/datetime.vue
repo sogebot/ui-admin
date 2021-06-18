@@ -21,7 +21,7 @@
 <script lang="ts">
 import {
   defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
 
 import {
   setAttr, timeToDate, timeToTime,

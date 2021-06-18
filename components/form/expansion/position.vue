@@ -81,14 +81,14 @@
 
 <script lang="ts">
 import { mdiSquare } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent,
   reactive,
   ref,
   toRefs,
   watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
 import type { RandomizerInterface } from '~/.bot/src/bot/database/entity/randomizer';

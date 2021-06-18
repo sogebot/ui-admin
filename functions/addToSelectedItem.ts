@@ -1,4 +1,4 @@
-import { Ref } from '@vue/composition-api';
+import { Ref } from '@nuxtjs/composition-api';
 
 function addToSelectedItem<T> (selected: Ref<T[]>, key: keyof T, currentItems: Ref<T[]>) {
   let lastSelected: T[typeof key] | null = null;

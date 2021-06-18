@@ -18,11 +18,11 @@
 </template>
 
 <script lang="ts">
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
 import { UserInterface } from '~/.bot/src/bot/database/entity/user';

@@ -263,17 +263,17 @@
 <script lang="ts">
 import { mdiPlus } from '@mdi/js';
 import {
-  shadowGenerator,
-  textStrokeGenerator,
-} from '@sogebot/ui-helpers/text';
-import translate from '@sogebot/ui-helpers/translate';
-import {
   defineAsyncComponent,
   defineComponent,
   onBeforeMount,
   ref,
   watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import {
+  shadowGenerator,
+  textStrokeGenerator,
+} from '@sogebot/ui-helpers/text';
+import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep } from 'lodash-es';
 
 import { required } from '~/functions/validators';

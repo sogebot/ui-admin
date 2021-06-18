@@ -75,13 +75,13 @@
 
 <script lang="ts">
 /* eslint-disable camelcase */
+import {
+  defineAsyncComponent,
+  defineComponent, onMounted, ref, useStore,
+} from '@nuxtjs/composition-api';
 import { getTime } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineAsyncComponent,
-  defineComponent, onMounted, ref,
-} from '@vue/composition-api';
 import { capitalize, isNil } from 'lodash-es';
 
 import { error } from '~/functions/error';
@@ -89,17 +89,18 @@ import { error } from '~/functions/error';
 export default defineComponent({
   props:      { timestamp: Number },
   components: { changeGameDialog: defineAsyncComponent({ loader: () => import('./change-game-dialog.vue') }) },
-  setup (_, ctx) {
+  setup () {
     const dialog = ref(false);
     const game = ref(null as null | string);
     const title = ref(null as null | string);
     const cachedTitle = ref('');
     const tags = ref([] as { is_auto: boolean; localization_names: { [x:string]: string } }[]);
     const isLoaded = ref(false);
+    const store = useStore<any>();
 
     const filterTags = (is_auto: boolean) => {
       return tags.value.filter(o => !!o.is_auto === is_auto).map((o) => {
-        const key = Object.keys(o.localization_names).find(key2 => key2.includes(ctx.root.$store.state.configuration.lang));
+        const key = Object.keys(o.localization_names).find(key2 => key2.includes(store.state.configuration.lang));
         return { name: o.localization_names[key || 'en-us'], is_auto: !!o.is_auto };
       }).sort((a, b) => {
         if ((a || { name: '' }).name < (b || { name: '' }).name) { // sort string ascending
@@ -155,9 +156,9 @@ export default defineComponent({
         title.value = await generateTitle(data.status, data.rawStatus);
         tags.value = data.tags;
 
-        ctx.root.$store.commit('setCurrentGame', game.value);
-        ctx.root.$store.commit('setCurrentTitle', data.rawStatus);
-        ctx.root.$store.commit('setCurrentTags', tags.value);
+        store.commit('setCurrentGame', game.value);
+        store.commit('setCurrentTitle', data.rawStatus);
+        store.commit('setCurrentTags', tags.value);
 
         isLoaded.value = true;
       });

@@ -341,13 +341,13 @@ import { normalize } from 'path';
 import {
   mdiCheckBoxMultipleOutline, mdiFileImage, mdiFileMusic, mdiFileVideo, mdiFolder, mdiFolderOpen, mdiLink, mdiThumbUp,
 } from '@mdi/js';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import { uniq } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 

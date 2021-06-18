@@ -250,13 +250,13 @@
 import {
   mdiCheckBoxMultipleOutline, mdiMagnify, mdiTagPlus,
 } from '@mdi/js';
+import {
+  computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import {
   capitalize, flatten, orderBy, uniq,
 } from 'lodash-es';

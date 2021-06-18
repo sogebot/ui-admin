@@ -63,13 +63,13 @@
 
 <script lang="ts">
 import { mdiDiceMultiple } from '@mdi/js';
-import { getRandomColor } from '@sogebot/ui-helpers/colors';
 import {
   defineComponent,
   onMounted,
   ref,
   watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { getRandomColor } from '@sogebot/ui-helpers/colors';
 import { v4 } from 'uuid';
 
 import { isHexColor, required } from '~/functions/validators';

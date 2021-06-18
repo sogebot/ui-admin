@@ -137,12 +137,12 @@
 
 <script lang="ts">
 /* eslint-disable camelcase */
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, reactive, ref, watch,
-} from '@vue/composition-api';
-import type { Ref } from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import type { Ref } from '@nuxtjs/composition-api';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 
 import { EventBus } from '~/functions/event-bus';
 
@@ -159,7 +159,7 @@ export default defineComponent({
     viewers:      defineAsyncComponent({ loader: () => import('~/components/statsbar/viewers.vue') }),
     withTrending: defineAsyncComponent({ loader: () => import('~/components/statsbar/withTrending.vue') }),
   },
-  setup (_) {
+  setup () {
     const averageStats: any = reactive({});
     const currentStats: any = reactive({});
     const timestamp: Ref<null | number> = ref(null);

@@ -75,7 +75,7 @@
 import { mdiCheck } from '@mdi/js';
 import {
   computed, defineAsyncComponent, defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
 import { cloneDeep } from 'lodash-es';
 
 import type { QuickActions } from '.bot/src/bot/database/entity/dashboard';

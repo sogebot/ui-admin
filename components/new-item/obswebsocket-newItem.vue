@@ -280,11 +280,11 @@
 import {
   mdiClose, mdiExclamationThick, mdiPlus,
 } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
-  defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+  defineComponent, nextTick, onMounted, ref, useContext, useRoute, useRouter, watch,
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep } from 'lodash-es';
 // import highlighting library (you can use any library you want just return html string)
 import ObsWebSocket from 'obs-websocket-js';
@@ -317,8 +317,8 @@ export default defineComponent({
   props:      { editItem: Object, activator: Boolean },
   setup (props: Props, ctx) {
     const dialog = ref(
-      (!props.activator && ctx.root.$route.query._action === 'create')
-      || (props.activator && typeof ctx.root.$route.query._id !== 'undefined'),
+      (!props.activator && useRoute().value.query._action === 'create')
+      || (props.activator && typeof useRoute().value.query._id !== 'undefined'),
     );
     const watcher = ref(true);
 
@@ -352,13 +352,13 @@ export default defineComponent({
         return;
       }
       if (val && props.activator) {
-        ctx.root.$router.push({ query: { _action: 'create' } });
+        useRouter().push({ query: { _action: 'create' } });
       } else {
-        ctx.root.$router.push({ query: {} });
+        useRouter().push({ query: {} });
       }
     });
 
-    watch(() => ctx.root.$route, (val) => {
+    watch(() => useRoute().value, (val) => {
       watcher.value = false;
       if (val.query._id && !props.activator) {
         dialog.value = true;
@@ -369,7 +369,7 @@ export default defineComponent({
       } else {
         dialog.value = false;
       }
-      ctx.root.$nextTick(() => {
+      nextTick(() => {
         watcher.value = true;
       });
     });
@@ -378,8 +378,8 @@ export default defineComponent({
       if (!props.activator) {
         // eventbus to activate dialog
         EventBus.$on('integrations::obswebsocket::updateDlgShow', (updateItem: OBSWebsocketInterface) => {
-          ctx.root.$nextTick(() => {
-            ctx.root.$router.push({ query: { _id: updateItem.id ?? '' } });
+          nextTick(() => {
+            useRouter().push({ query: { _id: updateItem.id ?? '' } });
           });
         });
       }
@@ -390,22 +390,22 @@ export default defineComponent({
       refreshScenes();
       refreshSources();
 
-      if (ctx.root.$route.query._id) {
+      if (useRoute().value.query._id) {
         // load initial item
         isLoading.value = true;
-        api.getOne<OBSWebsocketInterface>(ctx.root.$axios, `/api/v1/integration/obswebsocket`, String(ctx.root.$route.query._id) ?? '')
+        api.getOne<OBSWebsocketInterface>(useContext().$axios, `/api/v1/integration/obswebsocket`, String(useRoute().value.query._id) ?? '')
           .then((response) => {
             item.value = response.data;
             isLoading.value = false;
           })
           .catch(() => {
             dialog.value = false;
-            ctx.root.$router.push({ query: {} });
+            useRouter().push({ query: {} });
             EventBus.$emit('snack', 'error', 'Data not found.');
           });
       }
 
-      if (ctx.root.$route.query._action === 'create') {
+      if (useRoute().value.query._action === 'create') {
         isLoading.value = true;
         // fetch default advancedModeCode
         fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/obswebsocket-code.txt')
@@ -429,9 +429,9 @@ export default defineComponent({
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
         isSaving.value = true;
-        api.patch(ctx.root.$axios, `/api/v1/integration/obswebsocket/${item.value.id ?? v4()}`, item.value)
+        api.patch(useContext().$axios, `/api/v1/integration/obswebsocket/${item.value.id ?? v4()}`, item.value)
           .then((response) => {
-            ctx.root.$router.push({ query: { _id: response.id ?? '' } });
+            useRouter().push({ query: { _id: response.id ?? '' } });
             EventBus.$emit('snack', 'success', 'Data saved.');
             EventBus.$emit('integrations::obswebsocket::refresh');
           })
@@ -477,7 +477,7 @@ export default defineComponent({
     };
 
     const refreshScenes = () => {
-      api.get<ObsWebSocket.Scene[]>(ctx.root.$axios, '/api/v1/integration/obswebsocket/listScene')
+      api.get<ObsWebSocket.Scene[]>(useContext().$axios, '/api/v1/integration/obswebsocket/listScene')
         .then((response) => {
           availableScenes.value = [{ value: '', text: translate('integrations.obswebsocket.noSceneSelected') }, ...response.data.data.map((scene) => {
             return {
@@ -489,7 +489,7 @@ export default defineComponent({
     };
 
     const refreshSources = () => {
-      api.get<{ sources: Source[], types: Type[] }>(ctx.root.$axios, '/api/v1/integration/obswebsocket/sources')
+      api.get<{ sources: Source[], types: Type[] }>(useContext().$axios, '/api/v1/integration/obswebsocket/sources')
         .then((response) => {
           availableSources.value = response.data.data.sources;
           sourceTypes.value = response.data.data.types;
@@ -504,7 +504,7 @@ export default defineComponent({
 
     const test = () => {
       isTesting.value = true;
-      api.post(ctx.root.$axios, '/api/v1/integration/obswebsocket/trigger',
+      api.post(useContext().$axios, '/api/v1/integration/obswebsocket/trigger',
         item.value.advancedMode
           ? item.value.advancedModeCode
           : item.value.simpleModeTasks)

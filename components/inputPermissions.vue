@@ -26,10 +26,10 @@
   </div>
 </template>
 <script lang="ts">
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed, defineComponent, ref,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 
 import { getPermissionName } from '~/functions/getPermissionName';
 

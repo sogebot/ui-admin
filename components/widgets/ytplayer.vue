@@ -117,12 +117,12 @@
 import {
   mdiDelete, mdiPlay, mdiSkipForward, mdiStop,
 } from '@mdi/js';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
-  defineComponent, onMounted, onUnmounted, ref, watch,
-} from '@vue/composition-api';
+  defineComponent, nextTick, onMounted, onUnmounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import { isEqual } from 'lodash-es';
 import Vue from 'vue';
 import VuePlyr from 'vue-plyr';
@@ -139,7 +139,7 @@ const emptyCurrentSong = {
 };
 
 export default defineComponent({
-  setup (_, ctx) {
+  setup () {
     const isPopout = computed(() => location.href.includes('popout'));
     const height = ref(600);
 
@@ -279,7 +279,7 @@ export default defineComponent({
       });
       await waitForPlayer();
 
-      ctx.root.$nextTick(async () => {
+      nextTick(async () => {
         try {
           // change only if something is changed
           if (!player.value.source || !player.value.source.includes(currentSong.value.videoId)) {
@@ -302,7 +302,7 @@ export default defineComponent({
 
           player.value.volume = currentSong.value.volume / 100;
           player.value.muted = true;
-          ctx.root.$nextTick(() => {
+          nextTick(() => {
             player.value.muted = false;
           });
           player.value.play();
@@ -368,7 +368,7 @@ export default defineComponent({
       const ytplayer = document.getElementById('youtubeplayer')?.clientHeight ?? 0;
       const offset = 52 + 124 + ytplayer;
       const newHeight = window.innerHeight - offsetTop - offset;
-      height.value = Math.max(newHeight, (ctx.root as any).$vuetify.breakpoint.mobile ? 350 : 0);
+      height.value = Math.max(newHeight, useContext().$vuetify.breakpoint.mobile ? 350 : 0);
     }
 
     return {

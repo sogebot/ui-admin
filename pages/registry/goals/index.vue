@@ -202,12 +202,12 @@
 import {
   mdiCheckBoxMultipleOutline, mdiContentCopy, mdiInfinity, mdiLink, mdiMagnify, mdiPencil,
 } from '@mdi/js';
+import {
+  defineComponent, onMounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { v4 } from 'uuid';
 
 import type { GoalGroupInterface } from '.bot/src/bot/database/entity/goal';
@@ -217,7 +217,7 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
-  setup (_, ctx) {
+  setup () {
     const items = ref([] as GoalGroupInterface[]);
     const search = ref('');
 
@@ -263,7 +263,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      api.get<GoalGroupInterface[]>(ctx.root.$axios, '/api/v1/registry/goals')
+      api.get<GoalGroupInterface[]>(useContext().$axios, '/api/v1/registry/goals')
         .then((response) => {
           items.value = response.data.data;
           // we also need to reset selection values
@@ -283,7 +283,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve) => {
-            api.delete(ctx.root.$axios, `/api/v1/registry/goals/${item.id}`)
+            api.delete(useContext().$axios, `/api/v1/registry/goals/${item.id}`)
               .finally(() => resolve(true));
           });
         }),
@@ -305,7 +305,7 @@ export default defineComponent({
         })),
       };
 
-      api.post(ctx.root.$axios, '/api/v1/registry/goals', clonedGroup)
+      api.post(useContext().$axios, '/api/v1/registry/goals', clonedGroup)
         .then(() => {
           EventBus.$emit('snack', 'success', 'Data cloned.');
         })

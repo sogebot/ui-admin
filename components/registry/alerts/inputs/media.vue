@@ -132,10 +132,10 @@
 import {
   mdiDelete, mdiPlay, mdiStop, mdiUpload,
 } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineComponent, onMounted, onUnmounted, ref, watch,
-} from '@vue/composition-api';
+  defineComponent, onMounted, onUnmounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 import Vue from 'vue';
 import AudioVisual from 'vue-audio-visual';
@@ -356,7 +356,7 @@ export default defineComponent({
         console.debug(`upload::${filesUpload[i].name}`);
         fd.append('file', filesUpload[i]);
         const id = v4();
-        await api.put(ctx.root.$axios, `/api/v1/registry/alerts/media/${id}`, fd);
+        await api.put(useContext().$axios, `/api/v1/registry/alerts/media/${id}`, fd);
         model.value = id;
         isUploading.value = false;
       }

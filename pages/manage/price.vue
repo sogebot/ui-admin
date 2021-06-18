@@ -217,13 +217,14 @@
 
 <script lang="ts">
 import { mdiCheckBoxMultipleOutline, mdiMagnify } from '@mdi/js';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent,
   defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { useStore } from '@nuxtjs/composition-api';
+import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash-es';
 
 import type { PriceInterface } from '.bot/src/bot/database/entity/price';
@@ -237,7 +238,8 @@ import { getLocalizedName } from '~/functions/getLocalized';
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/price-newItem.vue') }) },
-  setup (_, ctx) {
+  setup () {
+    const store = useStore<any>();
     const timestamp = ref(Date.now());
     const search = ref('');
     const items = ref([] as PriceInterface[]);
@@ -382,7 +384,7 @@ export default defineComponent({
     const priceFormatter = (item: PriceInterface) => {
       const output = [];
       if (item.price !== 0) {
-        output.push(`${item.price} ${getLocalizedName(item.price, ctx.root.$store.state.configuration.systems.Points.customization.name)}`);
+        output.push(`${item.price} ${getLocalizedName(item.price, store.state.configuration.systems.Points.customization.name)}`);
       }
       if (item.priceBits !== 0) {
         output.push(`${item.priceBits} ${getLocalizedName(item.priceBits, translate('bot.bits'))}`);

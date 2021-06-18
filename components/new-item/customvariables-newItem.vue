@@ -306,14 +306,14 @@
 
 <script lang="ts">
 import { mdiDelete, mdiLink } from '@mdi/js';
+import {
+  computed,
+  defineComponent, onMounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  computed,
-  defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { v4 } from 'uuid';
 
 import type { VariableInterface } from '.bot/src/bot/database/entity/variable';
@@ -459,7 +459,7 @@ export default defineComponent({
           });
       }
 
-      api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+      api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
         .then(response => (permissions.value = response.data.data));
     });
 

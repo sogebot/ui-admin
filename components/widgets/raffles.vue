@@ -213,13 +213,13 @@
 import {
   mdiCheckboxBlankCircleOutline, mdiCheckCircleOutline, mdiCommentMultiple, mdiEyeOff, mdiSync, mdiSyncOff,
 } from '@mdi/js';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 
 import type { RaffleInterface } from '.bot/src/bot/database/entity/raffle';
 import { UserInterface } from '~/.bot/src/bot/database/entity/user';

@@ -210,12 +210,12 @@
 import {
   mdiCheckBoxMultipleOutline, mdiMagnify, mdiRestore,
 } from '@mdi/js';
+import {
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { capitalize, orderBy } from 'lodash-es';
 
 import type { CommandsInterface } from '.bot/src/bot/database/entity/commands';
@@ -240,7 +240,7 @@ export default defineComponent({
     'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/command-newItem.vue') }),
     responses:  defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
   },
-  setup (_, ctx) {
+  setup () {
     const rules = { command: [startsWith(['!']), required, minLength(2)] };
 
     const search = ref('');
@@ -298,7 +298,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+      api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
         .then((response) => {
           permissions.value = response.data.data;
           state.value.loadingPrm = ButtonStates.success;

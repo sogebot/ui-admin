@@ -23,12 +23,12 @@
 </template>
 
 <script lang="ts">
+import {
+  defineComponent, onMounted, ref,
+} from '@nuxtjs/composition-api';
 import { getTime } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineComponent, onMounted, ref,
-} from '@vue/composition-api';
 import { capitalize } from 'lodash-es';
 
 export default defineComponent({

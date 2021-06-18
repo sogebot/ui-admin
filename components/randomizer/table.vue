@@ -88,10 +88,10 @@
 
 <script lang="ts">
 import { mdiDelete, mdiDrag } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 import { orderBy } from 'lodash-es';
 
 import type { RandomizerItemInterface } from '~/.bot/src/bot/database/entity/randomizer';

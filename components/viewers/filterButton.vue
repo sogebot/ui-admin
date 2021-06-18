@@ -24,7 +24,7 @@ import {
 } from '@mdi/js';
 import {
   defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
 
 export default defineComponent({
   props: { value: [Boolean, Object] },

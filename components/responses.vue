@@ -200,10 +200,10 @@
 import {
   mdiDrag, mdiFilter, mdiKey, mdiPause, mdiPlay, mdiTrashCan,
 } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent, defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   capitalize, cloneDeep, orderBy,
 } from 'lodash-es';

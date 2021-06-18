@@ -77,10 +77,10 @@
 import {
   mdiAccountMinus, mdiAccountPlus, mdiClose, mdiCommentPlus, mdiExclamationThick, mdiRefresh,
 } from '@mdi/js';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import {
   computed, defineComponent, onMounted, onUnmounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import {
   chunk, flatten, sortedUniq,
 } from 'lodash-es';

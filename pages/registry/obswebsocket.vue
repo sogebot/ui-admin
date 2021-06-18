@@ -123,11 +123,11 @@
 import {
   mdiCheckBoxMultipleOutline, mdiClipboard, mdiClipboardCheck, mdiMagnify, mdiPencil,
 } from '@mdi/js';
+import {
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 
 import type { OBSWebsocketInterface } from '.bot/src/bot/database/entity/obswebsocket';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
@@ -137,7 +137,7 @@ import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/obswebsocket-newItem.vue') }) },
-  setup (_, ctx) {
+  setup () {
     const items = ref([] as OBSWebsocketInterface[]);
     const search = ref('');
 
@@ -188,7 +188,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      api.get<OBSWebsocketInterface[]>(ctx.root.$axios, '/api/v1/integration/obswebsocket')
+      api.get<OBSWebsocketInterface[]>(useContext().$axios, '/api/v1/integration/obswebsocket')
         .then((response) => {
           items.value = response.data.data;
           // we also need to reset selection values
@@ -208,7 +208,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve) => {
-            api.delete(ctx.root.$axios, `/api/v1/integration/obswebsocket/${item.id}`)
+            api.delete(useContext().$axios, `/api/v1/integration/obswebsocket/${item.id}`)
               .finally(() => resolve(true));
           });
         }),

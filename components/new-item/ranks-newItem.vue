@@ -33,8 +33,8 @@
 </template>
 
 <script lang="ts">
+import { defineComponent, ref } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { defineComponent, ref } from '@vue/composition-api';
 import { v4 as uuid } from 'uuid';
 
 import type { RankInterface } from '.bot/src/bot/database/entity/rank';

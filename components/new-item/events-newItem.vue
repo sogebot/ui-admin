@@ -154,13 +154,13 @@
 </template>
 
 <script lang="ts">
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineAsyncComponent,
   defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 

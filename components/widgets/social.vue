@@ -34,18 +34,18 @@
 
 <script lang="ts">
 import { mdiLink, mdiTwitter } from '@mdi/js';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
-  defineComponent, onMounted, ref,
-} from '@vue/composition-api';
+  defineComponent, onMounted, ref, useContext,
+} from '@nuxtjs/composition-api';
+import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
+import translate from '@sogebot/ui-helpers/translate';
 
 import type { WidgetSocialInterface } from '.bot/src/bot/database/entity/widget';
 import api from '~/functions/api';
 
 export default defineComponent({
-  setup (_, ctx) {
+  setup () {
     const isPopout = computed(() => location.href.includes('popout'));
     const height = ref(600);
     const items = ref([] as WidgetSocialInterface[]);
@@ -59,7 +59,7 @@ export default defineComponent({
     }
 
     const refresh = async () => {
-      const response = await api.get<WidgetSocialInterface[]>(ctx.root.$axios, `/api/v1/social`);
+      const response = await api.get<WidgetSocialInterface[]>(useContext().$axios, `/api/v1/social`);
       items.value = response.data.data;
     };
 

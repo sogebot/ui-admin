@@ -7,7 +7,7 @@
 <script lang="ts">
 import {
   computed, defineComponent, onMounted, onUnmounted, reactive, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
 
 const getTimeToReveal = (text: string, maxTimeToDecrypt: number) => {
   const baffledTimeToReveal = [];

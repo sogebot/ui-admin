@@ -148,12 +148,12 @@
 import {
   mdiCheckBoxMultipleOutline, mdiLink, mdiMagnify,
 } from '@mdi/js';
+import {
+  computed, defineComponent, onMounted, ref, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  computed, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { escapeRegExp, isNil } from 'lodash-es';
 
 import type { SongBanInterface } from '.bot/src/bot/database/entity/song';

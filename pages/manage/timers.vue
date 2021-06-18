@@ -228,12 +228,12 @@
 
 <script lang="ts">
 import { mdiCheckBoxMultipleOutline, mdiMagnify } from '@mdi/js';
+import {
+  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { capitalize, orderBy } from 'lodash-es';
 
 import type { TimerInterface } from '.bot/src/bot/database/entity/timer';

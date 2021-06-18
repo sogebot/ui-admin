@@ -53,19 +53,19 @@
 
 <script lang="ts">
 import { mdiPencil } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineAsyncComponent,
-  defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+  defineComponent, onMounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 
 import type { WidgetCustomInterface } from '.bot/src/bot/database/entity/widget';
 import api from '~/functions/api';
 
 export default defineComponent({
   components: { edit: defineAsyncComponent({ loader: () => import('~/components/widgets/custom/edit.vue') }) },
-  setup (_, ctx) {
+  setup () {
     const isPopout = computed(() => location.href.includes('popout'));
     const height = ref(600);
     const show = ref(false);
@@ -84,7 +84,7 @@ export default defineComponent({
     }
 
     const refresh = async () => {
-      const response = await api.get<WidgetCustomInterface[]>(ctx.root.$axios, `/api/v1/custom`);
+      const response = await api.get<WidgetCustomInterface[]>(useContext().$axios, `/api/v1/custom`);
       items.value = response.data.data;
     };
 

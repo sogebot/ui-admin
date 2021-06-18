@@ -182,11 +182,11 @@
 import {
   mdiCheckBoxMultipleOutline, mdiChevronRight, mdiClipboard, mdiClipboardCheck, mdiLink,
 } from '@mdi/js';
+import {
+  defineComponent, onMounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import {
   cloneDeep, debounce, isEqual,
 } from 'lodash-es';
@@ -203,7 +203,7 @@ export default defineComponent({
     clipscarousel: () => import('~/components/registry/overlays/clipscarousel.vue'),
     obswebsocket:  () => import('~/components/registry/overlays/obswebsocket.vue'),
   },
-  setup (_, ctx) {
+  setup () {
     const items = ref([] as OverlayMappers[]);
     const cacheItems = ref([] as OverlayMappers[]);
     const overlayOptions = [
@@ -301,7 +301,7 @@ export default defineComponent({
 
         promised.push(
           new Promise((resolve, reject) => {
-            api.patch(ctx.root.$axios, `/api/v1/overlay/${item.id}`, item)
+            api.patch(useContext().$axios, `/api/v1/overlay/${item.id}`, item)
               .then(() => resolve(true))
               .catch((e) => {
                 reject(e);
@@ -315,7 +315,7 @@ export default defineComponent({
     }, 250), { deep: true });
 
     const refresh = () => {
-      api.get<OverlayMappers[]>(ctx.root.$axios, `/api/v1/overlay/`)
+      api.get<OverlayMappers[]>(useContext().$axios, `/api/v1/overlay/`)
         .then((response) => {
           items.value = cloneDeep(response.data.data);
           cacheItems.value = cloneDeep(response.data.data);
@@ -332,7 +332,7 @@ export default defineComponent({
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        api.delete(ctx.root.$axios, `/api/v1/overlay/${item.id}`).catch(() => {
+        api.delete(useContext().$axios, `/api/v1/overlay/${item.id}`).catch(() => {
           return true;
         });
       });
@@ -349,7 +349,7 @@ export default defineComponent({
         opts:  null,
       };
       items.value.push(item);
-      api.post<OverlayMappers>(ctx.root.$axios, '/api/v1/overlay', item)
+      api.post<OverlayMappers>(useContext().$axios, '/api/v1/overlay', item)
         .then(() => {
           EventBus.$emit('snack', 'success', 'Data created.');
         });

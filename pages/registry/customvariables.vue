@@ -277,14 +277,14 @@
 import {
   mdiCheckBoxMultipleOutline, mdiCog, mdiCogRefresh, mdiContentCopy, mdiExclamationThick, mdiMagnify, mdiPencil,
 } from '@mdi/js';
+import {
+  computed,
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  computed,
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { v4 } from 'uuid';
 
 import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';
@@ -300,7 +300,7 @@ import {
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/customvariables-newItem.vue') }) },
-  setup (_, ctx) {
+  setup () {
     const rules = { variableName: [required, startsWith(['$_']), minLength(3), restrictedChars([' '])] };
 
     const items = ref([] as VariableInterface[]);
@@ -397,7 +397,7 @@ export default defineComponent({
           });
         }),
         new Promise<void>((resolve) => {
-          api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+          api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
             .then((response) => {
               permissions.value = response.data.data;
               resolve();

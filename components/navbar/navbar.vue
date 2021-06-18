@@ -46,11 +46,11 @@
 
 <script lang="ts">
 import { mdiArrowCollapseLeft } from '@mdi/js';
+import {
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext, useMeta, useRoute,
+} from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineAsyncComponent, defineComponent, onMounted, ref,
-} from '@vue/composition-api';
 
 const navmenu = defineAsyncComponent({ loader: () => import('./menu.vue') });
 const user = defineAsyncComponent({ loader: () => import('../user.vue') });
@@ -95,14 +95,16 @@ export default defineComponent({
     navmenu,
     user,
   },
-  setup (_, ctx) {
+  setup () {
     const name = ref('');
     const channelName = ref('');
-    const drawer = ref(!(ctx.root as any).$vuetify.breakpoint.mobile);
+    const drawer = ref(!useContext().$vuetify.breakpoint.mobile);
     const miniVariant = ref(false);
 
+    useMeta(() => ({ title: `${name.value} @ ${channelName.value}` }));
+
     onMounted(() => {
-      console.debug('#route | ' + ctx.root.$route.name);
+      console.debug('#route | ' + useRoute().value.name);
       const socket = getSocket('/', true);
       socket.emit('name', (recvName: string) => { name.value = recvName; });
       socket.emit('channelName', (recvName: string) => { channelName.value = recvName; });
@@ -112,8 +114,6 @@ export default defineComponent({
       name, channelName, drawer, translate, routeMapper, miniVariant, mdiArrowCollapseLeft,
     };
   },
-  head () {
-    return { title: `${this.name as string} @ ${this.channelName as string}` };
-  },
+  head: {}, // enable useMeta
 });
 </script>

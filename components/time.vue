@@ -46,11 +46,11 @@
 
 <script lang="ts">
 import {
+  defineComponent, ref, watch,
+} from '@nuxtjs/composition-api';
+import {
   HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
-import {
-  defineComponent, ref, watch,
-} from '@vue/composition-api';
 
 export default defineComponent({
   model: {

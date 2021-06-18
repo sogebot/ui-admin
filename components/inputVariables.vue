@@ -29,10 +29,10 @@
 </template>
 <script lang="ts">
 import { mdiVariable } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed, defineComponent, ref,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 
 export default defineComponent({
   props: { filters: Array },

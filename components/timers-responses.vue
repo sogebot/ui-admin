@@ -121,10 +121,10 @@
 import {
   mdiCheckboxBlankCircleOutline, mdiCheckboxMarkedCircle, mdiDrag, mdiTrashCan,
 } from '@mdi/js';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent, defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, cloneDeep } from 'lodash-es';
 import draggable from 'vuedraggable';
 

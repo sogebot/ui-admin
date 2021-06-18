@@ -131,14 +131,17 @@
 import {
   mdiClose, mdiExclamationThick, mdiPlus,
 } from '@mdi/js';
-import { getContrastColor, getRandomColor } from '@sogebot/ui-helpers/colors';
-import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
-import translate from '@sogebot/ui-helpers/translate';
+import {
+  useContext, useRoute, useRouter,
+} from '@nuxtjs/composition-api';
 import {
   computed,
   defineAsyncComponent,
   defineComponent, onMounted, ref,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { getContrastColor, getRandomColor } from '@sogebot/ui-helpers/colors';
+import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   cloneDeep, isEqual, orderBy,
 } from 'lodash-es';
@@ -195,7 +198,7 @@ export default defineComponent({
     tts:          defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
     optionsTable: defineAsyncComponent({ loader: () => import('~/components/randomizer/table.vue') }),
   },
-  setup (_, ctx) {
+  setup () {
     const stepper = ref(1);
 
     const form1 = ref(null);
@@ -219,20 +222,20 @@ export default defineComponent({
     const rules = { name: [required], command: [required, startsWith(['!']), minLength(3)] };
 
     onMounted(() => {
-      if (ctx.root.$route.params.id && ctx.root.$route.params.id !== 'new') {
+      if (useRoute().value.params.id && useRoute().value.params.id !== 'new') {
         // load initial item
         isLoading.value = true;
-        api.getOne<RandomizerInterface>(ctx.root.$axios, `/api/v1/registry/randomizer/`, String(ctx.root.$route.params.id) ?? '')
+        api.getOne<RandomizerInterface>(useContext().$axios, `/api/v1/registry/randomizer/`, String(useRoute().value.params.id) ?? '')
           .then((response) => {
             item.value = response.data;
             isLoading.value = false;
           })
           .catch(() => {
-            ctx.root.$router.push({ path: '/registry/randomizer' });
+            useRouter().push({ path: '/registry/randomizer' });
             EventBus.$emit('snack', 'error', 'Data not found.');
           });
 
-        api.get<PermissionsInterface[]>(ctx.root.$axios, '/api/v1/settings/permissions')
+        api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
           .then((response) => {
             permissions.value = response.data.data;
           });
@@ -244,9 +247,9 @@ export default defineComponent({
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
         isSaving.value = true;
-        api.patch(ctx.root.$axios, `/api/v1/registry/randomizer/${item.value.id ?? v4()}`, item.value)
+        api.patch(useContext().$axios, `/api/v1/registry/randomizer/${item.value.id ?? v4()}`, item.value)
           .then((response) => {
-            ctx.root.$router.push({ params: { id: response.id ?? '' } });
+            useRouter().push({ params: { id: response.id ?? '' } });
             EventBus.$emit('snack', 'success', 'Data saved.');
           })
           .catch((e) => {
@@ -258,7 +261,7 @@ export default defineComponent({
     };
 
     const goBack = () => {
-      ctx.root.$router.push({ path: '/registry/randomizer' });
+      useRouter().push({ path: '/registry/randomizer' });
     };
 
     const addOption = () => {

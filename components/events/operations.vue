@@ -129,12 +129,12 @@
 
 <script lang="ts">
 import { mdiTrashCan } from '@mdi/js';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import {
   computed,
   defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   capitalize, cloneDeep, orderBy,
 } from 'lodash-es';

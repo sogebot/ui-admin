@@ -174,11 +174,11 @@
 import {
   mdiCheckBoxMultipleOutline, mdiContentCopy, mdiLink, mdiMagnify, mdiPencil,
 } from '@mdi/js';
+import {
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
+} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { v4 } from 'uuid';
 
 import type { AlertInterface } from '.bot/src/bot/database/entity/alert';
@@ -190,7 +190,7 @@ import { required } from '~/functions/validators';
 
 export default defineComponent({
   components: { 'test-dialog': defineAsyncComponent({ loader: () => import('~/components/registry/alerts/test-dialog.vue') }) },
-  setup (_, ctx) {
+  setup () {
     const rules = { name: [required] };
 
     const items = ref([] as AlertInterface[]);
@@ -228,7 +228,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      api.get<AlertInterface[]>(ctx.root.$axios, '/api/v1/registry/alerts/')
+      api.get<AlertInterface[]>(useContext().$axios, '/api/v1/registry/alerts/')
         .then((response) => {
           items.value = response.data.data;
           // we also need to reset selection values
@@ -252,7 +252,7 @@ export default defineComponent({
       await Promise.allSettled(
         selected.value.map((item) => {
           return new Promise((resolve) => {
-            api.delete(ctx.root.$axios, `/api/v1/registry/alerts/${item.id}`)
+            api.delete(useContext().$axios, `/api/v1/registry/alerts/${item.id}`)
               .then(() => {
                 resolve(true);
               });
@@ -351,7 +351,7 @@ export default defineComponent({
         }),
       } as AlertInterface;
 
-      api.post(ctx.root.$axios, '/api/v1/registry/alerts', clonedItem)
+      api.post(useContext().$axios, '/api/v1/registry/alerts', clonedItem)
         .then(async () => {
           for (const mediaId of mediaMap.keys()) {
             await new Promise<void>((resolve) => {
@@ -361,7 +361,7 @@ export default defineComponent({
                 .then(async (data) => {
                   const fd = new FormData();
                   fd.append('file', data);
-                  await api.put(ctx.root.$axios, `/api/v1/registry/alerts/media/${mediaMap.get(mediaId)}`, fd);
+                  await api.put(useContext().$axios, `/api/v1/registry/alerts/media/${mediaMap.get(mediaId)}`, fd);
                   resolve();
                 });
             });

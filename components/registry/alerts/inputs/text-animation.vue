@@ -76,11 +76,11 @@
 </template>
 
 <script lang="ts">
-import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent,
   defineComponent, ref, watch,
-} from '@vue/composition-api';
+} from '@nuxtjs/composition-api';
+import translate from '@sogebot/ui-helpers/translate';
 
 require('animate.css');
 
