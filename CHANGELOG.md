@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.30](https://github.com/sogebot/ui-admin/compare/v0.0.29...v0.0.30) (2021-06-18)
+
+
+### Bug Fixes
+
+* **nuxt:** move to full nuxt composition-api ([8a8fc04](https://github.com/sogebot/ui-admin/commit/8a8fc04283def066e54cf72de2b54d90b4f1d721))
+
 ### [0.0.29](https://github.com/sogebot/ui-admin/compare/v0.0.28...v0.0.29) (2021-06-17)
 
 
