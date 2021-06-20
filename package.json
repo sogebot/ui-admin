@@ -2,6 +2,9 @@
   "name": "@sogebot/ui-admin",
   "version": "0.0.30",
   "author": "sogehige@gmail.com",
+  "engines": {
+    "npm": "~7.18.0"
+  },
   "description": "Nuxt.js version of ui-admin",
   "scripts": {
     "postinstall": "patch-package",
@@ -64,7 +67,7 @@
     "@types/uuid": "^8.3.0",
     "@types/vue-chartkick": "^0.5.1",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.28.0",
+    "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-nuxt": "^2.0.0",
     "eslint-plugin-prettier": "^3.4.0",
