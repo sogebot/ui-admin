@@ -1,21 +1,22 @@
 <template>
   <loading v-if="!settings" />
   <v-card v-else flat>
-    <v-card-title>{{ translate('categories.currency') }}</v-card-title>
-    <v-card-text>
-      <v-select
-        v-model="settings.currency.mainCurrency[0]"
-        :items="ui.currency.mainCurrency.values"
-        :label="translate('core.currency.settings.mainCurrency')"
-        @input="$store.commit('settings/pending', true)"
-      >
-        <template v-if="settings.currency.mainCurrency[0] !== settings.currency.mainCurrency[1]" #append-outer>
-          <v-btn text @click.stop="$store.commit('settings/pending', true); settings.currency.mainCurrency = [settings.currency.mainCurrency[1], settings.currency.mainCurrency[1]]">
-            Revert
-          </v-btn>
-        </template>
-      </v-select>
-    </v-card-text>
+    <v-form v-model="valid" lazy-validation>
+      <v-card-text>
+        <v-select
+          v-model="settings.currency.mainCurrency[0]"
+          :items="ui.currency.mainCurrency.values"
+          :label="translate('core.currency.settings.mainCurrency')"
+          @input="$store.commit('settings/pending', true)"
+        >
+          <template v-if="settings.currency.mainCurrency[0] !== settings.currency.mainCurrency[1]" #append-outer>
+            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.currency.mainCurrency = [settings.currency.mainCurrency[1], settings.currency.mainCurrency[1]]">
+              Revert
+            </v-btn>
+          </template>
+        </v-select>
+      </v-card-text>
+    </v-form>
   </v-card>
 </template>
 
@@ -45,6 +46,11 @@ export default defineComponent({
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
+    const valid = ref(true);
+
+    watch(valid, (val) => {
+      store.commit('settings/valid', val);
+    }, { immediate: true });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -73,6 +79,7 @@ export default defineComponent({
       settings,
       ui,
       translate,
+      valid,
     };
   },
 });

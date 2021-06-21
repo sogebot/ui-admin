@@ -1,22 +1,16 @@
 <template>
   <loading v-if="!settings" />
-  <v-card flat v-else>
-    <v-form v-model="valid" lazy-validation>
-      <v-card-text>
-        <v-select
-          v-model="settings.general.lang[0]"
-          :items="ui.general.lang.values"
-          :label="translate('core.general.settings.lang')"
-          @input="$store.commit('settings/pending', true)"
-        >
-          <template v-if="settings.general.lang[0] !== settings.general.lang[1]" #append-outer>
-            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.general.lang = [settings.general.lang[1], settings.general.lang[1]]">
-              Revert
-            </v-btn>
-          </template>
-        </v-select>
-      </v-card-text>
-    </v-form>
+  <v-card v-else flat>
+    <v-card-text>
+      <v-form ref="form" v-model="valid">
+        <v-checkbox
+          v-model="settings.general.isTitleForced"
+          dense
+          :label="translate('core.twitch.settings.isTitleForced')"
+          @click="$store.commit('settings/pending', true)"
+        />
+      </v-form>
+    </v-card-text>
   </v-card>
 </template>
 
@@ -30,6 +24,7 @@ import {
 
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
+import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
   beforeRouteLeave (_to, _from, next) {
@@ -47,24 +42,25 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
+    const form = ref(null);
+
+    watch(() => store.state.settings.save, (val) => {
+      if (val && settings.value) {
+        saveSettings('/core/twitch', store, settings.value);
+      }
+    });
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
     }, { immediate: true });
 
-    watch(() => store.state.settings.save, (val) => {
-      if (val && settings.value) {
-        saveSettings('/core/general', store, settings.value);
-      }
-    });
-
     onMounted(() => {
       store.commit('panel/breadcrumbs', [
         { text: translate('menu.settings') },
         { text: translate('menu.core') },
-        { text: translate('categories.general') },
+        { text: translate('menu.socket') },
       ]);
-      getSocket(`/core/general`)
+      getSocket(`/core/twitch`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
           if (err) {
             error(err);
@@ -80,6 +76,11 @@ export default defineComponent({
       ui,
       translate,
       valid,
+      form,
+
+      // validators
+      required,
+      minValue,
     };
   },
 });

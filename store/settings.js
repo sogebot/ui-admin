@@ -1,6 +1,7 @@
 export const state = () => ({
   save:    false,
   pending: false,
+  valid:   false,
 });
 
 export const mutations = {
@@ -9,5 +10,8 @@ export const mutations = {
   },
   pending (storeState, val) {
     storeState.pending = val;
+  },
+  valid (storeState, val) {
+    storeState.valid = val;
   },
 };

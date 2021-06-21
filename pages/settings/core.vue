@@ -1,7 +1,7 @@
 <template>
   <v-card class="fill-height">
     <portal to="navbar">
-      <v-btn text :disabled="!$store.state.settings.pending" :loading="$store.state.settings.save" @click="$store.commit('settings/save', true)">
+      <v-btn text :disabled="!$store.state.settings.pending && $store.state.settings.valid" :loading="$store.state.settings.save" @click="$store.commit('settings/save', true)">
         {{ translate('dialog.buttons.saveChanges.idle') }}
       </v-btn>
     </portal>

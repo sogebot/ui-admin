@@ -1,22 +1,77 @@
 <template>
   <loading v-if="!settings" />
   <v-card flat v-else>
-    <v-card-title>{{ translate('categories.bot') }}</v-card-title>
-    <v-card-text>
-      {{ settings.bot }}
-      <!--v-select
-        v-model="settings.oauth.lang[0]"
-        :items="ui.general.lang.values"
-        :label="translate('core.general.settings.lang')"
-        @input="$store.commit('settings/pending', true)"
-      >
-        <template v-if="settings.general.lang[0] !== settings.general.lang[1]" #append-outer>
-          <v-btn text @click.stop="settings.general.lang = [settings.general.lang[1], settings.general.lang[1]]">
-            Revert
-          </v-btn>
-        </template>
-      </v-select-->
-    </v-card-text>
+    <v-form v-model="valid" lazy-validation>
+      <v-card-title>{{ translate('categories.general') }}</v-card-title>
+      <v-card-text>
+        <v-text-field
+          :label="translate('core.oauth.settings.generalChannel')"
+          v-model="settings.general.generalChannel[0]"
+          @input="$store.commit('settings/pending', true)"
+        />
+
+        <v-textarea
+          auto-grow
+          persistent-hint
+          :label="translate('core.oauth.settings.generalOwners')"
+          :value="settings.general.generalOwners[0].filter(String).join('\n')"
+          @input="settings.general.generalOwners[0] = $event.split('\n').filter(String); $store.commit('settings/pending', true)"
+          :hint="translate('one-record-per-line')"
+        />
+      </v-card-text>
+
+      <v-divider />
+
+      <v-card-title>{{ translate('categories.bot') }}</v-card-title>
+      <v-card-text>
+        <v-text-field
+          :label="translate('core.oauth.settings.botAccessToken')"
+          v-model="settings.bot.botAccessToken[0]"
+          @input="$store.commit('settings/pending', true)"
+          type="password"
+        />
+        <v-text-field
+          :label="translate('core.oauth.settings.botRefreshToken')"
+          v-model="settings.bot.botRefreshToken[0]"
+          @input="$store.commit('settings/pending', true)"
+          type="password"
+        />
+        <v-text-field
+          :label="translate('core.oauth.settings.botUsername')"
+          v-model="settings.bot.botUsername[0]"
+          disabled
+        />
+        <v-btn href="https://twitchtokengenerator.com/quick/jLbq7v1pzF" target="_blank">
+          {{ translate('commons.generate') }}
+        </v-btn>
+      </v-card-text>
+
+      <v-divider />
+
+      <v-card-title>{{ translate('categories.broadcaster') }}</v-card-title>
+      <v-card-text>
+        <v-text-field
+          :label="translate('core.oauth.settings.broadcasterAccessToken')"
+          v-model="settings.broadcaster.broadcasterAccessToken[0]"
+          @input="$store.commit('settings/pending', true)"
+          type="password"
+        />
+        <v-text-field
+          :label="translate('core.oauth.settings.broadcasterRefreshToken')"
+          v-model="settings.broadcaster.broadcasterRefreshToken[0]"
+          @input="$store.commit('settings/pending', true)"
+          type="password"
+        />
+        <v-text-field
+          :label="translate('core.oauth.settings.broadcasterUsername')"
+          v-model="settings.broadcaster.broadcasterUsername[0]"
+          disabled
+        />
+        <v-btn href="https://twitchtokengenerator.com/quick/XH6B7JteDO" target="_blank">
+          {{ translate('commons.generate') }}
+        </v-btn>
+      </v-card-text>
+    </v-form>
   </v-card>
 </template>
 
@@ -46,6 +101,11 @@ export default defineComponent({
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
+    const valid = ref(true);
+
+    watch(valid, (val) => {
+      store.commit('settings/valid', val);
+    }, { immediate: true });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -74,6 +134,7 @@ export default defineComponent({
       settings,
       ui,
       translate,
+      valid,
     };
   },
 });
