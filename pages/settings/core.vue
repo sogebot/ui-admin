@@ -8,7 +8,7 @@
     <v-card-text class="pa-0">
       <loading v-if="isLoading" />
       <template v-else>
-        <v-tabs centered grow dense>
+        <v-tabs centered grow dense ref="tabs">
           <v-tab v-for="item of menu" :key="item.name" nuxt :to="'/settings/core/' + item.name">{{ item.name }}</v-tab>
         </v-tabs>
         <nuxt-child />
@@ -24,7 +24,7 @@ import {
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref,
+  defineAsyncComponent, defineComponent, nextTick, onMounted, ref,
 } from '@vue/composition-api';
 
 import { error } from '~/functions/error';
@@ -39,6 +39,7 @@ export default defineComponent({
     const menu = ref([] as systemFromIO[]);
     const route = useRoute();
     const router = useRouter();
+    const tabs = ref(null);
 
     onMounted(() => {
       store.commit('panel/breadcrumbs', [
@@ -53,17 +54,32 @@ export default defineComponent({
         const sortedSystems = systems.sort((a, b) => {
           return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
         });
-        if (!sortedSystems.map(o => o.name).includes(route.value.params.id)) {
+        const path = route.value.path.split('/');
+        if (!sortedSystems.map(o => o.name).includes(path[path.length - 1])) {
           router.push({ name: 'settings-core-' + sortedSystems[0].name });
         }
         menu.value = sortedSystems;
         isLoading.value = false;
       });
+
+      setInterval(() => {
+        updateTabWidth();
+      }, 1000);
     });
 
+    const updateTabWidth = () => {
+      if (tabs.value) {
+        (tabs.value as any).callSlider();
+      } else {
+        nextTick(() => {
+          updateTabWidth();
+        });
+      }
+    };
     return {
       isLoading,
       menu,
+      tabs,
 
       // others
       translate,

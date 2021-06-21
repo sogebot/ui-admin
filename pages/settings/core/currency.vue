@@ -10,7 +10,7 @@
         @input="$store.commit('settings/pending', true)"
       >
         <template v-if="settings.currency.mainCurrency[0] !== settings.currency.mainCurrency[1]" #append-outer>
-          <v-btn text @click.stop="settings.currency.mainCurrency = [settings.currency.mainCurrency[1], settings.currency.mainCurrency[1]]">
+          <v-btn text @click.stop="$store.commit('settings/pending', true); settings.currency.mainCurrency = [settings.currency.mainCurrency[1], settings.currency.mainCurrency[1]]">
             Revert
           </v-btn>
         </template>
@@ -26,10 +26,9 @@ import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
-import { cloneDeep } from 'lodash';
 
 import { error } from '~/functions/error';
-import { flatten, unflatten } from '~/functions/flatten';
+import { saveSettings } from '~/functions/settings';
 
 export default defineComponent({
   beforeRouteLeave (_to, _from, next) {
@@ -49,62 +48,7 @@ export default defineComponent({
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
-        let clonedSettings = cloneDeep(settings.value);
-
-        if (clonedSettings.settings) {
-          for (const [name, value] of Object.entries(clonedSettings.settings)) {
-            delete clonedSettings.settings[name];
-            clonedSettings[name] = value;
-          }
-          delete clonedSettings.settings;
-        }
-
-        // flat variables - getting rid of category
-        clonedSettings = flatten(clonedSettings);
-        for (const key of Object.keys(clonedSettings)) {
-          if (key.includes('__permission_based__') || key.includes('commands') || key.includes('_permission')) {
-            continue;
-          }
-
-          const value = clonedSettings[key];
-          const keyWithoutCategory = key.replace(/([\w]*\.)/, '');
-          delete clonedSettings[key];
-          console.debug(`FROM: ${key}`);
-          console.debug(`TO:   ${keyWithoutCategory}`);
-          clonedSettings[keyWithoutCategory] = value;
-        }
-        clonedSettings = unflatten(clonedSettings);
-
-        // flat permission based variables - getting rid of category
-        if (clonedSettings.__permission_based__) {
-          clonedSettings.__permission_based__ = flatten(clonedSettings.__permission_based__);
-          for (const key of Object.keys(clonedSettings.__permission_based__)) {
-            const match = key.match(/\./g);
-            if (match && match.length > 1) {
-              const value = clonedSettings.__permission_based__[key];
-              delete clonedSettings.__permission_based__[key];
-              const keyWithoutCategory = key.replace(/([\w]*\.)/, '');
-              console.debug(`FROM: ${key}`);
-              console.debug(`TO:   ${keyWithoutCategory}`);
-              clonedSettings.__permission_based__[keyWithoutCategory] = value;
-            }
-          }
-          clonedSettings.__permission_based__ = unflatten(clonedSettings.__permission_based__);
-        }
-
-        for (const key of Object.keys(clonedSettings)) {
-          clonedSettings[key] = Array.isArray(clonedSettings[key])
-            ? clonedSettings[key][0] // select current values
-            : clonedSettings[key];
-        }
-
-        getSocket(`/core/currency`).emit('settings.update', clonedSettings, (err: string | null) => {
-          store.commit('settings/save', false);
-          store.commit('settings/pending', false);
-          if (err) {
-            return error(err);
-          }
-        });
+        saveSettings('/core/currency', store, settings.value);
       }
     });
 

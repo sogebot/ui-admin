@@ -1,20 +1,21 @@
 <template>
   <loading v-if="!settings" />
   <v-card flat v-else>
-    <v-card-title>{{ translate('categories.general') }}</v-card-title>
+    <v-card-title>{{ translate('categories.bot') }}</v-card-title>
     <v-card-text>
-      <v-select
-        v-model="settings.general.lang[0]"
+      {{ settings.bot }}
+      <!--v-select
+        v-model="settings.oauth.lang[0]"
         :items="ui.general.lang.values"
         :label="translate('core.general.settings.lang')"
         @input="$store.commit('settings/pending', true)"
       >
         <template v-if="settings.general.lang[0] !== settings.general.lang[1]" #append-outer>
-          <v-btn text @click.stop="$store.commit('settings/pending', true); settings.general.lang = [settings.general.lang[1], settings.general.lang[1]]">
+          <v-btn text @click.stop="settings.general.lang = [settings.general.lang[1], settings.general.lang[1]]">
             Revert
           </v-btn>
         </template>
-      </v-select>
+      </v-select-->
     </v-card-text>
   </v-card>
 </template>
@@ -48,7 +49,7 @@ export default defineComponent({
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
-        saveSettings('/core/general', store, settings.value);
+        saveSettings('/core/oauth', store, settings.value);
       }
     });
 
@@ -56,9 +57,9 @@ export default defineComponent({
       store.commit('panel/breadcrumbs', [
         { text: translate('menu.settings') },
         { text: translate('menu.core') },
-        { text: translate('categories.general') },
+        { text: translate('menu.oauth') },
       ]);
-      getSocket(`/core/general`)
+      getSocket(`/core/oauth`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
           if (err) {
             error(err);
