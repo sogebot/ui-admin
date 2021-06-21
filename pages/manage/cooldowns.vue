@@ -1,22 +1,12 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-alert
       v-if="!$store.state.$systems.find(o => o.name === 'cooldown').enabled"
-      dismissible
-      prominent
-      dense
+      color="error"
+      class="mb-0"
     >
-      <div class="text-caption">
-        {{ translate('this-system-is-disabled') }}
-      </div>
+      {{ translate('this-system-is-disabled') }}
     </v-alert>
-
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.cooldown') }}
-    </h2>
 
     <v-data-table
       v-model="selected"
@@ -34,7 +24,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="my-2 pb-2 mt-0"
         >
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
@@ -246,7 +236,7 @@
 <script lang="ts">
 import { mdiCheckBoxMultipleOutline, mdiMagnify } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -266,6 +256,7 @@ type CooldownInterfaceUI = CooldownInterface & { count: number };
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/cooldowns-newItem.vue') }) },
   setup () {
+    const store = useStore();
     const rules = { name: [required, minLength(2)], count: [required, minValue(30)] };
 
     const items = ref([] as CooldownInterfaceUI[]);
@@ -339,6 +330,10 @@ export default defineComponent({
     ];
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.commands') },
+        { text: translate('menu.cooldown') },
+      ]);
       refresh();
     });
 

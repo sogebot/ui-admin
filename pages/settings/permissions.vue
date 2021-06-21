@@ -1,9 +1,5 @@
 <template>
   <v-card :loading="isLoading" class="fill-height">
-    <v-toolbar v-if="!$vuetify.breakpoint.mobile" dense color="dark" style="z-index: 999;">
-      <span class="headline">{{ translate('menu.permissions') }}</span>
-    </v-toolbar>
-
     <v-overlay v-if="isLoading" absolute>
       <v-row>
         <v-col class="text-center">
@@ -35,7 +31,6 @@
                   nuxt
                   :to="'/settings/permissions/' + permission.id"
                 >
-                  {{ permission.order }}
                   <v-icon v-if="permission.id !== defaultPermissions.VIEWERS && permission.id !== defaultPermissions.CASTERS" :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, permission.id)">
                     {{ mdiDrag }}
                   </v-icon>
@@ -71,7 +66,7 @@ import {
   mdiCog, mdiDrag, mdiEqual, mdiGreaterThanOrEqual, mdiPlus,
 } from '@mdi/js';
 import {
-  useContext, useRoute, useRouter,
+  useContext, useRoute, useRouter, useStore,
 } from '@nuxtjs/composition-api';
 import {
   defineComponent, onMounted, ref, watch,
@@ -179,6 +174,10 @@ function handleDragStart (e: DragEvent) {
 
 export default defineComponent({
   setup () {
+    const { $axios } = useContext();
+    const route = useRoute();
+    const router = useRouter();
+    const store = useStore();
     const isLoading = ref(true);
     const tab = ref(0);
     const permissions = ref([] as PermissionsInterface[]);
@@ -189,13 +188,21 @@ export default defineComponent({
       saving: boolean;
     });
 
-    watch(() => useRoute().value.params.id, (val?: string) => {
+    watch(() => route.value.params.id, (val?: string) => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.settings') },
+        { text: translate('menu.permissions') },
+      ]);
       if (!val && !isLoading.value) {
         refresh();
       }
     });
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.settings') },
+        { text: translate('menu.permissions') },
+      ]);
       refresh();
       EventBus
         .$off('settings::permissions::refresh')
@@ -232,13 +239,13 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
+      api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
         .then((response) => {
           permissions.value = response.data.data;
           isLoading.value = false;
 
-          if (!useRoute().value.params.id) {
-            useRouter().replace('/settings/permissions/' + permissions.value[0].id);
+          if (!route.value.params.id) {
+            router.replace('/settings/permissions/' + permissions.value[0].id);
           }
         });
     };
@@ -257,7 +264,7 @@ export default defineComponent({
       Promise.all(
         permissions.value.map((permission) => {
           return new Promise((resolve) => {
-            api.patch(useContext().$axios, '/api/v1/settings/permissions/' + permission.id, permission)
+            api.patch($axios, '/api/v1/settings/permissions/' + permission.id, permission)
               .catch((err) => {
                 error(err);
               })

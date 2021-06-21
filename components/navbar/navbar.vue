@@ -1,10 +1,23 @@
 <template>
   <span>
-    <v-app-bar v-if="$vuetify.breakpoint.mobile" fixed app dense>
+    <v-app-bar fixed app dense v-if="!$store.state.panel.breadcrumbsOnlyMobile || ($vuetify.breakpoint.mobile && $store.state.panel.breadcrumbsOnlyMobile)">
       <v-app-bar-nav-icon
+        v-if="$vuetify.breakpoint.mobile"
         @click.stop="drawer = !drawer"
       />
-      <v-toolbar-title>{{ translate('menu.' + routeMapper.get($route.name.toLowerCase())) }}</v-toolbar-title>
+
+      <v-btn text v-if="$store.state.panel.back.length > 0" nuxt :to="$store.state.panel.back" color="primary" class="mr-4">
+        <v-icon>
+          {{ mdiArrowLeft }}
+        </v-icon>
+      </v-btn>
+
+      <v-breadcrumbs
+        class="pl-0"
+        :items="$store.state.panel.breadcrumbs"
+      />
+      <v-spacer />
+      <portal-target name="navbar"/>
     </v-app-bar>
     <v-navigation-drawer
       v-model="drawer"
@@ -45,7 +58,7 @@
 </template>
 
 <script lang="ts">
-import { mdiArrowCollapseLeft } from '@mdi/js';
+import { mdiArrowCollapseLeft, mdiArrowLeft } from '@mdi/js';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, useContext, useMeta, useRoute,
 } from '@nuxtjs/composition-api';
@@ -54,41 +67,6 @@ import translate from '@sogebot/ui-helpers/translate';
 
 const navmenu = defineAsyncComponent({ loader: () => import('./menu.vue') });
 const user = defineAsyncComponent({ loader: () => import('../user.vue') });
-
-const routeMapper = new Map<string, string>([
-  ['index', 'dashboard'],
-  ['manage-alias', 'alias'],
-  ['manage-botcommands', 'botcommands'],
-  ['manage-commands', 'customcommands'],
-  ['manage-cooldowns', 'cooldown'],
-  ['manage-keywords', 'keywords'],
-  ['manage-price', 'price'],
-  ['manage-polls', 'polls'],
-  ['manage-quotes', 'quotes'],
-  ['manage-ranks', 'ranks'],
-  ['manage-timers', 'timers'],
-  ['manage-viewers', 'viewers'],
-  ['manage-spotify-bannedsongs', 'spotifybannedsongs'],
-  ['manage-songs-bannedsongs', 'bannedsongs'],
-  ['manage-songs-playlist', 'playlist'],
-  ['manage-events', 'event-listeners'],
-  ['manage-highlights', 'highlights'],
-  ['manage-hltb', 'howlongtobeat'],
-  ['registry-customvariables', 'custom-variables'],
-  ['registry-textoverlay', 'textoverlay'],
-  ['registry-gallery', 'gallery'],
-  ['registry-carousel', 'carousel'],
-  ['registry-goals', 'goals'],
-  ['registry-obswebsocket', 'obswebsocket'],
-  ['registry-randomizer', 'randomizer'],
-  ['registry-alerts', 'alerts'],
-  ['stats-api', 'api'],
-  ['stats-bits', 'bits'],
-  ['stats-tips', 'tips'],
-  ['stats-commandcount', 'commandcount'],
-  ['stats-profiler', 'profiler'],
-  ['stats-api-explorer', 'api-explorer'],
-]);
 
 export default defineComponent({
   components: {
@@ -111,7 +89,7 @@ export default defineComponent({
     });
 
     return {
-      name, channelName, drawer, translate, routeMapper, miniVariant, mdiArrowCollapseLeft,
+      name, channelName, drawer, translate, miniVariant, mdiArrowCollapseLeft, mdiArrowLeft,
     };
   },
   head: {}, // enable useMeta

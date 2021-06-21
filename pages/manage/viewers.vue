@@ -1,11 +1,5 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.viewers') }}
-    </h2>
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
 
     <v-speed-dial
       v-model="fab"
@@ -71,7 +65,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="my-2 pb-2 mt-0"
         >
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
@@ -762,6 +756,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.manage') },
+        { text: translate('menu.viewers') },
+      ]);
       refresh();
     });
 

@@ -1,16 +1,10 @@
 <template>
   <v-card :loading="isLoading" class="fill-height">
-    <v-toolbar dense color="dark" style="z-index: 999;">
-      <v-btn icon @click="goBack">
-        <v-icon>{{ mdiClose }}</v-icon>
-      </v-btn>
-      <span v-if="$route.params.id === 'new'" class="headline">New Item</span>
-      <span v-else class="headline">Edit Item</span>
-      <v-spacer />
+    <portal to="navbar">
       <v-btn text :loading="isSaving" :disabled="!valid1 || isLoading" @click="save">
         {{ translate('dialog.buttons.saveChanges.idle') }}
       </v-btn>
-    </v-toolbar>
+    </portal>
 
     <v-fade-transition>
       <v-container v-if="!isLoading" fluid>
@@ -90,7 +84,7 @@
           <tts v-model="item.tts" />
         </v-expansion-panels>
 
-        <v-container fluid>
+        <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
           <v-tabs
             v-model="tabs"
             show-arrows="always"
@@ -190,7 +184,7 @@ import {
 } from '@mdi/js';
 import {
   defineAsyncComponent,
-  defineComponent, onMounted, ref, useContext, useRoute, useRouter,
+  defineComponent, onMounted, ref, useContext, useRoute, useRouter, useStore,
 } from '@nuxtjs/composition-api';
 import { getContrastColor } from '@sogebot/ui-helpers/colors';
 import translate from '@sogebot/ui-helpers/translate';
@@ -274,6 +268,9 @@ export default defineComponent({
     tts:      defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
   },
   setup () {
+    const { $axios } = useContext();
+    const router = useRouter();
+    const store = useStore();
     const tabs = ref(null);
     const variantTabs = ref(
       supportedEvents.map(ev => ({ [ev]: 0 })),
@@ -296,17 +293,34 @@ export default defineComponent({
     ];
 
     onMounted(() => {
+      store.commit('panel/back', '/registry/alerts/');
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.registry') },
+        { text: translate('menu.alerts') },
+        { text: translate('dialog.title.add') },
+      ]);
       if (useRoute().value.params.id && useRoute().value.params.id !== 'new') {
+        store.commit('panel/breadcrumbs', [
+          { text: translate('menu.registry') },
+          { text: translate('menu.alerts') },
+          { text: translate('dialog.title.edit') },
+        ]);
         // load initial item
         isLoading.value = true;
-        api.getOne<AlertInterface>(useContext().$axios, `/api/v1/registry/alerts`, String(useRoute().value.params.id) ?? '')
+        api.getOne<AlertInterface>($axios, `/api/v1/registry/alerts`, String(useRoute().value.params.id) ?? '')
           .then((response) => {
             console.log(response.data);
+            store.commit('panel/breadcrumbs', [
+              { text: translate('menu.registry') },
+              { text: translate('menu.alerts') },
+              { text: translate('dialog.title.edit') },
+              { text: response.data.id },
+            ]);
             item.value = cloneDeep(response.data);
             isLoading.value = false;
           })
           .catch(() => {
-            useRouter().push({ path: '/registry/alerts' });
+            router.push({ path: '/registry/alerts' });
             EventBus.$emit('snack', 'error', 'Data not found.');
           });
       }
@@ -317,9 +331,9 @@ export default defineComponent({
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
         isSaving.value = true;
-        api.patch(useContext().$axios, `/api/v1/registry/alerts/${item.value.id ?? v4()}`, item.value)
+        api.patch($axios, `/api/v1/registry/alerts/${item.value.id ?? v4()}`, item.value)
           .then((response) => {
-            useRouter().push({ params: { id: response.id ?? '' } });
+            router.push({ params: { id: response.id ?? '' } });
             EventBus.$emit('snack', 'success', 'Data saved.');
           })
           .catch((e) => {
@@ -341,7 +355,7 @@ export default defineComponent({
             .then((data) => {
               const fd = new FormData();
               fd.append('file', data);
-              api.post<FormData, AlertMediaInterface>(useContext().$axios, '/api/v1/registry/alerts/media/', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+              api.post<FormData, AlertMediaInterface>($axios, '/api/v1/registry/alerts/media/', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
                 .then((data2) => {
                   resolve(data2.id);
                 });
@@ -353,7 +367,7 @@ export default defineComponent({
             .then((data) => {
               const fd = new FormData();
               fd.append('file', data);
-              api.post<FormData, AlertMediaInterface>(useContext().$axios, '/api/v1/registry/alerts/media/', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+              api.post<FormData, AlertMediaInterface>($axios, '/api/v1/registry/alerts/media/', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
                 .then((data2) => {
                   resolve(data2.id);
                 });
@@ -531,10 +545,6 @@ export default defineComponent({
       }
     };
 
-    const goBack = () => {
-      useRouter().push({ path: '/registry/alerts' });
-    };
-
     const removeVariant = (event: keyof typeof supportedEvents, idx: number) => {
       (item.value as any)[event].splice(idx, 1);
     };
@@ -562,7 +572,7 @@ export default defineComponent({
             .then(async (data) => {
               const fd = new FormData();
               fd.append('file', data);
-              await api.put(useContext().$axios, `/api/v1/registry/alerts/media/${mediaMap.get(mediaId)}`, fd);
+              await api.put($axios, `/api/v1/registry/alerts/media/${mediaMap.get(mediaId)}`, fd);
               resolve();
             });
         });
@@ -588,7 +598,6 @@ export default defineComponent({
 
       // functions
       save,
-      goBack,
       newAlert,
       removeVariant,
       duplicateVariant,

@@ -3,9 +3,6 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.carousel') }}
-    </h2>
 
     <v-data-table
       v-model="selected"
@@ -25,7 +22,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="my-2 pb-2 mt-0"
         >
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
@@ -332,7 +329,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiDrag, mdiMagnify,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, onMounted, ref, useContext, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -418,7 +415,9 @@ function handleDragStart (e: DragEvent, id: string) {
 
 export default defineComponent({
   setup () {
+    const { $axios } = useContext();
     const items = ref([] as CarouselInterface[]);
+    const store = useStore();
 
     const imageShowOverlay = ref(false);
     const imageShow = ref(null as null | string);
@@ -530,6 +529,10 @@ export default defineComponent({
     });
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.registry') },
+        { text: translate('menu.carousel') },
+      ]);
       refresh();
       EventBus.$off(`carousel::dragdrop`).$off(`carousel::dragstart`);
       EventBus.$on(`carousel::dragstart`, () => {
@@ -562,7 +565,7 @@ export default defineComponent({
           state.value.saving = true;
           await Promise.all(
             items.value.map((item) => {
-              return api.patch<{ order: number }>(useContext().$axios, `/api/v1/carousel/${item.id}`, { order: item.order });
+              return api.patch<{ order: number }>($axios, `/api/v1/carousel/${item.id}`, { order: item.order });
             }),
           );
           saveSuccess();
@@ -571,7 +574,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      api.get<CarouselInterface[]>(useContext().$axios, `/api/v1/carousel/`)
+      api.get<CarouselInterface[]>($axios, `/api/v1/carousel/`)
         .then(response => (items.value = response.data.data))
         .then(() => (state.value.loading = ButtonStates.success));
     };
@@ -585,7 +588,7 @@ export default defineComponent({
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        api.delete(useContext().$axios, `/api/v1/carousel/${item.id}`).catch(() => {
+        api.delete($axios, `/api/v1/carousel/${item.id}`).catch(() => {
           return true;
         });
       });
@@ -619,7 +622,7 @@ export default defineComponent({
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-            api.patch<CarouselInterface>(useContext().$axios, `/api/v1/carousel/${itemToUpdate.id}`, { [attr]: item[attr] }).then(() => {
+            api.patch<CarouselInterface>($axios, `/api/v1/carousel/${itemToUpdate.id}`, { [attr]: item[attr] }).then(() => {
               resolve(true);
             });
           });
@@ -642,10 +645,10 @@ export default defineComponent({
         console.debug(`upload::${filesUpload[i].name}`);
         fd.append('file', filesUpload[i]);
         await new Promise((resolve) => {
-          api.post<FormData, string>(useContext().$axios, '/api/v1/carousel/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+          api.post<FormData, string>($axios, '/api/v1/carousel/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
             .then((id) => {
               console.debug(`done::${filesUpload[i].name}::${id}`);
-              api.getOne<CarouselInterface>(useContext().$axios, `/api/v1/carousel`, id)
+              api.getOne<CarouselInterface>($axios, `/api/v1/carousel`, id)
                 .then((response) => {
                   console.debug('Uploaded', response.data.id);
                   uploadedFiles.value++;

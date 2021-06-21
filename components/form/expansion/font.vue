@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="pa-0">
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <slot />
 
     <v-checkbox v-if="isChild" v-model="isOverriden" :label="translate('registry.alerts.font.overrideGlobal')" />

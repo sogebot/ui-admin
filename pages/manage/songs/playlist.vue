@@ -1,22 +1,12 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-alert
       v-if="!$store.state.$systems.find(o => o.name === 'songs').enabled"
-      dismissible
-      prominent
-      dense
+      color="error"
+      class="mb-0"
     >
-      <div class="text-caption">
-        {{ translate('this-system-is-disabled') }}
-      </div>
+      {{ translate('this-system-is-disabled') }}
     </v-alert>
-
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.playlist') }}
-    </h2>
 
     <v-data-table
       v-model="selected"
@@ -40,7 +30,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="my-2 pb-2 mt-0"
         >
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
@@ -282,7 +272,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiClockOutline, mdiLink, mdiMagnify, mdiMusic, mdiSkipNext, mdiSkipPrevious, mdiVolumeHigh,
 } from '@mdi/js';
 import {
-  computed, defineComponent, onMounted, ref, watch,
+  computed, defineComponent, onMounted, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -313,6 +303,7 @@ export default defineComponent({
   setup () {
     const items = ref([] as SongPlaylistInterface[]);
     const search = ref('');
+    const store = useStore();
 
     const deleteDialog = ref(false);
     const selected = ref([] as SongPlaylistInterface[]);
@@ -381,6 +372,10 @@ export default defineComponent({
     const fItems = computed(() => items.value);
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.manage') },
+        { text: translate('menu.playlist') },
+      ]);
       refresh();
     });
 

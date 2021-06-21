@@ -33,6 +33,7 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '@/plugins/remove-shift-selection',
+    '@/plugins/before-each.ts',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -64,6 +65,7 @@ export default {
   modules: [
     '@nuxtjs/axios',
     '@nuxtjs/proxy',
+    'portal-vue/nuxt',
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
@@ -76,21 +78,6 @@ export default {
       routes.push({
         path:       '/manage/viewers/:id',
         components: { default: resolve(__dirname, 'pages/manage/viewers') },
-      });
-      routes.push({
-        name:       'RegistryAlertsEdit',
-        path:       '/registry/alerts/:id',
-        components: { default: resolve(__dirname, 'pages/registry/alerts/edit') },
-      });
-      routes.push({
-        name:       'RegistryRandomizerEdit',
-        path:       '/registry/randomizer/:id',
-        components: { default: resolve(__dirname, 'pages/registry/randomizer/edit') },
-      });
-      routes.push({
-        name:       'RegistryGoalsEdit',
-        path:       '/registry/goals/:id',
-        components: { default: resolve(__dirname, 'pages/registry/goals/edit') },
       });
     },
   },

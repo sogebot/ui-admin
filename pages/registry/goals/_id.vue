@@ -1,16 +1,10 @@
 <template>
   <v-card :loading="isLoading">
-    <v-toolbar dense color="dark" style="z-index: 999;">
-      <v-btn icon @click="goBack">
-        <v-icon>{{ mdiClose }}</v-icon>
-      </v-btn>
-      <span v-if="$route.params.id === 'new'" class="headline">New Item</span>
-      <span v-else class="headline">Edit Item</span>
-      <v-spacer />
+    <portal to="navbar">
       <v-btn text :loading="isSaving" :disabled="!valid1 || !valid2 || isLoading" @click="save">
         {{ translate('dialog.buttons.saveChanges.idle') }}
       </v-btn>
-    </v-toolbar>
+    </portal>
 
     <v-stepper
       v-if="!isLoading"
@@ -310,7 +304,7 @@ import {
   mdiClose, mdiExclamationThick, mdiPlus,
 } from '@mdi/js';
 import {
-  useContext, useRoute, useRouter,
+  useContext, useRoute, useRouter, useStore,
 } from '@nuxtjs/composition-api';
 import {
   defineAsyncComponent,
@@ -349,7 +343,10 @@ export default defineComponent({
     font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
   },
   setup () {
+    const { $axios } = useContext();
+    const store = useStore();
     const stepper = ref(1);
+    const router = useRouter();
 
     const form1 = ref(null);
     const valid1 = ref(true);
@@ -410,16 +407,33 @@ export default defineComponent({
     });
 
     onMounted(() => {
+      store.commit('panel/back', '/registry/goals/');
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.registry') },
+        { text: translate('menu.goals') },
+        { text: translate('dialog.title.add') },
+      ]);
       if (useRoute().value.params.id && useRoute().value.params.id !== 'new') {
         // load initial item
         isLoading.value = true;
-        api.getOne<GoalGroupInterface>(useContext().$axios, `/api/v1/registry/goals/`, String(useRoute().value.params.id) ?? '')
+        store.commit('panel/breadcrumbs', [
+          { text: translate('menu.registry') },
+          { text: translate('menu.goals') },
+          { text: translate('dialog.title.edit') },
+        ]);
+        api.getOne<GoalGroupInterface>($axios, `/api/v1/registry/goals/`, String(useRoute().value.params.id) ?? '')
           .then((response) => {
             item.value = response.data;
+            store.commit('panel/breadcrumbs', [
+              { text: translate('menu.registry') },
+              { text: translate('menu.goals') },
+              { text: translate('dialog.title.edit') },
+              { text: response.data.id },
+            ]);
             isLoading.value = false;
           })
           .catch(() => {
-            useRouter().push({ path: '/registry/goals' });
+            router.push({ path: '/registry/goals' });
             EventBus.$emit('snack', 'error', 'Data not found.');
           });
       }
@@ -504,9 +518,9 @@ export default defineComponent({
         && (form2.value as unknown as HTMLFormElement).validate()
       ) {
         isSaving.value = true;
-        api.patch(useContext().$axios, `/api/v1/registry/goals/${item.value.id ?? v4()}`, item.value)
+        api.patch($axios, `/api/v1/registry/goals/${item.value.id ?? v4()}`, item.value)
           .then((response) => {
-            useRouter().push({ params: { id: response.id ?? '' } });
+            router.push({ params: { id: response.id ?? '' } });
             EventBus.$emit('snack', 'success', 'Data saved.');
             EventBus.$emit('goals::refresh');
           })
@@ -541,7 +555,7 @@ export default defineComponent({
     };
 
     const goBack = () => {
-      useRouter().push({ path: '/registry/goals' });
+      router.push({ path: '/registry/goals' });
     };
 
     return {

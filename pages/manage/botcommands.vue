@@ -1,12 +1,5 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.botcommands') }}
-    </h2>
-
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-data-table
       v-model="selected"
       :loading="state.loading !== ButtonStates.success || state.loadingPrm !== ButtonStates.success"
@@ -20,7 +13,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="pb-2 mt-0"
         >
           <v-text-field
             v-model="search"
@@ -28,7 +21,7 @@
             label="Search"
             single-line
             hide-details
-            class="pa-0 ma-2 py-2"
+            class="pa-2 ma-0"
           />
         </v-sheet>
       </template>
@@ -93,7 +86,7 @@ import {
 } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, ref, useContext,
+  defineComponent, onMounted, ref, useContext, useStore,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -121,6 +114,8 @@ type CommandsInterface = {
 export default defineComponent({
   setup () {
     const rules = { command: [startsWith(['!']), required, minLength(2)] };
+    const store = useStore();
+    const { $axios } = useContext();
 
     const search = ref('');
     const items = ref([] as CommandsInterface[]);
@@ -163,7 +158,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
+      api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
         .then((response) => {
           permissions.value = response.data.data;
           state.value.loadingPrm = ButtonStates.success;
@@ -189,6 +184,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.commands') },
+        { text: translate('menu.botcommands') },
+      ]);
       refresh();
     });
 

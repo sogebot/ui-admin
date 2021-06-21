@@ -1,9 +1,5 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.randomizer') }}
-    </h2>
-
     <v-data-table
       v-model="selected"
       :show-select="selectable"
@@ -17,7 +13,7 @@
       @click:row="addToSelectedItem"
     >
       <template #top>
-        <v-sheet flat color="dark" class="my-2 p-2">
+        <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
@@ -133,6 +129,7 @@ import {
 } from '@mdi/js';
 import {
   defineComponent, onMounted, ref, useContext,
+  useStore,
   watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
@@ -153,6 +150,8 @@ export default defineComponent({
   setup () {
     const items = ref([] as RandomizerInterface[]);
     const search = ref('');
+    const store = useStore();
+    const { $axios } = useContext();
 
     const selected = ref([] as RandomizerInterface[]);
     const permissions = ref([] as PermissionsInterface[]);
@@ -193,6 +192,10 @@ export default defineComponent({
     ];
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.registry') },
+        { text: translate('menu.randomizer') },
+      ]);
       refresh();
       EventBus.$on('goals::refresh', refresh);
     });
@@ -200,7 +203,7 @@ export default defineComponent({
     const refresh = async () => {
       await Promise.all([
         new Promise<void>((resolve) => {
-          api.get<RandomizerInterface[]>(useContext().$axios, '/api/v1/registry/randomizer')
+          api.get<RandomizerInterface[]>($axios, '/api/v1/registry/randomizer')
             .then((response) => {
               items.value = response.data.data;
               // we also need to reset selection values
@@ -215,7 +218,7 @@ export default defineComponent({
             .finally(() => resolve());
         }),
         new Promise<void>((resolve) => {
-          api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
+          api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
             .then((response) => {
               permissions.value = response.data.data;
               resolve();
@@ -230,7 +233,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve) => {
-            api.delete(useContext().$axios, `/api/v1/registry/randomizer/${item.id}`)
+            api.delete($axios, `/api/v1/registry/randomizer/${item.id}`)
               .finally(() => resolve(true));
           });
         }),
@@ -260,7 +263,7 @@ export default defineComponent({
         items:   clonedItems.map(o => ({ ...o, groupId: o.groupId === null ? o.groupId : clonedItemsRemapId.get(o.groupId) })),
       };
 
-      api.post(useContext().$axios, '/api/v1/registry/randomizer', clonedItem)
+      api.post($axios, '/api/v1/registry/randomizer', clonedItem)
         .then(() => {
           EventBus.$emit('snack', 'success', 'Data cloned.');
         })
@@ -271,11 +274,11 @@ export default defineComponent({
     const toggleVisibility = async (item: Required<RandomizerInterface>) => {
       item.isShown = !item.isShown;
       await new Promise((resolve) => {
-        api.post<void>(useContext().$axios, '/api/v1/registry/randomizer/hideall')
+        api.post<void>($axios, '/api/v1/registry/randomizer/hideall')
           .finally(() => resolve(true));
       });
       await new Promise((resolve) => {
-        api.patch<RandomizerInterface>(useContext().$axios, '/api/v1/registry/randomizer/' + item.id, { isShown: item.isShown }).finally(() => resolve(true));
+        api.patch<RandomizerInterface>($axios, '/api/v1/registry/randomizer/' + item.id, { isShown: item.isShown }).finally(() => resolve(true));
       });
       for (const i of items.value) {
         if (i.id === item.id) {

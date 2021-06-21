@@ -1,22 +1,12 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-alert
       v-if="!$store.state.$systems.find(o => o.name === 'highlights').enabled"
-      dismissible
-      prominent
-      dense
+      color="error"
+      class="mb-0"
     >
-      <div class="text-caption">
-        {{ translate('this-system-is-disabled') }}
-      </div>
+      {{ translate('this-system-is-disabled') }}
     </v-alert>
-
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.highlights') }}
-    </h2>
 
     <v-data-table
       calculate-widths
@@ -32,7 +22,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="my-2 pb-2 mt-0"
         >
           <v-row class="px-2" no-gutters>
             <v-col align-self="center">
@@ -93,7 +83,7 @@
 
 import { mdiLink, mdiMagnify } from '@mdi/js';
 import {
-  computed, defineComponent, onMounted, ref,
+  computed, defineComponent, onMounted, ref, useStore,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -109,6 +99,7 @@ export default defineComponent({
   setup () {
     const items = ref([] as HighlightInterface[]);
     const search = ref('');
+    const store = useStore();
 
     const fItems = computed(() => {
       if (search.value.length === 0) {
@@ -146,6 +137,10 @@ export default defineComponent({
     ];
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.manage') },
+        { text: translate('menu.highlights') },
+      ]);
       refresh();
     });
 

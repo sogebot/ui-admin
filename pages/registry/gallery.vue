@@ -3,14 +3,11 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.gallery') }}
-    </h2>
 
     <v-sheet
       flat
       color="dark"
-      class="my-2 p-2"
+      class="my-2 pb-2 mt-0"
     >
       <v-row class="px-2" no-gutters>
         <v-col cols="auto" align-self="center" class="pr-2">
@@ -343,7 +340,7 @@ import {
 } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, ref, watch,
+  defineComponent, onMounted, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -362,6 +359,7 @@ const files = {
 export default defineComponent({
   setup () {
     const search = ref('');
+    const store = useStore();
 
     const items = ref([] as GalleryInterface[]);
     const active = ref([] as string[]);
@@ -407,6 +405,10 @@ export default defineComponent({
     });
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.registry') },
+        { text: translate('menu.gallery') },
+      ]);
       refresh();
     });
 

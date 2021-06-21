@@ -1,12 +1,5 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.tips') }}
-    </h2>
-
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-data-table
       :loading="state.loading !== ButtonStates.success"
       :headers="headers"
@@ -67,7 +60,7 @@
 import { mdiMagnify } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, ref,
+  defineComponent, onMounted, ref, useStore,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -85,6 +78,7 @@ Vue.use(Chartkick.use(Chart));
 
 export default defineComponent({
   setup () {
+    const store = useStore();
     const search = ref('');
     const selectedYear = ref(String((new Date()).getFullYear()));
     const items = ref([] as Required<UserTipInterface & { username: string }>[]);
@@ -125,6 +119,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.stats') },
+        { text: translate('menu.tips') },
+      ]);
       refresh();
     });
 

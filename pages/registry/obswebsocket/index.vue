@@ -1,9 +1,5 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.obswebsocket') }}
-    </h2>
-
     <v-data-table
       v-model="selected"
       calculate-widths
@@ -18,7 +14,7 @@
       @click:row="addToSelectedItem"
     >
       <template #top>
-        <v-sheet flat color="dark" class="my-2 p-2">
+        <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
@@ -78,10 +74,9 @@
                 </v-dialog>
               </template>
 
-              <!-- create dialog -->
-              <new-item activator />
-              <!-- update dialog -->
-              <new-item />
+              <v-btn color="primary" to="/registry/obswebsocket/new" nuxt>
+                New Item
+              </v-btn>
             </v-col>
           </v-row>
         </v-sheet>
@@ -94,7 +89,7 @@
       <template #[`item.actions`]="{ item }">
         <div style="width: max-content;">
           <v-hover v-slot="{ hover }">
-            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" @click.stop="edit(item)">
+            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" :to="'/registry/obswebsocket/' + item.id">
               <v-icon>{{ mdiPencil }}</v-icon>
             </v-btn>
           </v-hover>
@@ -124,7 +119,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiClipboard, mdiClipboardCheck, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, onMounted, ref, useContext, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
@@ -136,10 +131,11 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/obswebsocket-newItem.vue') }) },
   setup () {
+    const { $axios } = useContext();
     const items = ref([] as OBSWebsocketInterface[]);
     const search = ref('');
+    const store = useStore();
 
     const command = ref('!obsws run');
     const selected = ref([] as OBSWebsocketInterface[]);
@@ -183,12 +179,16 @@ export default defineComponent({
     ];
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.registry') },
+        { text: translate('menu.obswebsocket') },
+      ]);
       refresh();
       EventBus.$on('integrations::obswebsocket::refresh', refresh);
     });
 
     const refresh = () => {
-      api.get<OBSWebsocketInterface[]>(useContext().$axios, '/api/v1/integration/obswebsocket')
+      api.get<OBSWebsocketInterface[]>($axios, '/api/v1/integration/obswebsocket')
         .then((response) => {
           items.value = response.data.data;
           // we also need to reset selection values
@@ -208,7 +208,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve) => {
-            api.delete(useContext().$axios, `/api/v1/integration/obswebsocket/${item.id}`)
+            api.delete($axios, `/api/v1/integration/obswebsocket/${item.id}`)
               .finally(() => resolve(true));
           });
         }),
@@ -219,13 +219,8 @@ export default defineComponent({
       selected.value = [];
     };
 
-    const edit = (item: OBSWebsocketInterface) => {
-      EventBus.$emit('integrations::obswebsocket::updateDlgShow', item);
-    };
-
     return {
       // refs
-      edit,
       items,
       search,
       state,

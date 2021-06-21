@@ -3,9 +3,6 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.custom-variables') }}
-    </h2>
 
     <v-data-table
       v-model="selected"
@@ -27,7 +24,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="my-2 pb-2 mt-0"
         >
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
@@ -279,7 +276,7 @@ import {
 } from '@mdi/js';
 import {
   computed,
-  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -301,7 +298,9 @@ import {
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/customvariables-newItem.vue') }) },
   setup () {
+    const { $axios } = useContext();
     const rules = { variableName: [required, startsWith(['$_']), minLength(3), restrictedChars([' '])] };
+    const store = useStore();
 
     const items = ref([] as VariableInterface[]);
     const editItem = ref(null as null | VariableInterface);
@@ -373,6 +372,10 @@ export default defineComponent({
     ];
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.registry') },
+        { text: translate('menu.custom-variables') },
+      ]);
       refresh();
     });
 
@@ -397,7 +400,7 @@ export default defineComponent({
           });
         }),
         new Promise<void>((resolve) => {
-          api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
+          api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
             .then((response) => {
               permissions.value = response.data.data;
               resolve();

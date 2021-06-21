@@ -1,12 +1,5 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.profiler') }}
-    </h2>
-
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-data-table
       :loading="state.loading !== ButtonStates.success"
       :headers="headers"
@@ -48,7 +41,7 @@
 import { mdiMinusThick, mdiPlusThick } from '@mdi/js';
 import {
   defineComponent,
-  onMounted, ref, watch,
+  onMounted, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -66,6 +59,7 @@ type profilerItem = [function: string, times: number[]];
 
 export default defineComponent({
   setup () {
+    const store = useStore();
     const showChartFunctions = ref([] as string[]);
     watch(showChartFunctions, () => {
       localStorage.setItem('/stats/profiler/showChartFunctions', JSON.stringify(showChartFunctions.value));
@@ -130,6 +124,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.stats') },
+        { text: translate('menu.profiler') },
+      ]);
       refresh();
     });
 

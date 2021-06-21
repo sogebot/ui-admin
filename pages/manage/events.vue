@@ -1,12 +1,5 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.event-listeners') }}
-    </h2>
-
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-dialog
       v-model="deleteDialog"
     >
@@ -85,7 +78,7 @@
     <v-sheet
       flat
       color="dark"
-      class="my-2 p-2"
+      class="my-2 pb-2 mt-0"
     >
       <v-row class="px-2" no-gutters>
         <v-col>
@@ -259,7 +252,7 @@
 import { mdiDelete, mdiMagnify } from '@mdi/js';
 import {
   computed,
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -280,6 +273,7 @@ export default defineComponent({
   },
   setup () {
     const timestamp = ref(Date.now());
+    const store = useStore();
 
     const search = ref([] as string[]);
 
@@ -359,6 +353,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.manage') },
+        { text: translate('menu.event-listeners') },
+      ]);
       refresh();
     });
 

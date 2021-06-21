@@ -1,12 +1,5 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.commandcount') }}
-    </h2>
-
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-data-table
       :loading="state.loading !== ButtonStates.success"
       :headers="headers"
@@ -58,7 +51,7 @@ import {
 } from '@mdi/js';
 import {
   computed, defineComponent,
-  onMounted, ref, watch,
+  onMounted, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -77,6 +70,7 @@ Vue.use(Chartkick.use(Chart));
 
 export default defineComponent({
   setup () {
+    const store = useStore();
     const search = ref('');
     const showChartCommands = ref([] as string[]);
     watch(showChartCommands, () => {
@@ -163,6 +157,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.stats') },
+        { text: translate('menu.commandcount') },
+      ]);
       refresh();
     });
 

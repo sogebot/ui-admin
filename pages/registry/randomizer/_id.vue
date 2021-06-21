@@ -1,16 +1,10 @@
 <template>
   <v-card :loading="isLoading" class="fill-height">
-    <v-toolbar dense color="dark" style="z-index: 999;">
-      <v-btn icon @click="goBack">
-        <v-icon>{{ mdiClose }}</v-icon>
-      </v-btn>
-      <span v-if="$route.params.id === 'new'" class="headline">New Item</span>
-      <span v-else class="headline">Edit Item</span>
-      <v-spacer />
+    <portal to="navbar">
       <v-btn text :loading="isSaving" :disabled="!valid1 || isLoading" @click="save">
         {{ translate('dialog.buttons.saveChanges.idle') }}
       </v-btn>
-    </v-toolbar>
+    </portal>
 
     <v-fade-transition>
       <v-container v-if="!isLoading" fluid>
@@ -132,7 +126,7 @@ import {
   mdiClose, mdiExclamationThick, mdiPlus,
 } from '@mdi/js';
 import {
-  useContext, useRoute, useRouter,
+  useContext, useRoute, useRouter, useStore,
 } from '@nuxtjs/composition-api';
 import {
   computed,
@@ -199,7 +193,11 @@ export default defineComponent({
     optionsTable: defineAsyncComponent({ loader: () => import('~/components/randomizer/table.vue') }),
   },
   setup () {
+    const { $axios } = useContext();
+    const store = useStore();
     const stepper = ref(1);
+    const router = useRouter();
+    const route = useRoute();
 
     const form1 = ref(null);
     const valid1 = ref(true);
@@ -222,20 +220,37 @@ export default defineComponent({
     const rules = { name: [required], command: [required, startsWith(['!']), minLength(3)] };
 
     onMounted(() => {
-      if (useRoute().value.params.id && useRoute().value.params.id !== 'new') {
+      store.commit('panel/back', '/registry/randomizer/');
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.registry') },
+        { text: translate('menu.randomizer') },
+        { text: translate('dialog.title.add') },
+      ]);
+      if (route.value.params.id && route.value.params.id !== 'new') {
+        store.commit('panel/breadcrumbs', [
+          { text: translate('menu.registry') },
+          { text: translate('menu.randomizer') },
+          { text: translate('dialog.title.edit') },
+        ]);
         // load initial item
         isLoading.value = true;
-        api.getOne<RandomizerInterface>(useContext().$axios, `/api/v1/registry/randomizer/`, String(useRoute().value.params.id) ?? '')
+        api.getOne<RandomizerInterface>($axios, `/api/v1/registry/randomizer/`, String(route.value.params.id) ?? '')
           .then((response) => {
             item.value = response.data;
             isLoading.value = false;
+            store.commit('panel/breadcrumbs', [
+              { text: translate('menu.registry') },
+              { text: translate('menu.randomizer') },
+              { text: translate('dialog.title.edit') },
+              { text: response.data.id },
+            ]);
           })
           .catch(() => {
-            useRouter().push({ path: '/registry/randomizer' });
+            router.push({ path: '/registry/randomizer' });
             EventBus.$emit('snack', 'error', 'Data not found.');
           });
 
-        api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
+        api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
           .then((response) => {
             permissions.value = response.data.data;
           });
@@ -247,9 +262,9 @@ export default defineComponent({
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
         isSaving.value = true;
-        api.patch(useContext().$axios, `/api/v1/registry/randomizer/${item.value.id ?? v4()}`, item.value)
+        api.patch($axios, `/api/v1/registry/randomizer/${item.value.id ?? v4()}`, item.value)
           .then((response) => {
-            useRouter().push({ params: { id: response.id ?? '' } });
+            router.push({ params: { id: response.id ?? '' } });
             EventBus.$emit('snack', 'success', 'Data saved.');
           })
           .catch((e) => {
@@ -258,10 +273,6 @@ export default defineComponent({
           })
           .finally(() => (isSaving.value = false));
       }
-    };
-
-    const goBack = () => {
-      useRouter().push({ path: '/registry/randomizer' });
     };
 
     const addOption = () => {
@@ -336,7 +347,6 @@ export default defineComponent({
 
       // functions
       save,
-      goBack,
       addOption,
       generateItems,
 

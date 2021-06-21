@@ -1,22 +1,12 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-alert
       v-if="!$store.state.$systems.find(o => o.name === 'howlongtobeat').enabled"
-      dismissible
-      prominent
-      dense
+      color="error"
+      class="mb-0"
     >
-      <div class="text-caption">
-        {{ translate('this-system-is-disabled') }}
-      </div>
+      {{ translate('this-system-is-disabled') }}
     </v-alert>
-
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.howlongtobeat') }}
-    </h2>
 
     <v-data-table
       v-model="selected"
@@ -37,7 +27,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="my-2 pb-2 mt-0"
         >
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
@@ -243,7 +233,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiMagnify, mdiRefresh,
 } from '@mdi/js';
 import {
-  computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  computed, defineAsyncComponent, defineComponent, onMounted, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -261,6 +251,7 @@ import { minValue, required } from '~/functions/validators';
 export default defineComponent({
   components: { timeInput: defineAsyncComponent({ loader: () => import('~/components/time.vue') }) },
   setup () {
+    const store = useStore();
     const timestamp = ref(Date.now());
     const items = ref([] as HowLongToBeatGameInterface[]);
     const streams = ref([] as HowLongToBeatGameItemInterface[]);
@@ -362,6 +353,10 @@ export default defineComponent({
     ];
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.manage') },
+        { text: translate('menu.howlongtobeat') },
+      ]);
       refresh();
     });
     const refresh = () => {

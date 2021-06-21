@@ -299,6 +299,7 @@ import api from '~/functions/api';
 
 export default defineComponent({
   setup () {
+    const context = useContext();
     const store = useStore<any>();
     const areAlertsMuted = ref(false);
     const isTTSMuted = ref(false);
@@ -390,9 +391,9 @@ export default defineComponent({
     }
 
     watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
-      api.post(useContext().$axios, '/api/v1/registry/alerts/settings?name=areAlertsMuted', { value: val[0] });
-      api.post(useContext().$axios, '/api/v1/registry/alerts/settings?name=isTTSMuted', { value: val[1] });
-      api.post(useContext().$axios, '/api/v1/registry/alerts/settings?name=isSoundMuted', { value: val[2] });
+      api.post(context.$axios, '/api/v1/registry/alerts/settings?name=areAlertsMuted', { value: val[0] });
+      api.post(context.$axios, '/api/v1/registry/alerts/settings?name=isTTSMuted', { value: val[1] });
+      api.post(context.$axios, '/api/v1/registry/alerts/settings?name=isSoundMuted', { value: val[2] });
     });
 
     function updateHeight () {
@@ -462,11 +463,11 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      api.getOne<boolean>(useContext().$axios, '/api/v1/registry/alerts/settings?name=areAlertsMuted', '')
+      api.getOne<boolean>(context.$axios, '/api/v1/registry/alerts/settings?name=areAlertsMuted', '')
         .then(response => (areAlertsMuted.value = response.data));
-      api.getOne<boolean>(useContext().$axios, '/api/v1/registry/alerts/settings?name=isTTSMuted', '')
+      api.getOne<boolean>(context.$axios, '/api/v1/registry/alerts/settings?name=isTTSMuted', '')
         .then(response => (isTTSMuted.value = response.data));
-      api.getOne<boolean>(useContext().$axios, '/api/v1/registry/alerts/settings?name=isSoundMuted', '')
+      api.getOne<boolean>(context.$axios, '/api/v1/registry/alerts/settings?name=isSoundMuted', '')
         .then(response => (isSoundMuted.value = response.data));
       getSocket('/widgets/eventlist').on('askForGet', () => getSocket('/widgets/eventlist').emit('eventlist::get', 100));
       getSocket('/widgets/eventlist').on('update', (values: any) => {

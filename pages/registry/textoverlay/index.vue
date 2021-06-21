@@ -3,9 +3,6 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.textoverlay') }}
-    </h2>
     <v-data-table
       v-model="selected"
       calculate-widths
@@ -23,7 +20,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="my-2 pb-2 mt-0"
         >
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
@@ -95,54 +92,9 @@
                 </v-dialog>
               </template>
 
-              <v-dialog
-                v-model="newDialog"
-                fullscreen
-              >
-                <template #activator="{ on, attrs }">
-                  <v-btn
-                    color="primary"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    New Item
-                  </v-btn>
-                </template>
-
-                <v-card>
-                  <v-card-title>
-                    <span class="headline">New item</span>
-                  </v-card-title>
-
-                  <v-card-text :key="timestamp">
-                    <new-item
-                      :rules="rules"
-                      @close="newDialog = false"
-                      @save="saveSuccess"
-                    />
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
-
-              <v-dialog
-                v-model="editDialog"
-                fullscreen
-              >
-                <v-card v-if="editItem">
-                  <v-card-title>
-                    <span class="headline">Update item <span class="primary--text pl-1">{{ editItem.name }}</span></span>
-                  </v-card-title>
-
-                  <v-card-text :key="timestamp">
-                    <new-item
-                      :item="editItem"
-                      :rules="rules"
-                      @close="editItem = null"
-                      @save="saveSuccess"
-                    />
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
+              <v-btn color="primary" to="/registry/textoverlay/new" nuxt>
+                New Item
+              </v-btn>
             </v-col>
           </v-row>
         </v-sheet>
@@ -153,7 +105,7 @@
           <v-btn
             icon
             :color="hover ? 'primary' : 'secondary lighten-3'"
-            @click.stop="edit(item)"
+            nuxt :to='"/registry/textoverlay/" + item.id'
           >
             <v-icon>{{ mdiPencil }}</v-icon>
           </v-btn>
@@ -186,8 +138,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiContentCopy, mdiLink, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import {
-  computed,
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  defineComponent, onMounted, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -201,12 +152,11 @@ import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/textoverlay-newItem.vue') }) },
   setup () {
     const rules = { name: [required] };
+    const store = useStore();
 
     const items = ref([] as TextInterface[]);
-    const editItem = ref(null as null | TextInterface);
     const search = ref('');
 
     const selected = ref([] as TextInterface[]);
@@ -215,28 +165,11 @@ export default defineComponent({
       currentItems.value = value;
     };
     const deleteDialog = ref(false);
-    const newDialog = ref(false);
     const selectable = ref(false);
-    const editDialog = computed({
-      get () {
-        return !!editItem.value;
-      },
-      set (value) {
-        if (!value) {
-          editItem.value = null;
-        }
-      },
-    });
     watch(selectable, (val) => {
       if (!val) {
         selected.value = [];
       }
-    });
-
-    const timestamp = ref(Date.now());
-
-    watch(newDialog, () => {
-      timestamp.value = Date.now();
     });
 
     const state = ref({ loading: ButtonStates.progress } as {
@@ -258,6 +191,10 @@ export default defineComponent({
     ];
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.registry') },
+        { text: translate('menu.textoverlay') },
+      ]);
       refresh();
     });
 
@@ -282,8 +219,6 @@ export default defineComponent({
     const saveSuccess = () => {
       refresh();
       EventBus.$emit('snack', 'success', 'Data updated.');
-      editItem.value = null;
-      newDialog.value = false;
     };
     const update = async (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
       // check validity
@@ -360,14 +295,8 @@ export default defineComponent({
       EventBus.$emit('snack', 'success', 'Link copied to clipboard.');
     };
 
-    const edit = (item: TextInterface) => {
-      editItem.value = item;
-    };
-
     return {
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
-      edit,
-      editItem,
       items,
       search,
       state,
@@ -377,12 +306,9 @@ export default defineComponent({
       deleteSelected,
       update,
       selectable,
-      newDialog,
       deleteDialog,
       translate,
       saveSuccess,
-      editDialog,
-      timestamp,
       rules,
       mdiMagnify,
       mdiCheckBoxMultipleOutline,

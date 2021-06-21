@@ -90,6 +90,9 @@ export default defineComponent({
     test:      defineAsyncComponent(() => import('~/components/settings/permissions/test.vue')),
   },
   setup () {
+    const { $axios } = useContext();
+    const router = useRouter();
+    const route = useRoute();
     const model = ref(null as PermissionsInterface | null);
     const isRemoving = ref(false);
     const isSaving = ref(false);
@@ -101,24 +104,24 @@ export default defineComponent({
     const refresh = (val?: string) => {
       model.value = null;
       if (val) {
-        api.getOne<PermissionsInterface>(useContext().$axios, '/api/v1/settings/permissions/', val)
+        api.getOne<PermissionsInterface>($axios, '/api/v1/settings/permissions/', val)
           .then(response => (model.value = response.data));
       }
     };
 
     const remove = (id: string) => {
       isRemoving.value = true;
-      api.delete(useContext().$axios, '/api/v1/settings/permissions/' + id)
+      api.delete($axios, '/api/v1/settings/permissions/' + id)
         .then(() => {
           isRemoving.value = false;
-          useRouter().push('/settings/permissions');
+          router.push('/settings/permissions');
         });
     };
 
     const save = () => {
       if (model.value && model.value.id && valid) {
         isSaving.value = true;
-        api.patch(useContext().$axios, '/api/v1/settings/permissions/' + model.value.id, model.value)
+        api.patch($axios, '/api/v1/settings/permissions/' + model.value.id, model.value)
           .then(() => {
             EventBus.$emit('settings::permissions::refresh');
           })
@@ -131,12 +134,12 @@ export default defineComponent({
       }
     };
 
-    watch(() => useRoute().value.params.id, (val) => {
+    watch(() => route.value.params.id, (val) => {
       refresh(val);
     });
 
     onMounted(() => {
-      refresh(useRoute().value.params.id);
+      refresh(route.value.params.id);
     });
 
     return {

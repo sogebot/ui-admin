@@ -124,6 +124,11 @@ export default defineComponent({
     });
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.settings') },
+        { text: translate('menu.core') },
+        { text: translate('categories.general') },
+      ]);
       getSocket(`/core/general`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
           if (err) {

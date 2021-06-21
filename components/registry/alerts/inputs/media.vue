@@ -156,6 +156,7 @@ export default defineComponent({
     volume:  Number,
   },
   setup (props: Props, ctx) {
+    const context = useContext();
     let interval = 0;
     const duration = ref(0);
     const isUploading = ref(false);
@@ -356,7 +357,7 @@ export default defineComponent({
         console.debug(`upload::${filesUpload[i].name}`);
         fd.append('file', filesUpload[i]);
         const id = v4();
-        await api.put(useContext().$axios, `/api/v1/registry/alerts/media/${id}`, fd);
+        await api.put(context.$axios, `/api/v1/registry/alerts/media/${id}`, fd);
         model.value = id;
         isUploading.value = false;
       }

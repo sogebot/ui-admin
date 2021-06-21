@@ -1,22 +1,12 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-alert
       v-if="!$store.state.$systems.find(o => o.name === 'customcommands').enabled"
-      dismissible
-      prominent
-      dense
+      color="error"
+      class="mb-0"
     >
-      <div class="text-caption">
-        {{ translate('this-system-is-disabled') }}
-      </div>
+      {{ translate('this-system-is-disabled') }}
     </v-alert>
-
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.customcommands') }}
-    </h2>
 
     <v-data-table
       v-model="selected"
@@ -34,7 +24,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="my-2 pb-2 mt-0"
         >
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
@@ -211,7 +201,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiMagnify, mdiRestore,
 } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -241,8 +231,10 @@ export default defineComponent({
     responses:  defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
   },
   setup () {
+    const store = useStore();
     const rules = { command: [startsWith(['!']), required, minLength(2)] };
 
+    const { $axios } = useContext();
     const search = ref('');
     const items = ref([] as Required<CommandsInterfaceUI>[]);
     const permissions = ref([] as PermissionsInterface[]);
@@ -298,7 +290,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
+      api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
         .then((response) => {
           permissions.value = response.data.data;
           state.value.loadingPrm = ButtonStates.success;
@@ -329,6 +321,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      store.commit('panel/breadcrumbs', [
+        { text: translate('menu.commands') },
+        { text: translate('menu.customcommands') },
+      ]);
       refresh();
     });
 
