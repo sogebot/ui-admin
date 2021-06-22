@@ -28,6 +28,7 @@
           @click="$store.commit('settings/pending', true)"
         />
         <v-textarea
+          outlined
           rows="5"
           persistent-hint
           :label="translate('core.tmi.settings.ignorelist')"
@@ -124,7 +125,6 @@ export default defineComponent({
       store.commit('panel/breadcrumbs', [
         { text: translate('menu.settings') },
         { text: translate('menu.core') },
-        { text: translate('menu.socket') },
       ]);
       getSocket(`/core/tmi`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {

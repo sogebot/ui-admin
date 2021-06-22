@@ -12,6 +12,7 @@
 
         <v-textarea
           auto-grow
+          outlined
           persistent-hint
           :label="translate('core.oauth.settings.generalOwners')"
           :value="settings.general.generalOwners[0].filter(String).join('\n')"
@@ -117,7 +118,6 @@ export default defineComponent({
       store.commit('panel/breadcrumbs', [
         { text: translate('menu.settings') },
         { text: translate('menu.core') },
-        { text: translate('menu.oauth') },
       ]);
       getSocket(`/core/oauth`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {

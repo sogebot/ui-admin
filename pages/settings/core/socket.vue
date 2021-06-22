@@ -42,7 +42,7 @@
             <v-btn text @click.stop="copy(settings.connection.socketToken[0])">
               {{ translate('systems.polls.copy') }}
             </v-btn>
-            <v-btn text color="primary" @click.stop="settings.connection.socketToken = [v4(), '']">
+            <v-btn text color="primary" @click.stop="$store.commit('settings/pending', true); settings.connection.socketToken = [v4(), '']">
               {{ translate('commons.generate') }}
             </v-btn>
           </template>
@@ -102,7 +102,6 @@ export default defineComponent({
       store.commit('panel/breadcrumbs', [
         { text: translate('menu.settings') },
         { text: translate('menu.core') },
-        { text: translate('menu.socket') },
       ]);
       getSocket(`/core/socket`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {

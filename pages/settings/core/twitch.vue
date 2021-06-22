@@ -58,7 +58,6 @@ export default defineComponent({
       store.commit('panel/breadcrumbs', [
         { text: translate('menu.settings') },
         { text: translate('menu.core') },
-        { text: translate('menu.socket') },
       ]);
       getSocket(`/core/twitch`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
