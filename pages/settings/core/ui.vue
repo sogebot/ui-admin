@@ -3,10 +3,36 @@
   <v-card v-else flat>
     <v-card-text>
       <v-form ref="form" v-model="valid">
+        <v-text-field
+          v-model="settings.domain[0]"
+          :label="translate('core.ui.settings.domain.title')"
+          :hint="translate('core.ui.settings.domain.help')"
+          persistent-hint
+          :rules="[required]"
+          @input="$store.commit('settings/pending', true)"
+        >
+          <template v-if="settings.domain[0] !== settings.domain[1]" #append-outer>
+            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.domain = [settings.domain[1], settings.domain[1]]">
+              Revert
+            </v-btn>
+          </template>
+        </v-text-field>
         <v-checkbox
-          v-model="settings.general.isTitleForced[0]"
+          v-model="settings.percentage[0]"
           dense
-          :label="translate('core.twitch.settings.isTitleForced')"
+          :label="translate('core.ui.settings.percentage')"
+          @click="$store.commit('settings/pending', true)"
+        />
+        <v-checkbox
+          v-model="settings.shortennumbers[0]"
+          dense
+          :label="translate('core.ui.settings.shortennumbers')"
+          @click="$store.commit('settings/pending', true)"
+        />
+        <v-checkbox
+          v-model="settings.showdiff[0]"
+          dense
+          :label="translate('core.ui.settings.showdiff')"
           @click="$store.commit('settings/pending', true)"
         />
       </v-form>
@@ -24,7 +50,7 @@ import {
 
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
-import { minValue, required } from '~/functions/validators';
+import { required } from '~/functions/validators';
 
 export default defineComponent({
   beforeRouteLeave (_to, _from, next) {
@@ -46,7 +72,7 @@ export default defineComponent({
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
-        saveSettings('/core/twitch', store, settings.value);
+        saveSettings('/core/ui', store, settings.value);
       }
     });
 
@@ -59,7 +85,7 @@ export default defineComponent({
         { text: translate('menu.settings') },
         { text: translate('menu.core') },
       ]);
-      getSocket(`/core/twitch`)
+      getSocket(`/core/ui`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
           if (err) {
             error(err);
@@ -79,7 +105,6 @@ export default defineComponent({
 
       // validators
       required,
-      minValue,
     };
   },
 });

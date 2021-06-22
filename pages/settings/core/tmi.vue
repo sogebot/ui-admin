@@ -4,25 +4,25 @@
     <v-card-text>
       <v-form ref="form" v-model="valid">
         <v-checkbox
-          v-model="settings.chat.sendWithMe"
+          v-model="settings.chat.sendWithMe[0]"
           dense
           :label="translate('core.tmi.settings.sendWithMe')"
           @click="$store.commit('settings/pending', true)"
         />
         <v-checkbox
-          v-model="settings.chat.mute"
+          v-model="settings.chat.mute[0]"
           dense
           :label="translate('core.tmi.settings.mute')"
           @click="$store.commit('settings/pending', true)"
         />
         <v-checkbox
-          v-model="settings.chat.whisperListener"
+          v-model="settings.chat.whisperListener[0]"
           dense
           :label="translate('core.tmi.settings.whisperListener')"
           @click="$store.commit('settings/pending', true)"
         />
         <v-checkbox
-          v-model="settings.chat.showWithAt"
+          v-model="settings.chat.showWithAt[0]"
           dense
           :label="translate('core.tmi.settings.showWithAt')"
           @click="$store.commit('settings/pending', true)"

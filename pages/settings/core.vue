@@ -8,10 +8,14 @@
     <v-card-text class="pa-0">
       <loading v-if="isLoading" />
       <template v-else>
-        <v-row no-gutters>
-          <v-col cols="auto">
-            <v-tabs ref="tabs" :vertical="!$vuetify.breakpoint.mobile">
-              <v-tab v-for="item of menu" :key="item.name" nuxt :to="'/settings/core/' + item.name">{{ item.name }}</v-tab>
+        <v-row no-gutters :style="{'flex-direction': $vuetify.breakpoint.mobile ? undefined : 'row-reverse'}">
+          <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 'auto'" style="min-width: 200px;">
+            <v-tabs
+              ref="tabs"
+              :vertical="!$vuetify.breakpoint.mobile"
+              show-arrows
+            >
+              <v-tab :class="{ 'tab-left': !$vuetify.breakpoint.mobile }" v-for="item of menu" :key="item.name" nuxt :to="'/settings/core/' + item.name">{{ item.name }}</v-tab>
             </v-tabs>
           </v-col>
           <v-col>

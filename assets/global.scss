@@ -2,6 +2,11 @@
   width: 100%;
 }
 
+.tab-left {
+  text-align: left !important;
+  justify-content: normal !important;
+}
+
 .theme--dark.v-data-table tbody tr.v-data-table__selected {
   color: white !important;
 }
