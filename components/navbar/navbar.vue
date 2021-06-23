@@ -11,10 +11,11 @@
           {{ mdiArrowLeft }}
         </v-icon>
       </v-btn>
-
+      <v-skeleton-loader type="text" width="200px" v-if="$store.state.panel.breadcrumbs.length === 0"/>
       <v-breadcrumbs
+        v-else
         class="pl-0"
-        :items="$store.state.panel.breadcrumbs"
+        :items="$vuetify.breakpoint.mobile ? [...$store.state.panel.breadcrumbs[$store.state.panel.breadcrumbs.length - 1]] : $store.state.panel.breadcrumbs"
       />
       <v-spacer />
       <portal-target name="navbar"/>

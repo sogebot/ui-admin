@@ -1,17 +1,25 @@
 <template>
-  <loading v-if="!settings" />
-  <v-card v-else flat>
-    <v-card-text>
-      <v-form ref="form" v-model="valid">
-        <v-checkbox
-          v-model="settings.general.isTitleForced[0]"
-          dense
-          :label="translate('core.twitch.settings.isTitleForced')"
-          @click="$store.commit('settings/pending', true)"
-        />
+  <div class="fill-height">
+    <loading v-if="!settings" />
+    <v-card v-else flat class="fill-height">
+      <v-form v-model="valid" lazy-validation>
+        <v-card-text>
+          <v-select
+            v-model="settings.currency.mainCurrency[0]"
+            :items="ui.currency.mainCurrency.values"
+            :label="translate('core.currency.settings.mainCurrency')"
+            @input="$store.commit('settings/pending', true)"
+          >
+            <template v-if="settings.currency.mainCurrency[0] !== settings.currency.mainCurrency[1]" #append-outer>
+              <v-btn text @click.stop="$store.commit('settings/pending', true); settings.currency.mainCurrency = [settings.currency.mainCurrency[1], settings.currency.mainCurrency[1]]">
+                Revert
+              </v-btn>
+            </template>
+          </v-select>
+        </v-card-text>
       </v-form>
-    </v-card-text>
-  </v-card>
+    </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -24,7 +32,6 @@ import {
 
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
-import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
   beforeRouteLeave (_to, _from, next) {
@@ -42,24 +49,19 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
-    const form = ref(null);
-
-    watch(() => store.state.settings.save, (val) => {
-      if (val && settings.value) {
-        saveSettings('/core/twitch', store, settings.value);
-      }
-    });
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
     }, { immediate: true });
 
+    watch(() => store.state.settings.save, (val) => {
+      if (val && settings.value) {
+        saveSettings('/core/currency', store, settings.value);
+      }
+    });
+
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.settings') },
-        { text: translate('menu.core') },
-      ]);
-      getSocket(`/core/twitch`)
+      getSocket(`/core/currency`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
           if (err) {
             error(err);
@@ -75,11 +77,6 @@ export default defineComponent({
       ui,
       translate,
       valid,
-      form,
-
-      // validators
-      required,
-      minValue,
     };
   },
 });

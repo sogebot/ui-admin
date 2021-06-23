@@ -1,6 +1,6 @@
 <template>
   <loading v-if="!settings" />
-  <v-card v-else flat>
+  <v-card v-else flat class="fill-height">
     <v-card-text>
       <v-form ref="form" v-model="valid">
         <v-text-field
@@ -99,10 +99,6 @@ export default defineComponent({
     }, { immediate: true });
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.settings') },
-        { text: translate('menu.core') },
-      ]);
       getSocket(`/core/socket`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
           if (err) {

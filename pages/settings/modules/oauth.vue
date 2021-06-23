@@ -1,6 +1,6 @@
 <template>
   <loading v-if="!settings" />
-  <v-card flat v-else>
+  <v-card flat v-else class="fill-height">
     <v-form v-model="valid" lazy-validation>
       <v-card-title>{{ translate('categories.general') }}</v-card-title>
       <v-card-text>
@@ -115,10 +115,6 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.settings') },
-        { text: translate('menu.core') },
-      ]);
       getSocket(`/core/oauth`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
           if (err) {
