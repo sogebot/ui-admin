@@ -6,15 +6,23 @@
         @click.stop="drawer = !drawer"
       />
 
-      <v-btn icon v-if="$store.state.panel.back.length > 0" nuxt :to="$store.state.panel.back" color="primary" class="mr-1">
-        <v-icon>
-          {{ mdiArrowLeft }}
-        </v-icon>
-      </v-btn>
+      <v-slide-x-transition>
+        <v-btn icon v-if="$store.state.panel.back.length > 0" nuxt :to="$store.state.panel.back" color="primary">
+          <v-icon>
+            {{ mdiArrowLeft }}
+          </v-icon>
+        </v-btn>
+      </v-slide-x-transition>
+
       <v-breadcrumbs
+        style="position: absolute; transition: all; transition-duration: 0.24s; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);"
         class="pl-0"
+        :style="{
+          left: $store.state.panel.back.length > 0 ? '55px' : '20px'
+        }"
         :items="$vuetify.breakpoint.mobile ? [...$store.state.panel.breadcrumbs[$store.state.panel.breadcrumbs.length - 1]] : $store.state.panel.breadcrumbs"
       />
+
       <v-spacer />
       <portal-target name="navbar"/>
     </v-app-bar>
