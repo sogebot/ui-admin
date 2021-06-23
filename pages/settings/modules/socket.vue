@@ -8,7 +8,6 @@
           :label="translate('core.socket.settings.accessTokenExpirationTime')"
           type="number"
           :rules="[required, minValue(120)]"
-          @input="$store.commit('settings/pending', true)"
         >
           <template v-if="settings.connection.accessTokenExpirationTime[0] !== settings.connection.accessTokenExpirationTime[1]" #append-outer>
             <v-btn text @click.stop="$store.commit('settings/pending', true); settings.connection.accessTokenExpirationTime = [settings.connection.accessTokenExpirationTime[1], settings.connection.accessTokenExpirationTime[1]]">
@@ -21,7 +20,6 @@
           :label="translate('core.socket.settings.refreshTokenExpirationTime')"
           type="number"
           :rules="[required, minValue(400000)]"
-          @input="$store.commit('settings/pending', true)"
         >
           <template v-if="settings.connection.refreshTokenExpirationTime[0] !== settings.connection.refreshTokenExpirationTime[1]" #append-outer>
             <v-btn text @click.stop="$store.commit('settings/pending', true); settings.connection.refreshTokenExpirationTime = [settings.connection.refreshTokenExpirationTime[1], settings.connection.refreshTokenExpirationTime[1]]">
@@ -36,13 +34,12 @@
           persistent-hint
           readonly
           :value="'*'.repeat(30) + settings.connection.socketToken[0].slice(30)"
-          @input="$store.commit('settings/pending', true)"
         >
           <template #append-outer>
             <v-btn text @click.stop="copy(settings.connection.socketToken[0])">
               {{ translate('systems.polls.copy') }}
             </v-btn>
-            <v-btn text color="primary" @click.stop="$store.commit('settings/pending', true); settings.connection.socketToken = [v4(), '']">
+            <v-btn text color="primary" @click.stop="settings.connection.socketToken = [v4(), '']">
               {{ translate('commons.generate') }}
             </v-btn>
           </template>
@@ -61,7 +58,7 @@ import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineComponent, onMounted, ref, watch,
+  defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
 import { v4 } from 'uuid';
 
@@ -77,6 +74,10 @@ export default defineComponent({
     const store = useStore<any>();
     const valid = ref(true);
     const form = ref(null);
+
+    watch(settings, () => {
+      store.commit('settings/pending', true);
+    }, { deep: true });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -97,6 +98,7 @@ export default defineComponent({
           }
           ui.value = _ui;
           settings.value = _settings;
+          nextTick(() => { store.commit('settings/pending', false); });
         });
     });
 

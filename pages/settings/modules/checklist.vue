@@ -3,17 +3,25 @@
   <v-card v-else flat class="fill-height">
     <v-card-text>
       <v-form ref="form" v-model="valid">
-        <v-checkbox
-          v-model="settings.general.isTitleForced[0]"
+        <v-text-field
+          v-for="(item, idx) of settings.customization.itemsArray[0]"
+          :key="idx"
+          v-model="settings.customization.itemsArray[0][idx]"
           dense
-          :label="translate('core.twitch.settings.isTitleForced')"
-        />
+          :label="`Item ${idx+1}`"
+        >
+        <template #append-outer>
+          <v-btn icon color="red" @click="remove(idx)"><v-icon>{{ mdiDelete }}</v-icon></v-btn>
+        </template>
+        </v-text-field>
+        <v-btn @click="settings.customization.itemsArray[0].push('')">Add new item</v-btn>
       </v-form>
     </v-card-text>
   </v-card>
 </template>
 
 <script lang="ts">
+import { mdiDelete } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -39,7 +47,7 @@ export default defineComponent({
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
-        saveSettings('/core/twitch', store, settings.value);
+        saveSettings('/systems/checklist', store, settings.value);
       }
     });
 
@@ -48,7 +56,7 @@ export default defineComponent({
     }, { immediate: true });
 
     onMounted(() => {
-      getSocket(`/core/twitch`)
+      getSocket(`/systems/checklist`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
           if (err) {
             error(err);
@@ -60,16 +68,27 @@ export default defineComponent({
         });
     });
 
+    const remove = (index: number) => {
+      if (!settings.value) {
+        return;
+      }
+      settings.value.customization.itemsArray[0].splice(index, 1);
+    };
+
     return {
       settings,
       ui,
       translate,
       valid,
       form,
+      remove,
 
       // validators
       required,
       minValue,
+
+      // icons
+      mdiDelete,
     };
   },
 });

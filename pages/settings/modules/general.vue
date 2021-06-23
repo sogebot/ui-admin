@@ -7,7 +7,6 @@
           v-model="settings.general.lang[0]"
           :items="ui.general.lang.values"
           :label="translate('core.general.settings.lang')"
-          @input="$store.commit('settings/pending', true)"
         >
           <template v-if="settings.general.lang[0] !== settings.general.lang[1]" #append-outer>
             <v-btn text @click.stop="$store.commit('settings/pending', true); settings.general.lang = [settings.general.lang[1], settings.general.lang[1]]">
@@ -25,7 +24,7 @@ import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineComponent, onMounted, ref, watch,
+  defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
 
 import { error } from '~/functions/error';
@@ -37,6 +36,10 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
+
+    watch(settings, () => {
+      store.commit('settings/pending', true);
+    }, { deep: true });
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
@@ -57,6 +60,7 @@ export default defineComponent({
           }
           ui.value = _ui;
           settings.value = _settings;
+          nextTick(() => { store.commit('settings/pending', false); });
         });
     });
 

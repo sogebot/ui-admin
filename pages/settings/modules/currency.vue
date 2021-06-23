@@ -8,10 +8,9 @@
             v-model="settings.currency.mainCurrency[0]"
             :items="ui.currency.mainCurrency.values"
             :label="translate('core.currency.settings.mainCurrency')"
-            @input="$store.commit('settings/pending', true)"
           >
             <template v-if="settings.currency.mainCurrency[0] !== settings.currency.mainCurrency[1]" #append-outer>
-              <v-btn text @click.stop="$store.commit('settings/pending', true); settings.currency.mainCurrency = [settings.currency.mainCurrency[1], settings.currency.mainCurrency[1]]">
+              <v-btn text @click.stop="settings.currency.mainCurrency = [settings.currency.mainCurrency[1], settings.currency.mainCurrency[1]]">
                 Revert
               </v-btn>
             </template>
@@ -27,7 +26,7 @@ import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineComponent, onMounted, ref, watch,
+  defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
 
 import { error } from '~/functions/error';
@@ -39,6 +38,10 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
+
+    watch(settings, () => {
+      store.commit('settings/pending', true);
+    }, { deep: true });
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
@@ -59,6 +62,7 @@ export default defineComponent({
           }
           ui.value = _ui;
           settings.value = _settings;
+          nextTick(() => { store.commit('settings/pending', false); });
         });
     });
 

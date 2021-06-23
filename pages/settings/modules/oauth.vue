@@ -7,7 +7,6 @@
         <v-text-field
           :label="translate('core.oauth.settings.generalChannel')"
           v-model="settings.general.generalChannel[0]"
-          @input="$store.commit('settings/pending', true)"
         />
 
         <v-textarea
@@ -16,7 +15,7 @@
           persistent-hint
           :label="translate('core.oauth.settings.generalOwners')"
           :value="settings.general.generalOwners[0].filter(String).join('\n')"
-          @input="settings.general.generalOwners[0] = $event.split('\n').filter(String); $store.commit('settings/pending', true)"
+          @input="settings.general.generalOwners[0] = $event.split('\n').filter(String)"
           :hint="translate('one-record-per-line')"
         />
       </v-card-text>
@@ -28,13 +27,11 @@
         <v-text-field
           :label="translate('core.oauth.settings.botAccessToken')"
           v-model="settings.bot.botAccessToken[0]"
-          @input="$store.commit('settings/pending', true)"
           type="password"
         />
         <v-text-field
           :label="translate('core.oauth.settings.botRefreshToken')"
           v-model="settings.bot.botRefreshToken[0]"
-          @input="$store.commit('settings/pending', true)"
           type="password"
         />
         <v-text-field
@@ -54,13 +51,11 @@
         <v-text-field
           :label="translate('core.oauth.settings.broadcasterAccessToken')"
           v-model="settings.broadcaster.broadcasterAccessToken[0]"
-          @input="$store.commit('settings/pending', true)"
           type="password"
         />
         <v-text-field
           :label="translate('core.oauth.settings.broadcasterRefreshToken')"
           v-model="settings.broadcaster.broadcasterRefreshToken[0]"
-          @input="$store.commit('settings/pending', true)"
           type="password"
         />
         <v-text-field
@@ -81,7 +76,7 @@ import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineComponent, onMounted, ref, watch,
+  defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
 
 import { error } from '~/functions/error';
@@ -93,6 +88,10 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
+
+    watch(settings, () => {
+      store.commit('settings/pending', true);
+    }, { deep: true });
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
@@ -113,6 +112,7 @@ export default defineComponent({
           }
           ui.value = _ui;
           settings.value = _settings;
+          nextTick(() => { store.commit('settings/pending', false); });
         });
     });
 

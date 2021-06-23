@@ -9,7 +9,6 @@
           :hint="translate('core.ui.settings.domain.help')"
           persistent-hint
           :rules="[required]"
-          @input="$store.commit('settings/pending', true)"
         >
           <template v-if="settings.domain[0] !== settings.domain[1]" #append-outer>
             <v-btn text @click.stop="$store.commit('settings/pending', true); settings.domain = [settings.domain[1], settings.domain[1]]">
@@ -21,19 +20,16 @@
           v-model="settings.percentage[0]"
           dense
           :label="translate('core.ui.settings.percentage')"
-          @click="$store.commit('settings/pending', true)"
         />
         <v-checkbox
           v-model="settings.shortennumbers[0]"
           dense
           :label="translate('core.ui.settings.shortennumbers')"
-          @click="$store.commit('settings/pending', true)"
         />
         <v-checkbox
           v-model="settings.showdiff[0]"
           dense
           :label="translate('core.ui.settings.showdiff')"
-          @click="$store.commit('settings/pending', true)"
         />
       </v-form>
     </v-card-text>
@@ -45,7 +41,7 @@ import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineComponent, onMounted, ref, watch,
+  defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
 
 import { error } from '~/functions/error';
@@ -59,6 +55,10 @@ export default defineComponent({
     const store = useStore<any>();
     const valid = ref(true);
     const form = ref(null);
+
+    watch(settings, () => {
+      store.commit('settings/pending', true);
+    }, { deep: true });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -79,6 +79,7 @@ export default defineComponent({
           }
           ui.value = _ui;
           settings.value = _settings;
+          nextTick(() => { store.commit('settings/pending', false); });
         });
     });
 

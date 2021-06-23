@@ -7,25 +7,21 @@
           v-model="settings.chat.sendWithMe[0]"
           dense
           :label="translate('core.tmi.settings.sendWithMe')"
-          @click="$store.commit('settings/pending', true)"
         />
         <v-checkbox
           v-model="settings.chat.mute[0]"
           dense
           :label="translate('core.tmi.settings.mute')"
-          @click="$store.commit('settings/pending', true)"
         />
         <v-checkbox
           v-model="settings.chat.whisperListener[0]"
           dense
           :label="translate('core.tmi.settings.whisperListener')"
-          @click="$store.commit('settings/pending', true)"
         />
         <v-checkbox
           v-model="settings.chat.showWithAt[0]"
           dense
           :label="translate('core.tmi.settings.showWithAt')"
-          @click="$store.commit('settings/pending', true)"
         />
         <v-textarea
           outlined
@@ -34,7 +30,7 @@
           :label="translate('core.tmi.settings.ignorelist')"
           :value="settings.chat.ignorelist[0].filter(String).join('\n')"
           :hint="translate('one-record-per-line')"
-          @input="settings.chat.ignorelist[0] = $event.split('\n').filter(String); $store.commit('settings/pending', true)"
+          @input="settings.chat.ignorelist[0] = $event.split('\n').filter(String)"
         />
 
         <v-autocomplete
@@ -75,7 +71,7 @@ import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defineComponent, onMounted, ref, watch,
+  defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
 
 import { error } from '~/functions/error';
@@ -101,6 +97,10 @@ export default defineComponent({
       return item.includes(queryText) || aliases.find(o => o.includes(queryText));
     };
 
+    watch(settings, () => {
+      store.commit('settings/pending', true);
+    }, { deep: true });
+
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
         saveSettings('/core/tmi', store, settings.value);
@@ -120,6 +120,7 @@ export default defineComponent({
           }
           ui.value = _ui;
           settings.value = _settings;
+          nextTick(() => { store.commit('settings/pending', false); });
         });
 
       fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/globalIgnoreList.json')

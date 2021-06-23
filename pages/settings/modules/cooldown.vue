@@ -4,9 +4,14 @@
     <v-card-text>
       <v-form ref="form" v-model="valid">
         <v-checkbox
-          v-model="settings.general.isTitleForced[0]"
+          v-model="settings.cooldownNotifyAsWhisper[0]"
           dense
-          :label="translate('core.twitch.settings.isTitleForced')"
+          :label="translate('systems.cooldown.settings.cooldownNotifyAsWhisper')"
+        />
+        <v-checkbox
+          v-model="settings.cooldownNotifyAsChat[0]"
+          dense
+          :label="translate('systems.cooldown.settings.cooldownNotifyAsChat')"
         />
       </v-form>
     </v-card-text>
@@ -39,7 +44,7 @@ export default defineComponent({
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
-        saveSettings('/core/twitch', store, settings.value);
+        saveSettings('/systems/cooldown', store, settings.value);
       }
     });
 
@@ -48,7 +53,7 @@ export default defineComponent({
     }, { immediate: true });
 
     onMounted(() => {
-      getSocket(`/core/twitch`)
+      getSocket(`/systems/cooldown`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
           if (err) {
             error(err);

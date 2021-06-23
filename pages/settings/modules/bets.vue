@@ -3,11 +3,20 @@
   <v-card v-else flat class="fill-height">
     <v-card-text>
       <v-form ref="form" v-model="valid">
-        <v-checkbox
-          v-model="settings.general.isTitleForced[0]"
+        <v-text-field
+          v-model="settings.betPercentGain[0]"
           dense
-          :label="translate('core.twitch.settings.isTitleForced')"
-        />
+          type="number"
+          min="0"
+          :label="translate('systems.bets.settings.betPercentGain')"
+          :rules="[required, minValue(0)]"
+        >
+          <template v-if="settings.betPercentGain[0] !== settings.betPercentGain[1]" #append-outer>
+            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.betPercentGain = [settings.betPercentGain[1], settings.betPercentGain[1]]">
+              Revert
+            </v-btn>
+          </template>
+        </v-text-field>
       </v-form>
     </v-card-text>
   </v-card>
@@ -39,7 +48,7 @@ export default defineComponent({
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
-        saveSettings('/core/twitch', store, settings.value);
+        saveSettings('/systems/bets', store, settings.value);
       }
     });
 
@@ -48,7 +57,7 @@ export default defineComponent({
     }, { immediate: true });
 
     onMounted(() => {
-      getSocket(`/core/twitch`)
+      getSocket(`/systems/bets`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
           if (err) {
             error(err);
