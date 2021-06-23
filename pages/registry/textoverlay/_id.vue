@@ -202,21 +202,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      store.commit('panel/back', '/registry/textoverlay/');
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.textoverlay') },
-        { text: translate('dialog.title.add') },
-      ]);
+      store.commit('panel/back', '/registry/textoverlay');
       if (route.value.params.id && route.value.params.id !== 'new') {
         // load initial item
         isLoading.value = true;
-        store.commit('panel/breadcrumbs', [
-          { text: translate('menu.registry') },
-          { text: translate('menu.textoverlay') },
-          { text: translate('dialog.title.edit') },
-        ]);
-
         getSocket('/registries/text').emit('generic::getOne', { id: route.value.params.id, parseText: false }, (err: string | null, data: TextInterface) => {
           if (err) {
             return error(err);

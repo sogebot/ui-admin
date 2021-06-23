@@ -221,29 +221,13 @@ export default defineComponent({
 
     onMounted(() => {
       store.commit('panel/back', '/registry/randomizer/');
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.randomizer') },
-        { text: translate('dialog.title.add') },
-      ]);
       if (route.value.params.id && route.value.params.id !== 'new') {
-        store.commit('panel/breadcrumbs', [
-          { text: translate('menu.registry') },
-          { text: translate('menu.randomizer') },
-          { text: translate('dialog.title.edit') },
-        ]);
         // load initial item
         isLoading.value = true;
         api.getOne<RandomizerInterface>($axios, `/api/v1/registry/randomizer/`, String(route.value.params.id) ?? '')
           .then((response) => {
             item.value = response.data;
             isLoading.value = false;
-            store.commit('panel/breadcrumbs', [
-              { text: translate('menu.registry') },
-              { text: translate('menu.randomizer') },
-              { text: translate('dialog.title.edit') },
-              { text: response.data.id },
-            ]);
           })
           .catch(() => {
             router.push({ path: '/registry/randomizer' });

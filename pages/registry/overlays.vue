@@ -180,7 +180,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiChevronRight, mdiClipboard, mdiClipboardCheck, mdiLink,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useContext, useStore, watch,
+  defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
@@ -202,7 +202,6 @@ export default defineComponent({
   },
   setup () {
     const { $axios } = useContext();
-    const store = useStore();
     const items = ref([] as OverlayMappers[]);
     const cacheItems = ref([] as OverlayMappers[]);
     const overlayOptions = [
@@ -271,10 +270,6 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.overlays') },
-      ]);
       refresh();
     });
 

@@ -66,7 +66,7 @@ import {
   mdiCog, mdiDrag, mdiEqual, mdiGreaterThanOrEqual, mdiPlus,
 } from '@mdi/js';
 import {
-  useContext, useRoute, useRouter, useStore,
+  useContext, useRoute, useRouter,
 } from '@nuxtjs/composition-api';
 import {
   defineComponent, onMounted, ref, watch,
@@ -177,7 +177,6 @@ export default defineComponent({
     const { $axios } = useContext();
     const route = useRoute();
     const router = useRouter();
-    const store = useStore();
     const isLoading = ref(true);
     const tab = ref(0);
     const permissions = ref([] as PermissionsInterface[]);
@@ -189,20 +188,12 @@ export default defineComponent({
     });
 
     watch(() => route.value.params.id, (val?: string) => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.settings') },
-        { text: translate('menu.permissions') },
-      ]);
       if (!val && !isLoading.value) {
         refresh();
       }
     });
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.settings') },
-        { text: translate('menu.permissions') },
-      ]);
       refresh();
       EventBus
         .$off('settings::permissions::refresh')

@@ -304,7 +304,7 @@ import {
   mdiClose, mdiExclamationThick, mdiPlus,
 } from '@mdi/js';
 import {
-  useContext, useRoute, useRouter, useStore,
+  useContext, useRoute, useRouter,
 } from '@nuxtjs/composition-api';
 import {
   defineAsyncComponent,
@@ -344,7 +344,6 @@ export default defineComponent({
   },
   setup () {
     const { $axios } = useContext();
-    const store = useStore();
     const stepper = ref(1);
     const router = useRouter();
 
@@ -407,29 +406,12 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      store.commit('panel/back', '/registry/goals/');
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.goals') },
-        { text: translate('dialog.title.add') },
-      ]);
       if (useRoute().value.params.id && useRoute().value.params.id !== 'new') {
         // load initial item
         isLoading.value = true;
-        store.commit('panel/breadcrumbs', [
-          { text: translate('menu.registry') },
-          { text: translate('menu.goals') },
-          { text: translate('dialog.title.edit') },
-        ]);
         api.getOne<GoalGroupInterface>($axios, `/api/v1/registry/goals/`, String(useRoute().value.params.id) ?? '')
           .then((response) => {
             item.value = response.data;
-            store.commit('panel/breadcrumbs', [
-              { text: translate('menu.registry') },
-              { text: translate('menu.goals') },
-              { text: translate('dialog.title.edit') },
-              { text: response.data.id },
-            ]);
             isLoading.value = false;
           })
           .catch(() => {

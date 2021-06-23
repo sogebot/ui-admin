@@ -8,23 +8,13 @@
 import {
   computed,
   defineComponent,
-  onMounted,
-  useStore,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
 export default defineComponent({
   setup () {
-    const store = useStore();
     const url = computed(() => {
       return (process.env.isNuxtDev ? 'http://localhost:20000/' : '/');
-    });
-
-    onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.stats') },
-        { text: translate('menu.api-explorer') },
-      ]);
     });
 
     return {

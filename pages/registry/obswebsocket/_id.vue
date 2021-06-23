@@ -325,17 +325,11 @@ export default defineComponent({
     const actionToAdd = ref(Object.keys(availableActions)[0]);
 
     onMounted(() => {
-      store.commit('panel/back', '/registry/obswebsocket/');
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.obswebsocket') },
-        { text: translate('dialog.title.add') },
-      ]);
+      store.commit('panel/back', '/registry/obswebsocket');
       initial();
     });
 
     const initial = () => {
-      console.log(route.value);
       refreshScenes();
       refreshSources();
 
@@ -356,22 +350,11 @@ export default defineComponent({
             error(e);
           });
       } else {
-        store.commit('panel/breadcrumbs', [
-          { text: translate('menu.registry') },
-          { text: translate('menu.obswebsocket') },
-          { text: translate('dialog.title.edit') },
-        ]);
         // load initial item
         isLoading.value = true;
         api.getOne<OBSWebsocketInterface>(context.$axios, `/api/v1/integration/obswebsocket`, String(route.value.params.id) ?? '')
           .then((response) => {
             item.value = response.data;
-            store.commit('panel/breadcrumbs', [
-              { text: translate('menu.registry') },
-              { text: translate('menu.obswebsocket') },
-              { text: translate('dialog.title.edit') },
-              { text: response.data.id },
-            ]);
             isLoading.value = false;
           })
           .catch(() => {

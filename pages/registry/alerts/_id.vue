@@ -268,9 +268,9 @@ export default defineComponent({
     tts:      defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
   },
   setup () {
+    const store = useStore();
     const { $axios } = useContext();
     const router = useRouter();
-    const store = useStore();
     const tabs = ref(null);
     const variantTabs = ref(
       supportedEvents.map(ev => ({ [ev]: 0 })),
@@ -293,29 +293,12 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      store.commit('panel/back', '/registry/alerts/');
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.alerts') },
-        { text: translate('dialog.title.add') },
-      ]);
+      store.commit('panel/back', '/registry/alerts');
       if (useRoute().value.params.id && useRoute().value.params.id !== 'new') {
-        store.commit('panel/breadcrumbs', [
-          { text: translate('menu.registry') },
-          { text: translate('menu.alerts') },
-          { text: translate('dialog.title.edit') },
-        ]);
         // load initial item
         isLoading.value = true;
         api.getOne<AlertInterface>($axios, `/api/v1/registry/alerts`, String(useRoute().value.params.id) ?? '')
           .then((response) => {
-            console.log(response.data);
-            store.commit('panel/breadcrumbs', [
-              { text: translate('menu.registry') },
-              { text: translate('menu.alerts') },
-              { text: translate('dialog.title.edit') },
-              { text: response.data.id },
-            ]);
             item.value = cloneDeep(response.data);
             isLoading.value = false;
           })

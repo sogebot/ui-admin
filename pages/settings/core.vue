@@ -28,9 +28,7 @@
 </template>
 
 <script lang="ts">
-import {
-  useRoute, useRouter, useStore,
-} from '@nuxtjs/composition-api';
+import { useRoute, useRouter } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
@@ -44,7 +42,6 @@ type systemFromIO = { name: string; enabled: boolean; areDependenciesEnabled: bo
 export default defineComponent({
   components: { loading: defineAsyncComponent(() => import('~/components/loading.vue')) },
   setup () {
-    const store = useStore();
     const isLoading = ref(true);
     const menu = ref([] as systemFromIO[]);
     const route = useRoute();
@@ -52,10 +49,6 @@ export default defineComponent({
     const tabs = ref(null);
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.settings') },
-        { text: translate('menu.core') },
-      ]);
       getSocket('/').emit('core', (err: string | null, systems: systemFromIO[]) => {
         if (err) {
           error(err);

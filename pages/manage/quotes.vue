@@ -174,7 +174,7 @@
                 v-for="tag of item.tags"
                 :key="tag"
                 x-small
-                @click="showTag=tag"
+                @click.stop="showTag=tag"
               >
                 {{ tag }}
               </v-chip>
@@ -241,7 +241,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiMagnify, mdiTagPlus,
 } from '@mdi/js';
 import {
-  computed, defineAsyncComponent, defineComponent, onMounted, ref, useStore, watch,
+  computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -260,7 +260,6 @@ import { required } from '~/functions/validators';
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/quotes-newItem.vue') }) },
   setup () {
-    const store = useStore();
     const timestamp = ref(Date.now());
 
     const selected = ref([] as QuotesInterface[]);
@@ -322,10 +321,6 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.manage') },
-        { text: translate('menu.quotes') },
-      ]);
       refresh();
     });
 

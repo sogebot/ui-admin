@@ -329,7 +329,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiDrag, mdiMagnify,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useContext, useStore, watch,
+  defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -417,7 +417,6 @@ export default defineComponent({
   setup () {
     const { $axios } = useContext();
     const items = ref([] as CarouselInterface[]);
-    const store = useStore();
 
     const imageShowOverlay = ref(false);
     const imageShow = ref(null as null | string);
@@ -529,10 +528,6 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.carousel') },
-      ]);
       refresh();
       EventBus.$off(`carousel::dragdrop`).$off(`carousel::dragstart`);
       EventBus.$on(`carousel::dragstart`, () => {

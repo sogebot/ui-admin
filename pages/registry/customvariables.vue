@@ -276,7 +276,7 @@ import {
 } from '@mdi/js';
 import {
   computed,
-  defineAsyncComponent, defineComponent, onMounted, ref, useContext, useStore, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -300,7 +300,6 @@ export default defineComponent({
   setup () {
     const { $axios } = useContext();
     const rules = { variableName: [required, startsWith(['$_']), minLength(3), restrictedChars([' '])] };
-    const store = useStore();
 
     const items = ref([] as VariableInterface[]);
     const editItem = ref(null as null | VariableInterface);
@@ -372,10 +371,6 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.custom-variables') },
-      ]);
       refresh();
     });
 

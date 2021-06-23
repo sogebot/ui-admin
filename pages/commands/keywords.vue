@@ -170,7 +170,7 @@
 <script lang="ts">
 import { mdiCheckBoxMultipleOutline, mdiMagnify } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, useContext, useStore, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -195,7 +195,6 @@ export default defineComponent({
   },
   setup () {
     const { $axios } = useContext();
-    const store = useStore();
     const search = ref('');
     const items = ref([] as Required<KeywordInterface>[]);
     const permissions = ref([] as PermissionsInterface[]);
@@ -276,10 +275,6 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.commands') },
-        { text: translate('menu.keywords') },
-      ]);
       refresh();
     });
 

@@ -340,7 +340,7 @@ import {
 } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, ref, useStore, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -359,7 +359,6 @@ const files = {
 export default defineComponent({
   setup () {
     const search = ref('');
-    const store = useStore();
 
     const items = ref([] as GalleryInterface[]);
     const active = ref([] as string[]);
@@ -405,10 +404,6 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.gallery') },
-      ]);
       refresh();
     });
 

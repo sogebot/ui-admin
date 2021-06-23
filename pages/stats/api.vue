@@ -72,7 +72,7 @@
 import { mdiMagnify } from '@mdi/js';
 import {
   computed, defineComponent,
-  onMounted, ref, useStore,
+  onMounted, ref,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -89,7 +89,6 @@ Vue.use(Chartkick.use(Chart));
 
 export default defineComponent({
   setup () {
-    const store = useStore();
     const selected = ref('helix');
     const apiItems = computed(() => {
       return [
@@ -162,10 +161,6 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.stats') },
-        { text: translate('menu.api') },
-      ]);
       refresh();
     });
 

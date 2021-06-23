@@ -129,7 +129,6 @@ import {
 } from '@mdi/js';
 import {
   defineComponent, onMounted, ref, useContext,
-  useStore,
   watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
@@ -150,7 +149,6 @@ export default defineComponent({
   setup () {
     const items = ref([] as RandomizerInterface[]);
     const search = ref('');
-    const store = useStore();
     const { $axios } = useContext();
 
     const selected = ref([] as RandomizerInterface[]);
@@ -192,10 +190,6 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.randomizer') },
-      ]);
       refresh();
       EventBus.$on('goals::refresh', refresh);
     });

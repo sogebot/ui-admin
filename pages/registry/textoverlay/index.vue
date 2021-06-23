@@ -138,7 +138,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiContentCopy, mdiLink, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useStore, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -154,7 +154,6 @@ import { required } from '~/functions/validators';
 export default defineComponent({
   setup () {
     const rules = { name: [required] };
-    const store = useStore();
 
     const items = ref([] as TextInterface[]);
     const search = ref('');
@@ -191,10 +190,6 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.textoverlay') },
-      ]);
       refresh();
     });
 

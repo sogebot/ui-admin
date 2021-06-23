@@ -223,7 +223,7 @@
 <script lang="ts">
 import { mdiCheckBoxMultipleOutline, mdiMagnify } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, useStore, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -244,7 +244,6 @@ export default defineComponent({
     responses:  defineAsyncComponent({ loader: () => import('~/components/timers-responses.vue') }),
   },
   setup () {
-    const store = useStore();
     const rules = {
       name:                [required, minLength(2), mustBeCompliant('a-zA-Z0-9_')],
       triggerEveryMessage: [required, minValue(0)],
@@ -320,10 +319,6 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.manage') },
-        { text: translate('menu.timers') },
-      ]);
       refresh();
     });
 

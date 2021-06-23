@@ -197,7 +197,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiContentCopy, mdiInfinity, mdiLink, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useContext, useStore, watch,
+  defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -213,7 +213,6 @@ import { EventBus } from '~/functions/event-bus';
 export default defineComponent({
   setup () {
     const { $axios } = useContext();
-    const store = useStore();
     const items = ref([] as GoalGroupInterface[]);
     const search = ref('');
 
@@ -254,10 +253,6 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.goals') },
-      ]);
       refresh();
       EventBus.$on('goals::refresh', refresh);
     });

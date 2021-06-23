@@ -115,7 +115,7 @@
 <script lang="ts">
 import { mdiCheckBoxMultipleOutline, mdiMagnify } from '@mdi/js';
 import {
-  computed, defineComponent, onMounted, ref, useStore, watch,
+  computed, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -130,7 +130,6 @@ export default defineComponent({
   setup () {
     const items = ref([] as SpotifySongBanInterface[]);
     const search = ref('');
-    const store = useStore();
 
     const deleteDialog = ref(false);
     const selected = ref([] as SpotifySongBanInterface[]);
@@ -170,11 +169,6 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.manage') },
-        { text: translate('menu.spotify') },
-        { text: translate('menu.bannedsongs') },
-      ]);
       refresh();
     });
 

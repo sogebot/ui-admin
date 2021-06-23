@@ -83,7 +83,7 @@
 
 import { mdiLink, mdiMagnify } from '@mdi/js';
 import {
-  computed, defineComponent, onMounted, ref, useStore,
+  computed, defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -99,7 +99,6 @@ export default defineComponent({
   setup () {
     const items = ref([] as HighlightInterface[]);
     const search = ref('');
-    const store = useStore();
 
     const fItems = computed(() => {
       if (search.value.length === 0) {
@@ -137,10 +136,6 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.manage') },
-        { text: translate('menu.highlights') },
-      ]);
       refresh();
     });
 

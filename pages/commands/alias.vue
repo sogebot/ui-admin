@@ -272,7 +272,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiMagnify, mdiMinus, mdiPlus,
 } from '@mdi/js';
 import {
-  computed, defineAsyncComponent, defineComponent, onMounted, ref, useContext, useStore, watch,
+  computed, defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -298,7 +298,6 @@ export default defineComponent({
   setup () {
     const { $axios } = useContext();
     const timestamp = ref(Date.now());
-    const store = useStore();
 
     const selected = ref([] as AliasInterfaceUI[]);
     const currentItems = ref([] as AliasInterfaceUI[]);
@@ -366,10 +365,6 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.commands') },
-        { text: translate('menu.alias') },
-      ]);
       refresh();
     });
 

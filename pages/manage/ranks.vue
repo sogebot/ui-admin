@@ -229,7 +229,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiMagnify, mdiMinus, mdiPlus,
 } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, useStore, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -247,7 +247,6 @@ type RankInterfaceUI = RankInterface & { typeToBeShownInTable: string };
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/ranks-newItem.vue') }) },
   setup () {
-    const store = useStore();
     const rules = { value: [required, minValue(0)], rank: [required] };
 
     const items = ref([] as RankInterfaceUI[]);
@@ -306,10 +305,6 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.manage') },
-        { text: translate('menu.ranks') },
-      ]);
       refresh();
     });
 

@@ -6,20 +6,19 @@
         @click.stop="drawer = !drawer"
       />
 
-      <v-btn text v-if="$store.state.panel.back.length > 0" nuxt :to="$store.state.panel.back" color="primary" class="mr-4">
+      <v-btn icon v-if="$store.state.panel.back.length > 0" nuxt :to="$store.state.panel.back" color="primary" class="mr-1">
         <v-icon>
           {{ mdiArrowLeft }}
         </v-icon>
       </v-btn>
-      <v-skeleton-loader type="text" width="200px" v-if="$store.state.panel.breadcrumbs.length === 0"/>
       <v-breadcrumbs
-        v-else
         class="pl-0"
         :items="$vuetify.breakpoint.mobile ? [...$store.state.panel.breadcrumbs[$store.state.panel.breadcrumbs.length - 1]] : $store.state.panel.breadcrumbs"
       />
       <v-spacer />
       <portal-target name="navbar"/>
     </v-app-bar>
+
     <v-navigation-drawer
       v-model="drawer"
       app

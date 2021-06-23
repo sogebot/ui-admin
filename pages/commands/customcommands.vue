@@ -201,7 +201,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiMagnify, mdiRestore,
 } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, useContext, useStore, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -231,7 +231,6 @@ export default defineComponent({
     responses:  defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
   },
   setup () {
-    const store = useStore();
     const rules = { command: [startsWith(['!']), required, minLength(2)] };
 
     const { $axios } = useContext();
@@ -321,10 +320,6 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.commands') },
-        { text: translate('menu.customcommands') },
-      ]);
       refresh();
     });
 

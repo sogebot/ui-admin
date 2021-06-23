@@ -208,7 +208,7 @@ import {
 } from '@mdi/js';
 import {
   computed,
-  defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, useStore, watch,
+  defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -229,7 +229,6 @@ export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/polls-newItem.vue') }) },
   setup () {
     const rules = { title: [required], options: [expectedValuesCount(2)] };
-    const store = useStore();
 
     const items = ref([] as PollInterface[]);
     const isRunning = computed(() => {
@@ -293,10 +292,6 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.manage') },
-        { text: translate('menu.polls') },
-      ]);
       refresh();
     });
 

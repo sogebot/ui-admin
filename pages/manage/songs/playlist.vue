@@ -272,7 +272,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiClockOutline, mdiLink, mdiMagnify, mdiMusic, mdiSkipNext, mdiSkipPrevious, mdiVolumeHigh,
 } from '@mdi/js';
 import {
-  computed, defineComponent, onMounted, ref, useStore, watch,
+  computed, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -303,7 +303,6 @@ export default defineComponent({
   setup () {
     const items = ref([] as SongPlaylistInterface[]);
     const search = ref('');
-    const store = useStore();
 
     const deleteDialog = ref(false);
     const selected = ref([] as SongPlaylistInterface[]);
@@ -372,10 +371,6 @@ export default defineComponent({
     const fItems = computed(() => items.value);
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.manage') },
-        { text: translate('menu.playlist') },
-      ]);
       refresh();
     });
 

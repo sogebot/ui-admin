@@ -86,7 +86,7 @@ import {
 } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, ref, useContext, useStore,
+  defineComponent, onMounted, ref, useContext,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -114,7 +114,6 @@ type CommandsInterface = {
 export default defineComponent({
   setup () {
     const rules = { command: [startsWith(['!']), required, minLength(2)] };
-    const store = useStore();
     const { $axios } = useContext();
 
     const search = ref('');
@@ -184,10 +183,6 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.commands') },
-        { text: translate('menu.botcommands') },
-      ]);
       refresh();
     });
 

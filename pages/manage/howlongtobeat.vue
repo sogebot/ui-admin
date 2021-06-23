@@ -233,7 +233,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiMagnify, mdiRefresh,
 } from '@mdi/js';
 import {
-  computed, defineAsyncComponent, defineComponent, onMounted, ref, useStore, watch,
+  computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -251,7 +251,6 @@ import { minValue, required } from '~/functions/validators';
 export default defineComponent({
   components: { timeInput: defineAsyncComponent({ loader: () => import('~/components/time.vue') }) },
   setup () {
-    const store = useStore();
     const timestamp = ref(Date.now());
     const items = ref([] as HowLongToBeatGameInterface[]);
     const streams = ref([] as HowLongToBeatGameItemInterface[]);
@@ -353,10 +352,6 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.manage') },
-        { text: translate('menu.howlongtobeat') },
-      ]);
       refresh();
     });
     const refresh = () => {

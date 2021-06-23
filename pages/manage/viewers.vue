@@ -756,10 +756,6 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.manage') },
-        { text: translate('menu.viewers') },
-      ]);
       refresh();
     });
 

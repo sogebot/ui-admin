@@ -172,7 +172,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiContentCopy, mdiLink, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, useContext, useStore, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
@@ -189,7 +189,6 @@ export default defineComponent({
   components: { 'test-dialog': defineAsyncComponent({ loader: () => import('~/components/registry/alerts/test-dialog.vue') }) },
   setup () {
     const { $axios } = useContext();
-    const store = useStore();
     const rules = { name: [required] };
 
     const items = ref([] as AlertInterface[]);
@@ -223,10 +222,6 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.alerts') },
-      ]);
       refresh();
     });
 

@@ -119,7 +119,7 @@ import {
   mdiCheckBoxMultipleOutline, mdiClipboard, mdiClipboardCheck, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useContext, useStore, watch,
+  defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
@@ -135,7 +135,6 @@ export default defineComponent({
     const { $axios } = useContext();
     const items = ref([] as OBSWebsocketInterface[]);
     const search = ref('');
-    const store = useStore();
 
     const command = ref('!obsws run');
     const selected = ref([] as OBSWebsocketInterface[]);
@@ -179,10 +178,6 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.registry') },
-        { text: translate('menu.obswebsocket') },
-      ]);
       refresh();
       EventBus.$on('integrations::obswebsocket::refresh', refresh);
     });

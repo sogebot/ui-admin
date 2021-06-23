@@ -252,7 +252,7 @@
 import { mdiDelete, mdiMagnify } from '@mdi/js';
 import {
   computed,
-  defineAsyncComponent, defineComponent, onMounted, ref, useStore, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -273,7 +273,6 @@ export default defineComponent({
   },
   setup () {
     const timestamp = ref(Date.now());
-    const store = useStore();
 
     const search = ref([] as string[]);
 
@@ -353,10 +352,6 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.manage') },
-        { text: translate('menu.event-listeners') },
-      ]);
       refresh();
     });
 

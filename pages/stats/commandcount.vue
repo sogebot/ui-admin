@@ -51,7 +51,7 @@ import {
 } from '@mdi/js';
 import {
   computed, defineComponent,
-  onMounted, ref, useStore, watch,
+  onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -70,7 +70,6 @@ Vue.use(Chartkick.use(Chart));
 
 export default defineComponent({
   setup () {
-    const store = useStore();
     const search = ref('');
     const showChartCommands = ref([] as string[]);
     watch(showChartCommands, () => {
@@ -157,10 +156,6 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      store.commit('panel/breadcrumbs', [
-        { text: translate('menu.stats') },
-        { text: translate('menu.commandcount') },
-      ]);
       refresh();
     });
 
