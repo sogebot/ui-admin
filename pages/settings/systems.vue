@@ -88,16 +88,6 @@ import { error } from '~/functions/error';
 type systemFromIO = { name: string; enabled: boolean; areDependenciesEnabled: boolean; isDisabledByEnv: boolean };
 
 export default defineComponent({
-  beforeRouteLeave (_to, _from, next) {
-    if (this.$store.state.settings.pending) {
-      const isOK = confirm('You will lose your pending changes. Do you want to continue?');
-      if (!isOK) {
-        return next(false);
-      }
-    }
-    this.$store.commit('settings/pending', false);
-    next();
-  },
   setup () {
     const store = useStore<any>();
     const isLoading = ref(true);

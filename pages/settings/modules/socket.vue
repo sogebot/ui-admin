@@ -71,16 +71,6 @@ import { saveSettings } from '~/functions/settings';
 import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
-  beforeRouteLeave (_to, _from, next) {
-    if (this.$store.state.settings.pending) {
-      const isOK = confirm('You will lose your pending changes. Do you want to continue?');
-      if (!isOK) {
-        return next(false);
-      }
-    }
-    this.$store.commit('settings/pending', false);
-    next();
-  },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);

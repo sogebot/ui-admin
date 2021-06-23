@@ -7,6 +7,17 @@ export default ({ app: { store, router } }: Context) => {
     return;
   }
 
+  router.beforeEach((_to, _from, next) => {
+    if (store.state.settings.pending) {
+      const isOK = confirm('You will lose your pending changes. Do you want to continue?');
+      if (!isOK) {
+        return next(false);
+      }
+    }
+    store.commit('settings/pending', false);
+    next();
+  });
+
   router.afterEach((to) => {
     (function init () {
       if (!store.state.isUILoaded) {
