@@ -10,7 +10,7 @@
     </portal>
     <v-navigation-drawer
       right
-      :width="$vuetify.breakpoint.mobile ? '100%' : '60%'"
+      :width="$vuetify.breakpoint.mobile ? '100%' : '100%'"
       absolute
       hide-overlay
       v-model="drawer"
@@ -33,7 +33,9 @@
               <v-col
                 v-for="item in items"
                 :key="item.name"
-                cols="3"
+                sm="6"
+                md="6"
+                lg="2"
                 class="fill-height"
               >
                 <v-card class="fill-height">
