@@ -32,7 +32,7 @@ export default defineComponent({
     onMounted(() => {
       api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
         .then((response) => {
-          permissions.value = orderBy(response.data.data.filter(o => !props.ignored.includes(o.id)), 'order', 'desc');
+          permissions.value = orderBy(response.data.data.filter(o => !(props.ignored ?? []).includes(o.id)), 'order', 'desc');
         });
     });
 
