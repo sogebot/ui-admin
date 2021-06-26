@@ -33,7 +33,7 @@
     "@sogebot/ui-helpers": "^2.3.0",
     "animate.css": "^4.1.1",
     "chart.js": "^2.9.4",
-    "core-js": "^3.14.0",
+    "core-js": "^3.15.1",
     "gsap": "^3.7.0",
     "nuxt": "^2.15.7",
     "portal-vue": "^2.1.7",
@@ -56,7 +56,7 @@
     "@mdi/js": "^5.9.55",
     "@nuxt/types": "^2.15.7",
     "@nuxt/typescript-build": "^2.1.0",
-    "@nuxtjs/composition-api": "^0.24.4",
+    "@nuxtjs/composition-api": "^0.24.5",
     "@nuxtjs/eslint-config-typescript": "^6.0.1",
     "@nuxtjs/eslint-module": "^3.0.2",
     "@nuxtjs/stylelint-module": "^4.0.0",
@@ -73,7 +73,7 @@
     "eslint-plugin-nuxt": "^2.0.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-unused-imports": "^1.1.1",
-    "eslint-plugin-vue": "^7.11.1",
+    "eslint-plugin-vue": "^7.12.1",
     "lint-staged": "^11.0.0",
     "obs-websocket-js": "^4.0.2",
     "patch-package": "^6.4.7",
@@ -82,6 +82,6 @@
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "typeorm": "^0.2.34",
-    "vuetify": "^2.5.4"
+    "vuetify": "^2.5.5"
   }
 }

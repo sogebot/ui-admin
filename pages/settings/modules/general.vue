@@ -14,6 +14,21 @@
             </v-btn>
           </template>
         </v-select>
+        <v-text-field
+          v-model="settings.graceful_exit.gracefulExitEachXHours[0]"
+          type="number"
+          min="0"
+          :rules="[required, minValue(0)]"
+          :label="translate('core.general.settings.gracefulExitEachXHours.title')"
+          :hint="translate('core.general.settings.gracefulExitEachXHours.help')"
+          persistent-hint
+        >
+          <template v-if="settings.graceful_exit.gracefulExitEachXHours[0] !== settings.graceful_exit.gracefulExitEachXHours[1]" #append-outer>
+            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.graceful_exit.gracefulExitEachXHours = [settings.graceful_exit.gracefulExitEachXHours[1], settings.graceful_exit.gracefulExitEachXHours[1]]">
+              Revert
+            </v-btn>
+          </template>
+        </v-text-field>
       </v-card-text>
     </v-form>
   </v-card>
@@ -29,6 +44,7 @@ import {
 
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
+import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
   setup () {
@@ -59,6 +75,7 @@ export default defineComponent({
             return;
           }
           ui.value = _ui;
+          console.log({ _settings });
           settings.value = _settings;
           nextTick(() => { store.commit('settings/pending', false); });
         });
@@ -69,6 +86,8 @@ export default defineComponent({
       ui,
       translate,
       valid,
+      required,
+      minValue,
     };
   },
 });
