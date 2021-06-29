@@ -31,7 +31,7 @@
                 />
               </v-col>
               <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
-                <v-btn icon @click="settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0])"><v-icon>{{ settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0][permission.id] === null ? mdiLock : mdiLockOpen }}</v-icon></v-btn>
+                <v-btn icon @click="settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0])"><v-icon>{{ settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon></v-btn>
               </v-col>
             </v-row>
             <v-row class="pt-0 mt-0">
@@ -49,7 +49,7 @@
                 />
               </v-col>
               <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
-                <v-btn icon @click="settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0])"><v-icon>{{ settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0][permission.id] === null ? mdiLock : mdiLockOpen }}</v-icon></v-btn>
+                <v-btn icon @click="settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0])"><v-icon>{{ settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon></v-btn>
               </v-col>
             </v-row>
           </v-tab-item>
@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { mdiLock, mdiLockOpen } from '@mdi/js';
+import { mdiLock, mdiLockOpenVariant } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -130,7 +130,7 @@ export default defineComponent({
 
       // icons
       mdiLock,
-      mdiLockOpen,
+      mdiLockOpenVariant,
     };
   },
 });

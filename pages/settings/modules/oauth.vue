@@ -2,7 +2,7 @@
   <loading v-if="!settings" />
   <v-card flat v-else class="fill-height">
     <v-form v-model="valid" lazy-validation>
-      <v-card-title>{{ translate('categories.general') }}</v-card-title>
+      <v-card-title class="pt-0">{{ translate('categories.general') }}</v-card-title>
       <v-card-text>
         <v-text-field
           :label="translate('core.oauth.settings.generalChannel')"
@@ -22,7 +22,7 @@
 
       <v-divider />
 
-      <v-card-title>{{ translate('categories.bot') }}</v-card-title>
+       <v-card-title>{{ translate('categories.bot') }}</v-card-title>
       <v-card-text>
         <v-text-field
           :label="translate('core.oauth.settings.botAccessToken')"
@@ -46,7 +46,7 @@
 
       <v-divider />
 
-      <v-card-title>{{ translate('categories.broadcaster') }}</v-card-title>
+       <v-card-title>{{ translate('categories.broadcaster') }}</v-card-title>
       <v-card-text>
         <v-text-field
           :label="translate('core.oauth.settings.broadcasterAccessToken')"

@@ -3,7 +3,7 @@
   <v-card v-else flat style="min-height: 100%;">
     <v-card-text>
       <v-form ref="form" v-model="valid">
-        <v-card-title>{{ translate('categories.conversion') }}</v-card-title>
+        <v-card-title class="pt-0">{{ translate('categories.conversion') }}</v-card-title>
         <v-text-field
           v-model="settings.conversion.conversionRate[0]"
           type="number"
@@ -17,7 +17,7 @@
             </v-btn>
           </template>
         </v-text-field>
-        <v-card-title>{{ translate('categories.levels') }}</v-card-title>
+         <v-card-title>{{ translate('categories.levels') }}</v-card-title>
         <v-text-field
           v-model="settings.levels.firstLevelStartsAt[0]"
           type="number"
@@ -111,7 +111,7 @@
           {{ translate('systems.levels.settings.levelShowcaseHelp') }}
         </v-alert>
 
-        <v-card-title>{{ translate('categories.xp') }}</v-card-title>
+         <v-card-title>{{ translate('categories.xp') }}</v-card-title>
         <v-text-field
           v-model="settings.xp.xpName[0]"
           :label="translate('systems.levels.settings.xpName')"
@@ -141,7 +141,7 @@
                 />
               </v-col>
               <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
-                <v-btn icon @click="settings.__permission_based__.xp.interval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.interval[0])"><v-icon>{{ settings.__permission_based__.xp.interval[0][permission.id] === null ? mdiLock : mdiLockOpen }}</v-icon></v-btn>
+                <v-btn icon @click="settings.__permission_based__.xp.interval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.interval[0])"><v-icon>{{ settings.__permission_based__.xp.interval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon></v-btn>
               </v-col>
             </v-row>
             <v-row class="pt-0 mt-0">
@@ -159,7 +159,7 @@
                 />
               </v-col>
               <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
-                <v-btn icon @click="settings.__permission_based__.xp.perInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.perInterval[0])"><v-icon>{{ settings.__permission_based__.xp.perInterval[0][permission.id] === null ? mdiLock : mdiLockOpen }}</v-icon></v-btn>
+                <v-btn icon @click="settings.__permission_based__.xp.perInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.perInterval[0])"><v-icon>{{ settings.__permission_based__.xp.perInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon></v-btn>
               </v-col>
             </v-row>
             <v-row class="pt-0 mt-0">
@@ -177,7 +177,7 @@
                 />
               </v-col>
               <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
-                <v-btn icon @click="settings.__permission_based__.xp.offlineInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.offlineInterval[0])"><v-icon>{{ settings.__permission_based__.xp.offlineInterval[0][permission.id] === null ? mdiLock : mdiLockOpen }}</v-icon></v-btn>
+                <v-btn icon @click="settings.__permission_based__.xp.offlineInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.offlineInterval[0])"><v-icon>{{ settings.__permission_based__.xp.offlineInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon></v-btn>
               </v-col>
             </v-row>
             <v-row class="pt-0 mt-0">
@@ -195,7 +195,7 @@
                 />
               </v-col>
               <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
-                <v-btn icon @click="settings.__permission_based__.xp.perOfflineInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.perOfflineInterval[0])"><v-icon>{{ settings.__permission_based__.xp.perOfflineInterval[0][permission.id] === null ? mdiLock : mdiLockOpen }}</v-icon></v-btn>
+                <v-btn icon @click="settings.__permission_based__.xp.perOfflineInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.perOfflineInterval[0])"><v-icon>{{ settings.__permission_based__.xp.perOfflineInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon></v-btn>
               </v-col>
             </v-row>
             <v-row class="pt-0 mt-0">
@@ -213,7 +213,7 @@
                 />
               </v-col>
               <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
-                <v-btn icon @click="settings.__permission_based__.xp.messageInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.messageInterval[0])"><v-icon>{{ settings.__permission_based__.xp.messageInterval[0][permission.id] === null ? mdiLock : mdiLockOpen }}</v-icon></v-btn>
+                <v-btn icon @click="settings.__permission_based__.xp.messageInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.messageInterval[0])"><v-icon>{{ settings.__permission_based__.xp.messageInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon></v-btn>
               </v-col>
             </v-row>
             <v-row class="pt-0 mt-0">
@@ -231,7 +231,7 @@
                 />
               </v-col>
               <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
-                <v-btn icon @click="settings.__permission_based__.xp.perMessageInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.perMessageInterval[0])"><v-icon>{{ settings.__permission_based__.xp.perMessageInterval[0][permission.id] === null ? mdiLock : mdiLockOpen }}</v-icon></v-btn>
+                <v-btn icon @click="settings.__permission_based__.xp.perMessageInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.perMessageInterval[0])"><v-icon>{{ settings.__permission_based__.xp.perMessageInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon></v-btn>
               </v-col>
             </v-row>
             <v-row class="pt-0 mt-0">
@@ -249,7 +249,7 @@
                 />
               </v-col>
               <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
-                <v-btn icon @click="settings.__permission_based__.xp.messageOfflineInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.messageOfflineInterval[0])"><v-icon>{{ settings.__permission_based__.xp.messageOfflineInterval[0][permission.id] === null ? mdiLock : mdiLockOpen }}</v-icon></v-btn>
+                <v-btn icon @click="settings.__permission_based__.xp.messageOfflineInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.messageOfflineInterval[0])"><v-icon>{{ settings.__permission_based__.xp.messageOfflineInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon></v-btn>
               </v-col>
             </v-row>
             <v-row class="pt-0 mt-0">
@@ -267,7 +267,7 @@
                 />
               </v-col>
               <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
-                <v-btn icon @click="settings.__permission_based__.xp.perMessageOfflineInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.perMessageOfflineInterval[0])"><v-icon>{{ settings.__permission_based__.xp.perMessageOfflineInterval[0][permission.id] === null ? mdiLock : mdiLockOpen }}</v-icon></v-btn>
+                <v-btn icon @click="settings.__permission_based__.xp.perMessageOfflineInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.perMessageOfflineInterval[0])"><v-icon>{{ settings.__permission_based__.xp.perMessageOfflineInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon></v-btn>
               </v-col>
             </v-row>
           </v-tab-item>
@@ -278,7 +278,7 @@
 </template>
 
 <script lang="ts">
-import { mdiLock, mdiLockOpen } from '@mdi/js';
+import { mdiLock, mdiLockOpenVariant } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -363,7 +363,7 @@ export default defineComponent({
 
       // icons
       mdiLock,
-      mdiLockOpen,
+      mdiLockOpenVariant,
     };
   },
 });
