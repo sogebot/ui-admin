@@ -20,6 +20,8 @@
               <v-col>
                 <v-text-field
                   type="number"
+                  class="mb-1"
+                  hide-details
                   min="0"
                   :label="translate('systems.cooldown.settings.defaultCooldownOfCommandsInSeconds')"
                   :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0])"
@@ -36,6 +38,8 @@
               <v-col>
                 <v-text-field
                   type="number"
+                  class="mb-1"
+                  hide-details
                   min="0"
                   :label="translate('systems.cooldown.settings.defaultCooldownOfKeywordsInSeconds')"
                   :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0])"

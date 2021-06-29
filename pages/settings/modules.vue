@@ -17,47 +17,52 @@
     >
       <nuxt-child/>
     </v-navigation-drawer>
-    <v-card v-for="type of Object.keys(menu)" flat :key="type">
-      <v-card-title>
-        <h2 class="text-capitalize">{{type}}</h2>
-      </v-card-title>
-      <v-card-text>
-        <v-data-iterator
-          :items="menu[type]"
-          item-key="name"
-          :items-per-page="-1"
-          hide-default-footer
-        >
-          <template v-slot:default="{ items }">
-            <v-row dense>
-              <v-col
-                v-for="item in items"
-                :key="item.name"
-                sm="6"
-                md="6"
-                lg="2"
-                class="fill-height"
-              >
-                <v-card class="fill-height">
-                  <v-toolbar dense color="blue-grey darken-4">
-                    <v-toolbar-title class="text-button">
-                      {{ item.name }}
-                    </v-toolbar-title>
-                    <v-spacer />
-                    <v-simple-checkbox color="success" v-if="item.enabled !== undefined" v-model="item.enabled"/>
-                    <v-btn icon nuxt :to="`/settings/modules/${item.name}`" v-if="hasSettings(item.name)"><v-icon>{{ mdiCog }}</v-icon></v-btn>
-                  </v-toolbar>
-                  <v-card-subtitle class="pa-1" v-if="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)">
-                    <v-alert class="ma-0" dense border="left" text color="error" v-if="item.isDisabledByEnv">Disabled by ENV variable</v-alert>
-                    <v-alert class="ma-0" dense border="left" text color="error" v-if="!item.areDependenciesEnabled">Dependency system is disabled.</v-alert>
-                  </v-card-subtitle>
-                </v-card>
-              </v-col>
-            </v-row>
-          </template>
-        </v-data-iterator>
-      </v-card-text>
-    </v-card>
+
+    <v-fade-transition>
+      <div v-show="!drawer">
+        <v-card v-for="type of Object.keys(menu)" flat :key="type">
+          <v-card-title>
+            <h2 class="text-capitalize">{{type}}</h2>
+          </v-card-title>
+          <v-card-text>
+            <v-data-iterator
+              :items="menu[type]"
+              item-key="name"
+              :items-per-page="-1"
+              hide-default-footer
+            >
+              <template v-slot:default="{ items }">
+                <v-row dense>
+                  <v-col
+                    v-for="item in items"
+                    :key="item.name"
+                    sm="6"
+                    md="6"
+                    lg="2"
+                    class="fill-height"
+                  >
+                    <v-card class="fill-height">
+                      <v-toolbar dense color="blue-grey darken-4">
+                        <v-toolbar-title class="text-button">
+                          {{ item.name }}
+                        </v-toolbar-title>
+                        <v-spacer />
+                        <v-simple-checkbox color="success" v-if="item.enabled !== undefined" v-model="item.enabled"/>
+                        <v-btn icon nuxt :to="`/settings/modules/${item.name}`" v-if="hasSettings(item.name)"><v-icon>{{ mdiCog }}</v-icon></v-btn>
+                      </v-toolbar>
+                      <v-card-subtitle class="pa-1" v-if="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)">
+                        <v-alert class="ma-0" dense border="left" text color="error" v-if="item.isDisabledByEnv">Disabled by ENV variable</v-alert>
+                        <v-alert class="ma-0" dense border="left" text color="error" v-if="!item.areDependenciesEnabled">Dependency system is disabled.</v-alert>
+                      </v-card-subtitle>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </template>
+            </v-data-iterator>
+          </v-card-text>
+        </v-card>
+      </div>
+    </v-fade-transition>
   </div>
 </template>
 
