@@ -3,30 +3,20 @@
   <v-card v-else flat class="fill-height">
     <v-card-text>
       <v-form ref="form" v-model="valid">
-        <v-text-field
-          v-model.number="settings.connection.accessTokenExpirationTime[0]"
+        <revert-text-field
+          v-model="settings.connection.accessTokenExpirationTime"
+          type="number"
+          min="0"
           :label="translate('core.socket.settings.accessTokenExpirationTime')"
-          type="number"
           :rules="[required, minValue(120)]"
-        >
-          <template v-if="settings.connection.accessTokenExpirationTime[0] !== settings.connection.accessTokenExpirationTime[1]" #append-outer>
-            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.connection.accessTokenExpirationTime = [settings.connection.accessTokenExpirationTime[1], settings.connection.accessTokenExpirationTime[1]]">
-              Revert
-            </v-btn>
-          </template>
-        </v-text-field>
-        <v-text-field
-          v-model.number="settings.connection.refreshTokenExpirationTime[0]"
-          :label="translate('core.socket.settings.refreshTokenExpirationTime')"
+        />
+        <revert-text-field
+          v-model="settings.connection.refreshTokenExpirationTime"
           type="number"
+          min="0"
+          :label="translate('core.socket.settings.refreshTokenExpirationTime')"
           :rules="[required, minValue(400000)]"
-        >
-          <template v-if="settings.connection.refreshTokenExpirationTime[0] !== settings.connection.refreshTokenExpirationTime[1]" #append-outer>
-            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.connection.refreshTokenExpirationTime = [settings.connection.refreshTokenExpirationTime[1], settings.connection.refreshTokenExpirationTime[1]]">
-              Revert
-            </v-btn>
-          </template>
-        </v-text-field>
+        />
 
         <v-text-field
           :label="translate('core.socket.settings.socketToken.title')"
@@ -58,6 +48,7 @@ import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
+  defineAsyncComponent,
   defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
 import { v4 } from 'uuid';
@@ -68,6 +59,7 @@ import { saveSettings } from '~/functions/settings';
 import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
+  components: { revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')) },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);

@@ -4,46 +4,28 @@
     <v-card-text>
       <v-form ref="form" v-model="valid">
         <v-card-title class="pt-0">{{ translate('categories.conversion') }}</v-card-title>
-        <v-text-field
-          v-model="settings.conversion.conversionRate[0]"
+        <revert-text-field
+          v-model="settings.conversion.conversionRate"
           type="number"
-          min="0"
+          min="1"
           :label="translate('systems.levels.settings.conversionRate')"
           :rules="[required, minValue(1)]"
-        >
-          <template v-if="settings.conversion.conversionRate[0] !== settings.conversion.conversionRate[1]" #append-outer>
-            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.conversion.conversionRate = [settings.conversion.conversionRate[1], settings.conversion.conversionRate[1]]">
-              Revert
-            </v-btn>
-          </template>
-        </v-text-field>
-         <v-card-title>{{ translate('categories.levels') }}</v-card-title>
-        <v-text-field
-          v-model="settings.levels.firstLevelStartsAt[0]"
+        />
+
+        <v-card-title>{{ translate('categories.levels') }}</v-card-title>
+        <revert-text-field
+          v-model="settings.levels.firstLevelStartsAt"
           type="number"
-          min="0"
+          min="1"
           :label="translate('systems.levels.settings.firstLevelStartsAt')"
           :rules="[required, minValue(1)]"
-        >
-          <template v-if="settings.levels.firstLevelStartsAt[0] !== settings.levels.firstLevelStartsAt[1]" #append-outer>
-            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.levels.firstLevelStartsAt = [settings.levels.firstLevelStartsAt[1], settings.levels.firstLevelStartsAt[1]]">
-              Revert
-            </v-btn>
-          </template>
-        </v-text-field>
-        <v-text-field
-          v-model="settings.levels.nextLevelFormula[0]"
+        />
+        <revert-text-field
+          v-model="settings.levels.nextLevelFormula"
           :label="translate('systems.levels.settings.nextLevelFormula.title')"
           :hint="translate('systems.levels.settings.nextLevelFormula.help')"
-          persistent-hint
           :rules="[required]"
-        >
-          <template v-if="settings.levels.nextLevelFormula[0] !== settings.levels.nextLevelFormula[1]" #append-outer>
-            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.levels.nextLevelFormula = [settings.levels.nextLevelFormula[1], settings.levels.nextLevelFormula[1]]">
-              Revert
-            </v-btn>
-          </template>
-        </v-text-field>
+        />
 
         <v-row no-gutters>
           <v-col>
@@ -111,18 +93,12 @@
           {{ translate('systems.levels.settings.levelShowcaseHelp') }}
         </v-alert>
 
-         <v-card-title>{{ translate('categories.xp') }}</v-card-title>
-        <v-text-field
-          v-model="settings.xp.xpName[0]"
+        <v-card-title>{{ translate('categories.xp') }}</v-card-title>
+        <revert-text-field
+          v-model="settings.xp.xpName"
           :label="translate('systems.levels.settings.xpName')"
           :rules="[required]"
-        >
-          <template v-if="settings.xp.xpName[0] !== settings.xp.xpName[1]" #append-outer>
-            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.xp.xpName = [settings.xp.xpName[1], settings.xp.xpName[1]]">
-              Revert
-            </v-btn>
-          </template>
-        </v-text-field>
+        />
 
         <permission-tabs v-slot:default="{permissions}" :ignored="getIgnoredPermissions(settings, 'xp')">
           <v-tab-item v-for="permission of permissions" :key="permission.id" eager>
@@ -295,7 +271,10 @@ import { togglePermissionLock } from '~/functions/togglePermissionLock';
 import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
-  components: { permissionTabs: defineAsyncComponent(() => import('~/components/settings/modules/permissionTabs.vue')) },
+  components: {
+    permissionTabs:  defineAsyncComponent(() => import('~/components/settings/modules/permissionTabs.vue')),
+    revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')),
+  },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);

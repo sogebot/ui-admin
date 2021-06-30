@@ -3,32 +3,28 @@
   <v-card v-else flat class="fill-height">
     <v-card-text>
       <v-form ref="form" v-model="valid">
-        <v-text-field
-          v-model="settings.domain[0]"
+        <revert-text-field
+          v-model="settings.domain"
           :label="translate('core.ui.settings.domain.title')"
           :hint="translate('core.ui.settings.domain.help')"
-          persistent-hint
           :rules="[required]"
-        >
-          <template v-if="settings.domain[0] !== settings.domain[1]" #append-outer>
-            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.domain = [settings.domain[1], settings.domain[1]]">
-              Revert
-            </v-btn>
-          </template>
-        </v-text-field>
+        />
         <v-checkbox
           v-model="settings.percentage[0]"
           dense
+          hide-details
           :label="translate('core.ui.settings.percentage')"
         />
         <v-checkbox
           v-model="settings.shortennumbers[0]"
           dense
+          hide-details
           :label="translate('core.ui.settings.shortennumbers')"
         />
         <v-checkbox
           v-model="settings.showdiff[0]"
           dense
+          hide-details
           :label="translate('core.ui.settings.showdiff')"
         />
       </v-form>
@@ -41,6 +37,7 @@ import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
+  defineAsyncComponent,
   defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
 
@@ -49,6 +46,7 @@ import { saveSettings } from '~/functions/settings';
 import { required } from '~/functions/validators';
 
 export default defineComponent({
+  components: { revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')) },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);

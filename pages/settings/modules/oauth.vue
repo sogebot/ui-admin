@@ -1,6 +1,6 @@
 <template>
   <loading v-if="!settings" />
-  <v-card flat v-else class="fill-height">
+  <v-card v-else flat style="min-height: 100%;">
     <v-form v-model="valid" lazy-validation>
       <v-card-title class="pt-0">{{ translate('categories.general') }}</v-card-title>
       <v-card-text>

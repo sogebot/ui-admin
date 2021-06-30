@@ -1,6 +1,6 @@
 <template>
   <loading v-if="!settings" />
-  <v-card flat v-else class="fill-height">
+  <v-card v-else flat style="min-height: 100%;">
     <v-form v-model="valid" lazy-validation>
       <v-card-text>
         <v-select
@@ -14,21 +14,15 @@
             </v-btn>
           </template>
         </v-select>
-        <v-text-field
-          v-model="settings.graceful_exit.gracefulExitEachXHours[0]"
+
+        <revert-text-field
+          v-model="settings.graceful_exit.gracefulExitEachXHours"
           type="number"
           min="0"
-          :rules="[required, minValue(0)]"
           :label="translate('core.general.settings.gracefulExitEachXHours.title')"
           :hint="translate('core.general.settings.gracefulExitEachXHours.help')"
-          persistent-hint
-        >
-          <template v-if="settings.graceful_exit.gracefulExitEachXHours[0] !== settings.graceful_exit.gracefulExitEachXHours[1]" #append-outer>
-            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.graceful_exit.gracefulExitEachXHours = [settings.graceful_exit.gracefulExitEachXHours[1], settings.graceful_exit.gracefulExitEachXHours[1]]">
-              Revert
-            </v-btn>
-          </template>
-        </v-text-field>
+          :rules="[required, minValue(0)]"
+        />
       </v-card-text>
     </v-form>
   </v-card>
@@ -39,6 +33,7 @@ import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
+  defineAsyncComponent,
   defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
 
@@ -47,6 +42,7 @@ import { saveSettings } from '~/functions/settings';
 import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
+  components: { revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')) },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);

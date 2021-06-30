@@ -3,20 +3,13 @@
   <v-card v-else flat class="fill-height">
     <v-card-text>
       <v-form ref="form" v-model="valid">
-        <v-text-field
-          v-model="settings.betPercentGain[0]"
-          dense
+        <revert-text-field
+          v-model="settings.betPercentGain"
           type="number"
           min="0"
           :label="translate('systems.bets.settings.betPercentGain')"
           :rules="[required, minValue(0)]"
-        >
-          <template v-if="settings.betPercentGain[0] !== settings.betPercentGain[1]" #append-outer>
-            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.betPercentGain = [settings.betPercentGain[1], settings.betPercentGain[1]]">
-              Revert
-            </v-btn>
-          </template>
-        </v-text-field>
+        />
       </v-form>
     </v-card-text>
   </v-card>
@@ -27,6 +20,7 @@ import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
+  defineAsyncComponent,
   defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
 
@@ -35,6 +29,7 @@ import { saveSettings } from '~/functions/settings';
 import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
+  components: { revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')) },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);

@@ -4,19 +4,13 @@
     <v-card-text>
       <v-form ref="form" v-model="valid">
         <v-card-title class="pt-0">{{ translate('categories.warnings') }}</v-card-title>
-        <v-text-field
-          v-model="settings.warnings.cWarningsAllowedCount[0]"
+        <revert-text-field
+          v-model="settings.warnings.cWarningsAllowedCount"
           type="number"
           min="0"
           :label="translate('systems.moderation.settings.cWarningsAllowedCount')"
           :rules="[required, minValue(0)]"
-        >
-          <template v-if="settings.warnings.cWarningsAllowedCount[0] !== settings.warnings.cWarningsAllowedCount[1]" #append-outer>
-            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.warnings.cWarningsAllowedCount = [settings.warnings.cWarningsAllowedCount[1], settings.warnings.cWarningsAllowedCount[1]]">
-              Revert
-            </v-btn>
-          </template>
-        </v-text-field>
+        />
         <v-checkbox
           dense
           hide-details
@@ -625,7 +619,10 @@ import {
 } from '~/functions/validators';
 
 export default defineComponent({
-  components: { permissionTabs: defineAsyncComponent(() => import('~/components/settings/modules/permissionTabs.vue')) },
+  components: {
+    permissionTabs:  defineAsyncComponent(() => import('~/components/settings/modules/permissionTabs.vue')),
+    revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')),
+  },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);

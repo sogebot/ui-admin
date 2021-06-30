@@ -6,24 +6,29 @@
         <v-checkbox
           v-model="settings.chat.sendWithMe[0]"
           dense
+          hide-details
           :label="translate('core.tmi.settings.sendWithMe')"
         />
         <v-checkbox
           v-model="settings.chat.mute[0]"
           dense
+          hide-details
           :label="translate('core.tmi.settings.mute')"
         />
         <v-checkbox
           v-model="settings.chat.whisperListener[0]"
           dense
+          hide-details
           :label="translate('core.tmi.settings.whisperListener')"
         />
         <v-checkbox
           v-model="settings.chat.showWithAt[0]"
           dense
+          hide-details
           :label="translate('core.tmi.settings.showWithAt')"
         />
         <v-textarea
+          class="mt-3 pt-3"
           outlined
           rows="5"
           persistent-hint
