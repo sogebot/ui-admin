@@ -7,11 +7,21 @@
     :hint="hint"
     :label="label"
     :rules="rules"
+    :persistent-hint="persistentHint"
   >
+    <template #message="{ message }">
+      <!-- html hints -->
+      <span v-html="message" />
+    </template>
+
+    <template #append>
+      <slot name="append"/>
+    </template>
+
     <template #append-outer>
       <v-expand-x-transition>
         <div v-if="model !== original">
-          <v-btn  text @click.stop="$store.commit('settings/pending', true); model = original">
+          <v-btn text @click.stop="$store.commit('settings/pending', true); model = original">
             Revert
           </v-btn>
         </div>
@@ -27,12 +37,13 @@ import {
 
 export default defineComponent({
   props: {
-    value: Array,
-    rules: Array,
-    label: String,
-    type:  String,
-    min:   String,
-    hint:  String,
+    value:          Array,
+    rules:          Array,
+    label:          String,
+    type:           String,
+    min:            String,
+    hint:           String,
+    persistentHint: Boolean,
   },
   setup (props: {
     value: [any, any]
