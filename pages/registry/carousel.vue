@@ -124,7 +124,11 @@
       </template>
 
       <template #[`item.drag`]="{ item }">
-        <v-icon :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, item.id)">
+        <template v-if="$vuetify.breakpoint.mobile">
+          <v-icon v-if="item.order !== 0" @click.stop="swapOrder(item.order, item.order - 1)">{{ mdiChevronUp }}</v-icon>
+          <v-icon v-if="item.order !== items.length - 1" @click.stop="swapOrder(item.order, item.order + 1)">{{ mdiChevronDown }}</v-icon>
+        </template>
+        <v-icon v-else :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, item.id)">
           {{ mdiDrag }}
         </v-icon>
       </template>
@@ -326,7 +330,7 @@
 
 <script lang="ts">
 import {
-  mdiCheckBoxMultipleOutline, mdiDrag, mdiMagnify,
+  mdiCheckBoxMultipleOutline, mdiChevronDown, mdiChevronUp, mdiDrag, mdiMagnify,
 } from '@mdi/js';
 import {
   defineComponent, onMounted, ref, useContext, watch,
@@ -487,7 +491,7 @@ export default defineComponent({
         value: 'drag', text: '', sortable: false,
       },
       {
-        value: 'image', text: '', sortable: false,
+        value: 'image', text: '', sortable: false, align: 'center',
       },
       {
         value: 'waitBefore', text: translate('page.settings.overlays.carousel.titles.waitBefore'), sortable: false,
@@ -536,7 +540,7 @@ export default defineComponent({
       EventBus.$on(`carousel::dragstop`, () => {
         state.value.dragging = false;
       });
-      EventBus.$on(`carousel::dragdrop`, async (data: {id: string, offsetId?: string}) => {
+      EventBus.$on(`carousel::dragdrop`, (data: {id: string, offsetId?: string}) => {
         // reorder items
         // remove id
         const draggedItem = items.value.find(item => item.id === data.id);
@@ -553,20 +557,24 @@ export default defineComponent({
             // save as last item
             items.value.push({ ...draggedItem, order: items.value.length });
           }
-          // reorder
-          for (let i = 0; i < items.value.length; i++) {
-            items.value[i].order = i;
-          }
-          state.value.saving = true;
-          await Promise.all(
-            items.value.map((item) => {
-              return api.patch<{ order: number }>($axios, `/api/v1/carousel/${item.id}`, { order: item.order });
-            }),
-          );
-          saveSuccess();
+          reorder();
         }
       });
     });
+
+    const reorder = async () => {
+      // reorder
+      for (let i = 0; i < items.value.length; i++) {
+        items.value[i].order = i;
+      }
+      state.value.saving = true;
+      await Promise.all(
+        items.value.map((item) => {
+          return api.patch<{ order: number }>($axios, `/api/v1/carousel/${item.id}`, { order: item.order });
+        }),
+      );
+      saveSuccess();
+    };
 
     const refresh = () => {
       api.get<CarouselInterface[]>($axios, `/api/v1/carousel/`)
@@ -663,6 +671,16 @@ export default defineComponent({
       }
     };
 
+    const swapOrder = (order1: number, order2: number) => {
+      const item1 = items.value.find(o => o.order === order1);
+      const item2 = items.value.find(o => o.order === order2);
+      if (item1 && item2) {
+        item1.order = order2;
+        item2.order = order1;
+      }
+      reorder();
+    };
+
     function closeOverlay () {
       imageShowOverlay.value = false;
     }
@@ -693,11 +711,15 @@ export default defineComponent({
       filesChange,
       handleDragStart,
       closeOverlay,
+      swapOrder,
 
       // icons
       mdiMagnify,
       mdiCheckBoxMultipleOutline,
       mdiDrag,
+      mdiChevronUp,
+      mdiChevronDown,
+
       ButtonStates,
 
       // external functions

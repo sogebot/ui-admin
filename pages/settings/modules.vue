@@ -13,6 +13,7 @@
       :width="$vuetify.breakpoint.mobile ? '100%' : '100%'"
       absolute
       hide-overlay
+      v-if="drawer"
       v-model="drawer"
     >
       <nuxt-child/>

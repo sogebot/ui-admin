@@ -18,7 +18,9 @@
         style="position: absolute; transition: all; transition-duration: 0.24s; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);"
         class="pl-0"
         :style="{
-          left: $store.state.panel.back.length > 0 ? '55px' : '20px'
+          left: $store.state.panel.back.length > 0
+            ? ($vuetify.breakpoint.mobile ? '85px' : '55px')
+            : ($vuetify.breakpoint.mobile ? '50px' : '20px')
         }"
         :items="$vuetify.breakpoint.mobile ? [...$store.state.panel.breadcrumbs[$store.state.panel.breadcrumbs.length - 1]] : $store.state.panel.breadcrumbs"
       />
