@@ -3,14 +3,16 @@
   <v-card v-else flat class="fill-height">
     <v-card-text>
       <v-form ref="form" v-model="valid">
-        <v-checkbox
-          v-model="settings.cooldownNotifyAsWhisper[0]"
+        <v-switch
+          class="mt-0"
           dense
+          v-model="settings.cooldownNotifyAsWhisper[0]"
           :label="translate('systems.cooldown.settings.cooldownNotifyAsWhisper')"
         />
-        <v-checkbox
-          v-model="settings.cooldownNotifyAsChat[0]"
+        <v-switch
+          class="mt-0"
           dense
+          v-model="settings.cooldownNotifyAsChat[0]"
           :label="translate('systems.cooldown.settings.cooldownNotifyAsChat')"
         />
 

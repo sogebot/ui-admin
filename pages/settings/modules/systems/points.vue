@@ -181,10 +181,11 @@
         <template>
           <v-card-title>{{ translate('categories.reset') }}</v-card-title>
 
-          <v-checkbox
+          <v-switch
             v-model="settings.reset.isPointResetIntervalEnabled[0]"
             :label="translate('systems.points.settings.isPointResetIntervalEnabled')"
             dense
+            class="mt-0"
           />
           <revert-text-field
             v-model="settings.reset.resetIntervalCron"

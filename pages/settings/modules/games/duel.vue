@@ -5,63 +5,37 @@
       <v-form ref="form" v-model="valid">
         <template>
           <v-card-title class="pt-0 pb-0">{{ translate('categories.general') }}</v-card-title>
-          <v-checkbox
-            :label="translate('systems.songs.settings.songrequest')"
-            dense
-            hide-details
-            v-model="settings.songrequest[0]"
-          />
-          <v-checkbox
-            :label="translate('systems.songs.settings.playlist')"
-            dense
-            hide-details
-            v-model="settings.playlist[0]"
-          />
-          <v-checkbox
-            :label="translate('systems.songs.settings.notify')"
-            dense
-            hide-details
-            v-model="settings.notify[0]"
-          />
-          <v-checkbox
-            :label="translate('systems.songs.settings.shuffle')"
-            dense
-            hide-details
-            v-model="settings.shuffle[0]"
-          />
-          <v-checkbox
-            :label="translate('systems.songs.settings.onlyMusicCategory')"
-            dense
-            hide-details
-            v-model="settings.onlyMusicCategory[0]"
-          />
-          <v-checkbox
-            :label="translate('systems.songs.settings.calculateVolumeByLoudness')"
-            dense
-            hide-details
-            v-model="settings.calculateVolumeByLoudness[0]"
-            class="pb-4"
-          />
 
+          <v-switch
+            v-model="settings.bypassCooldownByOwnerAndMods[0]"
+            :label="translate('games.duel.settings.bypassCooldownByOwnerAndMods')"
+          />
           <revert-text-field
             class="pt-3"
-            v-model="settings.volume"
+            v-model="settings.cooldown"
             type="number"
             min="0"
-            :label="translate('systems.songs.settings.volume')"
-            :rules="[required, minValue(0), maxValue(100)]"
+            :label="translate('games.duel.settings.cooldown')"
+            :rules="[required, minValue(0)]"
           />
-
           <revert-text-field
             class="pt-3"
             v-model="settings.duration"
             type="number"
             min="0"
-            :label="translate('systems.songs.settings.duration.title')"
+            :label="translate('games.duel.settings.duration.title')"
             :rules="[required, minValue(0)]"
           >
-            <template #append>{{ translate('systems.songs.settings.duration.help') }}</template>
+            <template #append>{{ translate('games.duel.settings.duration.help') }}</template>
           </revert-text-field>
+          <revert-text-field
+            class="pt-3"
+            v-model="settings.minimalBet"
+            type="number"
+            min="0"
+            :label="translate('games.duel.settings.minimalBet')"
+            :rules="[required, minValue(0)]"
+          />
         </template>
       </v-form>
     </v-card-text>
@@ -69,7 +43,6 @@
 </template>
 
 <script lang="ts">
-import { mdiLock, mdiLockOpenVariant } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -79,10 +52,7 @@ import {
 } from '@vue/composition-api';
 
 import { error } from '~/functions/error';
-import { getIgnoredPermissions } from '~/functions/getIgnoredPermissions';
-import { getPermissionSettingsValue } from '~/functions/getPermissionSettingsValue';
 import { saveSettings } from '~/functions/settings';
-import { togglePermissionLock } from '~/functions/togglePermissionLock';
 import {
   maxValue, minValue, required,
 } from '~/functions/validators';
@@ -102,7 +72,7 @@ export default defineComponent({
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
-        saveSettings('/systems/songs', store, settings.value);
+        saveSettings('/games/duel', store, settings.value);
       }
     });
 
@@ -111,7 +81,7 @@ export default defineComponent({
     }, { immediate: true });
 
     onMounted(() => {
-      getSocket(`/systems/songs`)
+      getSocket(`/games/duel`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
           if (err) {
             error(err);
@@ -131,19 +101,12 @@ export default defineComponent({
       valid,
       form,
 
-      // functions
-      getIgnoredPermissions,
-      getPermissionSettingsValue,
-      togglePermissionLock,
-
       // validators
       required,
       minValue,
       maxValue,
 
-      // icons
-      mdiLock,
-      mdiLockOpenVariant,
+      // functions
     };
   },
 });

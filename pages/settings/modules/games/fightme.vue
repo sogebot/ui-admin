@@ -1,32 +1,34 @@
 <template>
   <loading v-if="!settings" />
-  <v-card v-else flat class="fill-height">
+  <v-card v-else flat style="min-height: 100%;">
     <v-card-text>
       <v-form ref="form" v-model="valid">
-        <revert-text-field
-          v-model="settings.domain"
-          :label="translate('core.ui.settings.domain.title')"
-          :hint="translate('core.ui.settings.domain.help')"
-          :rules="[required]"
-        />
-        <v-checkbox
-          v-model="settings.percentage[0]"
-          dense
-          hide-details
-          :label="translate('core.ui.settings.percentage')"
-        />
-        <v-checkbox
-          v-model="settings.shortennumbers[0]"
-          dense
-          hide-details
-          :label="translate('core.ui.settings.shortennumbers')"
-        />
-        <v-checkbox
-          v-model="settings.showdiff[0]"
-          dense
-          hide-details
-          :label="translate('core.ui.settings.showdiff')"
-        />
+        <template>
+          <v-card-title class="pt-0 pb-0">{{ translate('categories.general') }}</v-card-title>
+
+          <v-switch
+            v-model="settings.bypassCooldownByOwnerAndMods[0]"
+            :label="translate('games.fightme.settings.bypassCooldownByOwnerAndMods')"
+          />
+          <revert-text-field
+            class="pt-3"
+            v-model="settings.cooldown"
+            type="number"
+            min="0"
+            :label="translate('games.fightme.settings.cooldown')"
+            :rules="[required, minValue(0)]"
+          />
+          <revert-text-field
+            class="pt-3"
+            v-model="settings.timeout"
+            type="number"
+            min="0"
+            :label="translate('games.fightme.settings.timeout.title')"
+            :rules="[required, minValue(0)]"
+          >
+            <template #append>{{ translate('games.fightme.settings.timeout.help') }}</template>
+          </revert-text-field>
+        </template>
       </v-form>
     </v-card-text>
   </v-card>
@@ -43,7 +45,9 @@ import {
 
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
-import { required } from '~/functions/validators';
+import {
+  maxValue, minValue, required,
+} from '~/functions/validators';
 
 export default defineComponent({
   components: { revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')) },
@@ -60,7 +64,7 @@ export default defineComponent({
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
-        saveSettings('/core/ui', store, settings.value);
+        saveSettings('/games/fightme', store, settings.value);
       }
     });
 
@@ -69,13 +73,14 @@ export default defineComponent({
     }, { immediate: true });
 
     onMounted(() => {
-      getSocket(`/core/ui`)
+      getSocket(`/games/fightme`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
           if (err) {
             error(err);
             return;
           }
           ui.value = _ui;
+          console.log({ _settings });
           settings.value = _settings;
           nextTick(() => { store.commit('settings/pending', false); });
         });
@@ -90,6 +95,10 @@ export default defineComponent({
 
       // validators
       required,
+      minValue,
+      maxValue,
+
+      // functions
     };
   },
 });

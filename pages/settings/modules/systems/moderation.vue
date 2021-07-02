@@ -11,15 +11,15 @@
           :label="translate('systems.moderation.settings.cWarningsAllowedCount')"
           :rules="[required, minValue(0)]"
         />
-        <v-checkbox
+        <v-switch
           dense
-          hide-details
+          class="mt-0"
           :label="translate('systems.moderation.settings.cWarningsAnnounceTimeouts')"
           v-model="settings.warnings.cWarningsAnnounceTimeouts[0]"
         />
-        <v-checkbox
+        <v-switch
           dense
-          hide-details
+          class="mt-0"
           :label="translate('systems.moderation.settings.cWarningsShouldClearChat')"
           v-model="settings.warnings.cWarningsShouldClearChat[0]"
         />
@@ -51,7 +51,7 @@
           <v-tab-item v-for="permission of permissions" :key="permission.id" eager>
             <v-row>
               <v-col>
-                <v-checkbox
+                <v-switch
                   class="mb-1"
                   hide-details
                   :label="translate('systems.moderation.settings.cListsEnabled')"
@@ -94,7 +94,7 @@
           <v-tab-item v-for="permission of permissions" :key="permission.id" eager>
             <v-row>
               <v-col>
-                <v-checkbox
+                <v-switch
                   class="mb-1"
                   hide-details
                   :label="translate('systems.moderation.settings.cCapsEnabled')"
@@ -177,7 +177,7 @@
           <v-tab-item v-for="permission of permissions" :key="permission.id" eager>
             <v-row>
               <v-col>
-                <v-checkbox
+                <v-switch
                   class="mb-1"
                   hide-details
                   :label="translate('systems.moderation.settings.cColorEnabled')"
@@ -221,7 +221,7 @@
             <v-row>
               <v-col>
                 <v-layout row wrap align-baseline class="ma-0">
-                  <v-checkbox
+                  <v-switch
                     class="mb-1"
                     hide-details
                     :label="translate('systems.moderation.settings.cEmotesEnabled')"
@@ -236,7 +236,7 @@
               </v-col>
               <v-col>
                 <v-layout row wrap align-baseline class="ma-0">
-                  <v-checkbox
+                  <v-switch
                     class="mb-1"
                     hide-details
                     :label="translate('systems.moderation.settings.cEmotesEmojisAreEmotes')"
@@ -299,7 +299,7 @@
             <v-row>
               <v-col>
                 <v-layout row wrap align-baseline class="ma-0">
-                  <v-checkbox
+                  <v-switch
                     class="mb-1"
                     hide-details
                     :label="translate('systems.moderation.settings.cLinksEnabled')"
@@ -314,7 +314,7 @@
               </v-col>
               <v-col>
                 <v-layout row wrap align-baseline class="ma-0">
-                  <v-checkbox
+                  <v-switch
                     class="mb-1"
                     hide-details
                     :label="translate('systems.moderation.settings.cLinksIncludeClips')"
@@ -329,7 +329,7 @@
               </v-col>
               <v-col>
                 <v-layout row wrap align-baseline class="ma-0">
-                  <v-checkbox
+                  <v-switch
                     class="mb-1"
                     hide-details
                     :label="translate('systems.moderation.settings.cLinksIncludeSpaces')"
@@ -372,7 +372,7 @@
             <v-row>
               <v-col>
                 <v-layout row wrap align-baseline class="ma-0">
-                  <v-checkbox
+                  <v-switch
                     class="mb-1"
                     hide-details
                     :label="translate('systems.moderation.settings.cLongMessageEnabled')"
@@ -415,7 +415,7 @@
             <v-row>
               <v-col>
                 <v-layout row wrap align-baseline class="ma-0">
-                  <v-checkbox
+                  <v-switch
                     class="mb-1"
                     hide-details
                     :label="translate('systems.moderation.settings.cSpamEnabled')"
@@ -498,7 +498,7 @@
             <v-row>
               <v-col>
                 <v-layout row wrap align-baseline class="ma-0">
-                  <v-checkbox
+                  <v-switch
                     class="mb-1"
                     hide-details
                     :label="translate('systems.moderation.settings.cSymbolsEnabled')"

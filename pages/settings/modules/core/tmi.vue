@@ -3,28 +3,28 @@
   <v-card v-else flat class="fill-height">
     <v-card-text>
       <v-form ref="form" v-model="valid">
-        <v-checkbox
+        <v-switch
+          class="mt-0"
           v-model="settings.chat.sendWithMe[0]"
           dense
-          hide-details
           :label="translate('core.tmi.settings.sendWithMe')"
         />
-        <v-checkbox
+        <v-switch
+          class="mt-0"
           v-model="settings.chat.mute[0]"
           dense
-          hide-details
           :label="translate('core.tmi.settings.mute')"
         />
-        <v-checkbox
+        <v-switch
+          class="mt-0"
           v-model="settings.chat.whisperListener[0]"
           dense
-          hide-details
           :label="translate('core.tmi.settings.whisperListener')"
         />
-        <v-checkbox
+        <v-switch
+          class="mt-0"
           v-model="settings.chat.showWithAt[0]"
           dense
-          hide-details
           :label="translate('core.tmi.settings.showWithAt')"
         />
         <v-textarea

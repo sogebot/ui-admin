@@ -1,7 +1,7 @@
 <template>
   <loading v-if="isLoading" />
   <div v-else>
-    <portal to="navbar" v-if="route.path.split('/').length === 4">
+    <portal to="navbar" v-if="route.path.split('/').length === 5">
       <transition appear name="fade">
         <v-btn text :disabled="!$store.state.settings.pending || !$store.state.settings.valid" :loading="$store.state.settings.save" @click="$store.commit('settings/save', true)">
           {{ translate('dialog.buttons.saveChanges.idle') }}
@@ -23,7 +23,7 @@
       <div v-show="!drawer">
         <v-card v-for="type of Object.keys(menu)" flat :key="type">
           <v-card-title>
-            <h2 class="text-capitalize">{{type}}</h2>
+            {{ translate(`menu.${type}`) }}
           </v-card-title>
           <v-card-text>
             <v-data-iterator
@@ -48,8 +48,8 @@
                           {{ item.name }}
                         </v-toolbar-title>
                         <v-spacer />
-                        <v-simple-checkbox color="success" v-if="item.enabled !== undefined" v-model="item.enabled"/>
-                        <v-btn icon nuxt :to="`/settings/modules/${item.name}`" v-if="hasSettings(item.name)"><v-icon>{{ mdiCog }}</v-icon></v-btn>
+                        <v-switch style="transform: translateY(3px);" class="pt-4" @click="update(item)" color="success" :disabled="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)" v-if="item.enabled !== undefined" v-model="item.enabled"/>
+                        <v-btn icon nuxt :to="`/settings/modules/${item.type}/${item.name}`" v-if="hasSettings(item.type, item.name)"><v-icon>{{ mdiCog }}</v-icon></v-btn>
                       </v-toolbar>
                       <v-card-subtitle class="pa-1" v-if="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)">
                         <v-alert class="ma-0" dense border="left" text color="error" v-if="item.isDisabledByEnv">Disabled by ENV variable</v-alert>
@@ -79,8 +79,9 @@ import {
 } from '@vue/composition-api';
 
 import { error } from '~/functions/error';
+import { EventBus } from '~/functions/event-bus';
 
-type systemFromIO = { name: string; enabled: boolean; areDependenciesEnabled: boolean; isDisabledByEnv: boolean };
+type systemFromIO = { name: string; enabled: boolean; areDependenciesEnabled: boolean; isDisabledByEnv: boolean, type: string };
 
 export default defineComponent({
   setup () {
@@ -97,12 +98,12 @@ export default defineComponent({
       overlays:     [] as systemFromIO[],
     });
 
-    const hasSettings = (itemName: string) => {
-      return router.resolve('/settings/modules/' + itemName).resolved.matched.length > 0;
+    const hasSettings = (itemType: string, itemName: string) => {
+      return router.resolve(`/settings/modules/${itemType}/${itemName}`).resolved.matched.length > 0;
     };
 
     watch(route, (val) => {
-      drawer.value = val.path.split('/').length === 4;
+      drawer.value = val.path.split('/').length === 5;
 
       if (drawer.value) {
         nextTick(() => {
@@ -142,6 +143,17 @@ export default defineComponent({
       }
     });
 
+    const update = (item: systemFromIO) => {
+      const enabled = item.enabled;
+      getSocket(`/${item.type}/${item.name}`).emit('settings.update', { enabled }, (err: string | null) => {
+        if (err) {
+          return error(err);
+        } else {
+          EventBus.$emit('snack', enabled ? 'success' : 'orange', `Module ${item.name} ${enabled ? 'enabled' : 'disabled'}.`);
+        }
+      });
+    };
+
     return {
       isLoading,
       drawer,
@@ -150,6 +162,7 @@ export default defineComponent({
       mdiCog,
       route,
       hasSettings,
+      update,
     };
   },
 });

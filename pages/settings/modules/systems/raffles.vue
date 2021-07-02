@@ -5,12 +5,12 @@
       <v-form ref="form" v-model="valid">
         <template>
           <v-card-title class="pt-0 pb-0">{{ translate('categories.general') }}</v-card-title>
-          <v-checkbox
+          <v-switch
             :label="translate('systems.raffles.settings.allowOverTicketing.title')"
             :hint="translate('systems.raffles.settings.allowOverTicketing.help')"
             persistent-hint
             v-model="settings.allowOverTicketing[0]"
-            class="pb-4"
+            class="mt-0 pb-4"
           />
 
           <revert-text-field
@@ -37,18 +37,19 @@
 
         <template>
           <v-card-title class="pt-0 pb-0">{{ translate('categories.join') }}</v-card-title>
-          <v-checkbox
+          <v-switch
             :label="translate('systems.raffles.settings.deleteRaffleJoinCommands.title')"
             :hint="translate('systems.raffles.settings.deleteRaffleJoinCommands.help')"
             persistent-hint
+            class="mt-0"
             v-model="settings.join.deleteRaffleJoinCommands[0]"
           />
-          <v-checkbox
+          <v-switch
             :label="translate('systems.raffles.settings.announceNewEntries.title')"
             :hint="translate('systems.raffles.settings.announceNewEntries.help')"
             persistent-hint
             v-model="settings.join.announceNewEntries[0]"
-            class="pb-4"
+            class="mt-0 pb-4"
           />
           <revert-text-field
             class="pt-3"
