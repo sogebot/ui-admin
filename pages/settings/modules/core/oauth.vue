@@ -1,74 +1,58 @@
 <template>
   <loading v-if="!settings" />
-  <v-card v-else flat style="min-height: 100%;">
-    <v-form v-model="valid" lazy-validation>
-      <v-card-title class="pt-0">{{ translate('categories.general') }}</v-card-title>
-      <v-card-text>
-        <v-text-field
-          :label="translate('core.oauth.settings.generalChannel')"
-          v-model="settings.general.generalChannel[0]"
-        />
+  <v-form v-else v-model="valid" lazy-validation>
+    <v-tabs v-model="tab">
+      <v-tab>{{translate('categories.general')}}</v-tab>
+      <v-tab>{{translate('categories.bot')}}</v-tab>
+      <v-tab>{{translate('categories.broadcaster')}}</v-tab>
+    </v-tabs>
 
-        <v-textarea
-          auto-grow
-          outlined
-          persistent-hint
-          :label="translate('core.oauth.settings.generalOwners')"
-          :value="settings.general.generalOwners[0].filter(String).join('\n')"
-          @input="settings.general.generalOwners[0] = $event.split('\n').filter(String)"
-          :hint="translate('one-record-per-line')"
-        />
-      </v-card-text>
+    <v-tabs-items v-model="tab">
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <v-text-field :label="translate('core.oauth.settings.generalChannel')"
+              v-model="settings.general.generalChannel[0]" />
 
-      <v-divider />
-
-       <v-card-title>{{ translate('categories.bot') }}</v-card-title>
-      <v-card-text>
-        <v-text-field
-          :label="translate('core.oauth.settings.botAccessToken')"
-          v-model="settings.bot.botAccessToken[0]"
-          type="password"
-        />
-        <v-text-field
-          :label="translate('core.oauth.settings.botRefreshToken')"
-          v-model="settings.bot.botRefreshToken[0]"
-          type="password"
-        />
-        <v-text-field
-          :label="translate('core.oauth.settings.botUsername')"
-          v-model="settings.bot.botUsername[0]"
-          disabled
-        />
-        <v-btn href="https://twitchtokengenerator.com/quick/jLbq7v1pzF" target="_blank">
-          {{ translate('commons.generate') }}
-        </v-btn>
-      </v-card-text>
-
-      <v-divider />
-
-       <v-card-title>{{ translate('categories.broadcaster') }}</v-card-title>
-      <v-card-text>
-        <v-text-field
-          :label="translate('core.oauth.settings.broadcasterAccessToken')"
-          v-model="settings.broadcaster.broadcasterAccessToken[0]"
-          type="password"
-        />
-        <v-text-field
-          :label="translate('core.oauth.settings.broadcasterRefreshToken')"
-          v-model="settings.broadcaster.broadcasterRefreshToken[0]"
-          type="password"
-        />
-        <v-text-field
-          :label="translate('core.oauth.settings.broadcasterUsername')"
-          v-model="settings.broadcaster.broadcasterUsername[0]"
-          disabled
-        />
-        <v-btn href="https://twitchtokengenerator.com/quick/XH6B7JteDO" target="_blank">
-          {{ translate('commons.generate') }}
-        </v-btn>
-      </v-card-text>
-    </v-form>
-  </v-card>
+            <v-textarea auto-grow outlined persistent-hint :label="translate('core.oauth.settings.generalOwners')"
+              :value="settings.general.generalOwners[0].filter(String).join('\n')"
+              @input="settings.general.generalOwners[0] = $event.split('\n').filter(String)"
+              :hint="translate('one-record-per-line')" />
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <v-text-field :label="translate('core.oauth.settings.botAccessToken')"
+              v-model="settings.bot.botAccessToken[0]" type="password" />
+            <v-text-field :label="translate('core.oauth.settings.botRefreshToken')"
+              v-model="settings.bot.botRefreshToken[0]" type="password" />
+            <v-text-field :label="translate('core.oauth.settings.botUsername')" v-model="settings.bot.botUsername[0]"
+              disabled />
+            <v-btn href="https://twitchtokengenerator.com/quick/jLbq7v1pzF" target="_blank">
+              {{ translate('commons.generate') }}
+            </v-btn>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <v-text-field :label="translate('core.oauth.settings.broadcasterAccessToken')"
+              v-model="settings.broadcaster.broadcasterAccessToken[0]" type="password" />
+            <v-text-field :label="translate('core.oauth.settings.broadcasterRefreshToken')"
+              v-model="settings.broadcaster.broadcasterRefreshToken[0]" type="password" />
+            <v-text-field :label="translate('core.oauth.settings.broadcasterUsername')"
+              v-model="settings.broadcaster.broadcasterUsername[0]" disabled />
+            <v-btn href="https://twitchtokengenerator.com/quick/XH6B7JteDO" target="_blank">
+              {{ translate('commons.generate') }}
+            </v-btn>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+    </v-tabs-items>
+  </v-form>
 </template>
 
 <script lang="ts">
@@ -88,6 +72,7 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
+    const tab = ref(null);
 
     watch(settings, () => {
       store.commit('settings/pending', true);
@@ -121,6 +106,7 @@ export default defineComponent({
       ui,
       translate,
       valid,
+      tab,
     };
   },
 });

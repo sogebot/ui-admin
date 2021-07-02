@@ -1,31 +1,32 @@
 <template>
   <loading v-if="!settings" />
-  <v-card v-else flat style="min-height: 100%;">
-    <v-form v-model="valid" lazy-validation>
-      <v-card-text>
-        <v-select
-          v-model="settings.general.lang[0]"
-          :items="ui.general.lang.values"
-          :label="translate('core.general.settings.lang')"
-        >
-          <template v-if="settings.general.lang[0] !== settings.general.lang[1]" #append-outer>
-            <v-btn text @click.stop="$store.commit('settings/pending', true); settings.general.lang = [settings.general.lang[1], settings.general.lang[1]]">
-              Revert
-            </v-btn>
-          </template>
-        </v-select>
+  <v-form v-else v-model="valid" lazy-validation>
+    <v-tabs v-model="tab">
+      <v-tab>{{translate('categories.general')}}</v-tab>
+    </v-tabs>
 
-        <revert-text-field
-          v-model="settings.graceful_exit.gracefulExitEachXHours"
-          type="number"
-          min="0"
-          :label="translate('core.general.settings.gracefulExitEachXHours.title')"
-          :hint="translate('core.general.settings.gracefulExitEachXHours.help')"
-          :rules="[required, minValue(0)]"
-        />
-      </v-card-text>
-    </v-form>
-  </v-card>
+    <v-tabs-items v-model="tab">
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <v-select v-model="settings.general.lang[0]" :items="ui.general.lang.values"
+              :label="translate('core.general.settings.lang')">
+              <template v-if="settings.general.lang[0] !== settings.general.lang[1]" #append-outer>
+                <v-btn text
+                  @click.stop="$store.commit('settings/pending', true); settings.general.lang = [settings.general.lang[1], settings.general.lang[1]]">
+                  Revert
+                </v-btn>
+              </template>
+            </v-select>
+
+            <revert-text-field v-model="settings.graceful_exit.gracefulExitEachXHours" type="number" min="0"
+              :label="translate('core.general.settings.gracefulExitEachXHours.title')"
+              :hint="translate('core.general.settings.gracefulExitEachXHours.help')" :rules="[required, minValue(0)]" />
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+    </v-tabs-items>
+  </v-form>
 </template>
 
 <script lang="ts">
@@ -48,6 +49,7 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
+    const tab = ref(null);
 
     watch(settings, () => {
       store.commit('settings/pending', true);
@@ -84,6 +86,7 @@ export default defineComponent({
       valid,
       required,
       minValue,
+      tab,
     };
   },
 });

@@ -1,31 +1,42 @@
 <template>
   <loading v-if="!settings" />
-  <v-card v-else flat class="fill-height">
-    <v-card-text>
-      <v-form ref="form" v-model="valid">
-        <div v-for="item of settings.urls.urls[0]" :key="item.url">
-          <v-text-field
-            readonly
-            hide-details
-            :value="item.url"
-          >
-            <template #append-outer>
-              <v-btn text @click="item.clip = !item.clip" :color="item.clip ? 'success' : 'error'">CLIP</v-btn>
-              <v-btn text @click="item.highlight = !item.highlight" :color="item.highlight ? 'success' : 'error'">HIGHLIGHT</v-btn>
-            </template>
-          </v-text-field>
-        </div>
-        <v-btn @click="settings.urls.urls[0].push({
+  <v-form v-else v-model="valid" lazy-validation>
+    <v-tabs v-model="tab">
+      <v-tab>{{translate('categories.general')}}</v-tab>
+    </v-tabs>
+
+    <v-tabs-items v-model="tab">
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <v-form ref="form" v-model="valid">
+              <div v-for="(item, idx) of settings.urls.urls[0]" :key="item.url">
+                <v-text-field readonly hide-details :value="item.url">
+                  <template #append-outer>
+                    <v-btn text @click="item.clip = !item.clip" :color="item.clip ? 'success' : 'error'">CLIP</v-btn>
+                    <v-btn text @click="item.highlight = !item.highlight" :color="item.highlight ? 'success' : 'error'">
+                      HIGHLIGHT</v-btn>
+                    <v-btn icon color="red" @click="remove(idx)">
+                      <v-icon>{{ mdiDelete }}</v-icon>
+                    </v-btn>
+                  </template>
+                </v-text-field>
+              </div>
+              <v-btn @click="settings.urls.urls[0].push({
             url: origin + '/highlights/' + v4(),
             clip: false,
             highlight: false,
           })">Generate new url</v-btn>
-      </v-form>
-    </v-card-text>
-  </v-card>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+    </v-tabs-items>
+  </v-form>
 </template>
 
 <script lang="ts">
+import { mdiDelete } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -45,7 +56,7 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
-    const form = ref(null);
+    const tab = ref(null);
     const origin = computed(() => window.location.origin);
 
     watch(settings, () => {
@@ -75,20 +86,31 @@ export default defineComponent({
         });
     });
 
+    const remove = (index: number) => {
+      if (!settings.value) {
+        return;
+      }
+      settings.value.urls.urls[0].splice(index, 1);
+    };
+
     return {
       settings,
       ui,
       translate,
       valid,
-      form,
+      tab,
       origin,
 
       // functions
       v4,
+      remove,
 
       // validators
       required,
       minValue,
+
+      // icons
+      mdiDelete,
     };
   },
 });

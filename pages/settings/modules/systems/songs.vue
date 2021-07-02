@@ -1,70 +1,37 @@
 <template>
   <loading v-if="!settings" />
-  <v-card v-else flat style="min-height: 100%;">
-    <v-card-text>
-      <v-form ref="form" v-model="valid">
-        <template>
-          <v-card-title class="pt-0 pb-0">{{ translate('categories.general') }}</v-card-title>
-          <v-switch
-            class="mt-0"
-            :label="translate('systems.songs.settings.songrequest')"
-            dense
-            v-model="settings.songrequest[0]"
-          />
-          <v-switch
-            class="mt-0"
-            :label="translate('systems.songs.settings.playlist')"
-            dense
-            v-model="settings.playlist[0]"
-          />
-          <v-switch
-            class="mt-0"
-            :label="translate('systems.songs.settings.notify')"
-            dense
-            v-model="settings.notify[0]"
-          />
-          <v-switch
-            class="mt-0"
-            :label="translate('systems.songs.settings.shuffle')"
-            dense
-            v-model="settings.shuffle[0]"
-          />
-          <v-switch
-            class="mt-0"
-            :label="translate('systems.songs.settings.onlyMusicCategory')"
-            dense
-            v-model="settings.onlyMusicCategory[0]"
-          />
-          <v-switch
-            class="mt-0 pb-4"
-            :label="translate('systems.songs.settings.calculateVolumeByLoudness')"
-            dense
-            v-model="settings.calculateVolumeByLoudness[0]"
-          />
+  <v-form v-else v-model="valid" lazy-validation>
+    <v-tabs v-model="tab">
+      <v-tab>{{translate('categories.general')}}</v-tab>
+    </v-tabs>
 
-          <revert-text-field
-            class="pt-3"
-            v-model="settings.volume"
-            type="number"
-            min="0"
-            :label="translate('systems.songs.settings.volume')"
-            :rules="[required, minValue(0), maxValue(100)]"
-          />
-
-          <revert-text-field
-            class="pt-3"
-            v-model="settings.duration"
-            type="number"
-            min="0"
-            :label="translate('systems.songs.settings.duration.title')"
-            :rules="[required, minValue(0)]"
-          >
-            <template #append>{{ translate('systems.songs.settings.duration.help') }}</template>
-          </revert-text-field>
-        </template>
-      </v-form>
-    </v-card-text>
-  </v-card>
+    <v-tabs-items v-model="tab">
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <v-switch class="mt-0" :label="translate('systems.songs.settings.songrequest')" dense
+              v-model="settings.songrequest[0]" />
+            <v-switch class="mt-0" :label="translate('systems.songs.settings.playlist')" dense
+              v-model="settings.playlist[0]" />
+            <v-switch class="mt-0" :label="translate('systems.songs.settings.notify')" dense
+              v-model="settings.notify[0]" />
+            <v-switch class="mt-0" :label="translate('systems.songs.settings.shuffle')" dense
+              v-model="settings.shuffle[0]" />
+            <v-switch class="mt-0" :label="translate('systems.songs.settings.onlyMusicCategory')" dense
+              v-model="settings.onlyMusicCategory[0]" />
+            <v-switch class="mt-0 pb-4" :label="translate('systems.songs.settings.calculateVolumeByLoudness')" dense
+              v-model="settings.calculateVolumeByLoudness[0]" />
+            <revert-text-field class="pt-3" v-model="settings.volume" type="number" min="0"
+              :label="translate('systems.songs.settings.volume')" :rules="[required, minValue(0), maxValue(100)]" />
+            <revert-text-field class="pt-3" v-model="settings.duration" type="number" min="0"
+              :label="translate('systems.songs.settings.duration.title')" :rules="[required, minValue(0)]">
+              <template #append>{{ translate('systems.songs.settings.duration.help') }}</template>
+            </revert-text-field>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+    </v-tabs-items>
+  </v-form>
 </template>
 
 <script lang="ts">
@@ -93,7 +60,7 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
-    const form = ref(null);
+    const tab = ref(null);
 
     watch(settings, () => {
       store.commit('settings/pending', true);
@@ -128,7 +95,7 @@ export default defineComponent({
       ui,
       translate,
       valid,
-      form,
+      tab,
 
       // functions
       getIgnoredPermissions,

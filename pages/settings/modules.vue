@@ -9,6 +9,7 @@
       </transition>
     </portal>
     <v-navigation-drawer
+      class="fullscreen-drawer"
       right
       :width="$vuetify.breakpoint.mobile ? '100%' : '100%'"
       absolute

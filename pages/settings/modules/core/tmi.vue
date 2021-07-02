@@ -1,74 +1,50 @@
 <template>
   <loading v-if="!settings" />
-  <v-card v-else flat class="fill-height">
-    <v-card-text>
-      <v-form ref="form" v-model="valid">
-        <v-switch
-          class="mt-0"
-          v-model="settings.chat.sendWithMe[0]"
-          dense
-          :label="translate('core.tmi.settings.sendWithMe')"
-        />
-        <v-switch
-          class="mt-0"
-          v-model="settings.chat.mute[0]"
-          dense
-          :label="translate('core.tmi.settings.mute')"
-        />
-        <v-switch
-          class="mt-0"
-          v-model="settings.chat.whisperListener[0]"
-          dense
-          :label="translate('core.tmi.settings.whisperListener')"
-        />
-        <v-switch
-          class="mt-0"
-          v-model="settings.chat.showWithAt[0]"
-          dense
-          :label="translate('core.tmi.settings.showWithAt')"
-        />
-        <v-textarea
-          class="mt-3 pt-3"
-          outlined
-          rows="5"
-          persistent-hint
-          :label="translate('core.tmi.settings.ignorelist')"
-          :value="settings.chat.ignorelist[0].filter(String).join('\n')"
-          :hint="translate('one-record-per-line')"
-          @input="settings.chat.ignorelist[0] = $event.split('\n').filter(String)"
-        />
+  <v-form v-else v-model="valid" lazy-validation>
+    <v-tabs v-model="tab">
+      <v-tab>{{translate('categories.general')}}</v-tab>
+    </v-tabs>
 
-        <v-autocomplete
-          v-model="settings.chat.globalIgnoreListExclude[0]"
-          :label="translate('core.tmi.settings.globalIgnoreListExclude')"
-          :items="Object.keys(globalIgnoreList).map(k => k)"
-          cache-items
-          multiple
-          :filter="customFilter"
-          @input="$store.commit('settings/pending', true)"
-        >
-        <template v-slot:selection="data">
-          <v-chip
-            v-bind="data.attrs"
-            :input-value="data.selected"
-            close
-            small
-            @click:close="remove(data.item)"
-          >
-            <strong class='text-caption pr-2'>{{ data.item }}</strong> {{globalIgnoreList[data.item].known_aliases[0]}}
-          </v-chip>
-        </template>
-          <template v-slot:item="data">
-            <v-list-item-content>
-              <v-list-item-title><strong class='text-caption'>id:</strong> {{data.item}}</v-list-item-title>
-              <v-list-item-subtitle><strong class='text-caption'>Known as:</strong> {{globalIgnoreList[data.item].known_aliases.join(', ')}} </v-list-item-subtitle>
-              <v-list-item-subtitle><strong class='text-caption'>Reason:</strong> {{globalIgnoreList[data.item].reason}}</v-list-item-subtitle>
-            </v-list-item-content>
-          </template>
-        </v-autocomplete>
-      </v-form>
-    </v-card-text>
-  </v-card>
+    <v-tabs-items v-model="tab">
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <v-switch class="mt-0" v-model="settings.chat.sendWithMe[0]" dense
+              :label="translate('core.tmi.settings.sendWithMe')" />
+            <v-switch class="mt-0" v-model="settings.chat.mute[0]" dense :label="translate('core.tmi.settings.mute')" />
+            <v-switch class="mt-0" v-model="settings.chat.whisperListener[0]" dense
+              :label="translate('core.tmi.settings.whisperListener')" />
+            <v-switch class="mt-0" v-model="settings.chat.showWithAt[0]" dense
+              :label="translate('core.tmi.settings.showWithAt')" />
+            <v-textarea class="mt-3 pt-3" outlined rows="5" persistent-hint
+              :label="translate('core.tmi.settings.ignorelist')"
+              :value="settings.chat.ignorelist[0].filter(String).join('\n')" :hint="translate('one-record-per-line')"
+              @input="settings.chat.ignorelist[0] = $event.split('\n').filter(String)" />
+            <v-autocomplete v-model="settings.chat.globalIgnoreListExclude[0]"
+              :label="translate('core.tmi.settings.globalIgnoreListExclude')"
+              :items="Object.keys(globalIgnoreList).map(k => k)" cache-items multiple :filter="customFilter"
+              @input="$store.commit('settings/pending', true)">
+              <template v-slot:selection="data">
+                <v-chip v-bind="data.attrs" :input-value="data.selected" close small @click:close="remove(data.item)">
+                  <strong class='text-caption pr-2'>{{ data.item }}</strong>
+                  {{globalIgnoreList[data.item].known_aliases[0]}}
+                </v-chip>
+              </template>
+              <template v-slot:item="data">
+                <v-list-item-content>
+                  <v-list-item-title><strong class='text-caption'>id:</strong> {{data.item}}</v-list-item-title>
+                  <v-list-item-subtitle><strong class='text-caption'>Known as:</strong>
+                    {{globalIgnoreList[data.item].known_aliases.join(', ')}} </v-list-item-subtitle>
+                  <v-list-item-subtitle><strong class='text-caption'>Reason:</strong>
+                    {{globalIgnoreList[data.item].reason}}</v-list-item-subtitle>
+                </v-list-item-content>
+              </template>
+            </v-autocomplete>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+    </v-tabs-items>
+  </v-form>
 </template>
 
 <script lang="ts">
@@ -89,7 +65,8 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
-    const form = ref(null);
+    const tab = ref(null);
+
     const globalIgnoreList = ref({} as {
       [x: string]: {
         reason: string,
@@ -151,7 +128,7 @@ export default defineComponent({
       ui,
       translate,
       valid,
-      form,
+      tab,
       globalIgnoreList,
       remove,
       customFilter,

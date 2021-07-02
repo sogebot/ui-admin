@@ -1,16 +1,21 @@
 <template>
   <loading v-if="!settings" />
-  <v-card v-else flat class="fill-height">
-    <v-card-text>
-      <v-form ref="form" v-model="valid">
-        <v-switch
-          v-model="settings.general.isTitleForced[0]"
-          dense
-          :label="translate('core.twitch.settings.isTitleForced')"
-        />
-      </v-form>
-    </v-card-text>
-  </v-card>
+  <v-form v-else v-model="valid" lazy-validation>
+    <v-tabs v-model="tab">
+      <v-tab>{{translate('categories.general')}}</v-tab>
+    </v-tabs>
+
+    <v-tabs-items v-model="tab">
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <v-switch class="mt-0" v-model="settings.general.isTitleForced[0]" dense
+              :label="translate('core.twitch.settings.isTitleForced')" />
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+    </v-tabs-items>
+  </v-form>
 </template>
 
 <script lang="ts">
@@ -31,7 +36,7 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
-    const form = ref(null);
+    const tab = ref(null);
 
     watch(settings, () => {
       store.commit('settings/pending', true);
@@ -65,7 +70,7 @@ export default defineComponent({
       ui,
       translate,
       valid,
-      form,
+      tab,
 
       // validators
       required,

@@ -1,37 +1,27 @@
 <template>
   <loading v-if="!settings" />
-  <v-card v-else flat style="min-height: 100%;">
-    <v-card-text>
-      <v-form ref="form" v-model="valid">
-        <template>
-          <v-card-title class="pt-0 pb-0">{{ translate('categories.general') }}</v-card-title>
+  <v-form v-else v-model="valid" lazy-validation>
+    <v-tabs v-model="tab">
+      <v-tab>{{translate('categories.general')}}</v-tab>
+    </v-tabs>
 
-          <v-switch
-            v-model="settings.bypassCooldownByOwnerAndMods[0]"
-            :label="translate('games.fightme.settings.bypassCooldownByOwnerAndMods')"
-          />
-          <revert-text-field
-            class="pt-3"
-            v-model="settings.cooldown"
-            type="number"
-            min="0"
-            :label="translate('games.fightme.settings.cooldown')"
-            :rules="[required, minValue(0)]"
-          />
-          <revert-text-field
-            class="pt-3"
-            v-model="settings.timeout"
-            type="number"
-            min="0"
-            :label="translate('games.fightme.settings.timeout.title')"
-            :rules="[required, minValue(0)]"
-          >
-            <template #append>{{ translate('games.fightme.settings.timeout.help') }}</template>
-          </revert-text-field>
-        </template>
-      </v-form>
-    </v-card-text>
-  </v-card>
+    <v-tabs-items v-model="tab">
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <v-switch class="mt-0" v-model="settings.bypassCooldownByOwnerAndMods[0]"
+              :label="translate('games.fightme.settings.bypassCooldownByOwnerAndMods')" />
+            <revert-text-field class="pt-3" v-model="settings.cooldown" type="number" min="0"
+              :label="translate('games.fightme.settings.cooldown')" :rules="[required, minValue(0)]" />
+            <revert-text-field class="pt-3" v-model="settings.timeout" type="number" min="0"
+              :label="translate('games.fightme.settings.timeout.title')" :rules="[required, minValue(0)]">
+              <template #append>{{ translate('games.fightme.settings.timeout.help') }}</template>
+            </revert-text-field>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+    </v-tabs-items>
+  </v-form>
 </template>
 
 <script lang="ts">
@@ -56,7 +46,7 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
-    const form = ref(null);
+    const tab = ref(null);
 
     watch(settings, () => {
       store.commit('settings/pending', true);
@@ -91,7 +81,7 @@ export default defineComponent({
       ui,
       translate,
       valid,
-      form,
+      tab,
 
       // validators
       required,

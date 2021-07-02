@@ -1,46 +1,41 @@
 <template>
   <loading v-if="!settings" />
-  <v-card v-else flat class="fill-height">
-    <v-card-text>
-      <v-form ref="form" v-model="valid">
-        <revert-text-field
-          v-model="settings.connection.accessTokenExpirationTime"
-          type="number"
-          min="0"
-          :label="translate('core.socket.settings.accessTokenExpirationTime')"
-          :rules="[required, minValue(120)]"
-        />
-        <revert-text-field
-          v-model="settings.connection.refreshTokenExpirationTime"
-          type="number"
-          min="0"
-          :label="translate('core.socket.settings.refreshTokenExpirationTime')"
-          :rules="[required, minValue(400000)]"
-        />
+  <v-form v-else v-model="valid" lazy-validation>
+    <v-tabs v-model="tab">
+      <v-tab>{{translate('categories.general')}}</v-tab>
+    </v-tabs>
 
-        <v-text-field
-          :label="translate('core.socket.settings.socketToken.title')"
-          :hint="translate('core.socket.settings.socketToken.help')"
-          persistent-hint
-          readonly
-          :value="'*'.repeat(30) + settings.connection.socketToken[0].slice(30)"
-        >
-          <template #append-outer>
-            <v-btn text @click.stop="copy(settings.connection.socketToken[0])">
-              {{ translate('systems.polls.copy') }}
-            </v-btn>
-            <v-btn text color="primary" @click.stop="settings.connection.socketToken = [v4(), '']">
-              {{ translate('commons.generate') }}
-            </v-btn>
-          </template>
-        </v-text-field>
+    <v-tabs-items v-model="tab">
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <revert-text-field v-model="settings.connection.accessTokenExpirationTime" type="number" min="0"
+              :label="translate('core.socket.settings.accessTokenExpirationTime')" :rules="[required, minValue(120)]" />
+            <revert-text-field v-model="settings.connection.refreshTokenExpirationTime" type="number" min="0"
+              :label="translate('core.socket.settings.refreshTokenExpirationTime')"
+              :rules="[required, minValue(400000)]" />
 
-        <v-btn color="error" class="mt-2" @click="purgeAll">
-          {{ translate('core.socket.settings.purgeAllConnections') }}
-        </v-btn>
-      </v-form>
-    </v-card-text>
-  </v-card>
+            <v-text-field :label="translate('core.socket.settings.socketToken.title')"
+              :hint="translate('core.socket.settings.socketToken.help')" persistent-hint readonly
+              :value="'*'.repeat(30) + settings.connection.socketToken[0].slice(30)">
+              <template #append-outer>
+                <v-btn text @click.stop="copy(settings.connection.socketToken[0])">
+                  {{ translate('systems.polls.copy') }}
+                </v-btn>
+                <v-btn text color="primary" @click.stop="settings.connection.socketToken = [v4(), '']">
+                  {{ translate('commons.generate') }}
+                </v-btn>
+              </template>
+            </v-text-field>
+
+            <v-btn color="error" class="mt-2" @click="purgeAll">
+              {{ translate('core.socket.settings.purgeAllConnections') }}
+            </v-btn>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+    </v-tabs-items>
+  </v-form>
 </template>
 
 <script lang="ts">
@@ -65,7 +60,7 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
-    const form = ref(null);
+    const tab = ref(null);
 
     watch(settings, () => {
       store.commit('settings/pending', true);
@@ -110,7 +105,7 @@ export default defineComponent({
       ui,
       translate,
       valid,
-      form,
+      tab,
 
       // functions
       v4,

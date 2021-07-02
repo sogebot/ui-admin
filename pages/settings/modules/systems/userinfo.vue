@@ -1,54 +1,53 @@
 <template>
   <loading v-if="!settings" />
-  <v-card v-else flat style="min-height: 100%;">
-    <v-card-text>
-      <v-form ref="form" v-model="valid">
-        <template>
-          <v-card-title class="pt-0 pb-0">{{ translate('categories.customization') }}</v-card-title>
+  <v-form v-else v-model="valid" lazy-validation>
+    <v-tabs v-model="tab">
+      <v-tab>{{translate('categories.customization')}}</v-tab>
+      <v-tab>{{translate('categories.me')}}</v-tab>
+    </v-tabs>
 
-          <revert-text-field
-            class="pt-3"
-            v-model="settings.customization.lastSeenFormat"
-            :label="translate('systems.userinfo.settings.lastSeenFormat.title')"
-            :hint="translate('systems.userinfo.settings.lastSeenFormat.help')"
-            :rules="[required]"
-          />
-        </template>
-        <template>
-          <v-card-title class="pt-0 pb-0">{{ translate('categories.me') }}</v-card-title>
-
-          <revert-text-field
-            class="pt-3"
-            v-model="settings.me.formatSeparator"
-            :label="translate('systems.userinfo.settings.formatSeparator')"
-            :rules="[required]"
-          />
-
-          <label class="v-label theme--dark">
-            {{ translate('systems.userinfo.settings.order') }}
-          </label>
-          <v-simple-table dense>
-            <template #default>
-              <tbody>
-                <tr v-for="(item , idx) of settings.me.order[0]" :key="item">
-                  <td>
-                    <v-icon v-if="idx !== 0" @click.stop="swapOrder(idx, idx - 1)">{{ mdiChevronUp }}</v-icon>
-                    <v-icon v-if="idx !== settings.me.order[0].length - 1" @click.stop="swapOrder(idx, idx + 1)">{{ mdiChevronDown }}</v-icon>
-                  </td>
-                  <td>{{item}}</td>
-                  <td>
-                    <v-icon @click="toggleVisibility(item)">
-                      {{ settings.me._formatDisabled[0].includes(item) ? mdiEyeOff : mdiEye }}
-                    </v-icon>
-                  </td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
-        </template>
-      </v-form>
-    </v-card-text>
-  </v-card>
+    <v-tabs-items v-model="tab">
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <revert-text-field class="pt-3" v-model="settings.customization.lastSeenFormat"
+              :label="translate('systems.userinfo.settings.lastSeenFormat.title')"
+              :hint="translate('systems.userinfo.settings.lastSeenFormat.help')" :rules="[required]" />
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <revert-text-field class="pt-3" v-model="settings.me.formatSeparator"
+              :label="translate('systems.userinfo.settings.formatSeparator')" :rules="[required]" />
+            <label class="v-label theme--dark">
+              {{ translate('systems.userinfo.settings.order') }}
+            </label>
+            <v-simple-table dense>
+              <template #default>
+                <tbody>
+                  <tr v-for="(item , idx) of settings.me.order[0]" :key="item">
+                    <td>
+                      <v-icon v-if="idx !== 0" @click.stop="swapOrder(idx, idx - 1)">{{ mdiChevronUp }}</v-icon>
+                      <v-icon v-if="idx !== settings.me.order[0].length - 1" @click.stop="swapOrder(idx, idx + 1)">
+                        {{ mdiChevronDown }}</v-icon>
+                    </td>
+                    <td>{{item}}</td>
+                    <td>
+                      <v-icon @click="toggleVisibility(item)">
+                        {{ settings.me._formatDisabled[0].includes(item) ? mdiEyeOff : mdiEye }}
+                      </v-icon>
+                    </td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+    </v-tabs-items>
+  </v-form>
 </template>
 
 <script lang="ts">
@@ -77,7 +76,7 @@ export default defineComponent({
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
-    const form = ref(null);
+    const tab = ref(null);
 
     watch(settings, () => {
       store.commit('settings/pending', true);
@@ -130,7 +129,7 @@ export default defineComponent({
       ui,
       translate,
       valid,
-      form,
+      tab,
 
       // validators
       required,
