@@ -23,12 +23,12 @@
     <v-fade-transition>
       <div v-show="!drawer">
         <v-card v-for="type of Object.keys(menu)" flat :key="type">
-          <v-card-title>
+          <v-card-title v-if="haveActions(menu[type]).length > 0">
             {{ translate(`menu.${type}`) }}
           </v-card-title>
-          <v-card-text>
+          <v-card-text v-if="haveActions(menu[type]).length > 0">
             <v-data-iterator
-              :items="menu[type]"
+              :items="haveActions(menu[type])"
               item-key="name"
               :items-per-page="-1"
               hide-default-footer
@@ -155,6 +155,13 @@ export default defineComponent({
       });
     };
 
+    const haveActions = (items: systemFromIO[]) => {
+      return items.filter((o) => {
+        const canBeEnabled = o.enabled !== undefined;
+        return canBeEnabled || hasSettings(o.type, o.name);
+      });
+    };
+
     return {
       isLoading,
       drawer,
@@ -163,6 +170,7 @@ export default defineComponent({
       mdiCog,
       route,
       hasSettings,
+      haveActions,
       update,
     };
   },
