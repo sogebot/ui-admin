@@ -19,6 +19,7 @@
     </template>
 
     <template #append-outer>
+      <slot name="append-outer"/>
       <v-expand-x-transition>
         <div v-if="model !== original">
           <v-btn text @click.stop="$store.commit('settings/pending', true); model = original">

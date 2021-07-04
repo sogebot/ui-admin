@@ -13,12 +13,12 @@
       <v-tab-item eager>
         <v-card>
           <v-card-text>
-            <v-text-field v-model="settings.general.clientId" type="password"
+            <v-text-field v-model="settings.general.clientId[0]" type="password" dense
               :label="translate('integrations.discord.settings.clientId')" />
-            <v-text-field v-model="settings.general.token" type="password"
+            <v-text-field v-model="settings.general.token[0]" type="password" dense
               :label="translate('integrations.discord.settings.token')" />
             <v-btn @click="authorize "
-              :disabled="settings.general.clientId.length === 0 || settings.general.token.length === 0">
+              :disabled="settings.general.clientId[0].length === 0 || settings.general.token[0].length === 0">
               {{translate('integrations.discord.settings.joinToServerBtn')}}</v-btn>
           </v-card-text>
         </v-card>
@@ -26,7 +26,6 @@
       <v-tab-item eager>
         <v-card>
           <v-card-text>
-
             <v-autocomplete hide-selected :items="guilds" :label="translate('integrations.discord.settings.guild')"
               v-model="settings.bot.guild[0]">
               <template v-slot:selection="data">
