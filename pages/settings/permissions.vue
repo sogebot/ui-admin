@@ -1,71 +1,69 @@
 <template>
-  <v-card :loading="isLoading" class="fill-height">
-    <v-overlay v-if="isLoading" absolute>
-      <v-row>
-        <v-col class="text-center">
-          <v-progress-circular indeterminate size="48" />
-        </v-col>
-      </v-row>
-    </v-overlay>
-    <v-container v-else fluid>
-      <v-row dense class="pt-2">
-        <v-col cols="auto">
-          <v-card>
-            <v-toolbar dense color="blue-grey darken-4">
-              <v-toolbar-title class="text-button">
-                {{ translate('core.permissions.permissionsGroups') }}
-              </v-toolbar-title>
-              <v-spacer />
-              <v-btn icon :loading="state.saving" @click="addNewPermissionGroup">
-                <v-icon>{{ mdiPlus }}</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text class="pa-0">
-              <v-tabs ref="tabsRef" v-model="tab" vertical>
-                <v-tab
-                  v-for="permission of permissions"
-                  :id="permission.id"
-                  :key="permission.id"
-                  :disabled="state.saving"
-                  style="text-align: left; justify-content: normal; max-width: none;"
-                  nuxt
-                  :to="'/settings/permissions/' + permission.id"
-                >
-                  <template v-if="permission.id !== defaultPermissions.VIEWERS && permission.id !== defaultPermissions.CASTERS" >
-                    <template v-if="$vuetify.breakpoint.mobile">
-                      <v-icon v-if="permission.order > 1" @click.stop="swapOrder(permission.order, permission.order - 1)">{{ mdiChevronUp }}</v-icon>
-                      <v-icon v-if="permission.order !== permissions.length - 2" @click.stop="swapOrder(permission.order, permission.order + 1)">{{ mdiChevronDown }}</v-icon>
-                    </template>
-                    <v-icon v-else :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, permission.id)">
-                      {{ mdiDrag }}
-                    </v-icon>
-
+  <v-overlay v-if="isLoading" absolute>
+    <v-row>
+      <v-col class="text-center">
+        <v-progress-circular indeterminate size="48" />
+      </v-col>
+    </v-row>
+  </v-overlay>
+  <v-container v-else fluid>
+    <v-row dense class="pt-2">
+      <v-col cols="auto">
+        <v-card>
+          <v-toolbar dense color="blue-grey darken-4">
+            <v-toolbar-title class="text-button">
+              {{ translate('core.permissions.permissionsGroups') }}
+            </v-toolbar-title>
+            <v-spacer />
+            <v-btn icon :loading="state.saving" @click="addNewPermissionGroup">
+              <v-icon>{{ mdiPlus }}</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-card-text class="pa-0">
+            <v-tabs ref="tabsRef" v-model="tab" vertical>
+              <v-tab
+                v-for="permission of permissions"
+                :id="permission.id"
+                :key="permission.id"
+                :disabled="state.saving"
+                style="text-align: left; justify-content: normal; max-width: none;"
+                nuxt
+                :to="'/settings/permissions/' + permission.id"
+              >
+                <template v-if="permission.id !== defaultPermissions.VIEWERS && permission.id !== defaultPermissions.CASTERS" >
+                  <template v-if="$vuetify.breakpoint.mobile">
+                    <v-icon v-if="permission.order > 1" @click.stop="swapOrder(permission.order, permission.order - 1)">{{ mdiChevronUp }}</v-icon>
+                    <v-icon v-if="permission.order !== permissions.length - 2" @click.stop="swapOrder(permission.order, permission.order + 1)">{{ mdiChevronDown }}</v-icon>
                   </template>
-                  <v-icon left small>
-                    {{ permission.isWaterfallAllowed ? mdiGreaterThanOrEqual : mdiEqual }}
+                  <v-icon v-else :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, permission.id)">
+                    {{ mdiDrag }}
                   </v-icon>
-                  <span :class="{ 'white--text': permission.isCorePermission }">{{ permission.name }}</span>
-                  <template v-if="permission.automation">
-                    <v-spacer />
-                    <v-icon left small>
-                      {{ mdiCog }}
-                    </v-icon>
-                    <small class="text-caption">{{ translate('core.permissions.' + permission.automation) }}</small>
-                  </template>
-                </v-tab>
-              </v-tabs>
-            </v-card-text>
-          </v-card>
-          <v-alert color="error" text>
-            {{ translate('core.permissions.higherPermissionHaveAccessToLowerPermissions') }}
-          </v-alert>
-        </v-col>
-        <v-col>
-          <NuxtChild />
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-card>
+
+                </template>
+                <v-icon left small>
+                  {{ permission.isWaterfallAllowed ? mdiGreaterThanOrEqual : mdiEqual }}
+                </v-icon>
+                <span :class="{ 'white--text': permission.isCorePermission }">{{ permission.name }}</span>
+                <template v-if="permission.automation">
+                  <v-spacer />
+                  <v-icon left small>
+                    {{ mdiCog }}
+                  </v-icon>
+                  <small class="text-caption">{{ translate('core.permissions.' + permission.automation) }}</small>
+                </template>
+              </v-tab>
+            </v-tabs>
+          </v-card-text>
+        </v-card>
+        <v-alert color="error" text>
+          {{ translate('core.permissions.higherPermissionHaveAccessToLowerPermissions') }}
+        </v-alert>
+      </v-col>
+      <v-col>
+        <NuxtChild />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
