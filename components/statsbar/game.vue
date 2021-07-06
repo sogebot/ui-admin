@@ -82,7 +82,7 @@ import {
 import { getTime } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize, isNil } from 'lodash-es';
+import { capitalize, isNil } from 'lodash';
 
 import { error } from '~/functions/error';
 

@@ -161,7 +161,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize } from 'lodash-es';
+import { capitalize } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import { EventInterface, Events } from '~/.bot/src/bot/database/entity/event';

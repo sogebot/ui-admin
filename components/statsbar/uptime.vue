@@ -49,7 +49,7 @@ import { defineComponent } from '@nuxtjs/composition-api';
 import { getTime } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize } from 'lodash-es';
+import { capitalize } from 'lodash';
 
 export default defineComponent({
   props: {

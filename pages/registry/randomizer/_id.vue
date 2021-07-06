@@ -138,7 +138,7 @@ import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermi
 import translate from '@sogebot/ui-helpers/translate';
 import {
   cloneDeep, isEqual, orderBy,
-} from 'lodash-es';
+} from 'lodash';
 import { v4 } from 'uuid';
 
 import { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';

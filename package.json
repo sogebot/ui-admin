@@ -30,7 +30,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/proxy": "^2.1.0",
-    "@sogebot/ui-helpers": "^2.3.0",
+    "@sogebot/ui-helpers": "^2.3.1",
     "animate.css": "^4.1.1",
     "chart.js": "^2.9.4",
     "core-js": "^3.15.2",
@@ -63,7 +63,6 @@
     "@nuxtjs/stylelint-module": "^4.0.0",
     "@nuxtjs/vuetify": "^1.12.1",
     "@types/chart.js": "^2.9.33",
-    "@types/lodash-es": "^4.17.4",
     "@types/prismjs": "^1.16.5",
     "@types/shortid": "^0.0.29",
     "@types/uuid": "^8.3.1",

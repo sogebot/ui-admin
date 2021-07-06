@@ -27,7 +27,7 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize } from 'lodash-es';
+import { capitalize } from 'lodash';
 
 import { error } from '~/functions/error';
 import { required } from '~/functions/validators';

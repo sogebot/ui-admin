@@ -206,7 +206,7 @@ import {
 import translate from '@sogebot/ui-helpers/translate';
 import {
   capitalize, cloneDeep, orderBy,
-} from 'lodash-es';
+} from 'lodash';
 import draggable from 'vuedraggable';
 
 import { getPermissionName } from '~/functions/getPermissionName';

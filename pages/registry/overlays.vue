@@ -186,7 +186,7 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   cloneDeep, debounce, isEqual,
-} from 'lodash-es';
+} from 'lodash';
 import { v4 } from 'uuid';
 
 import type { OverlayMappers } from '.bot/src/bot/database/entity/overlay';

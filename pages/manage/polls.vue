@@ -214,7 +214,7 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import type { PollInterface } from '.bot/src/bot/database/entity/poll';

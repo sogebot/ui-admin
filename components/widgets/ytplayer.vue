@@ -123,7 +123,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { isEqual } from 'lodash-es';
+import { isEqual } from 'lodash';
 import Vue from 'vue';
 import VuePlyr from 'vue-plyr';
 

@@ -67,7 +67,7 @@ import {
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { getUsernameById } from '@sogebot/ui-helpers/userById';
-import { capitalize } from 'lodash-es';
+import { capitalize } from 'lodash';
 
 import type { QuotesInterface } from '.bot/src/bot/database/entity/quotes';
 

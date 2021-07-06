@@ -249,7 +249,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   capitalize, flatten, orderBy, uniq,
-} from 'lodash-es';
+} from 'lodash';
 
 import type { QuotesInterface } from '.bot/src/bot/database/entity/quotes';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';

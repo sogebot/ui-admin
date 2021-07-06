@@ -274,7 +274,7 @@ import {
   textStrokeGenerator,
 } from '@sogebot/ui-helpers/text';
 import translate from '@sogebot/ui-helpers/translate';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'lodash';
 
 import { required } from '~/functions/validators';
 

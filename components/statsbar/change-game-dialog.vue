@@ -123,7 +123,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { debounce, orderBy } from 'lodash-es';
+import { debounce, orderBy } from 'lodash';
 
 import type { CacheTitlesInterface } from '.bot/src/bot/database/entity/cacheTitles';
 import { error } from '~/functions/error';

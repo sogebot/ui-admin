@@ -134,7 +134,7 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { orderBy } from 'lodash-es';
+import { orderBy } from 'lodash';
 import { v4 } from 'uuid';
 
 import type { RandomizerInterface } from '.bot/src/bot/database/entity/randomizer';

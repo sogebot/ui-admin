@@ -81,7 +81,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import Chart from 'chart.js';
 import {
   capitalize, get, groupBy, isNil, orderBy,
-} from 'lodash-es';
+} from 'lodash';
 import Vue from 'vue';
 import Chartkick from 'vue-chartkick';
 

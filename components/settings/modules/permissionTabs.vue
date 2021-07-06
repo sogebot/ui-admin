@@ -16,7 +16,7 @@ import { useContext } from '@nuxtjs/composition-api';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@vue/composition-api';
-import { orderBy } from 'lodash-es';
+import { orderBy } from 'lodash';
 
 import { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
 import api from '~/functions/api';

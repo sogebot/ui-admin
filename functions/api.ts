@@ -1,6 +1,6 @@
 import { NuxtAxiosInstance } from '@nuxtjs/axios';
 import { AxiosRequestConfig } from 'axios';
-import { debounce } from 'lodash-es';
+import { debounce } from 'lodash';
 
 const redirectLogin = () => {
   if (window.location.href.includes('popout')) {

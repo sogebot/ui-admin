@@ -241,7 +241,7 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize } from 'lodash-es';
+import { capitalize } from 'lodash';
 
 import type { CooldownInterface } from '.bot/src/bot/database/entity/cooldown';
 import { error } from '~/functions//error';

@@ -1,4 +1,4 @@
-import { get } from 'lodash-es';
+import { get } from 'lodash';
 
 import { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
 

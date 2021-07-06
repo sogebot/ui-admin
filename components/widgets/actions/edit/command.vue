@@ -11,7 +11,7 @@
 import {
   defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'lodash';
 
 import type { CommandItem } from '.bot/src/bot/database/entity/dashboard';
 import { EventBus } from '~/functions/event-bus';

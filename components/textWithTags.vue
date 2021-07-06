@@ -10,7 +10,7 @@ import { defineComponent } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   isNil, keys, sortBy,
-} from 'lodash-es';
+} from 'lodash';
 
 import { flatten } from '~/functions/flatten';
 

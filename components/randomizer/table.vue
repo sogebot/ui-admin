@@ -92,7 +92,7 @@ import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { orderBy } from 'lodash-es';
+import { orderBy } from 'lodash';
 
 import type { RandomizerItemInterface } from '~/.bot/src/bot/database/entity/randomizer';
 import { EventBus } from '~/functions/event-bus';

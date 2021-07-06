@@ -269,7 +269,7 @@ import {
   defineComponent, onMounted, ref, useContext, useRoute, useRouter, useStore,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'lodash';
 // import highlighting library (you can use any library you want just return html string)
 import ObsWebSocket from 'obs-websocket-js';
 import shortid from 'shortid';

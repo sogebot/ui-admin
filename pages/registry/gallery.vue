@@ -345,7 +345,7 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { uniq } from 'lodash-es';
+import { uniq } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import type { GalleryInterface } from '.bot/src/bot/database/entity/gallery';

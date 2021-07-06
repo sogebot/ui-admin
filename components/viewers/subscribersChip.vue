@@ -51,7 +51,7 @@ import { mdiLock } from '@mdi/js';
 import {
   computed, defineComponent, ref,
 } from '@nuxtjs/composition-api';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'lodash';
 
 import type { UserInterface } from '.bot/src/bot/database/entity/user';
 

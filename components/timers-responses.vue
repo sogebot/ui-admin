@@ -125,7 +125,7 @@ import {
   defineAsyncComponent, defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize, cloneDeep } from 'lodash-es';
+import { capitalize, cloneDeep } from 'lodash';
 import draggable from 'vuedraggable';
 
 import type { TimerResponseInterface } from '.bot/src/bot/database/entity/timer';

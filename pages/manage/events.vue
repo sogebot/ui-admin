@@ -257,7 +257,7 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize, cloneDeep } from 'lodash-es';
+import { capitalize, cloneDeep } from 'lodash';
 
 import type { EventInterface, Events } from '.bot/src/bot/database/entity/event';
 import { error } from '~/functions/error';

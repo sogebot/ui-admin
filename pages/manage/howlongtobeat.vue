@@ -240,7 +240,7 @@ import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getTime, timestampToObject } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { cloneDeep, debounce } from 'lodash-es';
+import { cloneDeep, debounce } from 'lodash';
 
 import { HowLongToBeatGameInterface, HowLongToBeatGameItemInterface } from '.bot/src/bot/database/entity/howLongToBeatGame';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';

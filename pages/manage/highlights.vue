@@ -89,7 +89,7 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { escapeRegExp, isNil } from 'lodash-es';
+import { escapeRegExp, isNil } from 'lodash';
 
 import type { HighlightInterface } from '.bot/src/bot/database/entity/highlight';
 import { error } from '~/functions/error';

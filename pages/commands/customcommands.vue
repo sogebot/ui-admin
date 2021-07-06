@@ -206,7 +206,7 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize, orderBy } from 'lodash-es';
+import { capitalize, orderBy } from 'lodash';
 
 import type { CommandsInterface } from '.bot/src/bot/database/entity/commands';
 import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';

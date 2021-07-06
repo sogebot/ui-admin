@@ -168,7 +168,7 @@ import {
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { debounce } from 'lodash-es';
+import { debounce } from 'lodash';
 
 import { QueueInterface } from '.bot/src/bot/database/entity/queue';
 import { error } from '~/functions/error';

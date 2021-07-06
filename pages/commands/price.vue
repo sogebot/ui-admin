@@ -215,7 +215,7 @@ import { useStore } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize } from 'lodash-es';
+import { capitalize } from 'lodash';
 
 import type { PriceInterface } from '.bot/src/bot/database/entity/price';
 import {

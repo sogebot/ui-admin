@@ -292,7 +292,7 @@ import {
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { get } from 'lodash-es';
+import { get } from 'lodash';
 
 import type { EventListInterface } from '~/.bot/src/bot/database/entity/eventList';
 import api from '~/functions/api';

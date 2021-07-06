@@ -136,7 +136,7 @@ import {
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize, orderBy } from 'lodash-es';
+import { capitalize, orderBy } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import type { UserBitInterface, UserInterface } from '.bot/src/bot/database/entity/user';

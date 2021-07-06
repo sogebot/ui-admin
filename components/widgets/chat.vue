@@ -83,7 +83,7 @@ import {
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import {
   chunk, flatten, sortedUniq,
-} from 'lodash-es';
+} from 'lodash';
 
 import { error } from '~/functions/error';
 

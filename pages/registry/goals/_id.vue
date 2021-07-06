@@ -311,7 +311,7 @@ import {
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 
 import { GoalGroupInterface, GoalInterface } from '~/.bot/src/bot/database/entity/goal';

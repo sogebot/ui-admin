@@ -581,7 +581,7 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize, orderBy } from 'lodash-es';
+import { capitalize, orderBy } from 'lodash';
 
 import type { EventListInterface } from '.bot/src/bot/database/entity/eventList';
 import type { UserInterface } from '.bot/src/bot/database/entity/user';

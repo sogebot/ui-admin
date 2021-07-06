@@ -1,5 +1,5 @@
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'lodash';
 import type { Store } from 'vuex';
 
 import { error } from './error';

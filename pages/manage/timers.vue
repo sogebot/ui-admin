@@ -228,7 +228,7 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { capitalize, orderBy } from 'lodash-es';
+import { capitalize, orderBy } from 'lodash';
 
 import type { TimerInterface } from '.bot/src/bot/database/entity/timer';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';

@@ -137,7 +137,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   capitalize, cloneDeep, orderBy,
-} from 'lodash-es';
+} from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import type { EventOperationInterface, Events } from '~/.bot/src/bot/database/entity/event';

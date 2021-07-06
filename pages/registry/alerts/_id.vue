@@ -188,7 +188,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { getContrastColor } from '@sogebot/ui-helpers/colors';
 import translate from '@sogebot/ui-helpers/translate';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 
 import {

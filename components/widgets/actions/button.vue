@@ -59,7 +59,7 @@ import {
   defineComponent, nextTick, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'lodash';
 
 import type { QuickActions } from '.bot/src/bot/database/entity/dashboard';
 import api from '~/functions/api';

@@ -144,7 +144,7 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { escapeRegExp, isNil } from 'lodash-es';
+import { escapeRegExp, isNil } from 'lodash';
 
 import type { SongBanInterface } from '.bot/src/bot/database/entity/song';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
