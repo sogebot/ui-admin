@@ -74,6 +74,7 @@ export default defineComponent({
   props:      { item: Object, editing: Boolean },
   components: { edit: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit.vue') }) },
   setup (props: Props, ctx) {
+    const { $axios } = useContext();
     const dialog = ref((props.item as any).temporary);
     const timestamp = ref(Date.now());
     const isSaving = ref(false);
@@ -101,7 +102,7 @@ export default defineComponent({
           try {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { selected, temporary, show, ...item } = clonedItem.value;
-            await api.post<QuickActions.Item>(useContext().$axios, `/api/v1/quickaction`, item);
+            await api.post<QuickActions.Item>($axios, `/api/v1/quickaction`, item);
             dialog.value = false;
           } catch (e) {
             error(e);
@@ -115,7 +116,7 @@ export default defineComponent({
 
     const trigger = () => {
       console.log(`quickaction::trigger::${props.item.id}`);
-      api.post(useContext().$axios, `/api/v1/quickaction/${props.item.id}/trigger`);
+      api.post($axios, `/api/v1/quickaction/${props.item.id}/trigger`);
     };
 
     return {

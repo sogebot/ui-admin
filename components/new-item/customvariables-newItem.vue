@@ -242,7 +242,7 @@
           :items="permissionItems"
         />
 
-        <v-container fluid>
+        <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
           <h5 style="font-weight: normal;">
             {{ translate('registry.customvariables.response.name') }}
           </h5>
@@ -334,6 +334,7 @@ export default defineComponent({
   components: { PrismEditor },
   props:      { rules: Object, item: Object },
   setup (props: Props, ctx) {
+    const context = useContext();
     const computedRules = {
       runEveryX:    [required, minValue(0)],
       variableName: [
@@ -459,7 +460,7 @@ export default defineComponent({
           });
       }
 
-      api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
+      api.get<PermissionsInterface[]>(context.$axios, '/api/v1/settings/permissions')
         .then(response => (permissions.value = response.data.data));
     });
 

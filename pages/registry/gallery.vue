@@ -3,14 +3,11 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.gallery') }}
-    </h2>
 
     <v-sheet
       flat
       color="dark"
-      class="my-2 p-2"
+      class="my-2 pb-2 mt-0"
     >
       <v-row class="px-2" no-gutters>
         <v-col cols="auto" align-self="center" class="pr-2">

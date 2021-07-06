@@ -3,9 +3,6 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.overlays') }}
-    </h2>
 
     <v-data-table
       v-model="selected"
@@ -26,7 +23,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="my-2 pb-2 mt-0"
         >
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
@@ -204,6 +201,7 @@ export default defineComponent({
     obswebsocket:  () => import('~/components/registry/overlays/obswebsocket.vue'),
   },
   setup () {
+    const { $axios } = useContext();
     const items = ref([] as OverlayMappers[]);
     const cacheItems = ref([] as OverlayMappers[]);
     const overlayOptions = [
@@ -301,7 +299,7 @@ export default defineComponent({
 
         promised.push(
           new Promise((resolve, reject) => {
-            api.patch(useContext().$axios, `/api/v1/overlay/${item.id}`, item)
+            api.patch($axios, `/api/v1/overlay/${item.id}`, item)
               .then(() => resolve(true))
               .catch((e) => {
                 reject(e);
@@ -315,7 +313,7 @@ export default defineComponent({
     }, 250), { deep: true });
 
     const refresh = () => {
-      api.get<OverlayMappers[]>(useContext().$axios, `/api/v1/overlay/`)
+      api.get<OverlayMappers[]>($axios, `/api/v1/overlay/`)
         .then((response) => {
           items.value = cloneDeep(response.data.data);
           cacheItems.value = cloneDeep(response.data.data);
@@ -332,7 +330,7 @@ export default defineComponent({
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        api.delete(useContext().$axios, `/api/v1/overlay/${item.id}`).catch(() => {
+        api.delete($axios, `/api/v1/overlay/${item.id}`).catch(() => {
           return true;
         });
       });
@@ -349,7 +347,7 @@ export default defineComponent({
         opts:  null,
       };
       items.value.push(item);
-      api.post<OverlayMappers>(useContext().$axios, '/api/v1/overlay', item)
+      api.post<OverlayMappers>($axios, '/api/v1/overlay', item)
         .then(() => {
           EventBus.$emit('snack', 'success', 'Data created.');
         });

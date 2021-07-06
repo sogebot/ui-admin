@@ -1,12 +1,5 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.event-listeners') }}
-    </h2>
-
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-dialog
       v-model="deleteDialog"
     >
@@ -85,7 +78,7 @@
     <v-sheet
       flat
       color="dark"
-      class="my-2 p-2"
+      class="my-2 pb-2 mt-0"
     >
       <v-row class="px-2" no-gutters>
         <v-col>

@@ -3,9 +3,6 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.carousel') }}
-    </h2>
 
     <v-data-table
       v-model="selected"
@@ -25,7 +22,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="my-2 pb-2 mt-0"
         >
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
@@ -127,7 +124,11 @@
       </template>
 
       <template #[`item.drag`]="{ item }">
-        <v-icon :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, item.id)">
+        <template v-if="$vuetify.breakpoint.mobile">
+          <v-icon v-if="item.order !== 0" @click.stop="swapOrder(item.order, item.order - 1)">{{ mdiChevronUp }}</v-icon>
+          <v-icon v-if="item.order !== items.length - 1" @click.stop="swapOrder(item.order, item.order + 1)">{{ mdiChevronDown }}</v-icon>
+        </template>
+        <v-icon v-else :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, item.id)">
           {{ mdiDrag }}
         </v-icon>
       </template>
@@ -329,7 +330,7 @@
 
 <script lang="ts">
 import {
-  mdiCheckBoxMultipleOutline, mdiDrag, mdiMagnify,
+  mdiCheckBoxMultipleOutline, mdiChevronDown, mdiChevronUp, mdiDrag, mdiMagnify,
 } from '@mdi/js';
 import {
   defineComponent, onMounted, ref, useContext, watch,
@@ -418,6 +419,7 @@ function handleDragStart (e: DragEvent, id: string) {
 
 export default defineComponent({
   setup () {
+    const { $axios } = useContext();
     const items = ref([] as CarouselInterface[]);
 
     const imageShowOverlay = ref(false);
@@ -489,7 +491,7 @@ export default defineComponent({
         value: 'drag', text: '', sortable: false,
       },
       {
-        value: 'image', text: '', sortable: false,
+        value: 'image', text: '', sortable: false, align: 'center',
       },
       {
         value: 'waitBefore', text: translate('page.settings.overlays.carousel.titles.waitBefore'), sortable: false,
@@ -538,7 +540,7 @@ export default defineComponent({
       EventBus.$on(`carousel::dragstop`, () => {
         state.value.dragging = false;
       });
-      EventBus.$on(`carousel::dragdrop`, async (data: {id: string, offsetId?: string}) => {
+      EventBus.$on(`carousel::dragdrop`, (data: {id: string, offsetId?: string}) => {
         // reorder items
         // remove id
         const draggedItem = items.value.find(item => item.id === data.id);
@@ -555,23 +557,27 @@ export default defineComponent({
             // save as last item
             items.value.push({ ...draggedItem, order: items.value.length });
           }
-          // reorder
-          for (let i = 0; i < items.value.length; i++) {
-            items.value[i].order = i;
-          }
-          state.value.saving = true;
-          await Promise.all(
-            items.value.map((item) => {
-              return api.patch<{ order: number }>(useContext().$axios, `/api/v1/carousel/${item.id}`, { order: item.order });
-            }),
-          );
-          saveSuccess();
+          reorder();
         }
       });
     });
 
+    const reorder = async () => {
+      // reorder
+      for (let i = 0; i < items.value.length; i++) {
+        items.value[i].order = i;
+      }
+      state.value.saving = true;
+      await Promise.all(
+        items.value.map((item) => {
+          return api.patch<{ order: number }>($axios, `/api/v1/carousel/${item.id}`, { order: item.order });
+        }),
+      );
+      saveSuccess();
+    };
+
     const refresh = () => {
-      api.get<CarouselInterface[]>(useContext().$axios, `/api/v1/carousel/`)
+      api.get<CarouselInterface[]>($axios, `/api/v1/carousel/`)
         .then(response => (items.value = response.data.data))
         .then(() => (state.value.loading = ButtonStates.success));
     };
@@ -585,7 +591,7 @@ export default defineComponent({
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        api.delete(useContext().$axios, `/api/v1/carousel/${item.id}`).catch(() => {
+        api.delete($axios, `/api/v1/carousel/${item.id}`).catch(() => {
           return true;
         });
       });
@@ -619,7 +625,7 @@ export default defineComponent({
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-            api.patch<CarouselInterface>(useContext().$axios, `/api/v1/carousel/${itemToUpdate.id}`, { [attr]: item[attr] }).then(() => {
+            api.patch<CarouselInterface>($axios, `/api/v1/carousel/${itemToUpdate.id}`, { [attr]: item[attr] }).then(() => {
               resolve(true);
             });
           });
@@ -642,10 +648,10 @@ export default defineComponent({
         console.debug(`upload::${filesUpload[i].name}`);
         fd.append('file', filesUpload[i]);
         await new Promise((resolve) => {
-          api.post<FormData, string>(useContext().$axios, '/api/v1/carousel/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+          api.post<FormData, string>($axios, '/api/v1/carousel/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
             .then((id) => {
               console.debug(`done::${filesUpload[i].name}::${id}`);
-              api.getOne<CarouselInterface>(useContext().$axios, `/api/v1/carousel`, id)
+              api.getOne<CarouselInterface>($axios, `/api/v1/carousel`, id)
                 .then((response) => {
                   console.debug('Uploaded', response.data.id);
                   uploadedFiles.value++;
@@ -663,6 +669,16 @@ export default defineComponent({
             });
         });
       }
+    };
+
+    const swapOrder = (order1: number, order2: number) => {
+      const item1 = items.value.find(o => o.order === order1);
+      const item2 = items.value.find(o => o.order === order2);
+      if (item1 && item2) {
+        item1.order = order2;
+        item2.order = order1;
+      }
+      reorder();
     };
 
     function closeOverlay () {
@@ -695,11 +711,15 @@ export default defineComponent({
       filesChange,
       handleDragStart,
       closeOverlay,
+      swapOrder,
 
       // icons
       mdiMagnify,
       mdiCheckBoxMultipleOutline,
       mdiDrag,
+      mdiChevronUp,
+      mdiChevronDown,
+
       ButtonStates,
 
       // external functions

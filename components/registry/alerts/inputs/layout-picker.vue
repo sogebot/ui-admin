@@ -7,7 +7,7 @@
     </v-col>
     <v-col>
       <v-item-group v-model="model" mandatory>
-        <v-container fluid>
+        <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
           <v-row>
             <v-col v-for="idx of 5" :key="idx" cols="auto">
               <v-item v-slot="{ active, toggle }">

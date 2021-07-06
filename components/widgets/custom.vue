@@ -66,6 +66,7 @@ import api from '~/functions/api';
 export default defineComponent({
   components: { edit: defineAsyncComponent({ loader: () => import('~/components/widgets/custom/edit.vue') }) },
   setup () {
+    const context = useContext();
     const isPopout = computed(() => location.href.includes('popout'));
     const height = ref(600);
     const show = ref(false);
@@ -84,7 +85,7 @@ export default defineComponent({
     }
 
     const refresh = async () => {
-      const response = await api.get<WidgetCustomInterface[]>(useContext().$axios, `/api/v1/custom`);
+      const response = await api.get<WidgetCustomInterface[]>(context.$axios, `/api/v1/custom`);
       items.value = response.data.data;
     };
 

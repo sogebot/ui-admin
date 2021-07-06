@@ -85,6 +85,7 @@ type Props = {
 export default defineComponent({
   props: { dialog: Boolean },
   setup (props: Props, ctx) {
+    const { $axios } = useContext();
     const dialogController = ref(props.dialog);
     const isLoaded = ref(false);
     const isSaving = ref(false);
@@ -97,7 +98,7 @@ export default defineComponent({
     });
 
     const refresh = async () => {
-      const response = await api.get<WidgetCustomInterface[]>(useContext().$axios, `/api/v1/custom`);
+      const response = await api.get<WidgetCustomInterface[]>($axios, `/api/v1/custom`);
       items.value = response.data.data;
       isLoaded.value = true;
     };
@@ -105,12 +106,12 @@ export default defineComponent({
     const save = async () => {
       isSaving.value = true;
       for (const id of markedToDelete.value) {
-        api.delete<WidgetCustomInterface>(useContext().$axios, `/api/v1/custom/${id}`).catch(() => {
+        api.delete<WidgetCustomInterface>($axios, `/api/v1/custom/${id}`).catch(() => {
           return true;
         });
       }
       for (const item of items.value) {
-        await api.post<Omit<WidgetCustomInterface, 'userId'>>(useContext().$axios, `/api/v1/custom`, item);
+        await api.post<Omit<WidgetCustomInterface, 'userId'>>($axios, `/api/v1/custom`, item);
       }
       markedToDelete.value = [];
       isSaving.value = false;

@@ -1,9 +1,5 @@
 <template>
   <v-card :loading="isLoading" class="fill-height">
-    <v-toolbar v-if="!$vuetify.breakpoint.mobile" dense color="dark" style="z-index: 999;">
-      <span class="headline">{{ translate('menu.permissions') }}</span>
-    </v-toolbar>
-
     <v-overlay v-if="isLoading" absolute>
       <v-row>
         <v-col class="text-center">
@@ -35,10 +31,16 @@
                   nuxt
                   :to="'/settings/permissions/' + permission.id"
                 >
-                  {{ permission.order }}
-                  <v-icon v-if="permission.id !== defaultPermissions.VIEWERS && permission.id !== defaultPermissions.CASTERS" :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, permission.id)">
-                    {{ mdiDrag }}
-                  </v-icon>
+                  <template v-if="permission.id !== defaultPermissions.VIEWERS && permission.id !== defaultPermissions.CASTERS" >
+                    <template v-if="$vuetify.breakpoint.mobile">
+                      <v-icon v-if="permission.order > 1" @click.stop="swapOrder(permission.order, permission.order - 1)">{{ mdiChevronUp }}</v-icon>
+                      <v-icon v-if="permission.order !== permissions.length - 2" @click.stop="swapOrder(permission.order, permission.order + 1)">{{ mdiChevronDown }}</v-icon>
+                    </template>
+                    <v-icon v-else :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, permission.id)">
+                      {{ mdiDrag }}
+                    </v-icon>
+
+                  </template>
                   <v-icon left small>
                     {{ permission.isWaterfallAllowed ? mdiGreaterThanOrEqual : mdiEqual }}
                   </v-icon>
@@ -68,7 +70,8 @@
 
 <script lang="ts">
 import {
-  mdiCog, mdiDrag, mdiEqual, mdiGreaterThanOrEqual, mdiPlus,
+  mdiChevronDown, mdiChevronUp, mdiCog, mdiDrag,
+  mdiEqual, mdiGreaterThanOrEqual, mdiPlus,
 } from '@mdi/js';
 import {
   useContext, useRoute, useRouter,
@@ -179,6 +182,9 @@ function handleDragStart (e: DragEvent) {
 
 export default defineComponent({
   setup () {
+    const { $axios } = useContext();
+    const route = useRoute();
+    const router = useRouter();
     const isLoading = ref(true);
     const tab = ref(0);
     const permissions = ref([] as PermissionsInterface[]);
@@ -189,7 +195,7 @@ export default defineComponent({
       saving: boolean;
     });
 
-    watch(() => useRoute().value.params.id, (val?: string) => {
+    watch(() => route.value.params.id, (val?: string) => {
       if (!val && !isLoading.value) {
         refresh();
       }
@@ -232,13 +238,13 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      api.get<PermissionsInterface[]>(useContext().$axios, '/api/v1/settings/permissions')
+      api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
         .then((response) => {
           permissions.value = response.data.data;
           isLoading.value = false;
 
-          if (!useRoute().value.params.id) {
-            useRouter().replace('/settings/permissions/' + permissions.value[0].id);
+          if (!route.value.params.id) {
+            router.replace('/settings/permissions/' + permissions.value[0].id);
           }
         });
     };
@@ -257,7 +263,7 @@ export default defineComponent({
       Promise.all(
         permissions.value.map((permission) => {
           return new Promise((resolve) => {
-            api.patch(useContext().$axios, '/api/v1/settings/permissions/' + permission.id, permission)
+            api.patch($axios, '/api/v1/settings/permissions/' + permission.id, permission)
               .catch((err) => {
                 error(err);
               })
@@ -289,6 +295,16 @@ export default defineComponent({
       reorder(); // include save
     };
 
+    const swapOrder = (order1: number, order2: number) => {
+      const item1 = permissions.value.find(o => o.order === order1);
+      const item2 = permissions.value.find(o => o.order === order2);
+      if (item1 && item2) {
+        item1.order = order2;
+        item2.order = order1;
+      }
+      reorder();
+    };
+
     return {
       // refs
       isLoading,
@@ -300,6 +316,7 @@ export default defineComponent({
       // functions
       addNewPermissionGroup,
       handleDragStart,
+      swapOrder,
 
       // others
       translate,
@@ -311,6 +328,8 @@ export default defineComponent({
       mdiCog,
       mdiPlus,
       mdiDrag,
+      mdiChevronUp,
+      mdiChevronDown,
     };
   },
 });

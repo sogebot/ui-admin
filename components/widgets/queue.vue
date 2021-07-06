@@ -62,7 +62,7 @@
                     {{ mdiLock }}
                   </v-icon>
                   <v-icon v-else>
-                    {{ mdiLockOpen }}
+                    {{ mdiLockOpenVariant }}
                   </v-icon>
                 </v-btn>
               </template>
@@ -159,7 +159,7 @@
 
 <script lang="ts">
 import {
-  mdiBackspace, mdiLock, mdiLockOpen,
+  mdiBackspace, mdiLock, mdiLockOpenVariant,
 } from '@mdi/js';
 import {
   computed,
@@ -342,7 +342,7 @@ export default defineComponent({
       // icons,
       mdiBackspace,
       mdiLock,
-      mdiLockOpen,
+      mdiLockOpenVariant,
     };
   },
 });

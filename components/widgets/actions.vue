@@ -79,6 +79,7 @@ import { error } from '~/functions/error';
 export default defineComponent({
   components: { actionButton: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/button.vue') }) },
   setup () {
+    const context = useContext();
     const editing = ref(false);
     const height = ref(600);
     const isPopout = computed(() => location.href.includes('popout'));
@@ -122,7 +123,7 @@ export default defineComponent({
       const selected = items.value.filter(item => item.selected);
       for (const item of selected) {
         item.show = false;
-        api.delete(useContext().$axios, `/api/v1/quickaction/${item.id}`);
+        api.delete(context.$axios, `/api/v1/quickaction/${item.id}`);
       }
       setTimeout(() => {
         items.value = items.value.filter(item => !item.selected);
@@ -134,7 +135,7 @@ export default defineComponent({
         setTimeout(() => refresh(), 10);
       } else {
         try {
-          const response = await api.get<(QuickActions.Item)[]>(useContext().$axios, '/api/v1/quickaction');
+          const response = await api.get<(QuickActions.Item)[]>(context.$axios, '/api/v1/quickaction');
           items.value = response.data.data.map(o => ({
             ...o, selected: items.value.find(b => b.id === o.id)?.selected ?? false, temporary: false, show: false,
           }));

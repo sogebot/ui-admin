@@ -83,7 +83,7 @@
 
       <v-divider />
 
-      <v-container fluid>
+      <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
         <v-textarea
           v-model="title"
           auto-grow

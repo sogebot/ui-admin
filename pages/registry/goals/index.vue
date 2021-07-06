@@ -1,11 +1,5 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.goals') }}
-    </h2>
-
-    <new-item />
-
     <v-data-table
       v-model="selected"
       show-expand
@@ -23,7 +17,7 @@
       @click:row="addToSelectedItem"
     >
       <template #top>
-        <v-sheet flat color="dark" class="my-2 p-2">
+        <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
@@ -218,6 +212,7 @@ import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
   setup () {
+    const { $axios } = useContext();
     const items = ref([] as GoalGroupInterface[]);
     const search = ref('');
 
@@ -263,7 +258,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      api.get<GoalGroupInterface[]>(useContext().$axios, '/api/v1/registry/goals')
+      api.get<GoalGroupInterface[]>($axios, '/api/v1/registry/goals')
         .then((response) => {
           items.value = response.data.data;
           // we also need to reset selection values
@@ -283,7 +278,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve) => {
-            api.delete(useContext().$axios, `/api/v1/registry/goals/${item.id}`)
+            api.delete($axios, `/api/v1/registry/goals/${item.id}`)
               .finally(() => resolve(true));
           });
         }),
@@ -305,7 +300,7 @@ export default defineComponent({
         })),
       };
 
-      api.post(useContext().$axios, '/api/v1/registry/goals', clonedGroup)
+      api.post($axios, '/api/v1/registry/goals', clonedGroup)
         .then(() => {
           EventBus.$emit('snack', 'success', 'Data cloned.');
         })

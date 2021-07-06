@@ -1,12 +1,5 @@
 <template>
-  <v-container
-    fluid
-    :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
-  >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.api') }}
-    </h2>
-
+  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-data-table
       :loading="true"
       :headers="headers"

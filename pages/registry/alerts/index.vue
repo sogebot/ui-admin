@@ -3,9 +3,6 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.alerts') }}
-    </h2>
     <v-data-table
       v-model="selected"
       calculate-widths
@@ -23,7 +20,7 @@
         <v-sheet
           flat
           color="dark"
-          class="my-2 p-2"
+          class="my-2 pb-2 mt-0"
         >
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
@@ -191,6 +188,7 @@ import { required } from '~/functions/validators';
 export default defineComponent({
   components: { 'test-dialog': defineAsyncComponent({ loader: () => import('~/components/registry/alerts/test-dialog.vue') }) },
   setup () {
+    const { $axios } = useContext();
     const rules = { name: [required] };
 
     const items = ref([] as AlertInterface[]);
@@ -228,7 +226,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      api.get<AlertInterface[]>(useContext().$axios, '/api/v1/registry/alerts/')
+      api.get<AlertInterface[]>($axios, '/api/v1/registry/alerts/')
         .then((response) => {
           items.value = response.data.data;
           // we also need to reset selection values
@@ -252,7 +250,7 @@ export default defineComponent({
       await Promise.allSettled(
         selected.value.map((item) => {
           return new Promise((resolve) => {
-            api.delete(useContext().$axios, `/api/v1/registry/alerts/${item.id}`)
+            api.delete($axios, `/api/v1/registry/alerts/${item.id}`)
               .then(() => {
                 resolve(true);
               });
@@ -351,7 +349,7 @@ export default defineComponent({
         }),
       } as AlertInterface;
 
-      api.post(useContext().$axios, '/api/v1/registry/alerts', clonedItem)
+      api.post($axios, '/api/v1/registry/alerts', clonedItem)
         .then(async () => {
           for (const mediaId of mediaMap.keys()) {
             await new Promise<void>((resolve) => {
@@ -361,7 +359,7 @@ export default defineComponent({
                 .then(async (data) => {
                   const fd = new FormData();
                   fd.append('file', data);
-                  await api.put(useContext().$axios, `/api/v1/registry/alerts/media/${mediaMap.get(mediaId)}`, fd);
+                  await api.put($axios, `/api/v1/registry/alerts/media/${mediaMap.get(mediaId)}`, fd);
                   resolve();
                 });
             });
