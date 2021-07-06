@@ -3,7 +3,7 @@
   <div v-else>
     <portal to="navbar" v-if="route.path.split('/').length === 5">
       <transition appear name="fade">
-        <v-btn text :disabled="!$store.state.settings.pending || !$store.state.settings.valid" :loading="$store.state.settings.save" @click="$store.commit('settings/save', true)">
+        <v-btn text small :disabled="!$store.state.settings.pending || !$store.state.settings.valid" :loading="$store.state.settings.save" @click="$store.commit('settings/save', true)">
           {{ translate('dialog.buttons.saveChanges.idle') }}
         </v-btn>
       </transition>
@@ -22,7 +22,7 @@
 
     <v-fade-transition>
       <div v-show="!drawer">
-        <v-card v-for="type of Object.keys(menu)" flat :key="type">
+        <v-card v-for="type of Object.keys(menu)" flat :key="type" class="ma-2">
           <v-card-title v-if="haveActions(menu[type]).length > 0">
             {{ translate(`menu.${type}`) }}
           </v-card-title>

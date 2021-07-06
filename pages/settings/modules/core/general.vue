@@ -12,7 +12,7 @@
             <v-select v-model="settings.general.lang[0]" :items="ui.general.lang.values"
               :label="translate('core.general.settings.lang')">
               <template v-if="settings.general.lang[0] !== settings.general.lang[1]" #append-outer>
-                <v-btn text
+                <v-btn text small
                   @click.stop="$store.commit('settings/pending', true); settings.general.lang = [settings.general.lang[1], settings.general.lang[1]]">
                   Revert
                 </v-btn>

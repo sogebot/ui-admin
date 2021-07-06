@@ -19,10 +19,10 @@
               :hint="translate('core.socket.settings.socketToken.help')" persistent-hint readonly
               :value="'*'.repeat(30) + settings.connection.socketToken[0].slice(30)">
               <template #append-outer>
-                <v-btn text @click.stop="copy(settings.connection.socketToken[0])">
+                <v-btn text small @click.stop="copy(settings.connection.socketToken[0])">
                   {{ translate('systems.polls.copy') }}
                 </v-btn>
-                <v-btn text color="primary" @click.stop="settings.connection.socketToken = [v4(), '']">
+                <v-btn text small color="primary" @click.stop="settings.connection.socketToken = [v4(), '']">
                   {{ translate('commons.generate') }}
                 </v-btn>
               </template>

@@ -12,7 +12,7 @@
             <v-select v-model="settings.currency.mainCurrency[0]" :items="ui.currency.mainCurrency.values"
               :label="translate('core.currency.settings.mainCurrency')">
               <template v-if="settings.currency.mainCurrency[0] !== settings.currency.mainCurrency[1]" #append-outer>
-                <v-btn text
+                <v-btn text small
                   @click.stop="settings.currency.mainCurrency = [settings.currency.mainCurrency[1], settings.currency.mainCurrency[1]]">
                   Revert
                 </v-btn>

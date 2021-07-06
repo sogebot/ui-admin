@@ -13,8 +13,8 @@
               <div v-for="(item, idx) of settings.urls.urls[0]" :key="item.url">
                 <v-text-field readonly hide-details :value="item.url">
                   <template #append-outer>
-                    <v-btn text @click="item.clip = !item.clip" :color="item.clip ? 'success' : 'error'">CLIP</v-btn>
-                    <v-btn text @click="item.highlight = !item.highlight" :color="item.highlight ? 'success' : 'error'">
+                    <v-btn text small @click="item.clip = !item.clip" :color="item.clip ? 'success' : 'error'">CLIP</v-btn>
+                    <v-btn text small @click="item.highlight = !item.highlight" :color="item.highlight ? 'success' : 'error'">
                       HIGHLIGHT</v-btn>
                     <v-btn icon color="red" @click="remove(idx)">
                       <v-icon>{{ mdiDelete }}</v-icon>
