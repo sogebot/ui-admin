@@ -92,6 +92,8 @@
           :label="translate('registry.alerts.keepAlertShown')"
         />
 
+        <slot name="append"/>
+
         <v-textarea
           v-if="!isUndefined(model.voice)"
           v-model="text"

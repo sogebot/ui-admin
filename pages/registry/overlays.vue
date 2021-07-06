@@ -114,6 +114,7 @@
 
       <template #[`item.overlay`]="{ item }">
         <v-select
+          :disabled="item.value"
           v-model="item.value"
           single-line
           :items="overlayOptions"
@@ -199,6 +200,7 @@ export default defineComponent({
   components: {
     clipscarousel: () => import('~/components/registry/overlays/clipscarousel.vue'),
     obswebsocket:  () => import('~/components/registry/overlays/obswebsocket.vue'),
+    tts:           () => import('~/components/registry/overlays/tts.vue'),
   },
   setup () {
     const { $axios } = useContext();
@@ -293,8 +295,6 @@ export default defineComponent({
           if (!Object.keys(item.opts ?? {}).includes('volume')) {
             item.opts = { volume: 0 };
           }
-        } else {
-          item.opts = null;
         }
 
         promised.push(
@@ -354,7 +354,7 @@ export default defineComponent({
     };
 
     const haveAnyOptions = (type: string) => {
-      const withOpts = ['obswebsocket', 'clipscarousel'];
+      const withOpts = ['obswebsocket', 'clipscarousel', 'tts'];
       return withOpts.includes(type);
     };
 
