@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.31](https://github.com/sogebot/ui-admin/compare/v0.0.30...v0.0.31) (2021-07-06)
+
+
+### Features
+
+* **settings:** add custom translation ([#83](https://github.com/sogebot/ui-admin/issues/83)) ([bcf5758](https://github.com/sogebot/ui-admin/commit/bcf5758b54f42eab5d07e51b89d310ba9073979e))
+* **settings:** add modules settings ([#82](https://github.com/sogebot/ui-admin/issues/82)) ([07e1514](https://github.com/sogebot/ui-admin/commit/07e151458a6d14998908638ab042b81b484d3b32))
+
+
+### Bug Fixes
+
+* **deps:** bump actions/setup-node from 2.1.5 to 2.2.0 ([#76](https://github.com/sogebot/ui-admin/issues/76)) ([dc7c2e7](https://github.com/sogebot/ui-admin/commit/dc7c2e75e0ce7216611bbd58eb7d30a3773ef9da))
+* **permissions:** remove outer v-card ([092f1eb](https://github.com/sogebot/ui-admin/commit/092f1eb6a260a5caea9417b175600c5a4c7a4dcd))
+
 ### [0.0.30](https://github.com/sogebot/ui-admin/compare/v0.0.29...v0.0.30) (2021-06-18)
 
 
