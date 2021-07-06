@@ -1,7 +1,6 @@
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
-  ssr:    false,
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -94,6 +93,10 @@ export default {
       '/credentials': {
         changeOrigin: true,
         target:       'http://localhost:3001',
+      },
+      '/overlays': {
+        changeOrigin: true,
+        target:       'http://localhost:3002',
       },
     },
   },

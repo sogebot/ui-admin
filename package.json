@@ -81,6 +81,7 @@
     "simple-git-hooks": "^2.5.1",
     "standard-version": "^9.3.0",
     "stylelint": "^13.13.1",
+    "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-standard": "^22.0.0",
     "typeorm": "^0.2.34",
     "vuetify": "^2.5.6"
