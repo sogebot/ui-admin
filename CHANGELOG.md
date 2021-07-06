@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.32](https://github.com/sogebot/ui-admin/compare/v0.0.31...v0.0.32) (2021-07-06)
+
+
+### Bug Fixes
+
+* **deps:** bump actions/setup-node from 2.1.5 to 2.2.0 ([#75](https://github.com/sogebot/ui-admin/issues/75)) ([c025870](https://github.com/sogebot/ui-admin/commit/c025870502fee72323d86c4dd8a7108e45e90a2d))
+* replace lodash-es with lodash ([a018cee](https://github.com/sogebot/ui-admin/commit/a018cee1665ef34ee32775f9176e3e68b84b55e5))
+
 ### [0.0.31](https://github.com/sogebot/ui-admin/compare/v0.0.30...v0.0.31) (2021-07-06)
 
 
