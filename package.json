@@ -3,7 +3,7 @@
   "version": "0.0.30",
   "author": "sogehige@gmail.com",
   "engines": {
-    "npm": "~7.18.0"
+    "npm": ">7.19.0"
   },
   "description": "Nuxt.js version of ui-admin",
   "scripts": {
@@ -74,7 +74,7 @@
     "eslint-plugin-nuxt": "^2.0.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-unused-imports": "^1.1.2",
-    "eslint-plugin-vue": "^7.12.1",
+    "eslint-plugin-vue": "^7.13.0",
     "lint-staged": "^11.0.0",
     "obs-websocket-js": "^4.0.2",
     "patch-package": "^6.4.7",

@@ -11,70 +11,36 @@
       <v-tab-item eager>
         <v-card>
           <v-card-text>
-            <v-switch
-              v-model="settings.songRequests[0]"
-              class="mt-0"
-              dense
-              :label="translate('integrations.spotify.settings.songRequests')"
-            />
-            <v-switch
-              v-model="settings.fetchCurrentSongWhenOffline[0]"
-              class="mt-0"
-              dense
-              :label="translate('integrations.spotify.settings.fetchCurrentSongWhenOffline.title')"
-              persistent-hint
-              :hint="translate('integrations.spotify.settings.fetchCurrentSongWhenOffline.help')"
-            />
-            <v-switch
-              v-model="settings.queueWhenOffline[0]"
-              class="mt-0"
-              dense
-              :label="translate('integrations.spotify.settings.queueWhenOffline.title')"
-              persistent-hint
-              :hint="translate('integrations.spotify.settings.queueWhenOffline.help')"
-            />
-            <v-switch
-              v-model="settings.notify[0]"
-              class="mt-0"
-              dense
-              :label="translate('integrations.spotify.settings.notify')"
-            />
+            <v-switch v-model="settings.songRequests[0]" class="mt-0" dense
+              :label="translate('integrations.spotify.settings.songRequests')" />
+            <v-switch v-model="settings.fetchCurrentSongWhenOffline[0]" class="mt-0" dense
+              :label="translate('integrations.spotify.settings.fetchCurrentSongWhenOffline.title')" persistent-hint
+              :hint="translate('integrations.spotify.settings.fetchCurrentSongWhenOffline.help')" />
+            <v-switch v-model="settings.queueWhenOffline[0]" class="mt-0" dense
+              :label="translate('integrations.spotify.settings.queueWhenOffline.title')" persistent-hint
+              :hint="translate('integrations.spotify.settings.queueWhenOffline.help')" />
+            <v-switch v-model="settings.notify[0]" class="mt-0" dense
+              :label="translate('integrations.spotify.settings.notify')" />
           </v-card-text>
         </v-card>
       </v-tab-item>
       <v-tab-item eager>
         <v-card>
           <v-card-text>
-            <v-text-field
-              v-model="settings.connection.clientId"
-              dense
-              :label="translate('integrations.spotify.settings.clientId')"
-              persistent-hint
-              type="password"
-            />
-            <v-text-field
-              v-model="settings.connection.clientSecret"
-              dense
-              :label="translate('integrations.spotify.settings.clientSecret')"
-              persistent-hint
-              type="password"
-            />
-            <v-revert-field
-              v-model="settings.connection.redirectURI"
-              :label="translate('integrations.spotify.settings.redirectURI')"
-              persistent-hint
-            />
+            <v-text-field v-model="settings.connection.clientId" dense
+              :label="translate('integrations.spotify.settings.clientId')" persistent-hint type="password" />
+            <v-text-field v-model="settings.connection.clientSecret" dense
+              :label="translate('integrations.spotify.settings.clientSecret')" persistent-hint type="password" />
+            <v-revert-field v-model="settings.connection.redirectURI"
+              :label="translate('integrations.spotify.settings.redirectURI')" persistent-hint />
             <v-row>
               <v-col>
-                <v-text-field
-                  v-model="settings.connection.username[0]"
-                  dense
-                  disabled
-                  :label="translate('integrations.spotify.settings.username')"
-                />
+                <v-text-field v-model="settings.connection.username[0]" dense disabled
+                  :label="translate('integrations.spotify.settings.username')" />
               </v-col>
               <v-col cols="auto" align-self="center">
-                <v-btn text color="success" v-if="settings.connection.username[0].length === 0" @click="authorize" small>
+                <v-btn text color="success" v-if="settings.connection.username[0].length === 0" @click="authorize"
+                  small>
                   {{ translate('integrations.spotify.settings.authorizeBtn') }}
                 </v-btn>
                 <v-btn text color="error" v-else @click="revoke" small>
@@ -83,14 +49,10 @@
               </v-col>
             </v-row>
 
-            <v-text-field
-              v-model="settings.connection.manualDeviceId[0]"
-              persistent-hint
-              dense
+            <v-text-field v-model="settings.connection.manualDeviceId[0]" persistent-hint dense
               :disabled="settings.connection.username[0].length === 0"
               :label="translate('integrations.spotify.settings.manualDeviceId.title')"
-              :hint="translate('integrations.spotify.settings.manualDeviceId.help')"
-            >
+              :hint="translate('integrations.spotify.settings.manualDeviceId.help')">
               <template #append-outer>
                 <v-btn text small @click="setActive" :loading="gettingActive">Set current active device</v-btn>
               </template>
@@ -101,12 +63,9 @@
       <v-tab-item eager>
         <v-card>
           <v-card-text>
-            <v-revert-field
-              v-model="settings.customization.format"
+            <v-revert-field v-model="settings.customization.format"
               :label="translate('integrations.spotify.settings.format.title')"
-              :hint="translate('integrations.spotify.settings.format.help')"
-              persistent-hint
-            />
+              :hint="translate('integrations.spotify.settings.format.help')" persistent-hint />
           </v-card-text>
         </v-card>
       </v-tab-item>
