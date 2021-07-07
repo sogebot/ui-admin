@@ -9,7 +9,6 @@ export default function ({ store }: { store: any, app: any }) {
   (async function init () {
     await isBotStarted(store);
     store.commit('setLoggedUser', await isUserLoggedIn());
-    store.commit('setConfiguration', await getConfiguration());
 
     await populateListOf('core');
     await populateListOf('systems');
