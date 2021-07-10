@@ -1,10 +1,27 @@
 <template>
-  <v-text-field
-    v-model.number="options.volume"
-    :label="translate('volume')"
-    min="0"
-    max="100"
-  />
+  <v-expansion-panels>
+    <v-expansion-panel>
+      <v-expansion-panel-header>Settings</v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <v-text-field
+          v-model.number="options.volume"
+          :label="translate('volume')"
+          min="0"
+          max="100"
+        />
+        <v-text-field
+          v-model.number="options.customPeriod"
+          :label="translate('overlays.clipscarousel.settings.cClipsCustomPeriodInDays')"
+          min="1"
+        />
+        <v-text-field
+          v-model.number="options.numOfClips"
+          :label="translate('overlays.clipscarousel.settings.cClipsNumOfClips')"
+          min="1"
+        />
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+  </v-expansion-panels>
 </template>
 
 <script lang="ts">
@@ -13,18 +30,14 @@ import {
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
-const prepareOpts = (data: any) => {
-  if (!data || data.volume === null || typeof data.volume === 'undefined') {
-    return { volume: 0 };
-  } else {
-    return { volume: data.volume as number };
-  }
-};
-
 export default defineComponent({
   props: { opts: Object },
   setup (props: any, ctx) {
-    const options = ref(prepareOpts(props.opts));
+    const options = ref(props.opts ?? {
+      volume:       0,
+      customPeriod: 31,
+      numOfClips:   20,
+    });
 
     watch(options, (val: any) => {
       if (val.volume < 0) {
