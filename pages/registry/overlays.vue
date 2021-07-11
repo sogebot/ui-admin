@@ -3,7 +3,6 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
-
     <v-data-table
       v-model="selected"
       show-expand
@@ -114,8 +113,8 @@
 
       <template #[`item.overlay`]="{ item }">
         <v-select
-          :disabled="!!item.value"
           v-model="item.value"
+          :disabled="!!item.value"
           single-line
           :items="overlayOptions"
           @click.stop
@@ -198,10 +197,14 @@ import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
   components: {
-    clipscarousel: () => import('~/components/registry/overlays/clipscarousel.vue'),
-    obswebsocket:  () => import('~/components/registry/overlays/obswebsocket.vue'),
-    tts:           () => import('~/components/registry/overlays/tts.vue'),
-    polls:         () => import('~/components/registry/overlays/polls.vue'),
+    emotes:          () => import('~/components/registry/overlays/emotes.vue'),
+    emotesexplode:   () => import('~/components/registry/overlays/emotesexplode.vue'),
+    emotesfireworks: () => import('~/components/registry/overlays/emotesfireworks.vue'),
+    emotescombo:     () => import('~/components/registry/overlays/emotescombo.vue'),
+    clipscarousel:   () => import('~/components/registry/overlays/clipscarousel.vue'),
+    obswebsocket:    () => import('~/components/registry/overlays/obswebsocket.vue'),
+    tts:             () => import('~/components/registry/overlays/tts.vue'),
+    polls:           () => import('~/components/registry/overlays/polls.vue'),
   },
   setup () {
     const { $axios } = useContext();
@@ -217,6 +220,8 @@ export default defineComponent({
       { value: 'credits', text: 'credits' },
       { value: 'emotes', text: 'emotes' },
       { value: 'emotescombo', text: 'emotescombo' },
+      { value: 'emotesfireworks', text: 'emotesfireworks' },
+      { value: 'emotesexplode', text: 'emotesexplode' },
       { value: 'eventlist', text: 'eventlist' },
       { value: 'obswebsocket', text: 'obswebsocket' },
       { value: 'polls', text: 'polls' },
@@ -355,7 +360,7 @@ export default defineComponent({
     };
 
     const haveAnyOptions = (type: string) => {
-      const withOpts = ['obswebsocket', 'clipscarousel', 'tts', 'polls'];
+      const withOpts = ['obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
       return withOpts.includes(type);
     };
 

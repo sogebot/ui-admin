@@ -1,6 +1,6 @@
 <template>
-  <v-expansion-panels>
-    <v-expansion-panel>
+  <v-expansion-panels v-model="model">
+    <v-expansion-panel readonly>
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-select v-model="options.theme" :label="translate('overlays.polls.settings.cDisplayTheme')"
@@ -32,6 +32,7 @@ import translate from '@sogebot/ui-helpers/translate';
 export default defineComponent({
   props: { opts: Object },
   setup (props, ctx) {
+    const model = ref(0);
     const options = ref(props.opts ?? {
       theme:               'light',
       hideAfterInactivity: false,
@@ -44,6 +45,7 @@ export default defineComponent({
     }, { deep: true });
 
     return {
+      model,
       options,
       translate,
     };

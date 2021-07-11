@@ -1,6 +1,6 @@
 <template>
-  <v-expansion-panels>
-    <tts v-model="options">
+  <v-expansion-panels v-model="model">
+    <tts v-model="options" readonly>
       <template #append>
         <v-switch v-model="options.triggerTTSByHighlightedMessage" dense class="pt-0"
           :label="translate('overlays.texttospeech.settings.triggerTTSByHighlightedMessage')"/>
@@ -20,6 +20,7 @@ export default defineComponent({
   components: { tts: defineAsyncComponent(() => import('~/components/form/expansion/tts.vue')) },
   props:      { opts: Object },
   setup (props, ctx) {
+    const model = ref(0);
     const options = ref(props.opts ?? {
       voice:                          'UK English Female',
       volume:                         50,
@@ -33,6 +34,7 @@ export default defineComponent({
     }, { deep: true });
 
     return {
+      model,
       options,
       translate,
     };

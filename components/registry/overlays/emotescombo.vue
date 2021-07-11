@@ -4,19 +4,15 @@
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-text-field
-          v-model.number="options.volume"
-          :label="translate('volume')"
-          min="0"
-          max="100"
-        />
-        <v-text-field
-          v-model.number="options.customPeriod"
-          :label="translate('overlays.clipscarousel.settings.cClipsCustomPeriodInDays')"
+          v-model.number="options.showEmoteInOverlayThreshold"
+          :label="translate('overlays.emotes.settings.showEmoteInOverlayThreshold')"
           min="1"
         />
         <v-text-field
-          v-model.number="options.numOfClips"
-          :label="translate('overlays.clipscarousel.settings.cClipsNumOfClips')"
+          v-model.number="options.hideEmoteInOverlayAfter"
+          :label="translate('overlays.emotes.settings.hideEmoteInOverlayAfter.title')"
+          :hint="translate('overlays.emotes.settings.hideEmoteInOverlayAfter.help')"
+          persistent-hint
           min="1"
         />
       </v-expansion-panel-content>
@@ -35,24 +31,11 @@ export default defineComponent({
   setup (props: any, ctx) {
     const model = ref(0);
     const options = ref(props.opts ?? {
-      volume:       0,
-      customPeriod: 31,
-      numOfClips:   20,
+      showEmoteInOverlayThreshold: 3,
+      hideEmoteInOverlayAfter:     30,
     });
 
     watch(options, (val: any) => {
-      if (val.volume < 0) {
-        val.volume = 0;
-      }
-
-      if (val.volume > 100) {
-        val.volume = 100;
-      }
-
-      if (String(val.volume) === '') {
-        val.volume = 0;
-      }
-
       ctx.emit('update', val);
     }, { deep: true });
 

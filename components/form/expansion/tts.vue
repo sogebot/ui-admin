@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panel>
+  <v-expansion-panel :readonly="readonly">
     <v-expansion-panel-header>
       {{ translate('registry.alerts.tts.setting') }}
     </v-expansion-panel-header>
@@ -140,7 +140,7 @@ function isUndefined (val: any) {
 }
 
 export default defineComponent({
-  props: { value: Object },
+  props: { value: Object, readonly: Boolean },
   setup (props: { value: Partial<CommonSettingsInterface['tts']> | AlertInterface['tts']}, ctx) {
     const text = ref('This message should be said by TTS to test your settings.');
     const state = ref({ loaded: ButtonStates.progress } as { loaded: number });
