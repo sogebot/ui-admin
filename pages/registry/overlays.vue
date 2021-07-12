@@ -197,6 +197,7 @@ import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
   components: {
+    alerts:          () => import('~/components/registry/overlays/alerts.vue'),
     emotes:          () => import('~/components/registry/overlays/emotes.vue'),
     emotesexplode:   () => import('~/components/registry/overlays/emotesexplode.vue'),
     emotesfireworks: () => import('~/components/registry/overlays/emotesfireworks.vue'),
@@ -360,7 +361,7 @@ export default defineComponent({
     };
 
     const haveAnyOptions = (type: string) => {
-      const withOpts = ['obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
+      const withOpts = ['alerts', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
       return withOpts.includes(type);
     };
 
