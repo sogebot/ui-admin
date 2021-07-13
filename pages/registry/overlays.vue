@@ -203,6 +203,7 @@ export default defineComponent({
     emotesfireworks: () => import('~/components/registry/overlays/emotesfireworks.vue'),
     emotescombo:     () => import('~/components/registry/overlays/emotescombo.vue'),
     clipscarousel:   () => import('~/components/registry/overlays/clipscarousel.vue'),
+    clips:           () => import('~/components/registry/overlays/clips.vue'),
     obswebsocket:    () => import('~/components/registry/overlays/obswebsocket.vue'),
     tts:             () => import('~/components/registry/overlays/tts.vue'),
     polls:           () => import('~/components/registry/overlays/polls.vue'),
@@ -361,7 +362,7 @@ export default defineComponent({
     };
 
     const haveAnyOptions = (type: string) => {
-      const withOpts = ['alerts', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
+      const withOpts = ['alerts', 'clips', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
       return withOpts.includes(type);
     };
 

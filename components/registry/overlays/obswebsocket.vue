@@ -18,11 +18,13 @@ import {
 } from '@nuxtjs/composition-api';
 import { getCurrentIP } from '@sogebot/ui-helpers/getCurrentIP';
 import translate from '@sogebot/ui-helpers/translate';
+import { defaults } from 'lodash';
 
 export default defineComponent({
   props: { opts: Object },
   setup (props, ctx) {
-    const options = ref(props.opts ?? { allowedIPs: [] });
+    const options = ref(
+      defaults(props.opts, { allowedIPs: [] }));
 
     watch(options, (val) => {
       ctx.emit('update', val);

@@ -9,15 +9,14 @@
           min="0"
           max="100"
         />
-        <v-text-field
-          v-model.number="options.customPeriod"
-          :label="translate('overlays.clipscarousel.settings.cClipsCustomPeriodInDays')"
-          min="1"
+        <v-select
+          v-model="options.filter"
+          :items="['none', 'grayscale', 'sepia', 'tint', 'washed']"
+          :label="translate('overlays.clips.settings.cClipsFilter')"
         />
-        <v-text-field
-          v-model.number="options.numOfClips"
-          :label="translate('overlays.clipscarousel.settings.cClipsNumOfClips')"
-          min="1"
+        <v-switch
+          v-model="options.showLabel"
+          :label="translate('overlays.clips.settings.cClipsLabel')"
         />
       </v-expansion-panel-content>
     </v-expansion-panel>
@@ -37,9 +36,9 @@ export default defineComponent({
     const model = ref(0);
     const options = ref(
       defaults(props.opts, {
-        volume:       0,
-        customPeriod: 31,
-        numOfClips:   20,
+        volume:    0,
+        filter:    'none',
+        showLabel: true,
       }));
 
     watch(options, (val: any) => {
