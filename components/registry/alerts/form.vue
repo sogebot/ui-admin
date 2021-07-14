@@ -101,6 +101,7 @@
         <v-expansion-panel-content>
           <font
             v-model="model.font"
+            @input="model.font = $event"
             :parent="parent.font"
             :is-child="true"
           />

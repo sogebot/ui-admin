@@ -363,7 +363,8 @@ export default defineComponent({
 
     watch(model, (val) => {
       ctx.emit('update:value', val);
-    });
+      ctx.emit('input', val);
+    }, { deep: true });
 
     const addShadow = () => {
       if (model.value) {
