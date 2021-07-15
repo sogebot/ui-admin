@@ -218,7 +218,7 @@ export default defineComponent({
     };
 
     return {
-      toggleDisplay, currentAnimated, numberReducer, translate, isTrending, mdiTrendingDown, mdiTrendingUp, mdiInfinity,
+      toggleDisplay, currentAnimated, numberReducer, translate, isTrending, mdiTrendingDown, mdiTrendingUp, mdiInfinity, averageAnimated,
     };
   },
 });
