@@ -164,7 +164,7 @@
             v-if="haveAnyOptions(item.value)"
             :key="item.id"
             :opts="item.opts"
-            @update="item.opts = $event"
+            @update="item.opts = $event; triggerUpdate(items)"
           />
           <div v-else>
             No settings for <em>{{ item.value || 'this' }} overlay</em>
@@ -204,6 +204,7 @@ export default defineComponent({
     emotescombo:     () => import('~/components/registry/overlays/emotescombo.vue'),
     clipscarousel:   () => import('~/components/registry/overlays/clipscarousel.vue'),
     clips:           () => import('~/components/registry/overlays/clips.vue'),
+    credits:         () => import('~/components/registry/overlays/credits.vue'),
     obswebsocket:    () => import('~/components/registry/overlays/obswebsocket.vue'),
     tts:             () => import('~/components/registry/overlays/tts.vue'),
     polls:           () => import('~/components/registry/overlays/polls.vue'),
@@ -283,7 +284,7 @@ export default defineComponent({
       refresh();
     });
 
-    watch(items, debounce(async (val) => {
+    const triggerUpdate = debounce(async (val) => {
       if (isEqual(cacheItems.value, val)) {
         return;
       }
@@ -293,16 +294,6 @@ export default defineComponent({
         const cache = cacheItems.value.find(o => o.id === item.id);
         if (isEqual(cache, item)) {
           continue;
-        }
-
-        if (item.value === 'obswebsocket') {
-          if (!Object.keys(item.opts ?? {}).includes('allowedIPs')) {
-            item.opts = { allowedIPs: [] };
-          }
-        } else if (item.value === 'clipscarousel') {
-          if (!Object.keys(item.opts ?? {}).includes('volume')) {
-            item.opts = { volume: 0 };
-          }
         }
 
         promised.push(
@@ -318,7 +309,9 @@ export default defineComponent({
       }
       await Promise.all(promised);
       saveSuccess();
-    }, 250), { deep: true });
+    }, 250);
+
+    watch(items, triggerUpdate, { deep: true });
 
     const refresh = () => {
       api.get<OverlayMappers[]>($axios, `/api/v1/overlay/`)
@@ -362,7 +355,7 @@ export default defineComponent({
     };
 
     const haveAnyOptions = (type: string) => {
-      const withOpts = ['alerts', 'clips', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
+      const withOpts = ['alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
       return withOpts.includes(type);
     };
 
@@ -386,6 +379,7 @@ export default defineComponent({
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       addItem,
       haveAnyOptions,
+      triggerUpdate,
 
       // icons
       mdiCheckBoxMultipleOutline,
