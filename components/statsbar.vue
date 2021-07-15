@@ -258,6 +258,7 @@ export default defineComponent({
         console.log(data);
         console.groupEnd();
 
+        uptime.value = data.uptime;
         broadcasterType.value = data.broadcasterType;
         localStorage.broadcasterType = data.broadcasterType;
 
