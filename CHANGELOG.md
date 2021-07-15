@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.34](https://github.com/sogebot/ui-admin/compare/v0.0.33...v0.0.34) (2021-07-15)
+
+
+### Features
+
+* **overlay:** add alerts settings ([dbb6e30](https://github.com/sogebot/ui-admin/commit/dbb6e303be0b2421e2985b641519aabd0527854d))
+* **overlay:** add emotes overlays settings ([0814e41](https://github.com/sogebot/ui-admin/commit/0814e41b06ba5af3194e11fee1e582d9687ceaed))
+* **overlays:** add credits settings ([90f5948](https://github.com/sogebot/ui-admin/commit/90f59482ea0f216e6a927acdb43801e199e13967))
+* **overlays:** add polls options ([c0b238d](https://github.com/sogebot/ui-admin/commit/c0b238d4e1ac59935d475ae1f19eecc584e14960))
+
+
+### Bug Fixes
+
+* **alerts:** properly save deep nested font changes ([69bc16c](https://github.com/sogebot/ui-admin/commit/69bc16c58c03e338acd1c1ec5265fe52e441b7d4))
+* **isBotStarted:** remove config get duplication ([7dcf8f5](https://github.com/sogebot/ui-admin/commit/7dcf8f55a6403fdb4359f4b03e5f8683945b7d2e))
+* **overlays:** add proper default values ([6cea65f](https://github.com/sogebot/ui-admin/commit/6cea65f9b4ef326f718ec48190fbf0d778d5e890))
+* **queryFilter:** remove unused function ([492080e](https://github.com/sogebot/ui-admin/commit/492080ed7fd24e3c55955d2bfc3c0016fded70ef))
+
 ### [0.0.33](https://github.com/sogebot/ui-admin/compare/v0.0.32...v0.0.33) (2021-07-06)
 
 
