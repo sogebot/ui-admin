@@ -12,7 +12,7 @@
             <v-select v-model="settings.connection.accessBy[0]" :items="['direct', 'overlay']" persistent-hint
               :hint="translate('integrations.obswebsocket.settings.accessBy.help')"
               :label="translate('integrations.obswebsocket.settings.accessBy.title')" />
-            <v-text-field v-model="settings.connection.address[0]" dense
+            <v-text-field v-model="settings.connection.address[0]" dense class="pt-4"
               :label="translate('integrations.obswebsocket.settings.address')" />
             <v-text-field v-model="settings.connection.password[0]" type="password" dense
               :label="translate('integrations.obswebsocket.settings.password')" />
