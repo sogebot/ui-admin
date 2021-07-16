@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.39](https://github.com/sogebot/ui-admin/compare/v0.0.38...v0.0.39) (2021-07-16)
+
+
+### Bug Fixes
+
+* **withTrending:** properly calculate trending in stats ([ff95178](https://github.com/sogebot/ui-admin/commit/ff951783bae1a7696a69aae0063a895a3c00f825))
+
 ### [0.0.38](https://github.com/sogebot/ui-admin/compare/v0.0.37...v0.0.38) (2021-07-16)
 
 
