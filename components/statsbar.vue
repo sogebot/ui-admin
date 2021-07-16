@@ -240,11 +240,11 @@ export default defineComponent({
             return console.error(err);
           }
           for (const e of data.errors) {
-            console.error(`UIError: ${e.name} ¦ ${e.message}`);
+            console.error(`UIError: ${e.name} | ${e.message}`);
             EventBus.$emit('snack', 'red', `<h4>${e.name}</h4><div>${e.message}</div>`);
           }
           for (const e of data.warns) {
-            console.info(`UIWarn: ${e.name} ¦ ${e.message}`);
+            console.info(`UIWarn: ${e.name} | ${e.message}`);
             EventBus.$emit('snack', 'orange', `<h4>${e.name}</h4><div>${e.message}</div>`);
           }
         });

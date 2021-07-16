@@ -173,7 +173,7 @@ import {
   defineComponent, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { TweenLite } from 'gsap';
+import gsap from 'gsap';
 
 import { isTrending } from '~/functions/isTrending';
 
@@ -205,13 +205,17 @@ export default defineComponent({
 
     watch(() => props.current, (val) => {
       val = val ?? 0;
-      TweenLite.to(currentAnimated.value, 0.5, { value: val, roundProps: 'value' });
-    });
+      gsap.to(currentAnimated.value, {
+        duration: 0.5, value: val, roundProps: 'value',
+      });
+    }, { immediate: true });
 
     watch(() => props.average, (val) => {
       val = val ?? 0;
-      TweenLite.to(averageAnimated.value, 0.5, { value: val, roundProps: 'value' });
-    });
+      gsap.to(averageAnimated.value, {
+        duration: 0.5, value: val, roundProps: 'value',
+      });
+    }, { immediate: true });
 
     const toggleDisplay = () => {
       store.commit('setUIStatsHidden', !store.state.areUIStatsHidden);
