@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.36](https://github.com/sogebot/ui-admin/compare/v0.0.35...v0.0.36) (2021-07-16)
+
+
+### Bug Fixes
+
+* **actions:** initialize vuex store in setup ([079cf3a](https://github.com/sogebot/ui-admin/commit/079cf3a8d13a5e9b87ca27fa3ff1de47feb70666)), closes [#90](https://github.com/sogebot/ui-admin/issues/90)
+* **deps:** bump @sogebot/ui-helpers from 2.3.3 to 2.4.0 ([#86](https://github.com/sogebot/ui-admin/issues/86)) ([9262438](https://github.com/sogebot/ui-admin/commit/926243889280cd1907bcbed42114409ab26c7448))
+* **deps:** bump gsap from 3.7.0 to 3.7.1 ([#89](https://github.com/sogebot/ui-admin/issues/89)) ([eea08da](https://github.com/sogebot/ui-admin/commit/eea08da9f3f8bc4b200f2b5757f4599f1f1a17f8))
+* **navbar:** show breadcrumbs only if data present ([555623c](https://github.com/sogebot/ui-admin/commit/555623cea1ec6b15e943ef38d9f62a64b470c40d))
+* **v-slider:** align visual style of sliders ([3282e0e](https://github.com/sogebot/ui-admin/commit/3282e0e34e27307f1ff366d537bb90707f25e8cf)), closes [#84](https://github.com/sogebot/ui-admin/issues/84)
+
 ### [0.0.35](https://github.com/sogebot/ui-admin/compare/v0.0.34...v0.0.35) (2021-07-16)
 
 
