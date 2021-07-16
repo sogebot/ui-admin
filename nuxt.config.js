@@ -1,3 +1,8 @@
+import fs from 'fs';
+
+const packageJson = fs.readFileSync('./package.json');
+const version = JSON.parse(packageJson).version || 0;
+
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
@@ -20,7 +25,9 @@ export default {
     }],
   },
 
-  env: { isNuxtDev: process.env.NODE_ENV === 'development', BUILD: 'web' },
+  env: {
+    isNuxtDev: process.env.NODE_ENV === 'development', BUILD: 'web', version,
+  },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
@@ -34,6 +41,7 @@ export default {
   plugins: [
     '@/plugins/remove-shift-selection',
     '@/plugins/before-each.ts',
+    { src: '@/plugins/log-version.js', ssr: false },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
