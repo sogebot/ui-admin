@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.37](https://github.com/sogebot/ui-admin/compare/v0.0.36...v0.0.37) (2021-07-16)
+
+
+### Bug Fixes
+
+* **oauth:** save full array to trigger update ([366e90d](https://github.com/sogebot/ui-admin/commit/366e90d884f41c780fedd093071a0a3f4e4c978d))
+* **obswebsocket:** add proper padding to text-field ([38ea092](https://github.com/sogebot/ui-admin/commit/38ea092f0f596e59c76c85231b4c12c6f6921551))
+
 ### [0.0.36](https://github.com/sogebot/ui-admin/compare/v0.0.35...v0.0.36) (2021-07-16)
 
 
