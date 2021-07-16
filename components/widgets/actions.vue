@@ -84,6 +84,7 @@ export default defineComponent({
     const height = ref(600);
     const isPopout = computed(() => location.href.includes('popout'));
     const loading = ref(true);
+    const store = useStore<any>();
 
     const selectedItems = computed(() => {
       return items.value.filter(o => o.selected);
@@ -101,12 +102,11 @@ export default defineComponent({
       const newHeight = window.innerHeight - offsetTop - offset;
       height.value = Math.max(newHeight, 500);
     }
-
     function addItem () {
       items.value.push({
         id:        v4(),
         selected:  false,
-        userId:    useStore<any>().state.loggedUser.id,
+        userId:    store.state.loggedUser.id,
         order:     -1,
         temporary: true,
         show:      true,
@@ -131,7 +131,7 @@ export default defineComponent({
     }
 
     const refresh = async () => {
-      if (useStore<any>().state.loggedUser === 'undefined' || useStore<any>().state.loggedUser === null) {
+      if (store.state.loggedUser === 'undefined' || store.state.loggedUser === null) {
         setTimeout(() => refresh(), 10);
       } else {
         try {
