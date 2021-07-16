@@ -33,21 +33,14 @@
           <v-expand-transition>
             <div v-if="item.type === 'wheelOfFortune'">
               <v-checkbox v-model="item.shouldPlayTick" :label="translate('registry.randomizer.form.tick')" />
-              <v-slider v-model="item.tickVolume" min="0" max="100" step="1" :label="translate('volume')">
-                <template #append>
-                  <v-text-field
-                    v-model="item.tickVolume"
-                    disabled
-                    class="mt-0 pt-0"
-                    hide-details
-                    single-line
-                    type="number"
-                    style="width: 60px;"
-                  >
-                    <template #append>
-                      %
-                    </template>
-                  </v-text-field>
+              <v-slider v-model="item.tickVolume" min="0" max="100" step="1" :label="translate('volume')"
+                :thumb-size="0"
+                thumb-label="always"
+              >
+                <template #thumb-label="{ value }">
+                  <div style="transform: translateY(-8px);">
+                    {{ Number(value) + '%' }}
+                  </div>
                 </template>
               </v-slider>
             </div>

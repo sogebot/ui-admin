@@ -21,21 +21,13 @@
         :max="100"
         :step="0.01"
         :min="0"
-        hide-details
+        :thumb-size="0"
+        thumb-label="always"
       >
-        <template #append>
-          <v-text-field
-            v-model="model.x"
-            class="mt-0 pt-0"
-            hide-details
-            single-line
-            type="number"
-            style="width: 70px;"
-          >
-            <template #append>
-              %
-            </template>
-          </v-text-field>
+        <template #thumb-label="{ value }">
+          <div style="transform: translateY(-8px);">
+            {{ Number(value) + '%' }}
+          </div>
         </template>
       </v-slider>
 
@@ -45,21 +37,13 @@
         :max="100"
         :step="0.01"
         :min="0"
-        hide-details
+        :thumb-size="0"
+        thumb-label="always"
       >
-        <template #append>
-          <v-text-field
-            v-model="model.y"
-            class="mt-0 pt-0"
-            hide-details
-            single-line
-            type="number"
-            style="width: 70px;"
-          >
-            <template #append>
-              %
-            </template>
-          </v-text-field>
+        <template #thumb-label="{ value }">
+          <div style="transform: translateY(-8px);">
+            {{ Number(value) + '%' }}
+          </div>
         </template>
       </v-slider>
 

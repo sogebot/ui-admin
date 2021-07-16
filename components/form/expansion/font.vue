@@ -25,21 +25,13 @@
           class="align-center"
           :max="200"
           :min="1"
-          hide-details
+          :thumb-size="0"
+          thumb-label="always"
         >
-          <template #append>
-            <v-text-field
-              v-model="model.size"
-              class="mt-0 pt-0"
-              hide-details
-              single-line
-              type="number"
-              style="width: 70px;"
-            >
-              <template #append>
-                px
-              </template>
-            </v-text-field>
+          <template #thumb-label="{ value }">
+            <div style="transform: translateY(-8px);">
+              {{ Number(value) + 'px' }}
+            </div>
           </template>
         </v-slider>
         <v-slider
@@ -49,17 +41,13 @@
           :max="900"
           :min="100"
           :step="100"
-          hide-details
+          :thumb-size="0"
+          thumb-label="always"
         >
-          <template #append>
-            <v-text-field
-              v-model="model.weight"
-              class="mt-0 pt-0"
-              hide-details
-              single-line
-              type="number"
-              style="width: 70px;"
-            />
+          <template #thumb-label="{ value }">
+            <div style="transform: translateY(-8px);">
+              {{ Number(value) }}
+            </div>
           </template>
         </v-slider>
         <v-slider
@@ -68,21 +56,13 @@
           class="align-center"
           :max="100"
           :min="0"
-          hide-details
+          :thumb-size="0"
+          thumb-label="always"
         >
-          <template #append>
-            <v-text-field
-              v-model="model.borderPx"
-              class="mt-0 pt-0"
-              hide-details
-              single-line
-              type="number"
-              style="width: 70px;"
-            >
-              <template #append>
-                px
-              </template>
-            </v-text-field>
+          <template #thumb-label="{ value }">
+            <div style="transform: translateY(-8px);">
+              {{ Number(value) + 'px' }}
+            </div>
           </template>
         </v-slider>
         <color
@@ -135,28 +115,20 @@
 
             <v-expand-transition>
               <v-tabs-items v-if="model.shadow.length > 0" v-model="selectedTab">
-                <v-tab-item v-for="(shadow, idx) of model.shadow" :key="'shadow2' + idx">
+                <v-tab-item v-for="(shadow, idx) of model.shadow" :key="'shadow2' + idx" class="ma-2">
                   <v-slider
                     v-model="shadow.shiftRight"
                     :label="translate('dialog.font.shadowShiftRight')"
                     class="align-center"
                     :max="50"
                     :min="-50"
-                    hide-details
+                    :thumb-size="0"
+                    thumb-label="always"
                   >
-                    <template #append>
-                      <v-text-field
-                        v-model="shadow.shiftRight"
-                        class="mt-0 pt-0"
-                        hide-details
-                        single-line
-                        type="number"
-                        style="width: 70px;"
-                      >
-                        <template #append>
-                          px
-                        </template>
-                      </v-text-field>
+                    <template #thumb-label="{ value }">
+                      <div style="transform: translateY(-8px);">
+                        {{ Number(value) + 'px' }}
+                      </div>
                     </template>
                   </v-slider>
                   <v-slider
@@ -165,21 +137,13 @@
                     class="align-center"
                     :max="50"
                     :min="-50"
-                    hide-details
+                    :thumb-size="0"
+                    thumb-label="always"
                   >
-                    <template #append>
-                      <v-text-field
-                        v-model="shadow.shiftDown"
-                        class="mt-0 pt-0"
-                        hide-details
-                        single-line
-                        type="number"
-                        style="width: 70px;"
-                      >
-                        <template #append>
-                          px
-                        </template>
-                      </v-text-field>
+                    <template #thumb-label="{ value }">
+                      <div style="transform: translateY(-8px);">
+                        {{ Number(value) + 'px' }}
+                      </div>
                     </template>
                   </v-slider>
                   <v-slider
@@ -188,17 +152,13 @@
                     class="align-center"
                     :max="50"
                     :min="0"
-                    hide-details
+                    :thumb-size="0"
+                    thumb-label="always"
                   >
-                    <template #append>
-                      <v-text-field
-                        v-model="shadow.blur"
-                        class="mt-0 pt-0"
-                        hide-details
-                        single-line
-                        type="number"
-                        style="width: 70px;"
-                      />
+                    <template #thumb-label="{ value }">
+                      <div style="transform: translateY(-8px);">
+                        {{ Number(value) }}
+                      </div>
                     </template>
                   </v-slider>
                   <v-slider
@@ -207,22 +167,15 @@
                     class="align-center"
                     :max="100"
                     :min="0"
-                    hide-details
+                    :thumb-size="0"
+                    thumb-label="always"
                   >
-                    <template #append>
-                      <v-text-field
-                        v-model="shadow.opacity"
-                        class="mt-0 pt-0"
-                        hide-details
-                        single-line
-                        type="number"
-                        style="width: 70px;"
-                      >
-                        <template #append>
-                          %
-                        </template>
-                      </v-text-field>
+                    <template #thumb-label="{ value }">
+                      <div style="transform: translateY(-8px);">
+                        {{ Number(value) + '%' }}
+                      </div>
                     </template>
+                  </v-slider>
                   </v-slider>
                   <color v-model="shadow.color" :label="translate('dialog.font.color')" />
                   <v-card-actions>
