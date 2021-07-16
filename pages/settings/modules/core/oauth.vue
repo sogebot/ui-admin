@@ -16,7 +16,7 @@
 
             <v-textarea auto-grow outlined persistent-hint :label="translate('core.oauth.settings.generalOwners')"
               :value="settings.general.generalOwners[0].filter(String).join('\n')"
-              @input="settings.general.generalOwners[0] = $event.split('\n').filter(String)"
+              @input="settings.general.generalOwners = [$event.split('\n').filter(String), '']"
               :hint="translate('one-record-per-line')" />
           </v-card-text>
         </v-card>
