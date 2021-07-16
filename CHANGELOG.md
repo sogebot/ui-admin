@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.38](https://github.com/sogebot/ui-admin/compare/v0.0.37...v0.0.38) (2021-07-16)
+
+
+### Features
+
+* log current version in console ([771491b](https://github.com/sogebot/ui-admin/commit/771491bd6e04e3289db2085888b5704b05645ca7))
+
 ### [0.0.37](https://github.com/sogebot/ui-admin/compare/v0.0.36...v0.0.37) (2021-07-16)
 
 
