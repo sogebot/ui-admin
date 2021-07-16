@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.35](https://github.com/sogebot/ui-admin/compare/v0.0.34...v0.0.35) (2021-07-16)
+
+
+### Bug Fixes
+
+* **statsbar:** populate average stats ([7367370](https://github.com/sogebot/ui-admin/commit/7367370c2b704c809ef165d4344c69b2ea27c081))
+* **statsbar:** populate uptime data ([2764244](https://github.com/sogebot/ui-admin/commit/2764244aeaebbc33400e5f3bd74b1638ffda6869))
+
 ### [0.0.34](https://github.com/sogebot/ui-admin/compare/v0.0.33...v0.0.34) (2021-07-15)
 
 
