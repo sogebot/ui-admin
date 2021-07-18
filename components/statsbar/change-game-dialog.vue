@@ -13,7 +13,6 @@
         >
           <v-icon>{{ mdiClose }}</v-icon>
         </v-btn>
-        <span class="headline">Change game and title</span>
         <v-spacer />
         <v-btn
           text
@@ -47,7 +46,8 @@
               <v-col
                 v-for="game in lastGames"
                 :key="game"
-                cols="2"
+                cols="3"
+                sm="1"
                 md="1"
               >
                 <v-item v-slot="{ active, toggle }">
@@ -96,12 +96,12 @@
           Last used titles for {{ selectedGame }}
         </v-subheader>
 
-        <v-list :key="JSON.stringify(lastTitles)" flat dense>
+        <v-list id="list" :key="JSON.stringify(lastTitles)" flat dense :max-height="maxHeight" style="overflow: overlay;" class="pa-0">
           <v-list-item-group>
             <v-list-item
+              dense
               v-for="(item, i) in lastTitles"
               :key="item + i"
-              class="elevation-1"
               @click="title = item"
             >
               <v-list-item-content>
@@ -145,6 +145,7 @@ export default defineComponent({
     const isSearching = ref(false);
     const gamesFromTwitch = ref([] as string[]);
     const manuallySelectedGame = ref('');
+    const maxHeight = ref(250);
 
     const dialogController = ref(false);
     const isLoading = ref(false);
@@ -193,10 +194,20 @@ export default defineComponent({
       })(game);
     };
 
-    watch([selectedGame, lastGames], () => {
+    watch([selectedGame, lastGames, title], () => {
       // check if we have this in lastGames list
       const idx = lastGames.value.indexOf(selectedGame.value);
       selectedGameIdx.value = idx;
+      maxHeight.value = 0;
+
+      setTimeout(() => {
+        // recalculate maxHeight
+        const el = document.getElementById('list');
+        if (el) {
+          const offsetTop = el.offsetTop;
+          maxHeight.value = (el.offsetParent?.clientHeight ?? 0) - offsetTop - 20;
+        }
+      }, 1);
     });
 
     watch(manuallySelectedGame, (val) => {
@@ -290,6 +301,7 @@ export default defineComponent({
       title,
       lastTitles,
       save,
+      maxHeight,
     };
   },
 });
