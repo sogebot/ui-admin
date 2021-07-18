@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.40](https://github.com/sogebot/ui-admin/compare/v0.0.39...v0.0.40) (2021-07-18)
+
+
+### Bug Fixes
+
+* **game:** mobile friendlier change game/title dialog ([2febbe2](https://github.com/sogebot/ui-admin/commit/2febbe23e8626a50cb953229a4f4e54ca0784f96)), closes [#93](https://github.com/sogebot/ui-admin/issues/93)
+
 ### [0.0.39](https://github.com/sogebot/ui-admin/compare/v0.0.38...v0.0.39) (2021-07-16)
 
 
