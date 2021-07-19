@@ -57,7 +57,7 @@ import {
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { PermissionFiltersInterface } from '~/.bot/src/bot/database/entity/permissions';
+import type { PermissionFiltersInterface } from '~/.bot/src/database/entity/permissions';
 
 export default defineComponent({
   props: { value: Array },

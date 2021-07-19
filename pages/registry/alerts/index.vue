@@ -178,7 +178,7 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
-import type { AlertInterface } from '.bot/src/bot/database/entity/alert';
+import type { AlertInterface } from '.bot/src/database/entity/alert';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import api from '~/functions/api';
 import { error } from '~/functions/error';

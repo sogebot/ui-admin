@@ -72,7 +72,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { v4 } from 'uuid';
 
-import type { QuickActions } from '.bot/src/bot/database/entity/dashboard';
+import type { QuickActions } from '.bot/src/database/entity/dashboard';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 

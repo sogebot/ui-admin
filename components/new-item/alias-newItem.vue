@@ -52,7 +52,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 as uuid } from 'uuid';
 
-import type { AliasInterface } from '.bot/src/bot/database/entity/alias';
+import type { AliasInterface } from '.bot/src/database/entity/alias';
 
 export default defineComponent({
   props: { rules: Object },

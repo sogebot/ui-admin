@@ -236,7 +236,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash';
 
-import type { RankInterface } from '.bot/src/bot/database/entity/rank';
+import type { RankInterface } from '.bot/src/database/entity/rank';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

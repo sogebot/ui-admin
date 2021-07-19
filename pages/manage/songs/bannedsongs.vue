@@ -146,7 +146,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { escapeRegExp, isNil } from 'lodash';
 
-import type { SongBanInterface } from '.bot/src/bot/database/entity/song';
+import type { SongBanInterface } from '.bot/src/database/entity/song';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

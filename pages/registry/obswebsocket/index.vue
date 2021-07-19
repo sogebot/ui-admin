@@ -124,7 +124,7 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { OBSWebsocketInterface } from '.bot/src/bot/database/entity/obswebsocket';
+import type { OBSWebsocketInterface } from '.bot/src/database/entity/obswebsocket';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import api from '~/functions/api';
 import { error } from '~/functions/error';

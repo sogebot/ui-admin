@@ -314,7 +314,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 
-import { GoalGroupInterface, GoalInterface } from '~/.bot/src/bot/database/entity/goal';
+import { GoalGroupInterface, GoalInterface } from '~/.bot/src/database/entity/goal';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

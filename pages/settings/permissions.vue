@@ -83,7 +83,7 @@ import { cloneDeep, sortBy } from 'lodash';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
 
-import type { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
+import type { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

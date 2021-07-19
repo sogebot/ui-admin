@@ -122,7 +122,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { escapeRegExp, isNil } from 'lodash';
 
-import type { SpotifySongBanInterface } from '.bot/src/bot/database/entity/spotify';
+import type { SpotifySongBanInterface } from '.bot/src/database/entity/spotify';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
 

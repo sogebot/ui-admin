@@ -140,7 +140,7 @@ import {
 } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import type { EventOperationInterface, Events } from '~/.bot/src/bot/database/entity/event';
+import type { EventOperationInterface, Events } from '~/.bot/src/database/entity/event';
 import { error } from '~/functions/error';
 
 export default defineComponent({

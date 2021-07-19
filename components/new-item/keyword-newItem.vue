@@ -41,7 +41,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 as uuid } from 'uuid';
 
-import type { KeywordInterface } from '.bot/src/bot/database/entity/keyword';
+import type { KeywordInterface } from '.bot/src/database/entity/keyword';
 
 export default defineComponent({
   props: { rules: Object },

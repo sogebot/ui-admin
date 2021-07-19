@@ -204,7 +204,7 @@ import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
-import type { GoalGroupInterface } from '.bot/src/bot/database/entity/goal';
+import type { GoalGroupInterface } from '.bot/src/database/entity/goal';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import api from '~/functions/api';
 import { error } from '~/functions/error';

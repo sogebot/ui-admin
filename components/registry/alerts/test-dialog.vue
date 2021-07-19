@@ -160,7 +160,7 @@ import { generateUsername } from '@sogebot/ui-helpers/generateUsername';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { EmitData } from '.bot/src/bot/database/entity/alert';
+import type { EmitData } from '.bot/src/database/entity/alert';
 
 export default defineComponent({
   components: { rewards: defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }) },

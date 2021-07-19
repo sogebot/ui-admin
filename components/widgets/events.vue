@@ -294,7 +294,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { get } from 'lodash';
 
-import type { EventListInterface } from '~/.bot/src/bot/database/entity/eventList';
+import type { EventListInterface } from '~/.bot/src/database/entity/eventList';
 import api from '~/functions/api';
 
 export default defineComponent({

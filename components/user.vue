@@ -166,8 +166,8 @@ import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermi
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { PermissionsInterface } from '../.bot/src/bot/database/entity/permissions';
-import type { UserInterface } from '../.bot/src/bot/database/entity/user';
+import type { PermissionsInterface } from '../.bot/src/database/entity/permissions';
+import type { UserInterface } from '../.bot/src/database/entity/user';
 
 let interval = 0;
 

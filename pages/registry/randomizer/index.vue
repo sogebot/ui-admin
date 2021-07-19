@@ -137,8 +137,8 @@ import translate from '@sogebot/ui-helpers/translate';
 import { orderBy } from 'lodash';
 import { v4 } from 'uuid';
 
-import type { RandomizerInterface } from '.bot/src/bot/database/entity/randomizer';
-import { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
+import type { RandomizerInterface } from '.bot/src/database/entity/randomizer';
+import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import api from '~/functions/api';
 import { error } from '~/functions/error';

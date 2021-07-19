@@ -292,7 +292,7 @@ import {
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { AlertInterface, CommonSettingsInterface } from '~/.bot/src/bot/database/entity/alert';
+import type { AlertInterface, CommonSettingsInterface } from '~/.bot/src/database/entity/alert';
 import {
   highlighterCSS, highlighterHTML, highlighterJS, PrismEditor,
 } from '~/functions/prismjs';

@@ -134,8 +134,8 @@ import {
 } from 'lodash';
 import { v4 } from 'uuid';
 
-import { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
-import { RandomizerInterface, RandomizerItemInterface } from '~/.bot/src/bot/database/entity/randomizer';
+import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
+import { RandomizerInterface, RandomizerItemInterface } from '~/.bot/src/database/entity/randomizer';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

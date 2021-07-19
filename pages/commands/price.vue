@@ -217,7 +217,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash';
 
-import type { PriceInterface } from '.bot/src/bot/database/entity/price';
+import type { PriceInterface } from '.bot/src/database/entity/price';
 import {
   minLength, minValue, required, startsWith,
 } from '~/functions//validators';

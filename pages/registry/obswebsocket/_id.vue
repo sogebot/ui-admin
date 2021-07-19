@@ -275,9 +275,9 @@ import ObsWebSocket from 'obs-websocket-js';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
 
-import { OBSWebsocketInterface } from '~/.bot/src/bot/database/entity/obswebsocket';
-import { availableActions } from '~/.bot/src/bot/helpers/obswebsocket/actions';
-import type { Source, Type } from '~/.bot/src/bot/helpers/obswebsocket/sources';
+import { OBSWebsocketInterface } from '~/.bot/src/database/entity/obswebsocket';
+import { availableActions } from '~/.bot/src/helpers/obswebsocket/actions';
+import type { Source, Type } from '~/.bot/src/helpers/obswebsocket/sources';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

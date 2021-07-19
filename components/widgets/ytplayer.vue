@@ -129,7 +129,7 @@ import VuePlyr from 'vue-plyr';
 
 import 'vue-plyr/dist/vue-plyr.css';
 
-import type { currentSongType, SongRequestInterface } from '.bot/src/bot/database/entity/song';
+import type { currentSongType, SongRequestInterface } from '.bot/src/database/entity/song';
 import { error } from '~/functions/error';
 
 Vue.use(VuePlyr, { plyr: {} });

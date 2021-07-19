@@ -177,8 +177,8 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash';
 
-import type { KeywordInterface } from '.bot/src/bot/database/entity/keyword';
-import type { PermissionsInterface } from '.bot/src/bot/database/entity/permissions';
+import type { KeywordInterface } from '.bot/src/database/entity/keyword';
+import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import api from '~/functions/api';
 import { error } from '~/functions/error';

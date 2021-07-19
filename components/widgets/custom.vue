@@ -60,7 +60,7 @@ import {
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { WidgetCustomInterface } from '.bot/src/bot/database/entity/widget';
+import type { WidgetCustomInterface } from '.bot/src/database/entity/widget';
 import api from '~/functions/api';
 
 export default defineComponent({

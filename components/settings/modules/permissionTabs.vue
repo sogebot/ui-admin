@@ -18,7 +18,7 @@ import {
 } from '@vue/composition-api';
 import { orderBy } from 'lodash';
 
-import { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
+import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
 import api from '~/functions/api';
 
 export default defineComponent({

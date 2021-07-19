@@ -58,7 +58,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash';
 
-import type { PollInterface } from '.bot/src/bot/database/entity/poll';
+import type { PollInterface } from '.bot/src/database/entity/poll';
 
 export default defineComponent({
   props: { tags: Array, rules: Object },

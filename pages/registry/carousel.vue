@@ -339,7 +339,7 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { CarouselInterface } from '.bot/src/bot/database/entity/carousel';
+import type { CarouselInterface } from '.bot/src/database/entity/carousel';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import api from '~/functions/api';
 import { error } from '~/functions/error';

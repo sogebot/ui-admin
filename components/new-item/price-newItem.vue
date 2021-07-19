@@ -41,7 +41,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 as uuid } from 'uuid';
 
-import type { PriceInterface } from '.bot/src/bot/database/entity/price';
+import type { PriceInterface } from '.bot/src/database/entity/price';
 
 export default defineComponent({
   props: { rules: Object },

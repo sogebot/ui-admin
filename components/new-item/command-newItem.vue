@@ -41,7 +41,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 as uuid } from 'uuid';
 
-import type { CommandsInterface } from '.bot/src/bot/database/entity/commands';
+import type { CommandsInterface } from '.bot/src/database/entity/commands';
 
 export default defineComponent({
   props: { rules: Object },

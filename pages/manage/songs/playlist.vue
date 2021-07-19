@@ -279,7 +279,7 @@ import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { SongPlaylistInterface } from '.bot/src/bot/database/entity/song';
+import type { SongPlaylistInterface } from '.bot/src/database/entity/song';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

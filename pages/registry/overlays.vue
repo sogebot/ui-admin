@@ -189,7 +189,7 @@ import {
 } from 'lodash';
 import { v4 } from 'uuid';
 
-import type { OverlayMappers } from '.bot/src/bot/database/entity/overlay';
+import type { OverlayMappers } from '.bot/src/database/entity/overlay';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import api from '~/functions/api';
 import { error } from '~/functions/error';

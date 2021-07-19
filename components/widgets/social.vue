@@ -41,7 +41,7 @@ import {
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { WidgetSocialInterface } from '.bot/src/bot/database/entity/widget';
+import type { WidgetSocialInterface } from '.bot/src/database/entity/widget';
 import api from '~/functions/api';
 
 export default defineComponent({

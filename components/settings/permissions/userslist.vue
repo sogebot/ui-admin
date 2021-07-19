@@ -25,7 +25,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
-import { UserInterface } from '~/.bot/src/bot/database/entity/user';
+import { UserInterface } from '~/.bot/src/database/entity/user';
 
 export default defineComponent({
   props: { value: Array, label: String },

@@ -167,7 +167,7 @@ import {
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { CommonSettingsInterface } from '~/.bot/src/bot/database/entity/alert';
+import type { CommonSettingsInterface } from '~/.bot/src/database/entity/alert';
 
 type Props = {
   value: CommonSettingsInterface['filter'],

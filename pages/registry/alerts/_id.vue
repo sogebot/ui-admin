@@ -193,7 +193,7 @@ import { v4 } from 'uuid';
 
 import {
   AlertInterface, AlertMediaInterface, CommonSettingsInterface,
-} from '~/.bot/src/bot/database/entity/alert';
+} from '~/.bot/src/database/entity/alert';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

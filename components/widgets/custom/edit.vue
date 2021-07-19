@@ -75,7 +75,7 @@ import {
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
-import { WidgetCustomInterface } from '~/.bot/src/bot/database/entity/widget';
+import { WidgetCustomInterface } from '~/.bot/src/database/entity/widget';
 import api from '~/functions/api';
 
 type Props = {

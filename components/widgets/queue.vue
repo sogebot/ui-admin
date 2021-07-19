@@ -170,7 +170,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { debounce } from 'lodash';
 
-import { QueueInterface } from '.bot/src/bot/database/entity/queue';
+import { QueueInterface } from '.bot/src/database/entity/queue';
 import { error } from '~/functions/error';
 
 export default defineComponent({

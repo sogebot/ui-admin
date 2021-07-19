@@ -77,7 +77,7 @@ import {
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
-import { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
+import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

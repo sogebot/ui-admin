@@ -130,7 +130,7 @@ import {
   defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
 
-import { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
+import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';

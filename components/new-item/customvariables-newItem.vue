@@ -316,8 +316,8 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
-import type { VariableInterface } from '.bot/src/bot/database/entity/variable';
-import type { PermissionsInterface } from '~/.bot/src/bot/database/entity/permissions';
+import type { VariableInterface } from '.bot/src/database/entity/variable';
+import type { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
 import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
