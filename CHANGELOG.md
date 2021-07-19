@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.42](https://github.com/sogebot/ui-admin/compare/v0.0.41...v0.0.42) (2021-07-19)
+
+
+### Bug Fixes
+
+* **quickaction:** use contrast color for button ([ccef9d9](https://github.com/sogebot/ui-admin/commit/ccef9d92ac4218ead6733e57b54504caaac0fd38))
+
 ### [0.0.41](https://github.com/sogebot/ui-admin/compare/v0.0.40...v0.0.41) (2021-07-19)
 
 
