@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.41](https://github.com/sogebot/ui-admin/compare/v0.0.40...v0.0.41) (2021-07-19)
+
+
+### Features
+
+* **actions:** add custom variables actions ([0411d4e](https://github.com/sogebot/ui-admin/commit/0411d4eace699a7a4006c5a9406a9ee7bdbddd95))
+
 ### [0.0.40](https://github.com/sogebot/ui-admin/compare/v0.0.39...v0.0.40) (2021-07-18)
 
 
