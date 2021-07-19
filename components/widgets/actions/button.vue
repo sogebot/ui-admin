@@ -6,11 +6,12 @@
     elevation="2"
     width="100%"
   >
-    <v-card-text v-ripple class="text-button pa-1 mb-1 text-center" style="font-size: 12px !important; display: block;" @click="!editing ? trigger($event) : dialog = true">
+    <v-card-text v-ripple class="text-button pa-1 mb-1 text-center" style="font-size: 12px !important; display: block;" @click="!editing ? trigger($event) : dialog = true" :style="{ 'color': color }">
       <v-row v-if="item.type === 'command'" no-gutters>
         <v-slide-x-transition>
           <v-col v-if="editing" cols="auto" class="d-flex">
-            <v-simple-checkbox v-model="clonedItem.selected" />
+            <v-simple-checkbox v-model="clonedItem.selected" light v-if="color !== 'white'"/>
+            <v-simple-checkbox v-model="clonedItem.selected" dark v-else/>
           </v-col>
         </v-slide-x-transition>
         <v-col class="text-truncate">
@@ -20,7 +21,8 @@
       <v-row v-if="item.type === 'customvariable'" no-gutters ripple>
         <v-slide-x-transition>
           <v-col v-if="editing" cols="auto" class="d-flex">
-            <v-simple-checkbox v-model="clonedItem.selected" />
+            <v-simple-checkbox v-model="clonedItem.selected" light v-if="color !== 'white'"/>
+            <v-simple-checkbox v-model="clonedItem.selected" dark v-else/>
           </v-col>
         </v-slide-x-transition>
         <template v-if="customVariable && customVariable.type === 'eval'">
@@ -33,7 +35,7 @@
         </template>
         <template v-if="customVariable && customVariable.type === 'number'">
           <v-col v-if="!editing" cols="auto" class="d-flex">
-            <v-icon class="minus">
+            <v-icon class="minus" :color="color">
               {{ mdiMinus }}
             </v-icon>
           </v-col>
@@ -47,7 +49,7 @@
           </v-col>
 
           <v-col v-if="!editing" cols="auto" class="d-flex">
-            <v-icon class="plus">
+            <v-icon class="plus" :color="color">
               {{ mdiPlus }}
             </v-icon>
           </v-col>
@@ -62,7 +64,7 @@
             </div>
           </v-col>
 
-          <v-col v-if="!editing" cols="auto" class="d-flex">
+          <v-col v-if="!editing" cols="auto" class="d-flex" :color="color">
             <v-icon>{{ mdiChevronDown }}</v-icon>
           </v-col>
         </template>
@@ -76,7 +78,7 @@
             </div>
           </v-col>
 
-          <v-col v-if="!editing" cols="auto" class="d-flex">
+          <v-col v-if="!editing" cols="auto" class="d-flex" :color="color">
             <v-icon>{{ mdiPencil }}</v-icon>
           </v-col>
         </template>
@@ -153,6 +155,7 @@ import {
   defineAsyncComponent,
   defineComponent, nextTick, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
+import { getContrastColor } from '@sogebot/ui-helpers/colors';
 import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep, debounce } from 'lodash';
 
@@ -166,6 +169,14 @@ type Props = {
   item: QuickActions.Item & { selected: boolean, temporary: boolean, show: boolean },
 };
 
+const rgbToHex = function (rgb: number | string) {
+  let hex = Number(rgb).toString(16);
+  if (hex.length < 2) {
+    hex = '0' + hex;
+  }
+  return hex;
+};
+
 export default defineComponent({
   props:      { item: Object, editing: Boolean },
   components: { edit: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit.vue') }) },
@@ -177,9 +188,19 @@ export default defineComponent({
     const clonedItem = ref(cloneDeep(props.item));
     const valid = ref(true);
     const showMenu = ref(false);
+    const color = ref('white');
     const customVariable = ref(null as VariableInterface | null);
 
+    const recalculateColor = () => {
+      // get computed color
+      const card = document.getElementById(`quickaction-${clonedItem.value.id}`) as HTMLElement;
+      const bgColor = window.getComputedStyle(card, null).getPropertyValue('background-color');
+      color.value = getContrastColor('#' + bgColor.replace('rgb(', '').replace(')', '').split(',').map(o => rgbToHex(o.trim())).join(''));
+    };
+
     onMounted(() => {
+      recalculateColor();
+
       // get value if customvariable
       if (clonedItem.value.type === 'customvariable') {
         api.get($axios, `/api/v1/quickaction/${clonedItem.value.id}`)
@@ -206,6 +227,8 @@ export default defineComponent({
         timestamp.value = Date.now();
         clonedItem.value = cloneDeep(props.item);
       }
+
+      recalculateColor();
     });
 
     watch(() => clonedItem.value.selected, (val) => {
@@ -275,6 +298,7 @@ export default defineComponent({
     return {
       /* refs */
       clonedItem,
+      color,
       dialog,
       isSaving,
       timestamp,
