@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.43](https://github.com/sogebot/ui-admin/compare/v0.0.42...v0.0.43) (2021-07-20)
+
+
+### Features
+
+* **events:** add reward redeems to events list ([b73a0bc](https://github.com/sogebot/ui-admin/commit/b73a0bc93b4daab8312d7f8c84303c3db8e88ad2))
+
 ### [0.0.42](https://github.com/sogebot/ui-admin/compare/v0.0.41...v0.0.42) (2021-07-19)
 
 
