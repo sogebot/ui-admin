@@ -42,6 +42,7 @@
                     <v-checkbox v-model="showHosts" label="Hosts" class="pa-0 ma-0" hide-details />
                     <v-checkbox v-model="showBits" label="Bits" class="pa-0 ma-0" hide-details />
                     <v-checkbox v-model="showRaids" label="Raids" class="pa-0 ma-0" hide-details />
+                    <v-checkbox v-model="showRedeems" label="Reward Redeems" class="pa-0 ma-0" hide-details />
                   </v-col>
                   <v-col>
                     <v-checkbox v-model="showSubs" label="Subs" class="pa-0 ma-0" hide-details />
@@ -260,6 +261,9 @@
                     <v-icon v-else-if="item.event === 'tip'" color="green lighten-1">
                       {{ mdiCash }}
                     </v-icon>
+                    <v-icon v-else-if="item.event === 'rewardredeem'" color="blue lighten-1">
+                      {{ mdiTrophyAward }}
+                    </v-icon>
                   </template>
                 </v-list-item-action>
               </v-list-item>
@@ -283,7 +287,7 @@ import {
   mdiDiamond, mdiFencing, mdiFilterMenu, mdiFormatQuoteClose, mdiFormatQuoteOpen,
   mdiGift, mdiGiftOpen, mdiHeart, mdiRefresh,
   mdiSkipNext, mdiTelevision, mdiTextToSpeech, mdiTextToSpeechOff,
-  mdiVolumeHigh, mdiVolumeMute, mdiYoutubeSubscription,
+  mdiTrophyAward, mdiVolumeHigh, mdiVolumeMute, mdiYoutubeSubscription,
 } from '@mdi/js';
 import {
   computed,
@@ -312,6 +316,7 @@ export default defineComponent({
     const isPopout = computed(() => location.href.includes('popout'));
 
     const showFollows = ref((localStorage.showFollows && localStorage.showFollows === 'true') ?? true);
+    const showRedeems = ref((localStorage.showRedeems && localStorage.showRedeems === 'true') ?? true);
     const showTips = ref((localStorage.showTips && localStorage.showTips === 'true') ?? true);
     const showTipsMinimal = ref((localStorage.showTipsMinimal && localStorage.showTipsMinimal === 'true') ?? false);
     const showTipsMinimalAmount = ref(Number(localStorage.showTipsMinimalAmount || 50));
@@ -334,7 +339,7 @@ export default defineComponent({
       showFollows, showHosts, showBits, showRaids,
       showTips, showTipsMinimal, showTipsMinimalAmount,
       showResubs, showResubsPrime, showResubsTier1, showResubsTier2, showResubsTier3, showResubsMinimal, showResubsMinimalAmount,
-      showSubs, showSubsPrime, showSubsTier1, showSubsTier2, showSubsTier3,
+      showSubs, showSubsPrime, showSubsTier1, showSubsTier2, showSubsTier3, showRedeems,
     ], (val) => {
       localStorage.showFollows = String(val[0]);
       localStorage.showHosts = String(val[1]);
@@ -355,6 +360,7 @@ export default defineComponent({
       localStorage.showSubsTier1 = String(val[16]);
       localStorage.showSubsTier2 = String(val[17]);
       localStorage.showSubsTier3 = String(val[18]);
+      localStorage.showRedeems = String(val[19]);
     });
 
     function filter (event: EventListInterface & { sortAmount: number}) {
@@ -362,6 +368,7 @@ export default defineComponent({
       const host = showHosts.value && event.event === 'host';
       const raid = showRaids.value && event.event === 'raid';
       const bit = showBits.value && event.event === 'cheer';
+      const redeem = showRedeems.value && event.event === 'rewardredeem';
 
       const tip = showTips.value && event.event === 'tip';
       const tipMinimal = !showTipsMinimal.value || (showTipsMinimal.value && event.sortAmount >= showTipsMinimalAmount.value);
@@ -382,6 +389,7 @@ export default defineComponent({
       const subTier3 = showSubsTier3.value && Number(tier) === 3;
 
       return follow
+        || redeem
         || host
         || raid
         || (tip && tipMinimal)
@@ -434,6 +442,7 @@ export default defineComponent({
       t = t.replace('$subStreak', '<strong style="font-size: 1rem">' + get(values, 'subStreak', '0') + '</strong>');
       t = t.replace('$bits', '<strong style="font-size: 1rem">' + get(values, 'bits', '0') + '</strong>');
       t = t.replace('$count', '<strong style="font-size: 1rem">' + get(values, 'count', '0') + '</strong>');
+      t = t.replace('$titleOfReward', '<strong style="font-size: 1rem">' + get(values, 'titleOfReward', '') + '</strong>');
 
       let output = `<span style="font-size:0.7rem; font-weight: normal">${t}</span>`;
       if (values.song_url && values.song_title) {
@@ -445,7 +454,7 @@ export default defineComponent({
     function blockquote (event: any) {
       const values = JSON.parse(event.values_json);
       if (values.message) {
-        return `${values.message.replace(/(\w{10})/g, '$1<wbr>')} Lorem Ipsum dolor sit amet`;
+        return `${values.message.replace(/(\w{10})/g, '$1<wbr>')}`;
       } // will force new line for long texts
 
       return false;
@@ -523,6 +532,7 @@ export default defineComponent({
       showSubsTier1,
       showSubsTier2,
       showSubsTier3,
+      showRedeems,
 
       /* icons */
       mdiSkipNext,
@@ -546,6 +556,7 @@ export default defineComponent({
       mdiFilterMenu,
       mdiDelete,
       mdiRefresh,
+      mdiTrophyAward,
     };
   },
 });
