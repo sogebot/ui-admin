@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.44](https://github.com/sogebot/ui-admin/compare/v0.0.43...v0.0.44) (2021-07-21)
+
+
+### Bug Fixes
+
+* **buttons:** add icon for save buttons if small screen ([dd13e6c](https://github.com/sogebot/ui-admin/commit/dd13e6c3a30a8e100169252c94d0da9a29e0fa5f))
+
 ### [0.0.43](https://github.com/sogebot/ui-admin/compare/v0.0.42...v0.0.43) (2021-07-20)
 
 
