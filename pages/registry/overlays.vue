@@ -208,6 +208,7 @@ export default defineComponent({
     obswebsocket:    () => import('~/components/registry/overlays/obswebsocket.vue'),
     tts:             () => import('~/components/registry/overlays/tts.vue'),
     polls:           () => import('~/components/registry/overlays/polls.vue'),
+    eventlist:       () => import('~/components/registry/overlays/eventlist.vue'),
   },
   setup () {
     const { $axios } = useContext();
@@ -355,7 +356,7 @@ export default defineComponent({
     };
 
     const haveAnyOptions = (type: string) => {
-      const withOpts = ['alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
+      const withOpts = ['eventlist', 'alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
       return withOpts.includes(type);
     };
 
