@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.45](https://github.com/sogebot/ui-admin/compare/v0.0.44...v0.0.45) (2021-07-21)
+
+
+### Features
+
+* **overlays:** add eventlist settings ([f106f7e](https://github.com/sogebot/ui-admin/commit/f106f7ea7acc3ef3f0b391163d9eafe006eab8a1))
+
 ### [0.0.44](https://github.com/sogebot/ui-admin/compare/v0.0.43...v0.0.44) (2021-07-21)
 
 
