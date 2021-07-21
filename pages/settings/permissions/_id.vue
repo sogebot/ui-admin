@@ -61,14 +61,22 @@
         {{ translate('delete') }}
       </v-btn>
       <v-spacer />
-      <v-btn :loading="isSaving" :disabled="!valid" @click="save">
-        {{ translate('dialog.buttons.saveChanges.idle') }}
+      <v-btn
+        :text="$vuetify.breakpoint.sm"
+        :icon="!$vuetify.breakpoint.sm"
+        :loading="isSaving"
+        :disabled="!valid"
+        @click="save"
+      >
+        <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+        <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script lang="ts">
+import { mdiFloppy } from '@mdi/js';
 import {
   useContext, useRoute, useRouter,
 } from '@nuxtjs/composition-api';
@@ -159,6 +167,8 @@ export default defineComponent({
 
       // validators
       required,
+
+      mdiFloppy,
     };
   },
 });

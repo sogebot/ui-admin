@@ -4,8 +4,16 @@
       <v-btn text :loading="isTesting" :disabled="!valid1" @click="test">
         {{ translate('dialog.buttons.test.idle') }}
       </v-btn>
-      <v-btn text :loading="isSaving" :disabled="!valid1" @click="save">
-        {{ translate('dialog.buttons.saveChanges.idle') }}
+      <v-btn
+        small
+        :text="$vuetify.breakpoint.sm"
+        :icon="!$vuetify.breakpoint.sm"
+        :loading="isSaving"
+        @click="save"
+        :disabled="!valid1"
+      >
+        <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+        <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
     </portal>
 
@@ -262,7 +270,7 @@
 
 <script lang="ts">
 import {
-  mdiClose, mdiExclamationThick, mdiPlus,
+  mdiClose, mdiExclamationThick, mdiFloppy, mdiPlus,
 } from '@mdi/js';
 import {
   computed,
@@ -485,6 +493,7 @@ export default defineComponent({
       mdiClose,
       mdiPlus,
       mdiExclamationThick,
+      mdiFloppy,
     };
   },
 });

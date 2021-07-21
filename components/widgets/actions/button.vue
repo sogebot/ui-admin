@@ -131,12 +131,14 @@
           <span class="headline">Edit Action</span>
           <v-spacer />
           <v-btn
-            text
+            small
+            :text="$vuetify.breakpoint.sm"
+            :icon="!$vuetify.breakpoint.sm"
             :loading="isSaving"
-            :disabled="!valid"
             @click="save"
           >
-            {{ translate('dialog.buttons.saveChanges.idle') }}
+            <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+            <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
           </v-btn>
         </v-toolbar>
         <v-card-text class="pa-0">
@@ -149,7 +151,7 @@
 
 <script lang="ts">
 import {
-  mdiChevronDown, mdiClose, mdiMinus, mdiPencil, mdiPlus,
+  mdiChevronDown, mdiClose, mdiFloppy, mdiMinus, mdiPencil, mdiPlus,
 } from '@mdi/js';
 import {
   defineAsyncComponent,
@@ -317,6 +319,7 @@ export default defineComponent({
       mdiMinus,
       mdiChevronDown,
       mdiPencil,
+      mdiFloppy,
 
       // others
       translate,

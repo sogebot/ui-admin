@@ -15,11 +15,14 @@
         </v-btn>
         <v-spacer />
         <v-btn
-          text
+          small
+          :text="$vuetify.breakpoint.sm"
+          :icon="!$vuetify.breakpoint.sm"
           :loading="isSaving"
           @click="save"
         >
-          {{ translate('dialog.buttons.saveChanges.idle') }}
+          <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+          <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
         </v-btn>
       </v-toolbar>
 
@@ -116,7 +119,9 @@
 </template>
 
 <script lang="ts">
-import { mdiCheck, mdiClose } from '@mdi/js';
+import {
+  mdiCheck, mdiClose, mdiFloppy,
+} from '@mdi/js';
 import {
   computed,
   defineComponent, ref, useStore, watch,
@@ -289,6 +294,7 @@ export default defineComponent({
 
       mdiCheck,
       mdiClose,
+      mdiFloppy,
 
       selectedGameIdx,
       selectedGame,

@@ -1,8 +1,16 @@
 <template>
   <v-card :loading="isLoading">
     <portal to="navbar">
-      <v-btn text :loading="isSaving" :disabled="!valid1 || !valid2 || isLoading" @click="save">
-        {{ translate('dialog.buttons.saveChanges.idle') }}
+      <v-btn
+        small
+        :text="$vuetify.breakpoint.sm"
+        :icon="!$vuetify.breakpoint.sm"
+        :loading="isSaving"
+        @click="save"
+        :disabled="!valid1 || !valid2 || isLoading"
+      >
+        <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+        <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
     </portal>
 
@@ -301,7 +309,7 @@
 
 <script lang="ts">
 import {
-  mdiClose, mdiExclamationThick, mdiPlus,
+  mdiClose, mdiExclamationThick, mdiFloppy, mdiPlus,
 } from '@mdi/js';
 import {
   useContext, useRoute, useRouter,
@@ -576,6 +584,7 @@ export default defineComponent({
       mdiClose,
       mdiPlus,
       mdiExclamationThick,
+      mdiFloppy,
     };
   },
 });

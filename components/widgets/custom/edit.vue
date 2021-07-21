@@ -17,12 +17,14 @@
         <span class="headline">Edit custom URLs</span>
         <v-spacer />
         <v-btn
-          text
+          small
+          :text="$vuetify.breakpoint.sm"
+          :icon="!$vuetify.breakpoint.sm"
           :loading="isSaving"
-          :disabled="!valid"
           @click="save"
         >
-          {{ translate('dialog.buttons.saveChanges.idle') }}
+          <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+          <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
         </v-btn>
       </v-toolbar>
       <v-card-text class="pa-0">
@@ -67,7 +69,7 @@
 
 <script lang="ts">
 import {
-  mdiClose, mdiDelete, mdiExclamationThick,
+  mdiClose, mdiDelete, mdiExclamationThick, mdiFloppy,
 } from '@mdi/js';
 import {
   defineComponent, onMounted, ref, useContext, watch,
@@ -153,6 +155,7 @@ export default defineComponent({
       mdiClose,
       mdiDelete,
       mdiExclamationThick,
+      mdiFloppy,
     };
   },
 });

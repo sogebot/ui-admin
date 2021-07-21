@@ -3,8 +3,16 @@
   <div v-else>
     <portal to="navbar" v-if="route.path.split('/').length === 5">
       <transition appear name="fade">
-        <v-btn text small :disabled="!$store.state.settings.pending || !$store.state.settings.valid" :loading="$store.state.settings.save" @click="$store.commit('settings/save', true)">
-          {{ translate('dialog.buttons.saveChanges.idle') }}
+        <v-btn
+          small
+          :text="$vuetify.breakpoint.sm"
+          :icon="!$vuetify.breakpoint.sm"
+          :disabled="!$store.state.settings.pending || !$store.state.settings.valid"
+          :loading="$store.state.settings.save"
+          @click="$store.commit('settings/save', true)"
+        >
+          <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+          <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
         </v-btn>
       </transition>
     </portal>
@@ -71,7 +79,7 @@
 </template>
 
 <script lang="ts">
-import { mdiCog } from '@mdi/js';
+import { mdiCog, mdiFloppy } from '@mdi/js';
 import {
   useRoute, useRouter, useStore,
 } from '@nuxtjs/composition-api';
@@ -174,6 +182,7 @@ export default defineComponent({
       hasSettings,
       haveActions,
       update,
+      mdiFloppy,
     };
   },
 });
