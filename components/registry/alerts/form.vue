@@ -1,5 +1,5 @@
 <template>
-  <v-form v-model="valid">
+  <v-form ref="form1" v-model="valid">
     <v-checkbox
       v-model="model.enabled"
       :label="translate('registry.alerts.enabled')"
@@ -17,7 +17,6 @@
     <rewards
       v-if="model.rewardId !== undefined"
       v-model="model.rewardId"
-      :state="null"
     />
 
     <v-text-field
@@ -101,9 +100,9 @@
         <v-expansion-panel-content>
           <font
             v-model="model.font"
-            @input="model.font = $event"
             :parent="parent.font"
             :is-child="true"
+            @input="model.font = $event"
           />
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -288,11 +287,12 @@
 <script lang="ts">
 import {
   defineAsyncComponent,
-  defineComponent, ref, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
 import type { AlertInterface, CommonSettingsInterface } from '~/.bot/src/database/entity/alert';
+import { EventBus } from '~/functions/event-bus';
 import {
   highlighterCSS, highlighterHTML, highlighterJS, PrismEditor,
 } from '~/functions/prismjs';
@@ -322,10 +322,15 @@ export default defineComponent({
     const valid = ref(true);
     const model = ref(props.value);
     const customTab = ref(0);
+    const form1 = ref(null);
 
     watch(model, (val) => {
       ctx.emit('input', val);
     }, { deep: true });
+
+    onMounted(() => {
+      EventBus.$on('alert::validate', (cb: any) => cb((form1.value as unknown as HTMLFormElement).validate()));
+    });
 
     const revertCode = () => {
       if (customTab.value === 2) {
@@ -344,6 +349,7 @@ export default defineComponent({
     return {
       // ref
       valid,
+      form1,
       model,
       customTab,
 

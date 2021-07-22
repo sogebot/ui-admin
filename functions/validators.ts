@@ -1,6 +1,6 @@
 import XRegExp from 'xregexp';
 
-const required = (v?: string) => String(v).trim().length > 0 || 'This value is required';
+const required = (v?: string | null) => (v !== null && String(v).trim().length > 0) || 'This value is required';
 const minLength = (length: number) => {
   return (v?: string) => (typeof v === 'string' && v.length >= length) || 'Min length of this value is ' + length;
 };

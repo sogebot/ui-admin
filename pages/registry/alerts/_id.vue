@@ -6,10 +6,12 @@
         :text="$vuetify.breakpoint.sm"
         :icon="!$vuetify.breakpoint.sm"
         :loading="isSaving"
-        @click="save"
         :disabled="!valid1 || isLoading"
+        @click="save"
       >
-        <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+        <v-icon class="d-flex d-sm-none">
+          {{ mdiFloppy }}
+        </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
     </portal>
@@ -317,9 +319,20 @@ export default defineComponent({
       }
     });
 
-    const save = () => {
+    const save = async () => {
+      const isValid = await new Promise((resolve) => {
+        let validation = true;
+        EventBus.$emit('alert::validate', (_isValid: boolean) => {
+          if (!_isValid) {
+            validation = false;
+          }
+        });
+        setTimeout(() => {
+          resolve(validation);
+        }, 100);
+      });
       if (
-        (form1.value as unknown as HTMLFormElement).validate()
+        (form1.value as unknown as HTMLFormElement).validate() && isValid
       ) {
         isSaving.value = true;
         api.patch($axios, `/api/v1/registry/alerts/${item.value.id ?? v4()}`, item.value)
