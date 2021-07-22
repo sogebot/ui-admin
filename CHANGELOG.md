@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.46](https://github.com/sogebot/ui-admin/compare/v0.0.45...v0.0.46) (2021-07-22)
+
+
+### Bug Fixes
+
+* **alerts:** validate all alert forms before update ([a4b3458](https://github.com/sogebot/ui-admin/commit/a4b3458033100d1c3ba59f8366f5a215c17e4cae))
+
 ### [0.0.45](https://github.com/sogebot/ui-admin/compare/v0.0.44...v0.0.45) (2021-07-21)
 
 
