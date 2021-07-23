@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/sogebot/ui-admin/compare/v0.0.46...v1.0.0) (2021-07-23)
+
+
+### Features
+
+* **inputVariables:** add isStreamOnline ([c1ebeb7](https://github.com/sogebot/ui-admin/commit/c1ebeb7e712a12aa6edec4e9b3236401025b4ed0))
+
 ### [0.0.46](https://github.com/sogebot/ui-admin/compare/v0.0.45...v0.0.46) (2021-07-22)
 
 
