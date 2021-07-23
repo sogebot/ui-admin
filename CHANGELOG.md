@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.3](https://github.com/sogebot/ui-admin/compare/v1.0.2...v1.0.3) (2021-07-23)
+
+
+### Bug Fixes
+
+* **plyr:** use another vue-plyr package ([395b2a3](https://github.com/sogebot/ui-admin/commit/395b2a36c1b9d80a179207f423956417ec08e834))
+* **textoverlay:** use proper v-model for item text ([e45f1e2](https://github.com/sogebot/ui-admin/commit/e45f1e299dd4a59f4e06365decb25b3afaa8fe7c))
+* **ytplayer:** use context within setup ([a13e454](https://github.com/sogebot/ui-admin/commit/a13e454337fb4e8126629c90f5c4a0488ffd37eb))
+
 ### [1.0.2](https://github.com/sogebot/ui-admin/compare/v1.0.1...v1.0.2) (2021-07-23)
 
 ### [1.0.1](https://github.com/sogebot/ui-admin/compare/v1.0.0...v1.0.1) (2021-07-23)
