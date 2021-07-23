@@ -121,13 +121,14 @@ import {
   computed,
   defineComponent, nextTick, onMounted, onUnmounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
+import VuePlyr from '@skjnldsv/vue-plyr';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { isEqual } from 'lodash';
 import Vue from 'vue';
-import VuePlyr from 'vue-plyr';
 
-import 'vue-plyr/dist/vue-plyr.css';
+// Workaround is to load css in head https://github.com/skjnldsv/vue-plyr/issues/28
+// import '@skjnldsv/vue-plyr/dist/dist/vue-plyr.css';
 
 import type { currentSongType, SongRequestInterface } from '.bot/src/database/entity/song';
 import { error } from '~/functions/error';
@@ -402,6 +403,16 @@ export default defineComponent({
       mdiStop,
       mdiSkipForward,
       mdiDelete,
+    };
+  },
+  head () {
+    return {
+      link: [
+        {
+          rel:  'stylesheet',
+          href: 'https://unpkg.com/vue-plyr/dist/vue-plyr.css',
+        },
+      ],
     };
   },
 });
