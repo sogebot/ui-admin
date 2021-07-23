@@ -143,6 +143,7 @@ export default defineComponent({
   setup () {
     const isPopout = computed(() => location.href.includes('popout'));
     const height = ref(600);
+    const ctx = useContext();
 
     const currentTag = ref('general');
     const availableTags = ref([] as string[]);
@@ -369,7 +370,7 @@ export default defineComponent({
       const ytplayer = document.getElementById('youtubeplayer')?.clientHeight ?? 0;
       const offset = 52 + 124 + ytplayer;
       const newHeight = window.innerHeight - offsetTop - offset;
-      height.value = Math.max(newHeight, useContext().$vuetify.breakpoint.mobile ? 350 : 0);
+      height.value = Math.max(newHeight, ctx.$vuetify.breakpoint.mobile ? 350 : 0);
     }
 
     return {
