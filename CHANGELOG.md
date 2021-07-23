@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.5](https://github.com/sogebot/ui-admin/compare/v1.0.4...v1.0.5) (2021-07-23)
+
+
+### Bug Fixes
+
+* **events:** add missing variables on several inputs ([89a4a30](https://github.com/sogebot/ui-admin/commit/89a4a30975f1ec408b1c82232b38c39aa9c573ad))
+
 ### [1.0.4](https://github.com/sogebot/ui-admin/compare/v1.0.3...v1.0.4) (2021-07-23)
 
 
