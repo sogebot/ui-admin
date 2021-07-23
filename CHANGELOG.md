@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.1](https://github.com/sogebot/ui-admin/compare/v1.0.0...v1.0.1) (2021-07-23)
+
+
+### Bug Fixes
+
+* **buttons:** save button should correctly swap between text/icon ([8baf6de](https://github.com/sogebot/ui-admin/commit/8baf6de25f954358d6a8ab327476d410a085bdda))
+
 ## [1.0.0](https://github.com/sogebot/ui-admin/compare/v0.0.46...v1.0.0) (2021-07-23)
 
 
