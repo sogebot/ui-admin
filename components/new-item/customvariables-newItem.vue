@@ -215,7 +215,7 @@
                 <v-btn
                   icon
                   :color="hover ? 'primary' : 'secondary lighten-3'"
-                  @click="link(item)"
+                  :href="`/customvariables/${item.id}`"
                 >
                   <v-icon>{{ mdiLink }}</v-icon>
                 </v-btn>
@@ -570,11 +570,6 @@ export default defineComponent({
       urls.value = urls.value?.filter(o => o.id !== urlId);
     };
 
-    const link = (item: any) => {
-      navigator.clipboard.writeText(`${origin}customvariables/${item.id}`);
-      EventBus.$emit('snack', 'success', 'Link copied to clipboard.');
-    };
-
     return {
       variableName,
       evalValue,
@@ -619,7 +614,6 @@ export default defineComponent({
 
       urlsHeaders,
       origin,
-      link,
       highlighterJS,
     };
   },

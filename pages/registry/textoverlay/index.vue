@@ -123,7 +123,7 @@
           <v-btn
             icon
             :color="hover ? 'primary' : 'secondary lighten-3'"
-            @click.stop="link(item)"
+            :href="`/overlays/text/${item.id}`"
           >
             <v-icon>{{ mdiLink }}</v-icon>
           </v-btn>
@@ -285,11 +285,6 @@ export default defineComponent({
       });
     };
 
-    const link = (item: TextInterface) => {
-      navigator.clipboard.writeText(`${location.origin}/overlays/text/${item.id}`);
-      EventBus.$emit('snack', 'success', 'Link copied to clipboard.');
-    };
-
     return {
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       items,
@@ -312,7 +307,6 @@ export default defineComponent({
       mdiLink,
       ButtonStates,
       clone,
-      link,
       saveCurrentItems,
     };
   },
