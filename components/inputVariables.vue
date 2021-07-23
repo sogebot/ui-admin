@@ -48,7 +48,7 @@ export default defineComponent({
       'toptip.overall.username', 'toptip.overall.amount', 'toptip.overall.currency',
       'toptip.overall.message', 'toptip.stream.username', 'toptip.stream.amount',
       'toptip.stream.currency', 'toptip.stream.message', 'latestCheerAmount', 'latestCheerMessage',
-      'latestCheer', 'isBotSubscriber',
+      'latestCheer', 'isBotSubscriber', 'isStreamOnline',
     ];
 
     const filterItems = computed(() => {
