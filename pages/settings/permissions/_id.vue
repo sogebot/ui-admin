@@ -62,8 +62,8 @@
       </v-btn>
       <v-spacer />
       <v-btn
-        :text="$vuetify.breakpoint.sm"
-        :icon="!$vuetify.breakpoint.sm"
+        :text="!$vuetify.breakpoint.xs"
+        :icon="$vuetify.breakpoint.xs"
         :loading="isSaving"
         :disabled="!valid"
         @click="save"

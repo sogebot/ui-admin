@@ -3,8 +3,8 @@
     <portal to="navbar">
       <v-btn
         small
-        :text="$vuetify.breakpoint.sm"
-        :icon="!$vuetify.breakpoint.sm"
+        :text="!$vuetify.breakpoint.xs"
+        :icon="$vuetify.breakpoint.xs"
         :loading="isSaving"
         :disabled="!valid1 || isLoading"
         @click="save"

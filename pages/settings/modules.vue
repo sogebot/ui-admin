@@ -5,8 +5,8 @@
       <transition appear name="fade">
         <v-btn
           small
-          :text="$vuetify.breakpoint.sm"
-          :icon="!$vuetify.breakpoint.sm"
+          :text="!$vuetify.breakpoint.xs"
+          :icon="$vuetify.breakpoint.xs"
           :disabled="!$store.state.settings.pending || !$store.state.settings.valid"
           :loading="$store.state.settings.save"
           @click="$store.commit('settings/save', true)"
