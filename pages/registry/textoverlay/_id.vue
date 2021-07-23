@@ -117,7 +117,7 @@
 
             <v-stepper-content :step="3">
               <prism-editor
-                v-model="item.html"
+                v-model="item.text"
                 style="border: 1px solid gray;"
                 line-numbers
                 :tab-size="4"
@@ -201,6 +201,7 @@ export default defineComponent({
 
     const save = () => {
       isSaving.value = true;
+      console.log('Saving', item.value);
       getSocket('/registries/text').emit('text::save', item.value, (err: string | null) => {
         if (err) {
           return error(err);
