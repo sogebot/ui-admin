@@ -160,7 +160,7 @@
                   >
                     <template #append>
                       <input-variables
-                        :filters="['global', ...availableVariables(item.name)]"
+                        :filters="availableVariables(item.name)"
                         @input="item.filter = item.filter + $event"
                       />
                     </template>

@@ -125,7 +125,7 @@
             >
               <template #append>
                 <input-variables
-                  :filters="['global', ...availableVariables]"
+                  :filters="availableVariables"
                   @input="filter = filter + $event"
                 />
               </template>
