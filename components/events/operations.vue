@@ -74,7 +74,15 @@
                       :label="translate(`events.definitions.${defKey}.label`)"
                       :hint="translate('events.definitions.' + defKey + '.placeholder')"
                       persistent-hint
-                    />
+                    >
+                    <template #append>
+                      <input-variables
+                        v-if="['commandToRun', 'messageToSend'].includes(defKey)"
+                        :filters="filters"
+                        @input="o.definitions[defKey] = o.definitions[defKey] + $event"
+                      />
+                    </template>
+                    </v-text-field>
                     <v-text-field
                       v-else-if="typeof o.definitions[defKey] === 'number'"
                       v-model.number="o.definitions[defKey]"
@@ -146,7 +154,7 @@ import { error } from '~/functions/error';
 export default defineComponent({
   components: {},
   props:      {
-    operations: Array, item: Object, rules: Object,
+    operations: Array, item: Object, rules: Object, filters: Object,
   },
   setup (props, ctx) {
     let operationsBackup: any[] = [];

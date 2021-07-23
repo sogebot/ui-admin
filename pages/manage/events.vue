@@ -225,6 +225,7 @@
               :item="item"
               :operations="item.operations"
               :rules="rules"
+              :filters="availableVariables(item.name)"
               @save="item.operations = $event; update(item, false, 'operations')"
             />
           </v-col>
