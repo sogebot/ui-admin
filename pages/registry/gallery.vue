@@ -147,7 +147,7 @@
     </v-sheet>
 
     <v-row>
-      <v-col>
+      <v-col cols="12" md="7">
         <v-card :loading="state.loading !== ButtonStates.success">
           <v-card-text>
             <v-treeview
