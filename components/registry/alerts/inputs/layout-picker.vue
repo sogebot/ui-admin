@@ -37,7 +37,7 @@ import translate from '@sogebot/ui-helpers/translate';
 export default defineComponent({
   props: { value: String },
   setup (props, ctx) {
-    const model = ref(Number(props.value));
+    const model = ref(Number(props.value) - 1);
     watch(model, (val) => {
       ctx.emit('input', String(Number(val) + 1));
     });
