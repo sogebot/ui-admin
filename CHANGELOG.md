@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.9](https://github.com/sogebot/ui-admin/compare/v1.0.8...v1.0.9) (2021-07-24)
+
+
+### Bug Fixes
+
+* **layout-picker:** show correct layout on load ([1571fa6](https://github.com/sogebot/ui-admin/commit/1571fa67afcd833265636203ea48509a7ce14005))
+
 ### [1.0.8](https://github.com/sogebot/ui-admin/compare/v1.0.7...v1.0.8) (2021-07-24)
 
 
