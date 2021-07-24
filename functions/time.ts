@@ -23,7 +23,7 @@ export function setAttr (currentValue: number | string, type: 'time' | 'date', v
     console.log(`${value} ${time}`);
     return Date.parse(`${value} ${time}`);
   } else if (type === 'time') {
-    currentValue = currentValue === 0 ? Date.now() : currentValue;
+    currentValue = currentValue === 0 || typeof currentValue === 'undefined' ? Date.now() : currentValue;
     let date = timeToDate(currentValue);
     if (value.startsWith('00:')) {
       // we need to +1 day as day is setting back

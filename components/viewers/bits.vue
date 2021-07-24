@@ -48,7 +48,7 @@
             >
               {{ dayjs(item.cheeredAt).format('LL') }} {{ dayjs(item.cheeredAt).format('LTS') }}
               <template #input>
-                <datetime :key="userId + 'cheeredAt'" :input.sync="item.cheeredAt" />
+                <datetime :key="userId + 'cheeredAt'" @input="item.tippedAt = $event" />
               </template>
             </v-edit-dialog>
           </template>
