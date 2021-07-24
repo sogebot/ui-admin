@@ -22,17 +22,20 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { defaults } from 'lodash';
+import { defaults, pick } from 'lodash';
 
 export default defineComponent({
   props: { opts: Object },
   setup (props: any, ctx) {
     const model = ref(0);
     const options = ref(
-      defaults(props.opts, {
-        galleryCache:          false,
-        galleryCacheLimitInMb: 50,
-      }));
+      pick(
+        defaults(props.opts, {
+          galleryCache:          false,
+          galleryCacheLimitInMb: 50,
+        }),
+        ['galleryCache', 'galleryCacheLimitInMb'],
+      ));
 
     watch(options, (val: any) => {
       ctx.emit('update', val);

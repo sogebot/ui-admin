@@ -34,19 +34,22 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { defaults } from 'lodash';
+import { defaults, pick } from 'lodash';
 
 export default defineComponent({
   props: { opts: Object },
   setup (props: any, ctx) {
     const model = ref(0);
     const options = ref(
-      defaults(props.opts, {
-        display: ['username', 'event'],
-        ignore:  [],
-        count:   5,
-        order:   'desc',
-      }));
+      pick(
+        defaults(props.opts, {
+          display: ['username', 'event'],
+          ignore:  [],
+          count:   5,
+          order:   'desc',
+        }),
+        ['display', 'ignore', 'count', 'desc'],
+      ));
 
     watch(options, (val) => {
       ctx.emit('update', val);

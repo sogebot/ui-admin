@@ -28,18 +28,21 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { defaults } from 'lodash';
+import { defaults, pick } from 'lodash';
 
 export default defineComponent({
   props: { opts: Object },
   setup (props: any, ctx) {
     const model = ref(0);
     const options = ref(
-      defaults(props.opts, {
-        volume:    0,
-        filter:    'none',
-        showLabel: true,
-      }));
+      pick(
+        defaults(props.opts, {
+          volume:    0,
+          filter:    'none',
+          showLabel: true,
+        }),
+        ['volume', 'filter', 'showLabel'],
+      ));
 
     watch(options, (val: any) => {
       if (val.volume < 0) {

@@ -19,7 +19,7 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { defaults } from 'lodash';
+import { defaults, pick } from 'lodash';
 
 export default defineComponent({
   components: { tts: defineAsyncComponent(() => import('~/components/form/expansion/tts.vue')) },
@@ -27,13 +27,16 @@ export default defineComponent({
   setup (props, ctx) {
     const model = ref(0);
     const options = ref(
-      defaults(props.opts, {
-        voice:                          'UK English Female',
-        volume:                         50,
-        rate:                           1,
-        pitch:                          1,
-        triggerTTSByHighlightedMessage: false,
-      }));
+      pick(
+        defaults(props.opts, {
+          voice:                          'UK English Female',
+          volume:                         50,
+          rate:                           1,
+          pitch:                          1,
+          triggerTTSByHighlightedMessage: false,
+        }),
+        ['voice', 'volume', 'rate', 'pitch', 'triggerTTSByHighlightedMessage'],
+      ));
 
     watch(options, (val) => {
       ctx.emit('update', val);

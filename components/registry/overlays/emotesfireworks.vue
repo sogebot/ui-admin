@@ -50,19 +50,22 @@ import {
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { defaults } from 'lodash';
+import { defaults, pick } from 'lodash';
 
 export default defineComponent({
   props: { opts: Object },
   setup (props: any, ctx) {
     const model = ref(0);
     const options = ref(
-      defaults(props.opts, {
-        emotesSize:              3,
-        numOfEmotesPerExplosion: 10,
-        animationTime:           1000,
-        numOfExplosions:         5,
-      }));
+      pick(
+        defaults(props.opts, {
+          emotesSize:              3,
+          numOfEmotesPerExplosion: 10,
+          animationTime:           1000,
+          numOfExplosions:         5,
+        }),
+        ['emotesSize', 'animationTime', 'numOfEmotesPerExplosion', 'numOfExplosions'],
+      ));
 
     watch(options, (val: any) => {
       ctx.emit('update', val);

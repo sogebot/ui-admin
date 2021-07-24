@@ -44,19 +44,22 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { defaults } from 'lodash';
+import { defaults, pick } from 'lodash';
 
 export default defineComponent({
   props: { opts: Object },
   setup (props, ctx) {
     const model = ref(0);
     const options = ref(
-      defaults(props.opts, {
-        theme:               'light',
-        hideAfterInactivity: false,
-        inactivityTime:      5000,
-        align:               'top',
-      }));
+      pick(
+        defaults(props.opts, {
+          theme:               'light',
+          hideAfterInactivity: false,
+          inactivityTime:      5000,
+          align:               'top',
+        }),
+        ['theme', 'hideAfterInactivity', 'inactivityTime', 'align'],
+      ));
 
     watch(options, (val) => {
       ctx.emit('update', val);

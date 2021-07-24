@@ -29,18 +29,21 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { defaults } from 'lodash';
+import { defaults, pick } from 'lodash';
 
 export default defineComponent({
   props: { opts: Object },
   setup (props: any, ctx) {
     const model = ref(0);
     const options = ref(
-      defaults(props.opts, {
-        volume:       0,
-        customPeriod: 31,
-        numOfClips:   20,
-      }));
+      pick(
+        defaults(props.opts, {
+          volume:       0,
+          customPeriod: 31,
+          numOfClips:   20,
+        }),
+        ['volume', 'customPeriod', 'numOfClips'],
+      ));
 
     watch(options, (val: any) => {
       if (val.volume < 0) {
