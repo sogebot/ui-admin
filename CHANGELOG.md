@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.8](https://github.com/sogebot/ui-admin/compare/v1.0.7...v1.0.8) (2021-07-24)
+
+
+### Bug Fixes
+
+* **gallery:** force cols size ([526e55f](https://github.com/sogebot/ui-admin/commit/526e55f32f2e9ca12725d457fd4f7bee7fcadfe2))
+* **overlays:** pick only allowed keys ([2d44825](https://github.com/sogebot/ui-admin/commit/2d44825ef611e31eb7d9b7c98d94b22e76fc0c42))
+
 ### [1.0.7](https://github.com/sogebot/ui-admin/compare/v1.0.6...v1.0.7) (2021-07-24)
 
 
