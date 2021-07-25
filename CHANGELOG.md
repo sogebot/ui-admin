@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.12](https://github.com/sogebot/ui-admin/compare/v1.0.11...v1.0.12) (2021-07-25)
+
+
+### Bug Fixes
+
+* **overlays:** reset pending state on save ([8d84400](https://github.com/sogebot/ui-admin/commit/8d84400b5bbcf6b6808e82ac03ed3cf0a48d12f5))
+
 ### [1.0.11](https://github.com/sogebot/ui-admin/compare/v1.0.10...v1.0.11) (2021-07-25)
 
 
