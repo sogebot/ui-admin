@@ -50,7 +50,7 @@ export default defineComponent({
           count:   5,
           order:   'desc',
         }),
-        ['display', 'ignore', 'count', 'desc'],
+        ['display', 'ignore', 'count', 'order'],
       ));
 
     watch(options, (val) => {
