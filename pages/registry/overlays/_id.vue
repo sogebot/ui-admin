@@ -148,7 +148,10 @@ export default defineComponent({
               console.error(e.response.data);
               error(JSON.stringify(e.response.data));
             })
-            .finally(() => (isSaving.value = false));
+            .finally(() => {
+              isSaving.value = false;
+              store.commit('settings/pending', false);
+            });
         } else {
           api.post<OverlayMappers>($axios, '/api/v1/overlay', item.value)
             .then(() => {
@@ -159,7 +162,10 @@ export default defineComponent({
               console.error(e.response.data);
               error(JSON.stringify(e.response.data));
             })
-            .finally(() => (isSaving.value = false));
+            .finally(() => {
+              isSaving.value = false;
+              store.commit('settings/pending', false);
+            });
         }
       }
     };
