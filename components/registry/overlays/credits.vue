@@ -268,10 +268,10 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { defaultsDeep } from 'lodash';
+import { defaultsDeep, isEqual } from 'lodash';
 
 export default defineComponent({
-  props: { opts: Object },
+  props: { value: Object },
   setup (props: any, ctx) {
     const timestamp = ref(Date.now());
     const customTextTypes: { value: string, text: string }[] = [
@@ -305,7 +305,7 @@ export default defineComponent({
     ];
 
     const options = ref(
-      defaultsDeep(props.opts, {
+      defaultsDeep(props.value, {
         speed:       'medium',
         customTexts: [],
         social:      [],
@@ -344,9 +344,11 @@ export default defineComponent({
         },
       }));
 
-    watch([options, timestamp], (val: any) => {
-      ctx.emit('update', val[0]);
-    }, { deep: true });
+    watch([options, timestamp], () => {
+      if (!isEqual(props.value, options.value)) {
+        ctx.emit('input', options.value);
+      }
+    }, { deep: true, immediate: true });
 
     const timestampUpdate = () => {
       setTimeout(() => {

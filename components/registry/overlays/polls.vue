@@ -44,15 +44,17 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { defaults, pick } from 'lodash';
+import {
+  defaults, isEqual, pick,
+} from 'lodash';
 
 export default defineComponent({
-  props: { opts: Object },
+  props: { value: Object },
   setup (props, ctx) {
     const model = ref(0);
     const options = ref(
       pick(
-        defaults(props.opts, {
+        defaults(props.value, {
           theme:               'light',
           hideAfterInactivity: false,
           inactivityTime:      5000,
@@ -62,8 +64,10 @@ export default defineComponent({
       ));
 
     watch(options, (val) => {
-      ctx.emit('update', val);
-    }, { deep: true });
+      if (!isEqual(props.value, options.value)) {
+        ctx.emit('input', val);
+      }
+    }, { deep: true, immediate: true });
 
     return {
       model,

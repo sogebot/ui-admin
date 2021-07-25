@@ -18,20 +18,24 @@ import {
 } from '@nuxtjs/composition-api';
 import { getCurrentIP } from '@sogebot/ui-helpers/getCurrentIP';
 import translate from '@sogebot/ui-helpers/translate';
-import { defaults, pick } from 'lodash';
+import {
+  defaults, isEqual, pick,
+} from 'lodash';
 
 export default defineComponent({
-  props: { opts: Object },
+  props: { value: Object },
   setup (props, ctx) {
     const options = ref(
       pick(
-        defaults(props.opts, { allowedIPs: [] }),
+        defaults(props.value, { allowedIPs: [] }),
         ['allowedIPs'],
       ));
 
     watch(options, (val) => {
-      ctx.emit('update', val);
-    }, { deep: true });
+      if (!isEqual(props.value, options.value)) {
+        ctx.emit('input', val);
+      }
+    }, { deep: true, immediate: true });
 
     const addCurrentIP = (array: string[]) => {
       getCurrentIP().then((value) => {
