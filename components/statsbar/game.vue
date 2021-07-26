@@ -35,18 +35,18 @@
               <v-card-title :key="timestamp" class="px-1 py-0 text-truncate" style="font-size: 1rem;">
                 <span v-if="tags.length === 0">{{ capitalize(translate('not-available')) }}</span>
                 <small
-                  v-for="tag of filterTags(true)"
+                  v-for="(tag, idx) of filterTags(true)"
                   :key="tag.name"
                   :class="{ 'grey--text': tag.is_auto }"
                 >
-                  {{ tag.name }}
+                  {{ tag.name }}<span class="white--text" v-if="(idx + 1) < tags.length">,&nbsp;</span>
                 </small>
                 <span
-                  v-for="tag of filterTags(false)"
+                  v-for="(tag, idx) of filterTags(false)"
                   :key="tag.name"
                   :class="{ 'grey--text': tag.is_auto }"
                 >
-                  {{ tag.name }}
+                  {{ tag.name }}<span class="white--text" v-if="(idx + 1 + filterTags(true).length) < tags.length">,&nbsp;</span>
                 </span>
               </v-card-title>
               <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
