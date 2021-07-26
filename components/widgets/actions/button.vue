@@ -89,9 +89,10 @@
       <div v-if="showMenu && customVariable && customVariable.type === 'text'">
         <v-text-field
           v-model="customVariable.currentValue"
-          solo
+          filled
           dense
           hide-details
+          placeholder="Set your value"
           class="pa-0 ma-0"
           @input="debouncedTrigger($event, customVariable.currentValue)"
         />
@@ -207,11 +208,10 @@ export default defineComponent({
       if (clonedItem.value.type === 'customvariable') {
         api.get($axios, `/api/v1/quickaction/${clonedItem.value.id}`)
           .then((response) => {
-            console.log((response.data as any).customvariable);
             customVariable.value = (response.data as any).customvariable;
           });
         setInterval(() => {
-          // don't refresh if in middle updatem
+          // don't refresh if in middle update
           if (!showMenu.value) {
             api.get($axios, `/api/v1/quickaction/${clonedItem.value.id}`)
               .then((response) => {

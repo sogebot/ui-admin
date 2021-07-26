@@ -26,7 +26,7 @@
       </v-btn>
     </v-toolbar>
 
-    <v-row dense>
+    <v-row dense :key="timestamp">
       <v-col cols="12">
         <template v-for="item of items">
           <span :key="item.id + 'transition'">
@@ -81,6 +81,7 @@ export default defineComponent({
   setup () {
     const context = useContext();
     const editing = ref(false);
+    const timestamp = ref(Date.now());
     const height = ref(600);
     const isPopout = computed(() => location.href.includes('popout'));
     const loading = ref(true);
@@ -147,6 +148,7 @@ export default defineComponent({
                 item.show = true;
               }
               loading.value = false;
+              timestamp.value = Date.now();
             });
           }, 200);
         } catch (e) {
@@ -169,6 +171,7 @@ export default defineComponent({
       items,
       isPopout,
       loading,
+      timestamp,
 
       /* functions */
       addItem,
