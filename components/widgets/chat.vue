@@ -63,7 +63,7 @@
 
     <v-overlay v-model="dialog" color="black" absolute class="w-100 px-2">
       <v-textarea v-model="message" auto-grow rows="2" counter label="Bot message" />
-      <v-btn color="primary">
+      <v-btn color="primary" @click="sendMessage">
         Send message
       </v-btn>
       <v-btn icon @click="dialog=false">
@@ -184,6 +184,14 @@ export default defineComponent({
       }
     };
 
+    const sendMessage = () => {
+      if (message.value.length > 0) {
+        getSocket('/widgets/chat').emit('chat.message.send', message.value);
+      }
+      dialog.value = false;
+      message.value = '';
+    };
+
     return {
       isHttps,
       chatUrl,
@@ -196,6 +204,7 @@ export default defineComponent({
       showParts,
       height,
       list,
+      sendMessage,
       mdiRefresh,
       mdiClose,
       mdiCommentPlus,
