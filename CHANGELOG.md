@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.15](https://github.com/sogebot/ui-admin/compare/v1.0.14...v1.0.15) (2021-07-26)
+
+
+### Bug Fixes
+
+* **actions:** refresh buttons after save ([f2b67d1](https://github.com/sogebot/ui-admin/commit/f2b67d1766394c621e1738a5418536b2d78c3dc2))
+
 ### [1.0.14](https://github.com/sogebot/ui-admin/compare/v1.0.13...v1.0.14) (2021-07-26)
 
 
