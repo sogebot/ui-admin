@@ -224,6 +224,8 @@
             <operations
               :item="item"
               :operations="item.operations"
+              :events="availableEvents"
+              :variables="availableEvents.find(o => o.id === item.name) || { variables: []}.variables"
               :rules="rules"
               :filters="availableVariables(item.name)"
               @save="item.operations = $event; update(item, false, 'operations')"
@@ -270,7 +272,7 @@ import {
 export default defineComponent({
   components: {
     'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/events-newItem.vue') }),
-    operations: defineAsyncComponent({ loader: () => import('~/components/events/operations.vue') }),
+    operations: defineAsyncComponent({ loader: () => import('~/components/manage/events/operations.vue') }),
   },
   setup () {
     const timestamp = ref(Date.now());
@@ -510,6 +512,7 @@ export default defineComponent({
       update,
       deleteSelected,
       translate,
+      availableEvents,
 
       selected,
       deleteDialog,

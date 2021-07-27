@@ -108,6 +108,10 @@
             </v-list-item-content>
           </v-list-item>
         </v-form>
+
+        <v-divider/>
+
+        <tester :event="item.name" :events="events" :eventId="item.id"/>
       </v-card-text>
 
       <v-card-actions>
@@ -139,6 +143,7 @@
 import { mdiTrashCan } from '@mdi/js';
 import {
   computed,
+  defineAsyncComponent,
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -152,9 +157,9 @@ import type { EventOperationInterface, Events } from '~/.bot/src/database/entity
 import { error } from '~/functions/error';
 
 export default defineComponent({
-  components: {},
+  components: { tester: defineAsyncComponent({ loader: () => import('~/components/manage/events/test-dialog.vue') }) },
   props:      {
-    operations: Array, item: Object, rules: Object, filters: Object,
+    operations: Array, item: Object, rules: Object, filters: Array, variables: Object, events: Array,
   },
   setup (props, ctx) {
     let operationsBackup: any[] = [];

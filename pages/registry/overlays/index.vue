@@ -135,6 +135,7 @@
               icon
               :color="hover ? 'primary' : 'secondary lighten-3'"
               :href="'/overlays/' + item.id"
+              @click.stop
             >
               <v-icon>{{ mdiLink }}</v-icon>
             </v-btn>
