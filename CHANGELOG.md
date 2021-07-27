@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/sogebot/ui-admin/compare/v1.0.15...v2.0.0) (2021-07-27)
+
+
+### Features
+
+* add event tester ([4b0d5e7](https://github.com/sogebot/ui-admin/commit/4b0d5e7bb547829437f79b993a95ba68f5ef1384))
+
 ### [1.0.15](https://github.com/sogebot/ui-admin/compare/v1.0.14...v1.0.15) (2021-07-26)
 
 
