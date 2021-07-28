@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.3](https://github.com/sogebot/ui-admin/compare/v2.0.2...v2.0.3) (2021-07-28)
+
+
+### Bug Fixes
+
+* **discord:** set proper default value if channel not exist ([5b294a1](https://github.com/sogebot/ui-admin/commit/5b294a1fd560a73522b039b07c0dce7b751fd34f))
+
 ### [2.0.2](https://github.com/sogebot/ui-admin/compare/v2.0.1...v2.0.2) (2021-07-28)
 
 
