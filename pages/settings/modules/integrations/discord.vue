@@ -176,11 +176,13 @@ export default defineComponent({
             return;
           }
           ui.value = _ui;
-          console.log({ _settings });
 
-          if (typeof _settings.bot.listenAtChannels === 'string') {
-            _settings.bot.listenAtChannels = [_settings.bot.listenAtChannels];
-          }
+          _settings.bot.listenAtChannels = [
+            typeof _settings.bot.listenAtChannels[0] === 'string' ? [_settings.bot.listenAtChannels[0]] : _settings.bot.listenAtChannels[0],
+            typeof _settings.bot.listenAtChannels[1] === 'string' ? [_settings.bot.listenAtChannels[1]] : _settings.bot.listenAtChannels[1],
+          ];
+
+          console.log({ _settings });
           settings.value = _settings;
           nextTick(() => { store.commit('settings/pending', false); });
 
