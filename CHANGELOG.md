@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.2](https://github.com/sogebot/ui-admin/compare/v2.0.1...v2.0.2) (2021-07-28)
+
+
+### Bug Fixes
+
+* **discord:** force listenAtChannels to Array ([6c793a8](https://github.com/sogebot/ui-admin/commit/6c793a8eb03ec2df5993f5b049332c5b2b9ef096))
+
 ### [2.0.1](https://github.com/sogebot/ui-admin/compare/v2.0.0...v2.0.1) (2021-07-28)
 
 
