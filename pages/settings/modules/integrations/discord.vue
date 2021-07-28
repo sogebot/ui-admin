@@ -218,7 +218,9 @@ export default defineComponent({
             }
 
             if (!channels2.find((o: any) => String(o.value) === String(settings.value?.bot.guild[0]))) {
-              settings.value.bot.listenAtChannels = ['', settings.value.bot.listenAtChannels[1]];
+              settings.value.bot.listenAtChannels = [
+                [''],
+                !Array.isArray(settings.value.bot.listenAtChannels[1]) ? [settings.value.bot.listenAtChannels[1]] : settings.value.bot.listenAtChannels[1]];
             }
             settings.value.bot.listenAtChannels = [settings.value.bot.listenAtChannels[0].filter(Boolean), settings.value.bot.listenAtChannels[1]];
             channels.value = channels2;
