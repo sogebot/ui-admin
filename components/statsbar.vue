@@ -2,7 +2,7 @@
   <div>
     <v-alert
       v-if="!$store.state.configuration.isChannelSet"
-      type="danger"
+      type="error"
       dismissible
       prominent
       dense
@@ -140,7 +140,6 @@
 import {
   computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, reactive, ref, watch,
 } from '@nuxtjs/composition-api';
-import type { Ref } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
@@ -162,7 +161,7 @@ export default defineComponent({
   setup () {
     const averageStats: any = reactive({});
     const currentStats: any = reactive({});
-    const timestamp: Ref<null | number> = ref(null);
+    const timestamp = ref(null as null | number);
     const uptime = ref(null as null | number);
     const broadcasterType = ref(localStorage.broadcasterType || '');
     const version = ref('');
@@ -270,7 +269,7 @@ export default defineComponent({
 
       interval = window.setInterval(() => {
         timestamp.value = Date.now();
-      }, 1000);
+      }, 250);
     });
     onUnmounted(() => {
       clearInterval(interval);
