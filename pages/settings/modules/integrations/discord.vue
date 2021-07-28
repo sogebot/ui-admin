@@ -176,10 +176,9 @@ export default defineComponent({
             return;
           }
           ui.value = _ui;
-
           _settings.bot.listenAtChannels = [
-            typeof _settings.bot.listenAtChannels[0] === 'string' ? [_settings.bot.listenAtChannels[0]] : _settings.bot.listenAtChannels[0],
-            typeof _settings.bot.listenAtChannels[1] === 'string' ? [_settings.bot.listenAtChannels[1]] : _settings.bot.listenAtChannels[1],
+            !Array.isArray(_settings.bot.listenAtChannels[0]) ? [_settings.bot.listenAtChannels[0]] : _settings.bot.listenAtChannels[0],
+            !Array.isArray(_settings.bot.listenAtChannels[1]) ? [_settings.bot.listenAtChannels[1]] : _settings.bot.listenAtChannels[1],
           ];
 
           console.log({ _settings });
