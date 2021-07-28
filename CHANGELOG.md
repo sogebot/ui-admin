@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/sogebot/ui-admin/compare/v2.0.0...v2.0.1) (2021-07-28)
+
+
+### Bug Fixes
+
+* **deps:** bump actions/setup-node from 2.2.0 to 2.3.0 ([#97](https://github.com/sogebot/ui-admin/issues/97)) ([b219e18](https://github.com/sogebot/ui-admin/commit/b219e180398f12c48d394f839e37e4c70c217fad))
+* **discord:** retype string listenAtChannels ([55353ac](https://github.com/sogebot/ui-admin/commit/55353ac42020be8249d834652909ff1327e8b173))
+* **statsbar:** fix invalid alert type ([bd628dc](https://github.com/sogebot/ui-admin/commit/bd628dc02ffa9d1b5a0ecd41952d355ffbc09298))
+* **widgets:** remove empty space in widget tabs ([18e299d](https://github.com/sogebot/ui-admin/commit/18e299d74229e6337d9d379eeb9c992a2453cf98))
+
 ## [2.0.0](https://github.com/sogebot/ui-admin/compare/v1.0.15...v2.0.0) (2021-07-27)
 
 
