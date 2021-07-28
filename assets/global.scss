@@ -7,6 +7,10 @@
   justify-content: normal !important;
 }
 
+.v-slide-group:not(.v-slide-group--has-affixes) > .v-slide-group__prev--disabled, .v-slide-group:not(.v-slide-group--has-affixes) > .v-slide-group__next--disabled {
+  display: none !important;
+}
+
 .theme--dark.v-data-table tbody tr.v-data-table__selected {
   color: white !important;
 }
