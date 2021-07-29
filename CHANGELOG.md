@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/sogebot/ui-admin/compare/v2.0.3...v3.0.0) (2021-07-29)
+
+
+### Features
+
+* **settings:** add updater module ([0db8dc2](https://github.com/sogebot/ui-admin/commit/0db8dc2c6cc0ff8a0c85330665baa6aab1e556f2))
+
 ### [2.0.3](https://github.com/sogebot/ui-admin/compare/v2.0.2...v2.0.3) (2021-07-28)
 
 
