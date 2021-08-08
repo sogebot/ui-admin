@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.2](https://github.com/sogebot/ui-admin/compare/v3.0.1...v3.0.2) (2021-08-08)
+
+
+### Bug Fixes
+
+* **modules:** remove toggle from permanently enabled modules ([9ce0f9b](https://github.com/sogebot/ui-admin/commit/9ce0f9bacd716fddd9153ecde1866ad844ac9e51))
+
 ### [3.0.1](https://github.com/sogebot/ui-admin/compare/v3.0.0...v3.0.1) (2021-08-08)
 
 
