@@ -44,9 +44,10 @@
               <v-tab-item v-for="permission of permissions" :key="permission.id" eager>
                 <v-row>
                   <v-col>
-                    <v-switch class="mb-1" hide-details :label="translate('systems.moderation.settings.cListsEnabled')"
-                      :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.lists.cListsEnabled[0])"
-                      @change="settings.__permission_based__.lists.cListsEnabled[0][permission.id] = Number($event)"
+                    <v-switch class="mb-1" hide-details
+                      :label="translate('systems.moderation.settings.cListsEnabled')"
+                      :input-value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.lists.cListsEnabled[0])"
+                      @change="settings.__permission_based__.lists.cListsEnabled[0][permission.id] = $event"
                       :disabled="settings.__permission_based__.lists.cListsEnabled[0][permission.id] === null" />
                   </v-col>
                   <v-col align-self="center" cols="auto"
@@ -90,9 +91,10 @@
               <v-tab-item v-for="permission of permissions" :key="permission.id" eager>
                 <v-row>
                   <v-col>
-                    <v-switch class="mb-1" hide-details :label="translate('systems.moderation.settings.cCapsEnabled')"
-                      :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.caps_filter.cCapsEnabled[0])"
-                      @change="settings.__permission_based__.caps_filter.cCapsEnabled[0][permission.id] = Number($event)"
+                    <v-switch class="mb-1" hide-details
+                      :label="translate('systems.moderation.settings.cCapsEnabled')"
+                      :input-value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.caps_filter.cCapsEnabled[0])"
+                      @change="settings.__permission_based__.caps_filter.cCapsEnabled[0][permission.id] = $event"
                       :disabled="settings.__permission_based__.caps_filter.cCapsEnabled[0][permission.id] === null" />
                   </v-col>
                   <v-col align-self="center" cols="auto"
@@ -174,9 +176,10 @@
               <v-tab-item v-for="permission of permissions" :key="permission.id" eager>
                 <v-row>
                   <v-col>
-                    <v-switch class="mb-1" hide-details :label="translate('systems.moderation.settings.cColorEnabled')"
-                      :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.color_filter.cColorEnabled[0])"
-                      @change="settings.__permission_based__.color_filter.cColorEnabled[0][permission.id] = Number($event)"
+                    <v-switch class="mb-1" hide-details
+                      :label="translate('systems.moderation.settings.cColorEnabled')"
+                      :input-value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.color_filter.cColorEnabled[0])"
+                      @change="settings.__permission_based__.color_filter.cColorEnabled[0][permission.id] = $event"
                       :disabled="settings.__permission_based__.color_filter.cColorEnabled[0][permission.id] === null" />
                   </v-col>
                   <v-col align-self="center" cols="auto"
@@ -221,11 +224,11 @@
                 <v-row>
                   <v-col>
                     <v-layout row wrap align-baseline class="ma-0">
-                      <v-switch class="mb-1" hide-details
-                        :label="translate('systems.moderation.settings.cEmotesEnabled')"
-                        :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.emotes_filter.cEmotesEnabled[0])"
-                        @change="settings.__permission_based__.emotes_filter.cEmotesEnabled[0][permission.id] = Number($event)"
-                        :disabled="settings.__permission_based__.emotes_filter.cEmotesEnabled[0][permission.id] === null" />
+                    <v-switch class="mb-1" hide-details
+                      :label="translate('systems.moderation.settings.cEmotesEnabled')"
+                      :input-value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.emotes_filter.cEmotesEnabled[0])"
+                      @change="settings.__permission_based__.emotes_filter.cEmotesEnabled[0][permission.id] = $event"
+                      :disabled="settings.__permission_based__.emotes_filter.cEmotesEnabled[0][permission.id] === null" />
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.emotes_filter.cEmotesEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.emotes_filter.cEmotesEnabled[0])">
                         <v-icon>
@@ -238,8 +241,8 @@
                     <v-layout row wrap align-baseline class="ma-0">
                       <v-switch class="mb-1" hide-details
                         :label="translate('systems.moderation.settings.cEmotesEmojisAreEmotes')"
-                        :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.emotes_filter.cEmotesEmojisAreEmotes[0])"
-                        @change="settings.__permission_based__.emotes_filter.cEmotesEmojisAreEmotes[0][permission.id] = Number($event)"
+                        :input-value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.emotes_filter.cEmotesEmojisAreEmotes[0])"
+                        @change="settings.__permission_based__.emotes_filter.cEmotesEmojisAreEmotes[0][permission.id] = $event"
                         :disabled="settings.__permission_based__.emotes_filter.cEmotesEmojisAreEmotes[0][permission.id] === null" />
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.emotes_filter.cEmotesEmojisAreEmotes[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.emotes_filter.cEmotesEmojisAreEmotes[0])">
@@ -303,8 +306,8 @@
                     <v-layout row wrap align-baseline class="ma-0">
                       <v-switch class="mb-1" hide-details
                         :label="translate('systems.moderation.settings.cLinksEnabled')"
-                        :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.links_filter.cLinksEnabled[0])"
-                        @change="settings.__permission_based__.links_filter.cLinksEnabled[0][permission.id] = Number($event)"
+                        :input-value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.links_filter.cLinksEnabled[0])"
+                        @change="settings.__permission_based__.links_filter.cLinksEnabled[0][permission.id] = $event"
                         :disabled="settings.__permission_based__.links_filter.cLinksEnabled[0][permission.id] === null" />
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.links_filter.cLinksEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.links_filter.cLinksEnabled[0])">
@@ -318,8 +321,8 @@
                     <v-layout row wrap align-baseline class="ma-0">
                       <v-switch class="mb-1" hide-details
                         :label="translate('systems.moderation.settings.cLinksIncludeClips')"
-                        :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.links_filter.cLinksIncludeClips[0])"
-                        @change="settings.__permission_based__.links_filter.cLinksIncludeClips[0][permission.id] = Number($event)"
+                        :input-value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.links_filter.cLinksIncludeClips[0])"
+                        @change="settings.__permission_based__.links_filter.cLinksIncludeClips[0][permission.id] = $event"
                         :disabled="settings.__permission_based__.links_filter.cLinksIncludeClips[0][permission.id] === null" />
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.links_filter.cLinksIncludeClips[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.links_filter.cLinksIncludeClips[0])">
@@ -333,8 +336,8 @@
                     <v-layout row wrap align-baseline class="ma-0">
                       <v-switch class="mb-1" hide-details
                         :label="translate('systems.moderation.settings.cLinksIncludeSpaces')"
-                        :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.links_filter.cLinksIncludeSpaces[0])"
-                        @change="settings.__permission_based__.links_filter.cLinksIncludeSpaces[0][permission.id] = Number($event)"
+                        :input-value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.links_filter.cLinksIncludeSpaces[0])"
+                        @change="settings.__permission_based__.links_filter.cLinksIncludeSpaces[0][permission.id] = $event"
                         :disabled="settings.__permission_based__.links_filter.cLinksIncludeSpaces[0][permission.id] === null" />
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.links_filter.cLinksIncludeSpaces[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.links_filter.cLinksIncludeSpaces[0])">
@@ -380,8 +383,8 @@
                     <v-layout row wrap align-baseline class="ma-0">
                       <v-switch class="mb-1" hide-details
                         :label="translate('systems.moderation.settings.cLongMessageEnabled')"
-                        :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.longMessage_filter.cLongMessageEnabled[0])"
-                        @change="settings.__permission_based__.longMessage_filter.cLongMessageEnabled[0][permission.id] = Number($event)"
+                        :input-value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.longMessage_filter.cLongMessageEnabled[0])"
+                        @change="settings.__permission_based__.longMessage_filter.cLongMessageEnabled[0][permission.id] = $event"
                         :disabled="settings.__permission_based__.longMessage_filter.cLongMessageEnabled[0][permission.id] === null" />
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.longMessage_filter.cLongMessageEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.longMessage_filter.cLongMessageEnabled[0])">
@@ -424,9 +427,10 @@
                 <v-row>
                   <v-col>
                     <v-layout row wrap align-baseline class="ma-0">
-                      <v-switch class="mb-1" hide-details :label="translate('systems.moderation.settings.cSpamEnabled')"
-                        :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.spam_filter.cSpamEnabled[0])"
-                        @change="settings.__permission_based__.spam_filter.cSpamEnabled[0][permission.id] = Number($event)"
+                      <v-switch class="mb-1" hide-details
+                        :label="translate('systems.moderation.settings.cSpamEnabled')"
+                        :input-value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.spam_filter.cSpamEnabled[0])"
+                        @change="settings.__permission_based__.spam_filter.cSpamEnabled[0][permission.id] = $event"
                         :disabled="settings.__permission_based__.spam_filter.cSpamEnabled[0][permission.id] === null" />
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.spam_filter.cSpamEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.spam_filter.cSpamEnabled[0])">
@@ -510,8 +514,8 @@
                     <v-layout row wrap align-baseline class="ma-0">
                       <v-switch class="mb-1" hide-details
                         :label="translate('systems.moderation.settings.cSymbolsEnabled')"
-                        :value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.symbols_filter.cSymbolsEnabled[0])"
-                        @change="settings.__permission_based__.symbols_filter.cSymbolsEnabled[0][permission.id] = Number($event)"
+                        :input-value="getPermissionSettingsValue(permissions, permission.id, settings.__permission_based__.symbols_filter.cSymbolsEnabled[0])"
+                        @change="settings.__permission_based__.symbols_filter.cSymbolsEnabled[0][permission.id] = $event"
                         :disabled="settings.__permission_based__.symbols_filter.cSymbolsEnabled[0][permission.id] === null" />
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.symbols_filter.cSymbolsEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.symbols_filter.cSymbolsEnabled[0])">
@@ -639,6 +643,10 @@ export default defineComponent({
     const tab = ref(null);
     const maskBlacklist = ref(true);
 
+    const test = (a:any) => {
+      console.log({ a });
+    };
+
     watch(settings, () => {
       store.commit('settings/pending', true);
     }, { deep: true });
@@ -679,6 +687,7 @@ export default defineComponent({
       getIgnoredPermissions,
       getPermissionSettingsValue,
       togglePermissionLock,
+      test,
 
       // validators
       required,
