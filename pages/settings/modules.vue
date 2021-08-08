@@ -59,7 +59,7 @@
                           {{ item.name }}
                         </v-toolbar-title>
                         <v-spacer />
-                        <v-switch style="transform: translateY(3px);" class="pt-4" @click="update(item)" color="success" :disabled="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)" v-if="item.enabled !== undefined" v-model="item.enabled"/>
+                        <v-switch style="transform: translateY(3px);" class="pt-4" @click="update(item)" color="success" :disabled="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)" v-if="item.enabled !== undefined && item.enabled !== null" v-model="item.enabled"/>
                         <v-btn icon nuxt :to="`/settings/modules/${item.type}/${item.name}`" v-if="hasSettings(item.type, item.name)"><v-icon>{{ mdiCog }}</v-icon></v-btn>
                       </v-toolbar>
                       <v-card-subtitle class="pa-1" v-if="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)">
