@@ -3,7 +3,8 @@
   <v-form v-else v-model="valid" lazy-validation>
     <v-tabs v-model="tab">
       <v-tab>{{ translate('categories.general') }}</v-tab>
-      <v-tab>{{ translate('categories.messages') }}</v-tab>
+      <v-tab>{{ translate('categories.comboBreakMessages') }}</v-tab>
+      <v-tab>{{ translate('categories.hypeMessages') }}</v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="tab">
@@ -58,6 +59,43 @@
                 </v-row>
               </v-sheet>
               <v-divider v-if="idx !== settings.comboMessages[0].length - 1" :key="idx + 1000000" />
+            </template>
+            <v-btn block @click="addMessage">
+              Add message
+            </v-btn>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item eager>
+        <v-card>
+          <v-card-text>
+            <v-switch dense class="mt-0" :label="translate('overlays.emotes.settings.hypeMessagesEnabled')"
+              v-model="settings.hypeMessagesEnabled[0]" />
+            <v-alert v-if="settings.hypeMessages[0].length === 0" text border="left" color="orange">
+              {{ translate('overlays.emotes.settings.noMessagesFound') }}
+            </v-alert>
+            <template v-for="(message, idx) of settings.hypeMessages[0]">
+              <v-sheet :key="idx" class="pa-2">
+                <v-row>
+                  <v-col>
+                    <v-text-field v-model="message.message" :label="translate('overlays.emotes.settings.message')" :rules="[required]" />
+                    <v-text-field
+                      v-model="message.messagesCount"
+                      :label="translate('overlays.emotes.settings.threshold')"
+                      type="number"
+                      min="0"
+                      max="100"
+                      :rules="[required, minValue(0)]"
+                    />
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn icon @click="removeMessage(idx)">
+                      <v-icon>{{ mdiDelete }}</v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-sheet>
+              <v-divider v-if="idx !== settings.hypeMessages[0].length - 1" :key="idx + 1000000" />
             </template>
             <v-btn block @click="addMessage">
               Add message
