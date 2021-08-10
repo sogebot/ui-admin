@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.0.1](https://github.com/sogebot/ui-admin/compare/v4.0.0...v4.0.1) (2021-08-10)
+
+
+### Bug Fixes
+
+* **chat:** keep fab open on click on several buttons ([c974e82](https://github.com/sogebot/ui-admin/commit/c974e826fcb6896dd6995631d997b8ba5d69c9aa))
+
 ## [4.0.0](https://github.com/sogebot/ui-admin/compare/v3.0.2...v4.0.0) (2021-08-10)
 
 
