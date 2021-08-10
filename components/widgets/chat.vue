@@ -23,11 +23,11 @@
             <v-icon>{{ mdiRefresh }}</v-icon>
           </v-btn>
           <v-btn fab x-small :color="showJoins ? 'green lighten-1' : 'red lighten-1'"
-            @click="showJoins = !showJoins">
+            @click.stop="showJoins = !showJoins">
             <v-icon>{{ mdiAccountPlus }}</v-icon>
           </v-btn>
           <v-btn fab x-small :color="showParts ? 'green lighten-1' : 'red lighten-1'"
-            @click="showParts = !showParts">
+            @click.stop="showParts = !showParts">
             <v-icon>{{ mdiAccountMinus }}</v-icon>
           </v-btn>
           <v-btn fab x-small color='secondary' @click="dialog = true">
