@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/sogebot/ui-admin/compare/v3.0.2...v4.0.0) (2021-08-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* add monitor and popout for monitoring
+
+### Features
+
+* add monitor and popout for monitoring ([ae48742](https://github.com/sogebot/ui-admin/commit/ae48742ce9cba3a74042e7d2c451254991017537))
+
+
+### Bug Fixes
+
+* **chore:** dependency update ([72b1666](https://github.com/sogebot/ui-admin/commit/72b166622e0a61ed64e508db305565449141dfb8))
+* **deps:** bump actions/setup-node from 2.3.0 to 2.4.0 ([#117](https://github.com/sogebot/ui-admin/issues/117)) ([5672269](https://github.com/sogebot/ui-admin/commit/5672269ffe7efa25b8394c8d7e0a75ee258bfb08))
+* **deps:** bump core-js from 3.16.0 to 3.16.1 ([#118](https://github.com/sogebot/ui-admin/issues/118)) ([c0cdf55](https://github.com/sogebot/ui-admin/commit/c0cdf55703e15df4ff475f0f67684376b15e8539))
+
 ### [3.0.2](https://github.com/sogebot/ui-admin/compare/v3.0.1...v3.0.2) (2021-08-08)
 
 
