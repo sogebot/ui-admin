@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/sogebot/ui-admin/compare/v4.0.1...v4.1.0) (2021-08-10)
+
+
+### Features
+
+* **emotescombo:** add hype messages to settings ([3faa781](https://github.com/sogebot/ui-admin/commit/3faa7812a124081b55631f2b9a65ab2e2aab2758))
+
 ### [4.0.1](https://github.com/sogebot/ui-admin/compare/v4.0.0...v4.0.1) (2021-08-10)
 
 
