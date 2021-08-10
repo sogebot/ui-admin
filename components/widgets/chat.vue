@@ -1,43 +1,64 @@
 <template>
-  <v-card id="c7eff6a7-dc61-4c0b-bad6-90df9d5b605f" :key="timestamp" width="100%">
-    <v-toolbar color="blue-grey darken-4" class="mb-1" height="36">
-      <v-toolbar-title class="text-button">
-        Chat
-      </v-toolbar-title>
-      <v-spacer />
-      <v-btn icon height="36" width="36" @click="timestamp = Date.now()">
-        <v-icon>{{ mdiRefresh }}</v-icon>
-      </v-btn>
-      <v-btn icon height="36" width="36" :color="showJoins ? 'green lighten-1' : 'red lighten-1'" @click="showJoins = !showJoins">
-        <v-icon>{{ mdiAccountPlus }}</v-icon>
-      </v-btn>
-      <v-btn icon height="36" width="36" :color="showParts ? 'green lighten-1' : 'red lighten-1'" @click="showParts = !showParts">
-        <v-icon>{{ mdiAccountMinus }}</v-icon>
-      </v-btn>
-      <v-btn icon height="36" width="36" @click="dialog = true">
-        <v-icon>{{ mdiCommentPlus }}</v-icon>
-      </v-btn>
-    </v-toolbar>
-    <v-alert
-      v-if="!isHttps"
-      border="left"
-      color="red"
-      :icon="mdiExclamationThick"
-      text
-      type="success"
-    >
+  <v-card id="c7eff6a7-dc62-4c0b-bad6-90df9d5b605f" :key="timestamp" width="100%">
+    <v-row no-gutters class="flex-nowrap">
+      <v-col cols="12" class="flex-shrink-1 flex-grow-0" style="min-width: 100px; max-width: 100%;">
+        <v-tabs v-model="tab" height="36" background-color="blue-grey darken-4">
+          <v-tab>{{ translate('widget-title-chat') }}</v-tab>
+          <v-tab>{{ translate('widget-title-monitor') }}</v-tab>
+        </v-tabs>
+
+        <v-speed-dial absolute v-model="fab" right style="right: 2px; top: 20px;" direction="bottom" top>
+          <template v-slot:activator>
+            <v-btn v-model="fab" color="blue-grey darken-2" dark fab x-small>
+              <v-icon v-if="fab">
+                {{ mdiClose }}
+              </v-icon>
+              <v-icon v-else>
+                {{ mdiDotsVertical }}
+              </v-icon>
+            </v-btn>
+          </template>
+
+          <v-btn fab x-small color='secondary' @click="timestamp = Date.now()">
+            <v-icon>{{ mdiRefresh }}</v-icon>
+          </v-btn>
+          <v-btn fab x-small :color="showJoins ? 'green lighten-1' : 'red lighten-1'"
+            @click="showJoins = !showJoins">
+            <v-icon>{{ mdiAccountPlus }}</v-icon>
+          </v-btn>
+          <v-btn fab x-small :color="showParts ? 'green lighten-1' : 'red lighten-1'"
+            @click="showParts = !showParts">
+            <v-icon>{{ mdiAccountMinus }}</v-icon>
+          </v-btn>
+          <v-btn fab x-small color='secondary' @click="dialog = true">
+            <v-icon>{{ mdiCommentPlus }}</v-icon>
+          </v-btn>
+          <v-tooltip bottom v-if="!isPopout">
+            <template #activator="{ on, attrs }">
+              <v-btn color="secondary" fab x-small v-bind="attrs" href="#/popout/monitor" target="_blank"
+                v-on="on">
+                <v-icon>{{ mdiOpenInNew }}</v-icon>
+              </v-btn>
+            </template>
+            <span>Popout</span>
+          </v-tooltip>
+        </v-speed-dial>
+      </v-col>
+    </v-row>
+    <v-alert v-if="!isHttps" border="left" color="red" :icon="mdiExclamationThick" text type="success">
       You need to run bot on HTTPS on port 443 with valid certificate for this embed to be working
     </v-alert>
 
-    <iframe
-      v-else
-      class="enable-transition"
-      frameborder="0"
-      scrolling="no"
-      :src="chatUrl"
-      width="100%"
-      :height="height + 'px'"
-    />
+    <v-tabs-items v-model="tab" v-else>
+      <v-tab-item eager>
+        <iframe class="enable-transition" frameborder="0" scrolling="no" :src="chatUrl" width="100%"
+          :height="height + 'px'" />
+      </v-tab-item>
+      <v-tab-item eager>
+        <iframe class="enable-transition" frameborder="0" scrolling="no" :src="videoUrl" width="100%"
+          :height="height + 'px'" />
+      </v-tab-item>
+    </v-tabs-items>
 
     <v-expand-transition>
       <v-card v-if="showJoins || showParts" height="200px">
@@ -45,8 +66,7 @@
           <small class="text-button">Chat Events</small>
         </v-toolbar>
 
-        <v-card-text
-          v-html="
+        <v-card-text v-html="
             list.filter(o => {
               if (showJoins && showParts) {
                 return true;
@@ -56,8 +76,7 @@
                 return o.username.startsWith('-');
               }
             }).map(o => `<span class='${o.username.startsWith('+') ? 'green--text' : 'red--text'} text--lighten-2'>${o.username.substring(1)}</span>`).join(', ')
-          "
-        />
+          " />
       </v-card>
     </v-expand-transition>
 
@@ -75,12 +94,13 @@
 
 <script lang="ts">
 import {
-  mdiAccountMinus, mdiAccountPlus, mdiClose, mdiCommentPlus, mdiExclamationThick, mdiRefresh,
+  mdiAccountMinus, mdiAccountPlus, mdiClose, mdiCommentPlus, mdiDotsVertical, mdiExclamationThick, mdiOpenInNew, mdiRefresh,
 } from '@mdi/js';
 import {
   computed, defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
+import translate from '@sogebot/ui-helpers/translate';
 import {
   chunk, flatten, sortedUniq,
 } from 'lodash';
@@ -91,8 +111,16 @@ let interval = 0;
 
 export default defineComponent({
   setup () {
+    const tab = ref(Number(localStorage.monitorTab));
+    const fab = ref(false);
+    watch(tab, (val) => {
+      localStorage.monitorTab = String(val);
+    });
+
+    const isPopout = computed(() => location.href.includes('popout'));
     const dialog = ref(false);
     const list = ref([] as { username: string; timestamp: number }[]);
+    const show = ref('Chat');
     const showJoins = ref(localStorage.showJoins === 'true');
     const showParts = ref(localStorage.showParts === 'true');
     const message = ref('');
@@ -113,6 +141,9 @@ export default defineComponent({
         + '?darkpopout'
         + '&parent=' + window.location.hostname;
     });
+    const videoUrl = computed(() => {
+      return `${window.location.protocol}//player.twitch.tv/?channel=${room.value}&autoplay=true&muted=true&parent=${window.location.hostname}`;
+    });
 
     watch(showJoins, (val) => {
       localStorage.showJoins = String(val);
@@ -125,7 +156,7 @@ export default defineComponent({
 
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
-      const offsetTop = document.getElementById('c7eff6a7-dc61-4c0b-bad6-90df9d5b605f')?.offsetTop || 0;
+      const offsetTop = document.getElementById('c7eff6a7-dc62-4c0b-bad6-90df9d5b605f')?.offsetTop || 0;
       const offset = 61 + (showParts.value || showJoins.value ? 200 : 0);
       const newHeight = window.innerHeight - offsetTop - offset;
       height.value = Math.max(newHeight, (showParts.value || showJoins.value) ? 300 : 500);
@@ -195,7 +226,9 @@ export default defineComponent({
     return {
       isHttps,
       chatUrl,
+      videoUrl,
       room,
+      show,
       chatters,
       dialog,
       message,
@@ -211,6 +244,12 @@ export default defineComponent({
       mdiAccountPlus,
       mdiAccountMinus,
       mdiExclamationThick,
+      mdiOpenInNew,
+      mdiDotsVertical,
+      isPopout,
+      tab,
+      translate,
+      fab,
     };
   },
 });
