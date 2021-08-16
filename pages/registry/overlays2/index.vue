@@ -1,88 +1,34 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-row dense>
-      <v-col cols="auto">
         <v-card>
-          <v-card-text class="pa-0">
-              <v-subheader style="height: 30px">Overlays</v-subheader>
-            <v-list dense class="pa-0">
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>Eventlist</v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action>
-                  <div>
-                <v-icon
-                  color="grey lighten-1"
-                >
-                  {{ mdiWrench }}
-                </v-icon>
-                <v-icon
-                  color="grey lighten-1"
-                >
-                  {{ mdiEyeOutline }}
-                </v-icon>
-                <v-icon
-                  color="grey lighten-1"
-                >
-                  {{ mdiDelete }}
-                </v-icon>
-                  </div>
-              </v-list-item-action>
-              </v-list-item>
-
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>Item 2</v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action>
-                  <div>
-                <v-icon
-                  color="grey lighten-1"
-                >
-                  {{ mdiWrench }}
-                </v-icon>
-                <v-icon
-                  color="grey lighten-1"
-                >
-                  {{ mdiEyeOutline }}
-                </v-icon>
-                <v-icon
-                  color="grey lighten-1"
-                >
-                  {{ mdiDelete }}
-                </v-icon>
-                  </div>
-              </v-list-item-action>
-              </v-list-item>
-            </v-list>
-
-            <v-btn block color="pink" dark>
+            <v-btn fab absolute right bottom color="primary" dark small style="z-index: 999">
               <v-icon>{{ mdiPlus }}</v-icon>
             </v-btn>
-          </v-card-text>
-        </v-card>
-        <v-card class="mt-2">
-          <v-card-text class="pa-0">
-              <v-subheader style="height: 30px;">Settings</v-subheader>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col>
-        <v-card>
           <v-responsive :aspect-ratio="16/9">
             <v-card-text>
+              <v-sheet color="primary" height="100" width="200" style="position: absolute; cursor: grab; user-select: none;">
+                 <v-sheet color="grey darken-4" style="position: absolute; right: -35px; height: 100%">
+                  <v-btn icon block><v-icon>{{ mdiWrench }}</v-icon></v-btn>
+                  <v-btn color="red" icon  block><v-icon>{{ mdiDelete }}</v-icon></v-btn>
+                 </v-sheet>
+                 <div class="text-right pa-1 text-caption">100x200<br />
+                  <v-icon x-small>{{ mdiFormatHorizontalAlignRight }}</v-icon> 100
+                  <v-icon x-small>{{ mdiFormatVerticalAlignBottom }}</v-icon> 100
+                 </div>
+                 <div class="center text-button text-truncate">Eventlist</div>
+              </v-sheet>
+              <v-sheet color="grey darken-3" height="150" width="75" style="position: absolute; top: 200px; left: 100px; cursor: grab; user-select: none;">
+                 <div class="center text-button text-truncate">Item 2</div>
+              </v-sheet>
             </v-card-text>
           </v-responsive>
         </v-card>
-      </v-col>
-    </v-row>
   </v-container>
 </template>
 
 <script lang="ts">
 import {
-  mdiDelete, mdiEyeOutline, mdiPlus, mdiWrench,
+  mdiCircle, mdiCircleOutline, mdiDelete, mdiEyeOutline, mdiFormatHorizontalAlignRight, mdiFormatVerticalAlignBottom, mdiPlus, mdiWrench,
 } from '@mdi/js';
 import { defineComponent } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
@@ -102,6 +48,10 @@ export default defineComponent({
       mdiWrench,
       mdiEyeOutline,
       mdiDelete,
+      mdiFormatHorizontalAlignRight,
+      mdiFormatVerticalAlignBottom,
+      mdiCircle,
+      mdiCircleOutline,
     };
   },
 });
