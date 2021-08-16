@@ -1,5 +1,7 @@
 <template>
   <v-sheet
+    @mousedown="mousedown"
+    @mouseup="mouseup"
     :color="selectedSync === item.id ? 'primary' : 'grey darken2'"
     :height="item.height * ratio"
     :width="item.width * ratio"
@@ -8,7 +10,7 @@
       left: `${item.alignX * ratio}px`,
       top: `${item.alignY * ratio}px`,
     }"
-    @click="selectedSync = selectedSync === item.id ? null : item.id"
+    @click="selectItem"
   >
     <v-slide-x-transition>
       <v-sheet v-if="selectedSync === item.id" color="grey darken-4" style="position: absolute; right: -37px; height: 100%">
@@ -24,10 +26,10 @@
       {{ item.width }}x{{ item.height }}<br>
       <v-icon x-small>
         {{ mdiFormatHorizontalAlignRight }}
-      </v-icon> {{ item.alignX }}
+      </v-icon> {{ Math.floor(item.alignX) }}
       <v-icon x-small>
         {{ mdiFormatVerticalAlignBottom }}
-      </v-icon> {{ item.alignY }}
+      </v-icon> {{ Math.floor(item.alignY) }}
     </div>
     <div class="center text-button text-truncate">
       {{ item.type }}
@@ -48,6 +50,7 @@ export default defineComponent({
     item:     Object,
     selected: [Object, String],
     ratio:    Number,
+    isMoving: Boolean,
   },
   setup (props, ctx) {
     const selectedSync = ref(props.selected);
@@ -58,8 +61,28 @@ export default defineComponent({
       ctx.emit('update:selected', val);
     });
 
+    const mousedown = (ev) => {
+      ctx.emit('mousedown', { ev, id: props.item?.id });
+    };
+
+    const mouseup = () => {
+      ctx.emit('mouseup');
+    };
+
+    const selectItem = () => {
+      console.log(props.isMoving);
+      if (!props.isMoving) {
+        selectedSync.value = selectedSync.value === props.item?.id ? null : props.item?.id;
+      }
+    };
+
     return {
       selectedSync,
+
+      // fnc
+      mousedown,
+      mouseup,
+      selectItem,
 
       // icons
       mdiCircle,
