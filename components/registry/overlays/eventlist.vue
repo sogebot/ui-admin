@@ -39,12 +39,12 @@ import {
 } from 'lodash';
 
 export default defineComponent({
-  props: { value: Object },
+  props: { value: [Object, Array] },
   setup (props: any, ctx) {
     const model = ref(0);
     const options = ref(
       pick(
-        defaults(props.value, {
+        defaults(Array.isArray(props.value) ? null : props.value, {
           display: ['username', 'event'],
           ignore:  [],
           count:   5,

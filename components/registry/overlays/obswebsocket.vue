@@ -23,11 +23,11 @@ import {
 } from 'lodash';
 
 export default defineComponent({
-  props: { value: Object },
+  props: { value: [Object, Array] },
   setup (props, ctx) {
     const options = ref(
       pick(
-        defaults(props.value, { allowedIPs: [] }),
+        defaults(Array.isArray(props.value) ? null : props.value, { allowedIPs: [] }),
         ['allowedIPs'],
       ));
 
