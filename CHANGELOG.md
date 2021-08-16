@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/sogebot/ui-admin/compare/v4.1.0...v5.0.0) (2021-08-16)
+
+
+### Features
+
+* **menu:** get menu from REST call ([6eaf42a](https://github.com/sogebot/ui-admin/commit/6eaf42abd62b91372fc92e6845912fa3fe9cd481))
+
 ## [4.1.0](https://github.com/sogebot/ui-admin/compare/v4.0.1...v4.1.0) (2021-08-10)
 
 
