@@ -48,10 +48,11 @@ import {
   mdiCog, mdiExclamationThick, mdiFormatListBulletedSquare, mdiInformationVariant, mdiViewDashboard, mdiWrench,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref,
+  defineComponent, onMounted, ref, useContext,
 } from '@nuxtjs/composition-api';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+
+import api from '~/functions/api';
 
 type menuType = { category?: string; name: string; id: string; this: any | null }[];
 type menuWithEnabled = Omit<menuType[number], 'this'> & { enabled: boolean };
@@ -70,35 +71,21 @@ export default defineComponent({
     const menu = ref([] as menuWithEnabled[]);
     const categories = ['commands', 'manage', 'settings', 'registry', /* 'logs', */ 'stats'];
     const isDisabledHidden = ref(true);
+    const context = useContext();
 
-    onMounted(async () => {
-      const socket = getSocket('/');
-      const isLoaded = await Promise.race([
-        new Promise<boolean>((resolve) => {
-          socket.emit('menu', (err: string | null, data: menuWithEnabled[]) => {
-            if (err) {
-              return console.error(err);
-            }
-            console.groupCollapsed('menu::menu');
-            console.log({ data });
-            console.groupEnd();
-            for (const item of data.sort((a, b) => {
-              return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
-            })) {
-              menu.value.push(item);
-            }
-            resolve(true);
-          });
-        }),
-        new Promise<boolean>((resolve) => {
-          setTimeout(() => resolve(false), 4000);
-        }),
-      ]);
+    onMounted(() => {
+      api.get<any[]>(context.$axios, '/api/v1/menu/private')
+        .then((response) => {
+          console.groupCollapsed('menu::menu');
+          console.log({ menu: response.data.data });
+          console.groupEnd();
 
-      if (!isLoaded) {
-        console.error('menu not loaded, refreshing page');
-        location.reload();
-      }
+          for (const item of response.data.data.sort((a, b) => {
+            return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
+          })) {
+            menu.value.push(item);
+          }
+        });
     });
 
     return {
