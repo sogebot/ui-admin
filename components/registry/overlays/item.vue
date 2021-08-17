@@ -70,7 +70,6 @@ export default defineComponent({
     };
 
     const selectItem = () => {
-      console.log(props.isMoving);
       if (!props.isMoving) {
         selectedSync.value = selectedSync.value === props.item?.id ? null : props.item?.id;
       }
