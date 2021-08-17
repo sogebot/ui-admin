@@ -1,7 +1,6 @@
 <template>
 <div
     @mousedown="mousedown"
-    @mouseup="mouseup"
     style="position: absolute; cursor: grab; user-select: none;"
     :style="{
       left: `${item.alignX * ratio}px`,
@@ -16,10 +15,10 @@
   </v-fab-transition>
   <v-icon style="position: absolute; right: 0; bottom: 0;">{{ mdiResizeBottomRight }}</v-icon>
 
-    <div class="text-caption grey darken-4 px-1" style="position: absolute; top: -20px;; z-index: -1">
-      {{ Math.floor(item.width) }}x{{ Math.floor(item.height) }}<br>
+    <div class="text-caption grey darken-4 px-1" style="position: absolute; top: -20px;; z-index: -1; width: max-content;">
+      {{ Math.max(Math.floor(item.width), 1) }}x{{ Math.max(Math.floor(item.height), 1) }}<br>
     </div>
-    <div class="px-1 text-caption grey darken-4 " style="position: absolute; bottom: -20px; z-index: -1">
+    <div class="px-1 text-caption grey darken-4 " style="position: absolute; bottom: -20px; z-index: -1; width: max-content;">
       <v-icon x-small>
         {{ mdiFormatHorizontalAlignRight }}
       </v-icon> {{ Math.floor(item.alignX) }}
@@ -68,10 +67,6 @@ export default defineComponent({
       ctx.emit('mousedown', { ev, id: props.item?.id });
     };
 
-    const mouseup = () => {
-      ctx.emit('mouseup');
-    };
-
     const selectItem = () => {
       if (!props.isMoving) {
         selectedSync.value = selectedSync.value === props.item?.id ? null : props.item?.id;
@@ -83,7 +78,6 @@ export default defineComponent({
 
       // fnc
       mousedown,
-      mouseup,
       selectItem,
 
       // icons

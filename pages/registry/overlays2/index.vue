@@ -1,38 +1,50 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-responsive ref="responsive" style="overflow: inherit" :aspect-ratio="16/9" :max-height="height" :max-width="(height / 9) * 16">
-      <v-card height="100%" width="100%">
-        <v-card-text>
-          <item
+    <v-row>
+      <v-col cols="2">
+        <v-list>
+          <v-list-item
             v-for="item of items"
-            :key="item.id"
-            v-click-outside="{
-              handler: () => selected = null,
-              include: include,
-            }"
-            :is-moving="positions.moved"
-            :item="item"
-            :selected.sync="selected"
-            :ratio="ratio"
-            class="overlayItem"
-            @mousedown="startMove"
-            @mouseup="stopMove"
-          />
-        </v-card-text>
-      </v-card>
-      <v-btn
-        fab
-        absolute
-        right
-        bottom
-        color="primary"
-        dark
-        small
-        style="z-index: 999"
-      >
-        <v-icon>{{ mdiPlus }}</v-icon>
-      </v-btn>
-    </v-responsive>
+            :key="'list-' + item.id">
+            {{ item.type }}
+          </v-list-item>
+        </v-list>
+      </v-col>
+      <v-col>
+        <v-responsive ref="responsive" style="overflow: inherit" :aspect-ratio="16/9" :max-height="height" :max-width="(height / 9) * 16">
+          <v-card height="100%" width="100%">
+            <v-card-text>
+              <item
+                v-for="item of items"
+                :key="item.id"
+                v-click-outside="{
+                  handler: () => selected = null,
+                  include: include,
+                }"
+                :is-moving="positions.moved"
+                :item="item"
+                :selected.sync="selected"
+                :ratio="ratio"
+                class="overlayItem"
+                @mousedown="startMove"
+              />
+            </v-card-text>
+          </v-card>
+          <v-btn
+            fab
+            absolute
+            right
+            bottom
+            color="primary"
+            dark
+            small
+            style="z-index: 999"
+          >
+            <v-icon>{{ mdiPlus }}</v-icon>
+          </v-btn>
+        </v-responsive>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -175,6 +187,7 @@ export default defineComponent({
         // don't do anything on resize
         moveItem.value = item;
         const isIcon = ['path', 'svg'].includes((event.ev as any).path[0].tagName);
+        window.addEventListener('mouseup', stopMove);
         if (!isIcon && (event.ev.offsetX < (item.width * ratio.value) - 15 || event.ev.offsetY < (item.height * ratio.value) - 15)) {
           document.onmousemove = mouseMove;
         } else {
@@ -185,14 +198,15 @@ export default defineComponent({
 
     const stopMove = () => {
       if (moveItem.value) {
-        moveItem.value.width = Math.floor(moveItem.value.width);
-        moveItem.value.height = Math.floor(moveItem.value.height);
+        moveItem.value.width = Math.max(Math.floor(moveItem.value.width), 1);
+        moveItem.value.height = Math.max(Math.floor(moveItem.value.height), 1);
         moveItem.value.alignX = Math.floor(moveItem.value.alignX);
         moveItem.value.alignY = Math.floor(moveItem.value.alignY);
       }
       setTimeout(() => {
         moveItem.value = null;
         document.onmousemove = null;
+        window.removeEventListener('mouseup', stopMove);
       }, 1);
     };
 
