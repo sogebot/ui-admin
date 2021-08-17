@@ -1,11 +1,20 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-      <v-responsive ref="responsive" style="overflow: inherit" :aspect-ratio="16/9" :max-height="height" :max-width="(height / 9) * 16">
-    <v-card height="100%" width="100%">
-      <v-card-text>
-        <item @mousedown="startMove" @mouseup="stopMove" :isMoving="positions.moved" v-for="item of items" :key="item.id" :item="item" :selected.sync="selected" :ratio="ratio" />
-      </v-card-text>
-    </v-card>
+    <v-responsive ref="responsive" style="overflow: inherit" :aspect-ratio="16/9" :max-height="height" :max-width="(height / 9) * 16">
+      <v-card height="100%" width="100%">
+        <v-card-text>
+          <item
+            v-for="item of items"
+            :key="item.id"
+            :is-moving="positions.moved"
+            :item="item"
+            :selected.sync="selected"
+            :ratio="ratio"
+            @mousedown="startMove"
+            @mouseup="stopMove"
+          />
+        </v-card-text>
+      </v-card>
       <v-btn
         fab
         absolute
@@ -18,19 +27,17 @@
       >
         <v-icon>{{ mdiPlus }}</v-icon>
       </v-btn>
-      </v-responsive>
+    </v-responsive>
   </v-container>
 </template>
 
 <script lang="ts">
 import { mdiPlus } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, nextTick, onMounted, onUnmounted, ref,
+  defineAsyncComponent, defineComponent, nextTick, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
-
-// TODO: keyboard arrows should move selected item by pxls
 
 export default defineComponent({
   components: { item: defineAsyncComponent(() => import('~/components/registry/overlays/item.vue')) },
@@ -59,11 +66,38 @@ export default defineComponent({
       moved:     false,
     });
 
-    const selected = ref(null);
+    const selected = ref(null as null | string);
     const moveItem = ref(null as null | typeof items.value[number]);
     const responsive = ref(null as null | { '$el': HTMLElement });
     const ratio = ref(0);
     const height = ref(1920);
+
+    const keydownHandler: EventListener = (event) => {
+      const item = items.value.find(o => o.id === selected.value);
+      if (!item) {
+        return;
+      }
+      const key = (event as KeyboardEvent).key;
+      const shiftKey = (event as KeyboardEvent).shiftKey;
+      const ctrlKey = (event as KeyboardEvent).ctrlKey;
+      const offset = 1 * (ctrlKey ? 10 : 1) * (shiftKey ? 10 : 1);
+      if (key === 'ArrowRight') {
+        item.alignX += offset;
+      } else if (key === 'ArrowLeft') {
+        item.alignX -= offset;
+      } else if (key === 'ArrowUp') {
+        item.alignY -= offset;
+      } else if (key === 'ArrowDown') {
+        item.alignY += offset;
+      }
+    };
+
+    watch(selected, (val) => {
+      window.removeEventListener('keydown', keydownHandler);
+      if (val) {
+        window.addEventListener('keydown', keydownHandler);
+      }
+    });
 
     function mouseMove (event: MouseEvent) {
       event = event || window.event;

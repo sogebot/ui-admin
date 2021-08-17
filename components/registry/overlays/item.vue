@@ -61,7 +61,7 @@ export default defineComponent({
       ctx.emit('update:selected', val);
     });
 
-    const mousedown = (ev) => {
+    const mousedown = (ev: MouseEvent) => {
       ctx.emit('mousedown', { ev, id: props.item?.id });
     };
 
