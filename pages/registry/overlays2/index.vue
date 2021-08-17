@@ -6,10 +6,15 @@
           <item
             v-for="item of items"
             :key="item.id"
+            v-click-outside="{
+              handler: () => selected = null,
+              include: include,
+            }"
             :is-moving="positions.moved"
             :item="item"
             :selected.sync="selected"
             :ratio="ratio"
+            class="overlayItem"
             @mousedown="startMove"
             @mouseup="stopMove"
           />
@@ -169,10 +174,7 @@ export default defineComponent({
       if (item) {
         // don't do anything on resize
         moveItem.value = item;
-
-        console.log((event.ev as any).path);
         const isIcon = ['path', 'svg'].includes((event.ev as any).path[0].tagName);
-        console.log({ isIcon });
         if (!isIcon && (event.ev.offsetX < (item.width * ratio.value) - 15 || event.ev.offsetY < (item.height * ratio.value) - 15)) {
           document.onmousemove = mouseMove;
         } else {
@@ -194,6 +196,10 @@ export default defineComponent({
       }, 1);
     };
 
+    const include = () => {
+      return [...document.querySelectorAll('.overlayItem')];
+    };
+
     return {
       // refs
       translate,
@@ -209,6 +215,7 @@ export default defineComponent({
       // functions
       startMove,
       stopMove,
+      include,
 
       // icons
       mdiPlus,

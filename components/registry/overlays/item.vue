@@ -2,47 +2,24 @@
 <div
     @mousedown="mousedown"
     @mouseup="mouseup"
-    @contextmenu="show"
     style="position: absolute; cursor: grab; user-select: none;"
     :style="{
       left: `${item.alignX * ratio}px`,
       top: `${item.alignY * ratio}px`,
+      'z-index': selectedSync === item.id ? 2 : 1,
     }">
+  <v-fab-transition>
+    <v-btn v-if="selectedSync === item.id" fab right top absolute x-small style="right: 50px;"><v-icon>{{ mdiWrench }}</v-icon></v-btn>
+  </v-fab-transition>
+  <v-fab-transition>
+    <v-btn v-if="selectedSync === item.id" fab right top absolute x-small style="right: 10px;" color="red"><v-icon>{{ mdiDelete }}</v-icon></v-btn>
+  </v-fab-transition>
   <v-icon style="position: absolute; right: 0; bottom: 0;">{{ mdiResizeBottomRight }}</v-icon>
-  <v-sheet
-    :color="selectedSync === item.id ? 'primary' : 'grey darken2'"
-    :height="item.height * ratio"
-    :width="item.width * ratio"
-    @click="selectItem"
-  >
-    <v-menu
-      v-model="showMenu"
-      :position-x="x"
-      :position-y="y"
-      absolute
-      offset-y
-    >
-      <v-list>
-        <v-list-item>
-          <v-list-item-title>Test</v-list-item-title>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-title>Test 2</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-    <!--v-slide-x-transition>
-      <v-sheet v-if="selectedSync === item.id" color="grey darken-4" style="position: absolute; right: -37px; height: 100%">
-        <v-btn icon block>
-          <v-icon>{{ mdiWrench }}</v-icon>
-        </v-btn>
-        <v-btn color="red" icon block>
-          <v-icon>{{ mdiDelete }}</v-icon>
-        </v-btn>
-      </v-sheet>
-    </v-slide-x-transition-->
-    <div class="text-right pa-1 text-caption" style="position: absolute; bottom: -01px;">
+
+    <div class="text-caption grey darken-4 px-1" style="position: absolute; top: -20px;; z-index: -1">
       {{ Math.floor(item.width) }}x{{ Math.floor(item.height) }}<br>
+    </div>
+    <div class="px-1 text-caption grey darken-4 " style="position: absolute; bottom: -20px; z-index: -1">
       <v-icon x-small>
         {{ mdiFormatHorizontalAlignRight }}
       </v-icon> {{ Math.floor(item.alignX) }}
@@ -50,6 +27,12 @@
         {{ mdiFormatVerticalAlignBottom }}
       </v-icon> {{ Math.floor(item.alignY) }}
     </div>
+  <v-sheet
+    :color="selectedSync === item.id ? 'primary' : 'grey darken2'"
+    :height="item.height * ratio"
+    :width="item.width * ratio"
+    @click="selectItem"
+  >
     <div class="center text-button text-truncate">
       {{ item.type }}
     </div>
@@ -59,10 +42,10 @@
 
 <script lang="ts">
 import {
-  mdiFormatHorizontalAlignRight, mdiFormatVerticalAlignBottom, mdiResizeBottomRight,
+  mdiDelete, mdiFormatHorizontalAlignRight, mdiFormatVerticalAlignBottom, mdiResizeBottomRight, mdiWrench,
 } from '@mdi/js';
 import {
-  defineComponent, nextTick, ref, watch,
+  defineComponent, ref, watch,
 } from '@vue/composition-api';
 
 export default defineComponent({
@@ -73,10 +56,6 @@ export default defineComponent({
     isMoving: Boolean,
   },
   setup (props, ctx) {
-    const showMenu = ref(false);
-    const x = ref(0);
-    const y = ref(0);
-
     const selectedSync = ref(props.selected);
     watch(() => props.selected, (val) => {
       selectedSync.value = val;
@@ -99,32 +78,20 @@ export default defineComponent({
       }
     };
 
-    const show = (e: MouseEvent) => {
-      e.preventDefault();
-      showMenu.value = false;
-      x.value = e.clientX;
-      y.value = e.clientY;
-      nextTick(() => {
-        showMenu.value = true;
-      });
-    };
-
     return {
       selectedSync,
-      showMenu,
-      x,
-      y,
 
       // fnc
       mousedown,
       mouseup,
-      show,
       selectItem,
 
       // icons
       mdiResizeBottomRight,
       mdiFormatHorizontalAlignRight,
       mdiFormatVerticalAlignBottom,
+      mdiWrench,
+      mdiDelete,
     };
   },
 });
