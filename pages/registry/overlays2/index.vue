@@ -1,19 +1,29 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-row>
+    <v-row no-gutters>
       <v-col cols="2">
-        <v-list>
+        <v-list dense style="border-right: 2px solid #1a1a1a;">
+          <v-subheader>Display order</v-subheader>
           <v-list-item
-            v-for="item of items"
+            class="overlayItem"
+            :input-value="selected === item.id"
+            @click="selected = item.id"
+            v-for="(item, idx) of [...items].reverse()"
             :key="'list-' + item.id">
-            {{ item.type }}
+            <v-list-item-action style="align-items: baseline; margin:0; margin-right: 10px;">
+              <v-btn @click.stop="moveDown((items.length - 1) - idx)" v-if="idx !== 0" icon height="20" width="20"><v-icon>{{ mdiMenuUp }}</v-icon></v-btn>
+              <v-btn @click.stop="moveUp((items.length - 1) - idx)" v-if="idx !== items.length - 1" icon height="20" width="20"><v-icon>{{ mdiMenuDown }}</v-icon></v-btn>
+            </v-list-item-action>
+            <v-list-item-title>
+              {{ item.type }}
+            </v-list-item-title>
           </v-list-item>
         </v-list>
       </v-col>
       <v-col>
         <v-responsive ref="responsive" style="overflow: inherit" :aspect-ratio="16/9" :max-height="height" :max-width="(height / 9) * 16">
-          <v-card height="100%" width="100%">
-            <v-card-text>
+          <v-card height="100%" width="100%" :loading="!initialResize">
+            <v-card-text v-if="initialResize">
               <item
                 v-for="item of items"
                 :key="item.id"
@@ -49,16 +59,20 @@
 </template>
 
 <script lang="ts">
-import { mdiPlus } from '@mdi/js';
+import {
+  mdiMenuDown, mdiMenuUp, mdiPlus,
+} from '@mdi/js';
 import {
   defineAsyncComponent, defineComponent, nextTick, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
+import { cloneDeep } from 'lodash';
 
 export default defineComponent({
   components: { item: defineAsyncComponent(() => import('~/components/registry/overlays/item.vue')) },
   setup () {
+    const initialResize = ref(false);
     const items = ref([{
       id:     '1',
       type:   'eventlist',
@@ -73,6 +87,13 @@ export default defineComponent({
       alignY: 300,
       width:  200,
       height: 200,
+    }, {
+      id:     '3',
+      type:   'clipscarousel',
+      alignX: 500,
+      alignY: 100,
+      width:  800,
+      height: 600,
     }]);
 
     const positions = ref({
@@ -166,7 +187,10 @@ export default defineComponent({
     onMounted(() => {
       window.addEventListener('resize', resizeListener);
       nextTick(() => {
-        resize(responsive.value);
+        setTimeout(() => {
+          initialResize.value = true;
+          resize(responsive.value);
+        }, 1000);
       });
     });
 
@@ -214,6 +238,20 @@ export default defineComponent({
       return [...document.querySelectorAll('.overlayItem')];
     };
 
+    const moveUp = (idx: number) => {
+      console.log({ idx });
+      [items.value[idx - 1], items.value[idx]] = [items.value[idx], items.value[idx - 1]];
+      items.value = cloneDeep(items.value); // triggers watchers
+      console.log(items.value);
+    };
+
+    const moveDown = (idx: number) => {
+      console.log({ idx });
+      [items.value[idx + 1], items.value[idx]] = [items.value[idx], items.value[idx + 1]];
+      items.value = cloneDeep(items.value); // triggers watchers
+      console.log(items.value);
+    };
+
     return {
       // refs
       translate,
@@ -225,14 +263,19 @@ export default defineComponent({
       height,
       moveItem,
       positions,
+      initialResize,
 
       // functions
       startMove,
       stopMove,
       include,
+      moveUp,
+      moveDown,
 
       // icons
       mdiPlus,
+      mdiMenuUp,
+      mdiMenuDown,
     };
   },
 });
