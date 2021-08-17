@@ -4,6 +4,7 @@
       <v-card height="100%" width="100%">
         <v-card-text>
           <item
+            style="resize: both; overflow: hidden"
             v-for="item of items"
             :key="item.id"
             :is-moving="positions.moved"
@@ -99,6 +100,23 @@ export default defineComponent({
       }
     });
 
+    function mouseMoveResize (event: MouseEvent) {
+      event = event || window.event;
+      event.preventDefault();
+
+      if (moveItem.value) {
+        positions.value.moved = true;
+        positions.value.movementX = positions.value.clientX - event.clientX;
+        positions.value.movementY = positions.value.clientY - event.clientY;
+        positions.value.clientX = event.clientX;
+        positions.value.clientY = event.clientY;
+
+        // set the element's new position:
+        moveItem.value.width = moveItem.value.width - positions.value.movementX / ratio.value;
+        moveItem.value.height = moveItem.value.height - positions.value.movementY / ratio.value;
+      }
+    }
+
     function mouseMove (event: MouseEvent) {
       event = event || window.event;
       event.preventDefault();
@@ -141,6 +159,7 @@ export default defineComponent({
     });
 
     const startMove = (event: { ev: MouseEvent, id: string}) => {
+      // determinate if we are resizing
       const item = items.value.find(o => o.id === event.id);
 
       // get the mouse cursor position at startup:
@@ -149,13 +168,20 @@ export default defineComponent({
       positions.value.moved = false;
 
       if (item) {
+        // don't do anything on resize
         moveItem.value = item;
-        document.onmousemove = mouseMove;
+        if (event.ev.offsetX < (item.width * ratio.value) - 15 && event.ev.offsetY < (item.height * ratio.value) - 15) {
+          document.onmousemove = mouseMove;
+        } else {
+          document.onmousemove = mouseMoveResize;
+        }
       }
     };
 
     const stopMove = () => {
       if (moveItem.value) {
+        moveItem.value.width = Math.floor(moveItem.value.width);
+        moveItem.value.height = Math.floor(moveItem.value.height);
         moveItem.value.alignX = Math.floor(moveItem.value.alignX);
         moveItem.value.alignY = Math.floor(moveItem.value.alignY);
       }

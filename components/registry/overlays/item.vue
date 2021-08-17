@@ -23,7 +23,7 @@
       </v-sheet>
     </v-slide-x-transition>
     <div class="text-right pa-1 text-caption">
-      {{ item.width }}x{{ item.height }}<br>
+      {{ Math.floor(item.width) }}x{{ Math.floor(item.height) }}<br>
       <v-icon x-small>
         {{ mdiFormatHorizontalAlignRight }}
       </v-icon> {{ Math.floor(item.alignX) }}
