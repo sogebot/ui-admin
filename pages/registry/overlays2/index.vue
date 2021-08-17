@@ -4,7 +4,6 @@
       <v-card height="100%" width="100%">
         <v-card-text>
           <item
-            style="resize: both; overflow: hidden"
             v-for="item of items"
             :key="item.id"
             :is-moving="positions.moved"
@@ -170,7 +169,11 @@ export default defineComponent({
       if (item) {
         // don't do anything on resize
         moveItem.value = item;
-        if (event.ev.offsetX < (item.width * ratio.value) - 15 && event.ev.offsetY < (item.height * ratio.value) - 15) {
+
+        console.log((event.ev as any).path);
+        const isIcon = ['path', 'svg'].includes((event.ev as any).path[0].tagName);
+        console.log({ isIcon });
+        if (!isIcon && (event.ev.offsetX < (item.width * ratio.value) - 15 || event.ev.offsetY < (item.height * ratio.value) - 15)) {
           document.onmousemove = mouseMove;
         } else {
           document.onmousemove = mouseMoveResize;
