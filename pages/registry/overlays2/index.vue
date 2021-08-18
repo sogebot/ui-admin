@@ -4,52 +4,46 @@
       <v-col cols="2">
         <v-list dense style="border-right: 2px solid #1a1a1a;">
           <v-subheader>Display order</v-subheader>
-          <v-list-item
-            class="overlayItem"
-            :input-value="selected === item.id"
-            @click="selected = item.id"
-            v-for="(item, idx) of [...items].reverse()"
-            :key="'list-' + item.id">
-            <v-list-item-action style="align-items: baseline; margin:0; margin-right: 10px;">
-              <v-btn @click.stop="moveDown((items.length - 1) - idx)" v-if="idx !== 0" icon height="20" width="20"><v-icon>{{ mdiMenuUp }}</v-icon></v-btn>
-              <v-btn @click.stop="moveUp((items.length - 1) - idx)" v-if="idx !== items.length - 1" icon height="20" width="20"><v-icon>{{ mdiMenuDown }}</v-icon></v-btn>
-            </v-list-item-action>
-            <v-list-item-title>
-              {{ item.type }}
-            </v-list-item-title>
-          </v-list-item>
+          <v-fade-transition group>
+            <v-list-item class="overlayItem" :input-value="selected === item.id" @click="selected = item.id"
+              v-for="(item, idx) of [...items].reverse()" :key="'list-' + item.id">
+              <v-list-item-action style="align-items: baseline; margin:0; margin-right: 10px;align-self: center;">
+                <v-btn @click.stop="moveDown((items.length - 1) - idx)" icon :disabled="idx === 0" height="20"
+                  width="20">
+                  <v-icon>{{ mdiMenuUp }}</v-icon>
+                </v-btn>
+                <v-btn @click.stop="moveUp((items.length - 1) - idx)" icon :disabled="!(idx !== items.length - 1)"
+                  height="20" width="20">
+                  <v-icon>{{ mdiMenuDown }}</v-icon>
+                </v-btn>
+              </v-list-item-action>
+              <v-list-item-title>
+                {{ item.type }}
+              </v-list-item-title>
+              <v-list-item-avatar size="20">
+                <v-sheet :color="generateColorFromString(item.id)" height="40" width="40"/>
+              </v-list-item-avatar>
+            </v-list-item>
+          </v-fade-transition>
         </v-list>
       </v-col>
       <v-col>
-        <v-responsive ref="responsive" style="overflow: inherit" :aspect-ratio="16/9" :max-height="height" :max-width="(height / 9) * 16">
+        <v-responsive ref="responsive" style="overflow: inherit" :aspect-ratio="16/9" :max-height="height"
+          :max-width="(height / 9) * 16">
           <v-card height="100%" width="100%" :loading="!initialResize">
             <v-card-text v-if="initialResize">
-              <item
-                v-for="item of items"
-                :key="item.id"
-                v-click-outside="{
-                  handler: () => selected = null,
-                  include: include,
-                }"
-                :is-moving="positions.moved"
-                :item="item"
-                :selected.sync="selected"
-                :ratio="ratio"
-                class="overlayItem"
-                @mousedown="startMove"
-              />
+              <v-fade-transition v-for="item of items" :key="item.id">
+                <item v-click-outside="{
+                    handler: () => selected = null,
+                    include: include,
+                  }" :is-moving="positions.moved" :item="item" :selected.sync="selected" :ratio="ratio"
+                  class="overlayItem" @mousedown="startMove"
+                  @delete="deleteItem(item.id)"
+                  :color="generateColorFromString(item.id)"/>
+              </v-fade-transition>
             </v-card-text>
           </v-card>
-          <v-btn
-            fab
-            absolute
-            right
-            bottom
-            color="primary"
-            dark
-            small
-            style="z-index: 999"
-          >
+          <v-btn fab absolute right bottom color="primary" dark small style="z-index: 999">
             <v-icon>{{ mdiPlus }}</v-icon>
           </v-btn>
         </v-responsive>
@@ -72,23 +66,30 @@ import { cloneDeep } from 'lodash';
 export default defineComponent({
   components: { item: defineAsyncComponent(() => import('~/components/registry/overlays/item.vue')) },
   setup () {
+    const generateColorFromString = (stringInput: string) => {
+      const stringUniqueHash = [...stringInput].reduce((acc, char) => {
+        return char.charCodeAt(0) + ((acc << 5) - acc);
+      }, 0);
+      return `hsl(${stringUniqueHash % 360}, 30%, 30%)`;
+    };
+
     const initialResize = ref(false);
     const items = ref([{
-      id:     '1',
+      id:     'd6dcfcfb-e4ac-44d6-9faa-5b272e97e5be',
       type:   'eventlist',
       alignX: 180,
       alignY: 880,
       width:  1600,
       height: 100,
     }, {
-      id:     '2',
+      id:     '920bd954-b143-4732-82a2-99469d557c79',
       type:   'eventlist',
       alignX: 200,
       alignY: 300,
       width:  200,
       height: 200,
     }, {
-      id:     '3',
+      id:     '77c7c48f-5fbb-442d-abb1-51ea99d31b4e',
       type:   'clipscarousel',
       alignX: 500,
       alignY: 100,
@@ -239,17 +240,20 @@ export default defineComponent({
     };
 
     const moveUp = (idx: number) => {
-      console.log({ idx });
       [items.value[idx - 1], items.value[idx]] = [items.value[idx], items.value[idx - 1]];
       items.value = cloneDeep(items.value); // triggers watchers
-      console.log(items.value);
     };
 
     const moveDown = (idx: number) => {
-      console.log({ idx });
       [items.value[idx + 1], items.value[idx]] = [items.value[idx], items.value[idx + 1]];
       items.value = cloneDeep(items.value); // triggers watchers
-      console.log(items.value);
+    };
+
+    const deleteItem = (id: string) => {
+      const idx = items.value.findIndex(o => o.id === id);
+      if (idx >= 0) {
+        items.value.splice(idx, 1);
+      }
     };
 
     return {
@@ -269,8 +273,10 @@ export default defineComponent({
       startMove,
       stopMove,
       include,
+      deleteItem,
       moveUp,
       moveDown,
+      generateColorFromString,
 
       // icons
       mdiPlus,

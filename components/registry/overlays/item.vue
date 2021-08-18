@@ -11,7 +11,7 @@
     <v-btn v-if="selectedSync === item.id" fab right top absolute x-small style="right: 50px;"><v-icon>{{ mdiWrench }}</v-icon></v-btn>
   </v-fab-transition>
   <v-fab-transition>
-    <v-btn v-if="selectedSync === item.id" fab right top absolute x-small style="right: 10px;" color="red"><v-icon>{{ mdiDelete }}</v-icon></v-btn>
+    <v-btn @click="deleteItem" v-if="selectedSync === item.id" fab right top absolute x-small style="right: 10px;" color="red"><v-icon>{{ mdiDelete }}</v-icon></v-btn>
   </v-fab-transition>
   <v-icon style="position: absolute; right: 0; bottom: 0;">{{ mdiResizeBottomRight }}</v-icon>
 
@@ -27,7 +27,7 @@
       </v-icon> {{ Math.floor(item.alignY) }}
     </div>
   <v-sheet
-    :color="selectedSync === item.id ? 'primary' : 'grey darken2'"
+    :color="selectedSync === item.id ? 'primary' : color"
     :height="item.height * ratio"
     :width="item.width * ratio"
     @click="selectItem"
@@ -49,6 +49,7 @@ import {
 
 export default defineComponent({
   props: {
+    color:    String,
     item:     Object,
     selected: [Object, String],
     ratio:    Number,
@@ -73,12 +74,17 @@ export default defineComponent({
       }
     };
 
+    const deleteItem = () => {
+      ctx.emit('delete');
+    };
+
     return {
       selectedSync,
 
       // fnc
       mousedown,
       selectItem,
+      deleteItem,
 
       // icons
       mdiResizeBottomRight,
