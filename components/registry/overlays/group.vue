@@ -1,55 +1,53 @@
 <template>
-  <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-row no-gutters>
-      <v-col cols="2">
-        <v-list dense style="border-right: 2px solid #1a1a1a;">
-          <v-subheader>Display order</v-subheader>
-          <v-fade-transition group>
-            <v-list-item class="overlayItem" :input-value="selected === item.id" @click="selected = item.id"
-              v-for="(item, idx) of [...items].reverse()" :key="'list-' + item.id">
-              <v-list-item-action style="align-items: baseline; margin:0; margin-right: 10px;align-self: center;">
-                <v-btn @click.stop="moveDown((items.length - 1) - idx)" icon :disabled="idx === 0" height="20"
-                  width="20">
-                  <v-icon>{{ mdiMenuUp }}</v-icon>
-                </v-btn>
-                <v-btn @click.stop="moveUp((items.length - 1) - idx)" icon :disabled="!(idx !== items.length - 1)"
-                  height="20" width="20">
-                  <v-icon>{{ mdiMenuDown }}</v-icon>
-                </v-btn>
-              </v-list-item-action>
-              <v-list-item-title>
-                {{ item.type }}
-              </v-list-item-title>
-              <v-list-item-avatar size="20">
-                <v-sheet :color="generateColorFromString(item.id)" height="40" width="40"/>
-              </v-list-item-avatar>
-            </v-list-item>
-          </v-fade-transition>
-        </v-list>
-      </v-col>
-      <v-col>
-        <v-responsive ref="responsive" style="overflow: inherit" :aspect-ratio="16/9" :max-height="height"
-          :max-width="(height / 9) * 16">
-          <v-card height="100%" width="100%" :loading="!initialResize">
-            <v-card-text v-if="initialResize">
-              <v-fade-transition v-for="item of items" :key="item.id">
-                <item v-click-outside="{
-                    handler: () => selected = null,
-                    include: include,
-                  }" :is-moving="positions.moved" :item="item" :selected.sync="selected" :ratio="ratio"
-                  class="overlayItem" @mousedown="startMove"
-                  @delete="deleteItem(item.id)"
-                  :color="generateColorFromString(item.id)"/>
-              </v-fade-transition>
-            </v-card-text>
-          </v-card>
-          <v-btn fab absolute right bottom color="primary" dark small style="z-index: 999">
-            <v-icon>{{ mdiPlus }}</v-icon>
-          </v-btn>
-        </v-responsive>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-row no-gutters>
+    <v-col cols="2">
+      <v-list dense>
+        <v-subheader>Display order</v-subheader>
+        <v-fade-transition group>
+          <v-list-item class="overlayItem" :input-value="selected === item.id" @click="selected = item.id"
+            v-for="(item, idx) of [...items].reverse()" :key="'list-' + item.id">
+            <v-list-item-action style="align-items: baseline; margin:0; margin-right: 10px;align-self: center;">
+              <v-btn @click.stop="moveDown((items.length - 1) - idx)" icon :disabled="idx === 0" height="20"
+                width="20">
+                <v-icon>{{ mdiMenuUp }}</v-icon>
+              </v-btn>
+              <v-btn @click.stop="moveUp((items.length - 1) - idx)" icon :disabled="!(idx !== items.length - 1)"
+                height="20" width="20">
+                <v-icon>{{ mdiMenuDown }}</v-icon>
+              </v-btn>
+            </v-list-item-action>
+            <v-list-item-title>
+              {{ item.type }}
+            </v-list-item-title>
+            <v-list-item-avatar size="20">
+              <v-sheet :color="generateColorFromString(item.id)" height="40" width="40"/>
+            </v-list-item-avatar>
+          </v-list-item>
+        </v-fade-transition>
+      </v-list>
+    </v-col>
+    <v-col>
+      <v-responsive ref="responsive" style="overflow: inherit" :aspect-ratio="16/9" :max-height="height"
+        :max-width="(height / 9) * 16">
+        <v-card height="100%" width="100%" :loading="!initialResize">
+          <v-card-text v-if="initialResize">
+            <v-fade-transition v-for="item of items" :key="item.id">
+              <item v-click-outside="{
+                  handler: () => selected = null,
+                  include: include,
+                }" :is-moving="positions.moved" :item="item" :selected.sync="selected" :ratio="ratio"
+                class="overlayItem" @mousedown="startMove"
+                @delete="deleteItem(item.id)"
+                :color="generateColorFromString(item.id)"/>
+            </v-fade-transition>
+          </v-card-text>
+        </v-card>
+        <v-btn fab absolute right bottom color="primary" dark small style="z-index: 999">
+          <v-icon>{{ mdiPlus }}</v-icon>
+        </v-btn>
+      </v-responsive>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">

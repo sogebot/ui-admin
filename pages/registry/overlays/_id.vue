@@ -72,6 +72,7 @@ export default defineComponent({
     tts:             () => import('~/components/registry/overlays/tts.vue'),
     polls:           () => import('~/components/registry/overlays/polls.vue'),
     eventlist:       () => import('~/components/registry/overlays/eventlist.vue'),
+    group:           () => import('~/components/registry/overlays/group.vue'),
   },
   setup () {
     const store = useStore();
@@ -87,6 +88,7 @@ export default defineComponent({
 
     const overlayOptions = [
       { value: null, text: 'Please select an option' },
+      { value: 'group', text: 'group of overlays' },
       { value: 'alerts', text: 'alerts' },
       { value: 'bets', text: 'bets' },
       { value: 'carousel', text: 'carousel' },
@@ -171,7 +173,7 @@ export default defineComponent({
     };
 
     const haveAnyOptions = (type: string) => {
-      const withOpts = ['eventlist', 'alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
+      const withOpts = ['group', 'eventlist', 'alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
       return withOpts.includes(type);
     };
 
