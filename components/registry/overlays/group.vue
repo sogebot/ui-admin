@@ -118,7 +118,6 @@
 
     <v-fade-transition>
       <div v-if="selectedItem && haveAnyOptions(selectedItem.type)">
-        <v-subheader>Settings</v-subheader>
         <component
           :is="selectedItem.type"
           v-model="selectedItem.opts"
@@ -152,6 +151,9 @@ export default defineComponent({
   props:      { value: [Object, Array] },
   components: {
     alerts:          () => import('~/components/registry/overlays/alerts.vue'),
+    alertsRegistry:  () => import('~/components/registry/overlays/alertsRegistry.vue'),
+    textRegistry:    () => import('~/components/registry/overlays/textRegistry.vue'),
+    goalRegistry:    () => import('~/components/registry/overlays/goalRegistry.vue'),
     emotes:          () => import('~/components/registry/overlays/emotes.vue'),
     emotesexplode:   () => import('~/components/registry/overlays/emotesexplode.vue'),
     emotesfireworks: () => import('~/components/registry/overlays/emotesfireworks.vue'),
@@ -204,6 +206,9 @@ export default defineComponent({
 
     const overlayOptions = [
       { value: null, text: 'Please select an option' },
+      { value: 'alertsRegistry', text: 'alerts registry' },
+      { value: 'textRegistry', text: 'text registry' },
+      { value: 'goalRegistry', text: 'goal registry' },
       { value: 'alerts', text: 'alerts' },
       { value: 'bets', text: 'bets' },
       { value: 'carousel', text: 'carousel' },

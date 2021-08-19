@@ -59,7 +59,7 @@ import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 
 export const haveAnyOptions = (type: string) => {
-  const withOpts = ['group', 'eventlist', 'alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
+  const withOpts = ['goalRegistry', 'alertsRegistry', 'textRegistry', 'group', 'eventlist', 'alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
   return withOpts.includes(type);
 };
 
