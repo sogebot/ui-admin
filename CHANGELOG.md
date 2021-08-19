@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.0](https://github.com/sogebot/ui-admin/compare/v5.0.0...v6.1.0) (2021-08-19)
+
+
+### Features
+
+* **overlays:** add alert, goal and text registry grouping support ([93f6c1d](https://github.com/sogebot/ui-admin/commit/93f6c1d4a6f9c116e41ee478fced114a406a3d74))
+* **overlays:** add overlay grouping ([907c3bb](https://github.com/sogebot/ui-admin/commit/907c3bb0fa011d4d9ff232537c47ecfb42c37b69))
+
 ## [6.0.0](https://github.com/sogebot/ui-admin/compare/v5.0.0...v6.0.0) (2021-08-19)
 
 
