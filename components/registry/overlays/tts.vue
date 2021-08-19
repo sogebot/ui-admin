@@ -25,12 +25,12 @@ import {
 
 export default defineComponent({
   components: { tts: defineAsyncComponent(() => import('~/components/form/expansion/tts.vue')) },
-  props:      { value: Object },
+  props:      { value: [Object, Array] },
   setup (props, ctx) {
     const model = ref(0);
     const options = ref(
       pick(
-        defaults(props.value, {
+        defaults(Array.isArray(props.value) ? null : props.value, {
           voice:                          'UK English Female',
           volume:                         50,
           rate:                           1,

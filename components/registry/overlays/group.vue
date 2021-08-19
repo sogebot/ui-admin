@@ -1,53 +1,133 @@
 <template>
-  <v-row no-gutters>
-    <v-col cols="2">
-      <v-list dense>
-        <v-subheader>Display order</v-subheader>
-        <v-fade-transition group>
-          <v-list-item class="overlayItem" :input-value="selected === item.id" @click="selected = item.id"
-            v-for="(item, idx) of [...items].reverse()" :key="'list-' + item.id">
-            <v-list-item-action style="align-items: baseline; margin:0; margin-right: 10px;align-self: center;">
-              <v-btn @click.stop="moveDown((items.length - 1) - idx)" icon :disabled="idx === 0" height="20"
-                width="20">
-                <v-icon>{{ mdiMenuUp }}</v-icon>
+  <div>
+    <v-row no-gutters>
+      <v-col cols="2">
+        <v-list dense>
+          <v-subheader>Display order</v-subheader>
+          <v-fade-transition group>
+            <v-list-item
+              v-for="(item, idx) of [...items].reverse()"
+              :key="'list-' + item.id"
+              class="overlayItem"
+              :input-value="selected === item.id"
+              @click="selected = item.id"
+            >
+              <v-list-item-action style="align-items: baseline; margin:0; margin-right: 10px;align-self: center;">
+                <v-btn
+                  icon
+                  :disabled="idx === 0"
+                  height="20"
+                  width="20"
+                  @click.stop="moveDown((items.length - 1) - idx)"
+                >
+                  <v-icon>{{ mdiMenuUp }}</v-icon>
+                </v-btn>
+                <v-btn
+                  icon
+                  :disabled="!(idx !== items.length - 1)"
+                  height="20"
+                  width="20"
+                  @click.stop="moveUp((items.length - 1) - idx)"
+                >
+                  <v-icon>{{ mdiMenuDown }}</v-icon>
+                </v-btn>
+              </v-list-item-action>
+              <v-list-item-title>
+                {{ item.type }}
+              </v-list-item-title>
+              <v-list-item-avatar size="20">
+                <v-sheet :color="generateColorFromString(item.id)" height="40" width="40" />
+              </v-list-item-avatar>
+            </v-list-item>
+          </v-fade-transition>
+        </v-list>
+      </v-col>
+      <v-col>
+        <v-responsive
+          ref="responsive"
+          style="overflow: inherit"
+          :aspect-ratio="16/9"
+          :max-height="height"
+          :max-width="(height / 9) * 16"
+        >
+          <v-card height="100%" width="100%" :loading="!initialResize" color="blue-grey darken-4">
+            <v-card-text v-if="initialResize">
+              <v-fade-transition v-for="item of items" :key="item.id">
+                <item
+                  v-click-outside="{
+                    handler: () => selected = null,
+                    include: include,
+                  }"
+                  :is-moving="positions.moved"
+                  :item="item"
+                  :selected.sync="selected"
+                  :ratio="ratio"
+                  class="overlayItem"
+                  :color="generateColorFromString(item.id)"
+                  @mousedown="startMove"
+                  @delete="deleteItem(item.id)"
+                />
+              </v-fade-transition>
+            </v-card-text>
+          </v-card>
+          <v-menu
+            v-model="dialog"
+            :close-on-content-click="false"
+            :nudge-width="300"
+            offset-x
+          >
+            <template #activator="{ on, attrs }">
+              <v-btn
+                v-bind="attrs"
+                fab
+                absolute
+                right
+                bottom
+                color="primary"
+                dark
+                small
+                style="z-index: 2"
+                v-on="on"
+              >
+                <v-icon>{{ mdiPlus }}</v-icon>
               </v-btn>
-              <v-btn @click.stop="moveUp((items.length - 1) - idx)" icon :disabled="!(idx !== items.length - 1)"
-                height="20" width="20">
-                <v-icon>{{ mdiMenuDown }}</v-icon>
-              </v-btn>
-            </v-list-item-action>
-            <v-list-item-title>
-              {{ item.type }}
-            </v-list-item-title>
-            <v-list-item-avatar size="20">
-              <v-sheet :color="generateColorFromString(item.id)" height="40" width="40"/>
-            </v-list-item-avatar>
-          </v-list-item>
-        </v-fade-transition>
-      </v-list>
-    </v-col>
-    <v-col>
-      <v-responsive ref="responsive" style="overflow: inherit" :aspect-ratio="16/9" :max-height="height"
-        :max-width="(height / 9) * 16">
-        <v-card height="100%" width="100%" :loading="!initialResize">
-          <v-card-text v-if="initialResize">
-            <v-fade-transition v-for="item of items" :key="item.id">
-              <item v-click-outside="{
-                  handler: () => selected = null,
-                  include: include,
-                }" :is-moving="positions.moved" :item="item" :selected.sync="selected" :ratio="ratio"
-                class="overlayItem" @mousedown="startMove"
-                @delete="deleteItem(item.id)"
-                :color="generateColorFromString(item.id)"/>
-            </v-fade-transition>
-          </v-card-text>
-        </v-card>
-        <v-btn fab absolute right bottom color="primary" dark small style="z-index: 999">
-          <v-icon>{{ mdiPlus }}</v-icon>
-        </v-btn>
-      </v-responsive>
-    </v-col>
-  </v-row>
+            </template>
+            <v-card>
+              <v-card-text>
+                <v-select
+                  v-model="itemToAdd"
+                  style="width: 300px;"
+                  :items="overlayOptions"
+                >
+                  <template #append-outer>
+                    <v-btn
+                      dark
+                      text
+                      @click="addItem()"
+                    >
+                      Add
+                    </v-btn>
+                  </template>
+                </v-select>
+              </v-card-text>
+            </v-card>
+          </v-menu>
+        </v-responsive>
+      </v-col>
+    </v-row>
+
+    <v-fade-transition>
+      <div v-if="selectedItem && haveAnyOptions(selectedItem.type)">
+        <v-subheader>Settings</v-subheader>
+        <component
+          :is="selectedItem.type"
+          v-model="selectedItem.opts"
+          class="overlayItem"
+          @update="selectedItem.opts = $event;"
+        />
+      </div>
+    </v-fade-transition>
+  </div>
 </template>
 
 <script lang="ts">
@@ -55,15 +135,37 @@ import {
   mdiMenuDown, mdiMenuUp, mdiPlus,
 } from '@mdi/js';
 import {
+  computed,
   defineAsyncComponent, defineComponent, nextTick, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
-import { cloneDeep } from 'lodash';
+import {
+  cloneDeep,
+  isEqual,
+} from 'lodash';
+import { v4 } from 'uuid';
+
+import { haveAnyOptions } from '~/pages/registry/overlays/_id.vue';
 
 export default defineComponent({
-  components: { item: defineAsyncComponent(() => import('~/components/registry/overlays/item.vue')) },
-  setup () {
+  props:      { value: [Object, Array] },
+  components: {
+    alerts:          () => import('~/components/registry/overlays/alerts.vue'),
+    emotes:          () => import('~/components/registry/overlays/emotes.vue'),
+    emotesexplode:   () => import('~/components/registry/overlays/emotesexplode.vue'),
+    emotesfireworks: () => import('~/components/registry/overlays/emotesfireworks.vue'),
+    emotescombo:     () => import('~/components/registry/overlays/emotescombo.vue'),
+    clipscarousel:   () => import('~/components/registry/overlays/clipscarousel.vue'),
+    clips:           () => import('~/components/registry/overlays/clips.vue'),
+    credits:         () => import('~/components/registry/overlays/credits.vue'),
+    obswebsocket:    () => import('~/components/registry/overlays/obswebsocket.vue'),
+    tts:             () => import('~/components/registry/overlays/tts.vue'),
+    polls:           () => import('~/components/registry/overlays/polls.vue'),
+    eventlist:       () => import('~/components/registry/overlays/eventlist.vue'),
+    item:            defineAsyncComponent(() => import('~/components/registry/overlays/item.vue')),
+  },
+  setup (props, ctx) {
     const generateColorFromString = (stringInput: string) => {
       const stringUniqueHash = [...stringInput].reduce((acc, char) => {
         return char.charCodeAt(0) + ((acc << 5) - acc);
@@ -71,29 +173,26 @@ export default defineComponent({
       return `hsl(${stringUniqueHash % 360}, 30%, 30%)`;
     };
 
+    const itemToAdd = ref(null as null | string);
     const initialResize = ref(false);
-    const items = ref([{
-      id:     'd6dcfcfb-e4ac-44d6-9faa-5b272e97e5be',
-      type:   'eventlist',
-      alignX: 180,
-      alignY: 880,
-      width:  1600,
-      height: 100,
-    }, {
-      id:     '920bd954-b143-4732-82a2-99469d557c79',
-      type:   'eventlist',
-      alignX: 200,
-      alignY: 300,
-      width:  200,
-      height: 200,
-    }, {
-      id:     '77c7c48f-5fbb-442d-abb1-51ea99d31b4e',
-      type:   'clipscarousel',
-      alignX: 500,
-      alignY: 100,
-      width:  800,
-      height: 600,
-    }]);
+    const dialog = ref(false);
+
+    const items = ref(
+      (Array.isArray(props.value) ? props.value : []) as {
+        id: string,
+        type: string,
+        alignX: number,
+        alignY: number,
+        width: number,
+        height: number,
+        opts: null | Record<string, any>
+      }[]);
+
+    watch(items, (val) => {
+      if (!isEqual(props.value, items.value)) {
+        ctx.emit('input', val);
+      }
+    }, { deep: true, immediate: true });
 
     const positions = ref({
       clientX:   0,
@@ -103,11 +202,41 @@ export default defineComponent({
       moved:     false,
     });
 
+    const overlayOptions = [
+      { value: null, text: 'Please select an option' },
+      { value: 'alerts', text: 'alerts' },
+      { value: 'bets', text: 'bets' },
+      { value: 'carousel', text: 'carousel' },
+      { value: 'clips', text: 'clips' },
+      { value: 'clipscarousel', text: 'clipscarousel' },
+      { value: 'credits', text: 'credits' },
+      { value: 'emotes', text: 'emotes' },
+      { value: 'emotescombo', text: 'emotescombo' },
+      { value: 'emotesfireworks', text: 'emotesfireworks' },
+      { value: 'emotesexplode', text: 'emotesexplode' },
+      { value: 'eventlist', text: 'eventlist' },
+      { value: 'obswebsocket', text: 'obswebsocket' },
+      { value: 'polls', text: 'polls' },
+      { value: 'randomizer', text: 'randomizer' },
+      { value: 'stats', text: 'stats' },
+      { value: 'tts', text: 'tts' },
+    ];
+
     const selected = ref(null as null | string);
     const moveItem = ref(null as null | typeof items.value[number]);
     const responsive = ref(null as null | { '$el': HTMLElement });
     const ratio = ref(0);
     const height = ref(1920);
+
+    const selectedItem = computed(() => {
+      return items.value.find(o => o.id === selected.value);
+    });
+
+    watch(dialog, (val) => {
+      if (val) {
+        itemToAdd.value = null;
+      }
+    });
 
     const keydownHandler: EventListener = (event) => {
       const item = items.value.find(o => o.id === selected.value);
@@ -234,7 +363,7 @@ export default defineComponent({
     };
 
     const include = () => {
-      return [...document.querySelectorAll('.overlayItem')];
+      return [...document.querySelectorAll('.overlayItem'), ...document.querySelectorAll('.v-list-item')];
     };
 
     const moveUp = (idx: number) => {
@@ -245,6 +374,21 @@ export default defineComponent({
     const moveDown = (idx: number) => {
       [items.value[idx + 1], items.value[idx]] = [items.value[idx], items.value[idx + 1]];
       items.value = cloneDeep(items.value); // triggers watchers
+    };
+
+    const addItem = () => {
+      if (itemToAdd.value) {
+        items.value.push({
+          id:     v4(),
+          type:   itemToAdd.value,
+          width:  200,
+          height: 200,
+          alignX: 0,
+          alignY: 0,
+          opts:   null,
+        });
+        dialog.value = false;
+      }
     };
 
     const deleteItem = (id: string) => {
@@ -266,15 +410,21 @@ export default defineComponent({
       moveItem,
       positions,
       initialResize,
+      overlayOptions,
+      dialog,
+      itemToAdd,
+      selectedItem,
 
       // functions
       startMove,
       stopMove,
       include,
+      addItem,
       deleteItem,
       moveUp,
       moveDown,
       generateColorFromString,
+      haveAnyOptions,
 
       // icons
       mdiPlus,

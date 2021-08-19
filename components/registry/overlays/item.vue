@@ -8,9 +8,6 @@
       'z-index': selectedSync === item.id ? 2 : 1,
     }">
   <v-fab-transition>
-    <v-btn v-if="selectedSync === item.id" fab right top absolute x-small style="right: 50px;"><v-icon>{{ mdiWrench }}</v-icon></v-btn>
-  </v-fab-transition>
-  <v-fab-transition>
     <v-btn @click="deleteItem" v-if="selectedSync === item.id" fab right top absolute x-small style="right: 10px;" color="red"><v-icon>{{ mdiDelete }}</v-icon></v-btn>
   </v-fab-transition>
   <v-icon style="position: absolute; right: 0; bottom: 0;">{{ mdiResizeBottomRight }}</v-icon>
@@ -41,7 +38,7 @@
 
 <script lang="ts">
 import {
-  mdiDelete, mdiFormatHorizontalAlignRight, mdiFormatVerticalAlignBottom, mdiResizeBottomRight, mdiWrench,
+  mdiDelete, mdiFormatHorizontalAlignRight, mdiFormatVerticalAlignBottom, mdiResizeBottomRight,
 } from '@mdi/js';
 import {
   defineComponent, ref, watch,
@@ -90,7 +87,6 @@ export default defineComponent({
       mdiResizeBottomRight,
       mdiFormatHorizontalAlignRight,
       mdiFormatVerticalAlignBottom,
-      mdiWrench,
       mdiDelete,
     };
   },

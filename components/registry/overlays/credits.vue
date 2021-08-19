@@ -271,7 +271,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import { defaultsDeep, isEqual } from 'lodash';
 
 export default defineComponent({
-  props: { value: Object },
+  props: { value: [Object, Array] },
   setup (props: any, ctx) {
     const timestamp = ref(Date.now());
     const customTextTypes: { value: string, text: string }[] = [

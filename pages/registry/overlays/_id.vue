@@ -58,6 +58,11 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 
+export const haveAnyOptions = (type: string) => {
+  const withOpts = ['group', 'eventlist', 'alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
+  return withOpts.includes(type);
+};
+
 export default defineComponent({
   components: {
     alerts:          () => import('~/components/registry/overlays/alerts.vue'),
@@ -170,11 +175,6 @@ export default defineComponent({
             });
         }
       }
-    };
-
-    const haveAnyOptions = (type: string) => {
-      const withOpts = ['group', 'eventlist', 'alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
-      return withOpts.includes(type);
     };
 
     return {
