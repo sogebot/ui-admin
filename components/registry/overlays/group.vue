@@ -117,13 +117,23 @@
     </v-row>
 
     <v-fade-transition>
-      <div v-if="selectedItem && haveAnyOptions(selectedItem.type)">
+      <div v-if="selectedItem && haveAnyOptions(selectedItem.type)" class="pt-4">
         <component
           :is="selectedItem.type"
           v-model="selectedItem.opts"
           class="overlayItem"
           @update="selectedItem.opts = $event;"
-        />
+        >
+          <v-expansion-panel>
+            <v-expansion-panel-header>Position / Size</v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-text-field type="number" v-model.number="selectedItem.width" label="Width" min="1" hide-details="auto"/>
+              <v-text-field type="number" v-model.number="selectedItem.height" label="Height" min="1" hide-details="auto"/>
+              <v-text-field type="number" v-model.number="selectedItem.alignX" label="X" min="0" hide-details="auto"/>
+              <v-text-field type="number" v-model.number="selectedItem.alignY" label="Y" min="0" hide-details="auto"/>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </component>
       </div>
     </v-fade-transition>
   </div>
@@ -245,7 +255,7 @@ export default defineComponent({
 
     const keydownHandler: EventListener = (event) => {
       const item = items.value.find(o => o.id === selected.value);
-      if (!item) {
+      if (!item || (event as any).path[0].nodeName === 'INPUT') {
         return;
       }
       const key = (event as KeyboardEvent).key;
@@ -299,8 +309,8 @@ export default defineComponent({
         positions.value.clientY = event.clientY;
 
         // set the element's new position:
-        moveItem.value.alignX = moveItem.value.alignX - positions.value.movementX / ratio.value;
-        moveItem.value.alignY = moveItem.value.alignY - positions.value.movementY / ratio.value;
+        moveItem.value.alignX = Math.floor(moveItem.value.alignX - positions.value.movementX / ratio.value);
+        moveItem.value.alignY = Math.floor(moveItem.value.alignY - positions.value.movementY / ratio.value);
       }
     }
 

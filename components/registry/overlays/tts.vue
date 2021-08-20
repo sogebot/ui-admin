@@ -1,5 +1,6 @@
 <template>
   <v-expansion-panels v-model="model">
+    <slot/>
     <tts v-model="options" readonly>
       <template #append>
         <v-switch

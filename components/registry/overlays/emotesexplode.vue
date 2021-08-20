@@ -1,6 +1,7 @@
 <template>
   <v-expansion-panels v-model="model">
-    <v-expansion-panel readonly>
+    <slot/>
+    <v-expansion-panel :readonly="typeof $slots.default === 'undefined'">
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-row>
