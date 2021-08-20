@@ -58,7 +58,7 @@
       <v-spacer />
       <navmenu />
       <template #append>
-        <div v-if="!miniVariant" class="text-center text-caption">
+        <div v-if="!miniVariant" class="text-center text-caption" @dblclick="setDebug" style="user-select: none;">
           <a href="https://github.com/sogehige/SogeBot">GitHub</a> |
           <a href="https://github.com/sogehige/SogeBot/issues">Issues</a> |
           <a href="https://github.com/sogehige/SogeBot/blob/master/LICENSE">GPL-3.0 License</a>
@@ -75,6 +75,8 @@ import {
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+
+import { error } from '~/functions/error';
 
 const navmenu = defineAsyncComponent({ loader: () => import('./menu.vue') });
 const user = defineAsyncComponent({ loader: () => import('../user.vue') });
@@ -99,8 +101,20 @@ export default defineComponent({
       socket.emit('channelName', (recvName: string) => { channelName.value = recvName; });
     });
 
+    const setDebug = () => {
+      getSocket('/').emit('debug::get', (err: null | string, debugEnv: string) => {
+        if (err) {
+          error(err);
+        }
+        const debug = prompt('Set debug', debugEnv);
+        if (debug !== null) {
+          getSocket('/').emit('debug::set', debug);
+        }
+      });
+    };
+
     return {
-      name, channelName, drawer, translate, miniVariant, mdiArrowCollapseLeft, mdiArrowLeft,
+      name, channelName, drawer, translate, miniVariant, mdiArrowCollapseLeft, mdiArrowLeft, setDebug,
     };
   },
   head: {}, // enable useMeta
