@@ -15,6 +15,13 @@
                   </v-btn>
                 </v-col>
                 <v-col align-self="center">
+                  <v-slider
+                    :label="translate('responses.variable.' + variable)"
+                    v-if="['level'].includes(variable)"
+                    v-model="values[idx]"
+                    max="5"
+                    min="1"
+                  ></v-slider>
                   <v-textarea
                     v-if="['userInput', 'message', 'reason'].includes(variable)"
                     v-model="values[idx]"
@@ -32,6 +39,14 @@
                     :disabled="randomized.includes(variable)"
                   />
                   <v-select
+                    v-if="variable === 'lastContributionType'"
+                    v-model="values[idx]"
+                    :items="['BITS', 'SUBS']"
+                    :label="translate('responses.variable.' + variable)"
+                    hide-details="auto"
+                    :disabled="randomized.includes(variable)"
+                  />
+                  <v-select
                     v-if="variable === 'tier'"
                     v-model="values[idx]"
                     :items="['Prime', '0', '1', '2']"
@@ -40,14 +55,14 @@
                     :disabled="randomized.includes(variable)"
                   />
                   <v-text-field
-                    v-if="['duration', 'viewers', 'bits', 'subCumulativeMonths', 'count', 'subStreak', 'amount', 'amountInBotCurrency'].includes(variable)"
+                    v-if="['lastContributionTotal', 'topContributionsSubsTotal', 'topContributionsBitsTotal', 'total', 'goal', 'duration', 'viewers', 'bits', 'subCumulativeMonths', 'count', 'subStreak', 'amount', 'amountInBotCurrency'].includes(variable)"
                     v-model.number="values[idx]"
                     :label="translate('responses.variable.' + variable)"
                     hide-details="auto"
                     :disabled="randomized.includes(variable)"
                   />
                   <v-text-field
-                    v-if="['game', 'oldGame', 'target', 'username', 'recipient', 'command'].includes(variable)"
+                    v-if="['lastContributionUsername', 'lastContributionUserId', 'topContributionsBitsUserId', 'topContributionsBitsUsername', 'topContributionsSubsUserId', 'topContributionsSubsUsername', 'game', 'oldGame', 'target', 'username', 'recipient', 'command'].includes(variable)"
                     v-model="values[idx]"
                     :label="translate('responses.variable.' + variable)"
                     hide-details="auto"
