@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.3.0](https://github.com/sogebot/ui-admin/compare/v6.2.1...v6.3.0) (2021-08-20)
+
+
+### Features
+
+* **events:** add support for hypetrain ([c7ec253](https://github.com/sogebot/ui-admin/commit/c7ec253ff3631d5a69227a3b8296f3b06baf5297))
+
+
+### Bug Fixes
+
+* **oauth:** update token generator to include channel:read:hype_train ([1934133](https://github.com/sogebot/ui-admin/commit/193413310f3d9b26cfd18b093702eb683129006a))
+
 ### [6.2.1](https://github.com/sogebot/ui-admin/compare/v6.2.0...v6.2.1) (2021-08-20)
 
 
