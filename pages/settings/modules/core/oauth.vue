@@ -45,7 +45,7 @@
               v-model="settings.broadcaster.broadcasterRefreshToken[0]" type="password" />
             <v-text-field :label="translate('core.oauth.settings.broadcasterUsername')"
               v-model="settings.broadcaster.broadcasterUsername[0]" disabled />
-            <v-btn href="https://twitchtokengenerator.com/quick/XH6B7JteDO" target="_blank">
+            <v-btn href="https://twitchtokengenerator.com/quick/VHavigHX0P" target="_blank">
               {{ translate('commons.generate') }}
             </v-btn>
           </v-card-text>
