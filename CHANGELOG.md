@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.2.0](https://github.com/sogebot/ui-admin/compare/v6.1.0...v6.2.0) (2021-08-20)
+
+
+### Features
+
+* **overlays:** add pos/size settings for groups ([ff40383](https://github.com/sogebot/ui-admin/commit/ff40383fda90250642d024a92961b79a592c00a1))
+
+
+### Bug Fixes
+
+* **debug:** add missing debug set prompt ([8010f18](https://github.com/sogebot/ui-admin/commit/8010f18f6ee5daa4cdc2cfd06cf6ed1e39c50f3a)), closes [#106](https://github.com/sogebot/ui-admin/issues/106)
+
 ## [6.1.0](https://github.com/sogebot/ui-admin/compare/v5.0.0...v6.1.0) (2021-08-19)
 
 
