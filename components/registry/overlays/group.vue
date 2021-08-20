@@ -117,8 +117,9 @@
     </v-row>
 
     <v-fade-transition>
-      <div v-if="selectedItem && haveAnyOptions(selectedItem.type)" class="pt-4">
+      <div v-if="selectedItem" class="pt-4">
         <component
+          v-if="haveAnyOptions(selectedItem.type)"
           :is="selectedItem.type"
           v-model="selectedItem.opts"
           class="overlayItem"
@@ -134,6 +135,17 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </component>
+        <v-expansion-panels v-else class="overlayItem" :value="0">
+          <v-expansion-panel readonly>
+            <v-expansion-panel-header>Position / Size</v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-text-field type="number" v-model.number="selectedItem.width" label="Width" min="1" hide-details="auto"/>
+              <v-text-field type="number" v-model.number="selectedItem.height" label="Height" min="1" hide-details="auto"/>
+              <v-text-field type="number" v-model.number="selectedItem.alignX" label="X" min="0" hide-details="auto"/>
+              <v-text-field type="number" v-model.number="selectedItem.alignY" label="Y" min="0" hide-details="auto"/>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </div>
     </v-fade-transition>
   </div>
