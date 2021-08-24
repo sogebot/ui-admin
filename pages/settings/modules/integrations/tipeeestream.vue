@@ -9,9 +9,6 @@
       <v-tab-item eager>
         <v-card>
           <v-card-text>
-            <v-text-field v-model="settings.username[0]" dense
-              :label="translate('integrations.tipeeestream.settings.username.title')"
-              :hint="translate('integrations.tipeeestream.settings.username.help')" persistent-hint />
             <v-text-field v-model="settings.apiKey[0]" type="password" dense class="pt-4"
               :label="translate('integrations.tipeeestream.settings.apiKey.title')"
               :hint="translate('integrations.tipeeestream.settings.apiKey.help')" persistent-hint />
