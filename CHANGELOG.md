@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.4.0](https://github.com/sogebot/ui-admin/compare/v6.3.1...v6.4.0) (2021-08-25)
+
+
+### Features
+
+* **eventsub:** add eventsub configuration ([27117e9](https://github.com/sogebot/ui-admin/commit/27117e90de7753dbbe32c8cbb8c00f1662a48533))
+
 ### [6.3.1](https://github.com/sogebot/ui-admin/compare/v6.3.0...v6.3.1) (2021-08-24)
 
 
