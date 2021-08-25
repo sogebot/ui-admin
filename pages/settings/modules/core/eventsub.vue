@@ -13,7 +13,7 @@
             <ol>
               <li>Go to <a href="https://dev.twitch.tv/console/apps" target="_blank">https://dev.twitch.tv/console/apps</a> and register your app</li>
               <li>You can choose any <strong>name</strong> of app you want</li>
-              <li>Set <strong>oauth redirect</strong> to your {{location.origin}}</li>
+              <li>Set <strong>oauth redirect</strong> to your {{origin}}</li>
               <li>Pick Application Integration for <strong>category</strong> and create</li>
               <li>After creation copy clientId and generate clientSecret</li>
               <li>Authorize your broadcaster account to enable subscription with your account</li>
@@ -28,7 +28,7 @@
 
             <v-alert color="info" text class="mt-2">Authorize by clicking on authorize button. It will then take around ~1 minute to subscribe to missing events</v-alert>
 
-            <v-btn target="_blank" :href="`https://id.twitch.tv/oauth2/authorize?client_id=${settings.clientId[0]}&redirect_uri=${location.origin}&response_type=token&force_verify=true&scope=channel:read:hype_train`" :disabled="settings.clientId[0].trim().length === 0">Authorize to enable EventSub subscriptions</v-btn>
+            <v-btn target="_blank" :href="`https://id.twitch.tv/oauth2/authorize?client_id=${settings.clientId[0]}&redirect_uri=${origin}&response_type=token&force_verify=true&scope=channel:read:hype_train`" :disabled="settings.clientId[0].trim().length === 0">Authorize to enable EventSub subscriptions</v-btn>
 
             <h3 class="pt-4 mt-4">Currently subscribed events</h3>
             <v-list dense>
@@ -61,6 +61,7 @@ export default defineComponent({
     const store = useStore<any>();
     const valid = ref(true);
     const tab = ref(null);
+    const origin = location.origin;
 
     watch(settings, () => {
       store.commit('settings/pending', true);
@@ -95,6 +96,7 @@ export default defineComponent({
       translate,
       valid,
       tab,
+      origin,
     };
   },
 });
