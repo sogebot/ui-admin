@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.4.1](https://github.com/sogebot/ui-admin/compare/v6.4.0...v6.4.1) (2021-08-25)
+
+
+### Bug Fixes
+
+* **eventsub:** remove domain setting ([d54abce](https://github.com/sogebot/ui-admin/commit/d54abceacbb2392927ba7b95cf9a7f3e47df2493))
+
 ## [6.4.0](https://github.com/sogebot/ui-admin/compare/v6.3.1...v6.4.0) (2021-08-25)
 
 
