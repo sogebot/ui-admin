@@ -247,6 +247,7 @@ export default defineComponent({
       { value: 'randomizer', text: 'randomizer' },
       { value: 'stats', text: 'stats' },
       { value: 'tts', text: 'tts' },
+      { value: 'hypetrain', text: 'hypetrain' },
     ];
 
     const selected = ref(null as null | string);
