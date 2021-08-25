@@ -13,8 +13,7 @@
             <ol>
               <li>Go to <a href="https://dev.twitch.tv/console/apps" target="_blank">https://dev.twitch.tv/console/apps</a> and register your app</li>
               <li>You can choose any <strong>name</strong> of app you want</li>
-              <li>Set <strong>oauth redirect</strong> to your bot domain
-                <template v-if="settings.domain[0].length > 0">, e.g. https://{{settings.domain[0]}}</template></li>
+              <li>Set <strong>oauth redirect</strong> to your {{location.origin}}</li>
               <li>Pick Application Integration for <strong>category</strong> and create</li>
               <li>After creation copy clientId and generate clientSecret</li>
               <li>Authorize your broadcaster account to enable subscription with your account</li>
@@ -26,13 +25,10 @@
               v-model="settings.clientId[0]" hide-details="auto" class="pb-2"/>
             <v-text-field :label="translate('integrations.spotify.settings.clientSecret')"
               v-model="settings.clientSecret[0]" type="password" hide-details="auto" class="pb-2"/>
-            <v-text-field :label="translate('core.ui.settings.domain.title')"
-              :hint="translate('core.ui.settings.domain.help')"
-              v-model="settings.domain[0]" hide-details="auto" class="pb-2"/>
 
             <v-alert color="info" text class="mt-2">Authorize by clicking on authorize button. It will then take around ~1 minute to subscribe to missing events</v-alert>
 
-            <v-btn target="_blank" :href="`https://id.twitch.tv/oauth2/authorize?client_id=${settings.clientId[0]}&redirect_uri=${settings.domain[0]}&response_type=token&force_verify=true&scope=channel:read:hype_train`" :disabled="settings.clientId[0].trim().length === 0 || settings.domain[0].trim().length === 0">Authorize to enable EventSub subscriptions</v-btn>
+            <v-btn target="_blank" :href="`https://id.twitch.tv/oauth2/authorize?client_id=${settings.clientId[0]}&redirect_uri=${location.origin}&response_type=token&force_verify=true&scope=channel:read:hype_train`" :disabled="settings.clientId[0].trim().length === 0">Authorize to enable EventSub subscriptions</v-btn>
 
             <h3 class="pt-4 mt-4">Currently subscribed events</h3>
             <v-list dense>
