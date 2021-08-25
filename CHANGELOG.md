@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.4.2](https://github.com/sogebot/ui-admin/compare/v6.4.1...v6.4.2) (2021-08-25)
+
+
+### Bug Fixes
+
+* **eventsub:** set correct location.origin ([f53dae3](https://github.com/sogebot/ui-admin/commit/f53dae31a10d2edc9bbae00ad6693599bcdd8501))
+
 ### [6.4.1](https://github.com/sogebot/ui-admin/compare/v6.4.0...v6.4.1) (2021-08-25)
 
 
