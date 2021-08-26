@@ -25,6 +25,20 @@
               v-model="settings.clientId[0]" hide-details="auto" class="pb-2"/>
             <v-text-field :label="translate('integrations.spotify.settings.clientSecret')"
               v-model="settings.clientSecret[0]" type="password" hide-details="auto" class="pb-2"/>
+            <v-row>
+              <v-col cols="auto">
+                <v-switch
+                  v-model="settings.useTunneling[0]"
+                  label="Use unreliable tunneling (works on localhost)"
+                />
+              </v-col>
+              <v-col>
+                <v-text-field :label="translate('core.ui.settings.domain.title')"
+                  :hint="translate('core.ui.settings.domain.help')"
+                  :disabled="settings.useTunneling[0]"
+                  v-model="settings.domain[0]" hide-details="auto" class="pb-2"/>
+              </v-col>
+            </v-row>
 
             <v-alert color="info" text class="mt-2">Authorize by clicking on authorize button. It will then take around ~1 minute to subscribe to missing events</v-alert>
 
