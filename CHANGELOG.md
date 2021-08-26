@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.5.0](https://github.com/sogebot/ui-admin/compare/v6.4.2...v6.5.0) (2021-08-26)
+
+
+### Features
+
+* **overlays:** add support for hypetrain ([db931e3](https://github.com/sogebot/ui-admin/commit/db931e3315d9769d5987ce1e046d879a2e53e0d7))
+
+
+### Bug Fixes
+
+* **eventsub:** add tunnel/domain options ([b1ee45d](https://github.com/sogebot/ui-admin/commit/b1ee45dc288e6e0d345030896af92a5fec3491d5))
+
 ### [6.4.2](https://github.com/sogebot/ui-admin/compare/v6.4.1...v6.4.2) (2021-08-25)
 
 
