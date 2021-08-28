@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.0.0](https://github.com/sogebot/ui-admin/compare/v6.5.0...v7.0.0) (2021-08-28)
+
+
+### Bug Fixes
+
+* **alerts:** filters should have correct options ([38f2c86](https://github.com/sogebot/ui-admin/commit/38f2c86ba651ed3a5f8604622292e6d69a7ed71e))
+* **deps:** bump core-js from 3.16.2 to 3.16.3 ([#132](https://github.com/sogebot/ui-admin/issues/132)) ([c8ef3f8](https://github.com/sogebot/ui-admin/commit/c8ef3f85b73481251dd23a5e60242a6bb12b235b))
+* **deps:** bump marked from 3.0.0 to 3.0.2 ([#133](https://github.com/sogebot/ui-admin/issues/133)) ([fd6822e](https://github.com/sogebot/ui-admin/commit/fd6822ee076963b642627e2fa90cc1f54d80f799))
+
 ## [6.5.0](https://github.com/sogebot/ui-admin/compare/v6.4.2...v6.5.0) (2021-08-26)
 
 
