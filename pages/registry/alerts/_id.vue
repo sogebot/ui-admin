@@ -166,6 +166,7 @@
                       <formEdit
                         :value="alert"
                         :parent="item"
+                        :event="event"
                         @input="alert = $event"
                       />
                     </v-tab-item>
@@ -482,7 +483,7 @@ export default defineComponent({
           item.value.cmdredeems.push({
             ..._default,
             // eslint-disable-next-line no-template-curly-in-string
-            messageTemplate: '{name} was redeemed by {recipient} for x${amount}!',
+            messageTemplate: '{name} was redeemed by {recipient} for x{amount}!',
           });
           break;
         case 'subs':

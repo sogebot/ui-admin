@@ -177,7 +177,7 @@ export default defineComponent({
     const recipient = ref('');
     const isRecipientRandomized = ref(true);
     const haveRecipient = computed(() => {
-      return ['rewardredeems', 'subgift'].includes(event.value);
+      return ['rewardredeems', 'subgifts', 'cmdredeems'].includes(event.value);
     });
 
     const message = ref('');

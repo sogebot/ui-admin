@@ -11,7 +11,7 @@
       :label="translate('registry.alerts.title.name')"
     />
 
-    <query-filter v-model="model.filter" :rules="[['username', 'string']]" />
+    <query-filter v-model="model.filter" :rules="rules(event)" />
     <variant v-model="model.variantAmount" />
 
     <rewards
@@ -317,12 +317,36 @@ export default defineComponent({
     media:         defineAsyncComponent(() => import('~/components/registry/alerts/inputs/media.vue')),
     rewards:       defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }),
   },
-  props: { value: Object, parent: Object },
+  props: {
+    value: Object, parent: Object, event: String,
+  },
   setup (props: Props, ctx) {
     const valid = ref(true);
     const model = ref(props.value);
     const customTab = ref(0);
     const form1 = ref(null);
+
+    const rules = (type: string) => {
+      switch (type) {
+        case 'cheers':
+        case 'subcommunitygifts':
+        case 'tips':
+        case 'hosts':
+        case 'raids':
+          return [['username', 'string'], ['amount', 'number']];
+        case 'subs':
+          return [['username', 'string'], ['tier', 'tier']];
+        case 'resubs':
+          return [['username', 'string'], ['tier', 'tier'], ['amount', 'number']];
+        case 'subgifts':
+          return [['username', 'string'], ['recipient', 'string'], ['amount', 'number']];
+        case 'cmdredeems':
+          return [['recipient', 'string'], ['amount', 'number'], ['name', 'string']];
+        case 'rewardredeems':
+          return [['recipient', 'string']];
+      }
+      return [['username', 'string']];
+    };
 
     watch(model, (val) => {
       ctx.emit('input', val);
@@ -355,6 +379,7 @@ export default defineComponent({
 
       // functions
       revertCode,
+      rules,
 
       // prism
       highlighterCSS,
