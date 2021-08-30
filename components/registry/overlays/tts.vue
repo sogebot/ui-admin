@@ -1,7 +1,7 @@
 <template>
   <v-expansion-panels v-model="model">
     <slot/>
-    <tts v-model="options" readonly>
+    <tts v-model="options" :readonly="typeof $slots.default === 'undefined'">
       <template #append>
         <v-switch
           v-model="options.triggerTTSByHighlightedMessage"
