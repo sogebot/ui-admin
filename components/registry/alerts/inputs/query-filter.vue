@@ -99,6 +99,7 @@
                             v-if="getRuleType(item.type) === 'tier'"
                             :label="translate('registry.alerts.filter.value')"
                             :items="['Prime', '1', '2', '3']"
+                            v-model="item.value"
                           />
                           <v-text-field
                             v-else-if="getRuleType(item.type) === 'number'"
