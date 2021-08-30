@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.0.0](https://github.com/sogebot/ui-admin/compare/v7.0.3...v8.0.0) (2021-08-30)
+
+
+### Features
+
+* **quickactions:** add randomizer button ([d42e7aa](https://github.com/sogebot/ui-admin/commit/d42e7aaaf71190f0632cdc38aec1b99ef8694f8e))
+
+
+### Bug Fixes
+
+* **button:** check type before interval ([4517c53](https://github.com/sogebot/ui-admin/commit/4517c53cb67c7dd824c77283044d58c4ff9eabe5))
+* **button:** value precheck ([0ab880b](https://github.com/sogebot/ui-admin/commit/0ab880bedb7f755cb7a4d9e217ff9481b07840fa))
+
 ### [7.0.3](https://github.com/sogebot/ui-admin/compare/v7.0.2...v7.0.3) (2021-08-30)
 
 
