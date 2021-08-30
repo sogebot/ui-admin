@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.0.3](https://github.com/sogebot/ui-admin/compare/v7.0.2...v7.0.3) (2021-08-30)
+
+
+### Bug Fixes
+
+* **overlays:** tts panel should be clickable ([63dc567](https://github.com/sogebot/ui-admin/commit/63dc567454e4f750c22584a76cb9be696ba85deb))
+
 ### [7.0.2](https://github.com/sogebot/ui-admin/compare/v7.0.1...v7.0.2) (2021-08-30)
 
 
