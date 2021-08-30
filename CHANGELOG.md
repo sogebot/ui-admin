@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.0.2](https://github.com/sogebot/ui-admin/compare/v7.0.1...v7.0.2) (2021-08-30)
+
+
+### Bug Fixes
+
+* **alerts:** show tts settings only where applicable ([f1a7f49](https://github.com/sogebot/ui-admin/commit/f1a7f49eab3cc5053c6ccd79b9a1d2dfb4c327de))
+
 ### [7.0.1](https://github.com/sogebot/ui-admin/compare/v7.0.0...v7.0.1) (2021-08-30)
 
 
