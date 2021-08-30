@@ -257,6 +257,9 @@ export default defineComponent({
         setInterval(() => {
           // don't refresh if in middle update
           if (!showMenu.value) {
+            if (!randomizer.value) {
+              return;
+            }
             api.getOne<RandomizerInterface>($axios, `/api/v1/registry/randomizer`, clonedItem.value.options.randomizerId)
               .then((response) => {
                 randomizer.value = response.data;
