@@ -89,6 +89,7 @@ export default defineComponent({
   components: {
     command:        defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/command.vue') }),
     customvariable: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/customvariable.vue') }),
+    randomizer:     defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/randomizer.vue') }),
   },
   setup (props: Props, ctx) {
     const stepper = ref('1');
@@ -153,6 +154,7 @@ export default defineComponent({
     const typeItems = [
       { text: 'Run Command', value: 'command' },
       { text: '+/-/= Custom Variable', value: 'customvariable' },
+      { text: 'Randomizer', value: 'randomizer' },
     ];
 
     watch(clonedItem, (val) => {

@@ -83,6 +83,31 @@
           </v-col>
         </template>
       </v-row>
+      <v-row v-if="item.type === 'randomizer' && randomizer" no-gutters ripple>
+        <v-slide-x-transition>
+          <v-col v-if="editing" cols="auto" class="d-flex">
+            <v-simple-checkbox v-model="clonedItem.selected" light v-if="color !== 'white'"/>
+            <v-simple-checkbox v-model="clonedItem.selected" dark v-else/>
+          </v-col>
+        </v-slide-x-transition>
+        <v-col v-if="!editing" cols="auto" class="d-flex">
+          <v-icon class="minus" :color="color">
+            {{ randomizer.isShown ? mdiEye : mdiEyeOff }}
+          </v-icon>
+        </v-col>
+        <v-col class="text py-1" style="line-height: normal;">
+          <div style="font-size: 0.8rem;">
+            {{ randomizer.name }}
+          </div>
+        </v-col>
+
+        <v-col v-if="!editing" cols="auto" class="d-flex">
+          <v-icon class="plus" :color="color" v-if="!randomizerSpin">
+            {{ mdiPlay }}
+          </v-icon>
+          <v-progress-circular v-else indeterminate size="20" />
+        </v-col>
+      </v-row>
     </v-card-text>
 
     <v-expand-transition>
@@ -152,15 +177,18 @@
 
 <script lang="ts">
 import {
-  mdiChevronDown, mdiClose, mdiFloppy, mdiMinus, mdiPencil, mdiPlus,
+  mdiChevronDown, mdiClose, mdiEye, mdiEyeOff, mdiFloppy, mdiMinus, mdiPencil, mdiPlay, mdiPlus,
 } from '@mdi/js';
 import {
   defineAsyncComponent,
   defineComponent, nextTick, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { getContrastColor } from '@sogebot/ui-helpers/colors';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep, debounce } from 'lodash';
+
+import { RandomizerInterface } from '../../../.bot/src/database/entity/randomizer';
 
 import type { QuickActions } from '.bot/src/database/entity/dashboard';
 import { VariableInterface } from '~/.bot/src/database/entity/variable';
@@ -193,6 +221,8 @@ export default defineComponent({
     const showMenu = ref(false);
     const color = ref('white');
     const customVariable = ref(null as VariableInterface | null);
+    const randomizer = ref(null as RandomizerInterface | null);
+    const randomizerSpin = ref(false);
 
     const recalculateColor = () => {
       // get computed color
@@ -216,6 +246,20 @@ export default defineComponent({
             api.get($axios, `/api/v1/quickaction/${clonedItem.value.id}`)
               .then((response) => {
                 customVariable.value = (response.data as any).customvariable;
+              });
+          }
+        }, 5000);
+      } else if (clonedItem.value.type === 'randomizer') {
+        api.getOne<RandomizerInterface>($axios, `/api/v1/registry/randomizer`, clonedItem.value.options.randomizerId)
+          .then((response) => {
+            randomizer.value = response.data;
+          });
+        setInterval(() => {
+          // don't refresh if in middle update
+          if (!showMenu.value) {
+            api.getOne<RandomizerInterface>($axios, `/api/v1/registry/randomizer`, clonedItem.value.options.randomizerId)
+              .then((response) => {
+                randomizer.value = response.data;
               });
           }
         }, 5000);
@@ -258,8 +302,40 @@ export default defineComponent({
     };
 
     const debouncedTrigger = debounce((ev: MouseEvent, value?: string) => trigger(ev, value), 1000);
-    const trigger = (ev: MouseEvent, value?: string) => {
-      if (customVariable.value && (customVariable.value.type === 'options' || customVariable.value.type === 'text')) {
+    const trigger = async (ev: MouseEvent, value?: string) => {
+      if (randomizer.value) {
+        // determinate which part of button is pushed
+        const card = document.getElementById(`quickaction-${clonedItem.value.id}`) as HTMLElement;
+        const text = document.getElementsByClassName(`text`)[0] as HTMLElement;
+
+        const getClassList = (el: Element) => {
+          if (el.tagName === 'path') {
+            return (Array.from(el.parentElement?.parentElement?.classList ?? []));
+          } else {
+            return (Array.from(el.parentElement?.classList ?? []));
+          }
+        };
+
+        const mouseOffsetX = ev.offsetX;
+        const isText = getClassList(ev.target as Element).includes('text');
+
+        const isDecrement = !getClassList(ev.target as Element).includes('plus')
+          && (getClassList(ev.target as Element).includes('minus') || mouseOffsetX < ((isText ? text.clientWidth : card.clientWidth) / 2));
+
+        if (isDecrement) {
+          randomizer.value.isShown = !randomizer.value.isShown;
+          await api.post<void>($axios, '/api/v1/registry/randomizer/hideall');
+          await api.patch<RandomizerInterface>($axios, '/api/v1/registry/randomizer/' + randomizer.value.id, { isShown: randomizer.value.isShown });
+        } else {
+          randomizerSpin.value = true;
+          getSocket('/registries/randomizer').emit('randomizer::startSpin', () => {
+            return true;
+          });
+          setTimeout(() => {
+            randomizerSpin.value = false;
+          }, 5000);
+        }
+      } else if (customVariable.value && (customVariable.value.type === 'options' || customVariable.value.type === 'text')) {
         if (typeof value === 'undefined') {
           showMenu.value = !showMenu.value;
         } else {
@@ -307,6 +383,8 @@ export default defineComponent({
       valid,
       customVariable,
       showMenu,
+      randomizer,
+      randomizerSpin,
 
       // fncs
       save,
@@ -320,6 +398,9 @@ export default defineComponent({
       mdiChevronDown,
       mdiPencil,
       mdiFloppy,
+      mdiEye,
+      mdiPlay,
+      mdiEyeOff,
 
       // others
       translate,
