@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.0.1](https://github.com/sogebot/ui-admin/compare/v7.0.0...v7.0.1) (2021-08-30)
+
+
+### Bug Fixes
+
+* **queryFilter:** properly set value of tier ([fb28a14](https://github.com/sogebot/ui-admin/commit/fb28a14c4b50b45f3e363b5c76282c8be6ec75c2))
+
 ## [7.0.0](https://github.com/sogebot/ui-admin/compare/v6.5.0...v7.0.0) (2021-08-28)
 
 
