@@ -159,7 +159,7 @@
           </font>
         </v-expansion-panel-content>
       </v-expansion-panel>
-      <tts v-model="model.tts" />
+      <tts v-model="model.tts" v-if="setableTTS"/>
       <v-expansion-panel>
         <v-expansion-panel-header>
           {{ translate('registry.alerts.image.setting') }}
@@ -286,6 +286,7 @@
 
 <script lang="ts">
 import {
+  computed,
   defineAsyncComponent,
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -300,7 +301,7 @@ import {
 type Props = {
   value: CommonSettingsInterface,
   parent: AlertInterface,
-
+  event: string,
 };
 
 export default defineComponent({
@@ -325,6 +326,10 @@ export default defineComponent({
     const model = ref(props.value);
     const customTab = ref(0);
     const form1 = ref(null);
+
+    const setableTTS = computed(() => {
+      return ['tips', 'resubs', 'cheers', 'rewardredeems'].includes(props.event);
+    });
 
     const rules = (type: string) => {
       switch (type) {
@@ -376,6 +381,7 @@ export default defineComponent({
       form1,
       model,
       customTab,
+      setableTTS,
 
       // functions
       revertCode,
