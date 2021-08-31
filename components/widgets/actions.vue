@@ -4,27 +4,33 @@
       <v-toolbar-title class="text-button">
         Actions
       </v-toolbar-title>
-      <v-spacer />
-      <v-tooltip v-if="!isPopout" bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn
-            icon
-            height="36"
-            width="36"
-            v-bind="attrs"
-            href="#/popout/actions"
-            target="_blank"
-            v-on="on"
-          >
-            <v-icon>{{ mdiOpenInNew }}</v-icon>
-          </v-btn>
-        </template>
-        <span>Popout</span>
-      </v-tooltip>
-      <v-btn icon height="36" width="36" :color="editing ? 'primary' : 'secondary lighten-2'" @click="editing = !editing">
-        <v-icon>{{ mdiCircleEditOutline }}</v-icon>
-      </v-btn>
     </v-toolbar>
+
+    <v-speed-dial absolute v-model="fab" right style="right: 2px; top: -15px;" direction="bottom" top>
+          <template v-slot:activator>
+            <v-btn v-model="fab" color="blue-grey darken-2" dark fab x-small>
+              <v-icon v-if="fab">
+                {{ mdiClose }}
+              </v-icon>
+              <v-icon v-else>
+                {{ mdiDotsVertical }}
+              </v-icon>
+            </v-btn>
+          </template>
+
+          <v-btn fab x-small :color="editing ? 'primary' : 'secondary lighten-2'" @click="editing = !editing">
+            <v-icon>{{ mdiCircleEditOutline }}</v-icon>
+          </v-btn>
+          <v-tooltip bottom v-if="!isPopout">
+            <template #activator="{ on, attrs }">
+              <v-btn color="secondary" fab x-small v-bind="attrs" href="#/popout/actions" target="_blank"
+                v-on="on">
+                <v-icon>{{ mdiOpenInNew }}</v-icon>
+              </v-btn>
+            </template>
+            <span>Popout</span>
+          </v-tooltip>
+        </v-speed-dial>
 
     <v-row dense :key="timestamp">
       <v-col cols="12">
@@ -63,7 +69,7 @@
 
 <script lang="ts">
 import {
-  mdiCircleEditOutline, mdiDelete, mdiOpenInNew, mdiPlusThick,
+  mdiCircleEditOutline, mdiClose, mdiDelete, mdiDotsVertical, mdiOpenInNew, mdiPlusThick,
 } from '@mdi/js';
 import {
   computed,
@@ -80,6 +86,7 @@ export default defineComponent({
   components: { actionButton: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/button.vue') }) },
   setup () {
     const context = useContext();
+    const fab = ref(false);
     const editing = ref(false);
     const timestamp = ref(Date.now());
     const height = ref(600);
@@ -172,6 +179,7 @@ export default defineComponent({
       isPopout,
       loading,
       timestamp,
+      fab,
 
       /* functions */
       addItem,
@@ -183,6 +191,8 @@ export default defineComponent({
       mdiPlusThick,
       mdiDelete,
       mdiOpenInNew,
+      mdiDotsVertical,
+      mdiClose,
     };
   },
 });

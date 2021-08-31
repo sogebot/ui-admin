@@ -7,7 +7,7 @@
           <v-tab>{{ translate('widget-title-monitor') }}</v-tab>
         </v-tabs>
 
-        <v-speed-dial absolute v-model="fab" right style="right: 2px; top: 20px;" direction="bottom" top>
+        <v-speed-dial absolute v-model="fab" right style="right: 2px; top: -15px;" direction="bottom" top>
           <template v-slot:activator>
             <v-btn v-model="fab" color="blue-grey darken-2" dark fab x-small>
               <v-icon v-if="fab">
