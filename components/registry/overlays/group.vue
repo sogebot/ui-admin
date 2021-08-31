@@ -366,7 +366,7 @@ export default defineComponent({
       if (item) {
         // don't do anything on resize
         moveItem.value = item;
-        const isIcon = ['path', 'svg'].includes((event.ev as any).path[0].tagName);
+        const isIcon = ['path', 'svg'].includes((event.ev as any).composedPath()[0].tagName);
         window.addEventListener('mouseup', stopMove);
         if (!isIcon && (event.ev.offsetX < (item.width * ratio.value) - 15 || event.ev.offsetY < (item.height * ratio.value) - 15)) {
           document.onmousemove = mouseMove;
