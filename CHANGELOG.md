@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.0.8](https://github.com/sogebot/ui-admin/compare/v8.0.7...v8.0.8) (2021-08-31)
+
+
+### Bug Fixes
+
+* **statsbar:** update missing sockets init ([88dbd60](https://github.com/sogebot/ui-admin/commit/88dbd6004bfeb61a72de8d5190587181b0ec48c8))
+
 ### [8.0.7](https://github.com/sogebot/ui-admin/compare/v8.0.6...v8.0.7) (2021-08-31)
 
 
