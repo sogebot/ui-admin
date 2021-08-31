@@ -250,7 +250,7 @@ export default defineComponent({
       getLatestStats();
 
       getSocket('/').emit('panel::resetStatsState');
-      socket.on('panel::stats', (data: Record<string, any>) => {
+      getSocket('/').on('panel::stats', (data: Record<string, any>) => {
         console.groupCollapsed('panel::stats');
         console.log(data);
         console.groupEnd();
