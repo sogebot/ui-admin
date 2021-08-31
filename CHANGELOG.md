@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.0.3](https://github.com/sogebot/ui-admin/compare/v8.0.2...v8.0.3) (2021-08-31)
+
+
+### Bug Fixes
+
+* **layout:** wait for logged user ([61fc178](https://github.com/sogebot/ui-admin/commit/61fc17829524a8fb2ca6d5b55408fb1cedf5e8e5))
+
 ### [8.0.2](https://github.com/sogebot/ui-admin/compare/v8.0.1...v8.0.2) (2021-08-31)
 
 
