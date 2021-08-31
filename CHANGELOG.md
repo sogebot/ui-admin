@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.0.7](https://github.com/sogebot/ui-admin/compare/v8.0.6...v8.0.7) (2021-08-31)
+
+
+### Bug Fixes
+
+* **socket:** remove socket init in js file root ([be463ee](https://github.com/sogebot/ui-admin/commit/be463eefe2538f9408785431218ea363a2ab2a40))
+
 ### [8.0.6](https://github.com/sogebot/ui-admin/compare/v8.0.5...v8.0.6) (2021-08-31)
 
 ### [8.0.5](https://github.com/sogebot/ui-admin/compare/v8.0.4...v8.0.5) (2021-08-31)
