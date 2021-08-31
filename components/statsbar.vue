@@ -189,7 +189,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      socket.emit('version', async (recvVersion: string) => {
+      getSocket('/').emit('version', async (recvVersion: string) => {
         version.value = recvVersion;
 
         const { response } = await new Promise<{ response: Record<string, any>}>((resolve) => {
@@ -232,7 +232,7 @@ export default defineComponent({
       });
 
       UIErrorInterval = window.setInterval(() => {
-        socket.emit('panel::alerts', (err: string | null, data: { errors: { name: string; message: string }[], warns: { name: string; message: string }[] }) => {
+        getSocket('/').emit('panel::alerts', (err: string | null, data: { errors: { name: string; message: string }[], warns: { name: string; message: string }[] }) => {
           if (err) {
             return console.error(err);
           }
@@ -249,7 +249,7 @@ export default defineComponent({
 
       getLatestStats();
 
-      socket.emit('panel::resetStatsState');
+      getSocket('/').emit('panel::resetStatsState');
       socket.on('panel::stats', (data: Record<string, any>) => {
         console.groupCollapsed('panel::stats');
         console.log(data);
