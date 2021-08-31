@@ -1,6 +1,6 @@
 <template>
   <v-app id="app" dark>
-    <template v-if="$store.state.isUILoaded">
+    <template v-if="$store.state.isUILoaded && $store.state.loggedUser">
       <navbar />
       <v-main>
         <!-- dashboard needs to be visible all the time -->
