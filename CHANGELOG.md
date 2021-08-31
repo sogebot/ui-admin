@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.0.12](https://github.com/sogebot/ui-admin/compare/v8.0.11...v8.0.12) (2021-08-31)
+
 ### [8.0.11](https://github.com/sogebot/ui-admin/compare/v8.0.10...v8.0.11) (2021-08-31)
 
 ### [8.0.10](https://github.com/sogebot/ui-admin/compare/v8.0.9...v8.0.10) (2021-08-31)
