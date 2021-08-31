@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.0.1](https://github.com/sogebot/ui-admin/compare/v8.0.0...v8.0.1) (2021-08-31)
+
+
+### Bug Fixes
+
+* **group:** use composedPath() instead of path ([22a0c3a](https://github.com/sogebot/ui-admin/commit/22a0c3ac1c03b6f2f14dc0069652cc3961846925))
+
 ## [8.0.0](https://github.com/sogebot/ui-admin/compare/v7.0.3...v8.0.0) (2021-08-30)
 
 
