@@ -64,8 +64,7 @@ export default defineComponent({
             visible:   true,
           };
           console.log('Saving', { item });
-          const socket = getSocket('/systems/customcommands');
-          socket.emit('generic::setById', { id: item.id, item }, () => {
+          getSocket('/systems/customcommands').emit('generic::setById', { id: item.id, item }, () => {
             resolve(true);
             ctx.emit('save');
             newItemSaving.value = false;

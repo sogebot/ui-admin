@@ -148,8 +148,6 @@ import { EventBus } from '~/functions/event-bus';
 let interval = 0;
 let UIErrorInterval = 0;
 
-const socket = getSocket('/');
-
 export default defineComponent({
   components: {
     game:         defineAsyncComponent({ loader: () => import('~/components/statsbar/game.vue') }),
@@ -177,7 +175,7 @@ export default defineComponent({
     });
 
     const getLatestStats = () => {
-      socket.emit('getLatestStats', (err: string | null, data: any) => {
+      getSocket('/').emit('getLatestStats', (err: string | null, data: any) => {
         console.groupCollapsed('navbar::getLatestStats');
         console.log(data);
         if (err) {

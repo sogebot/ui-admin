@@ -96,9 +96,8 @@ export default defineComponent({
 
     onMounted(() => {
       console.debug('#route | ' + useRoute().value.name);
-      const socket = getSocket('/', true);
-      socket.emit('name', (recvName: string) => { name.value = recvName; });
-      socket.emit('channelName', (recvName: string) => { channelName.value = recvName; });
+      getSocket('/', true).emit('name', (recvName: string) => { name.value = recvName; });
+      getSocket('/', true).emit('channelName', (recvName: string) => { channelName.value = recvName; });
     });
 
     const setDebug = () => {

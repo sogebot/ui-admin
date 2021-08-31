@@ -78,8 +78,7 @@ export default defineComponent({
             group:      null,
           };
           console.log('Saving', { item });
-          const socket = getSocket('/systems/alias');
-          socket.emit('generic::setById', { id: item.id, item }, () => {
+          getSocket('/systems/alias').emit('generic::setById', { id: item.id, item }, () => {
             resolve(true);
             ctx.emit('save');
             newItemSaving.value = false;
