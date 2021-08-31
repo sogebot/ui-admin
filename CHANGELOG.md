@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.0.10](https://github.com/sogebot/ui-admin/compare/v8.0.9...v8.0.10) (2021-08-31)
+
+
+### Bug Fixes
+
+* **actions:** split buttons ([b97f339](https://github.com/sogebot/ui-admin/commit/b97f339cc8dd026c3e43e63ad55377ba4496c931))
+
 ### [8.0.9](https://github.com/sogebot/ui-admin/compare/v8.0.8...v8.0.9) (2021-08-31)
 
 
