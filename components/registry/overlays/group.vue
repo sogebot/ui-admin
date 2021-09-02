@@ -3,10 +3,19 @@
     <v-row no-gutters>
       <v-col cols="2">
         <v-list dense>
+          <v-subheader>Canvas</v-subheader>
+          <v-list-item>
+            <v-text-field v-model.number="options.canvas.width" hide-details="auto" type="number" label="Width" />
+          </v-list-item>
+          <v-list-item>
+            <v-text-field v-model.number="options.canvas.height" hide-details="auto" type="number" label="Height" />
+          </v-list-item>
+        </v-list>
+        <v-list dense>
           <v-subheader>Display order</v-subheader>
           <v-fade-transition group>
             <v-list-item
-              v-for="(item, idx) of [...items].reverse()"
+              v-for="(item, idx) of [...options.items].reverse()"
               :key="'list-' + item.id"
               class="overlayItem"
               :input-value="selected === item.id"
@@ -18,16 +27,16 @@
                   :disabled="idx === 0"
                   height="20"
                   width="20"
-                  @click.stop="moveDown((items.length - 1) - idx)"
+                  @click.stop="moveDown((options.items.length - 1) - idx)"
                 >
                   <v-icon>{{ mdiMenuUp }}</v-icon>
                 </v-btn>
                 <v-btn
                   icon
-                  :disabled="!(idx !== items.length - 1)"
+                  :disabled="!(idx !== options.items.length - 1)"
                   height="20"
                   width="20"
-                  @click.stop="moveUp((items.length - 1) - idx)"
+                  @click.stop="moveUp((options.items.length - 1) - idx)"
                 >
                   <v-icon>{{ mdiMenuDown }}</v-icon>
                 </v-btn>
@@ -46,13 +55,13 @@
         <v-responsive
           ref="responsive"
           style="overflow: inherit"
-          :aspect-ratio="16/9"
+          :aspect-ratio="options.canvas.width/options.canvas.height"
           :max-height="height"
-          :max-width="(height / 9) * 16"
+          :max-width="height * options.canvas.width/options.canvas.height"
         >
           <v-card height="100%" width="100%" :loading="!initialResize" color="blue-grey darken-4">
             <v-card-text v-if="initialResize">
-              <v-fade-transition v-for="item of items" :key="item.id">
+              <v-fade-transition v-for="item of options.items" :key="item.id">
                 <item
                   v-click-outside="{
                     handler: () => selected = null,
@@ -119,8 +128,8 @@
     <v-fade-transition>
       <div v-if="selectedItem" class="pt-4">
         <component
-          v-if="haveAnyOptions(selectedItem.type)"
           :is="selectedItem.type"
+          v-if="haveAnyOptions(selectedItem.type)"
           v-model="selectedItem.opts"
           class="overlayItem"
           @update="selectedItem.opts = $event;"
@@ -128,10 +137,34 @@
           <v-expansion-panel>
             <v-expansion-panel-header>Position / Size</v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-text-field type="number" v-model.number="selectedItem.width" label="Width" min="1" hide-details="auto"/>
-              <v-text-field type="number" v-model.number="selectedItem.height" label="Height" min="1" hide-details="auto"/>
-              <v-text-field type="number" v-model.number="selectedItem.alignX" label="X" min="0" hide-details="auto"/>
-              <v-text-field type="number" v-model.number="selectedItem.alignY" label="Y" min="0" hide-details="auto"/>
+              <v-text-field v-model.number="selectedItem.width" type="number" label="Width" min="1" hide-details="auto" />
+              <v-text-field v-model.number="selectedItem.height" type="number" label="Height" min="1" hide-details="auto" />
+              <v-text-field v-model.number="selectedItem.alignX" type="number" label="X" min="0" hide-details="auto">
+                <template #append>
+                  <v-btn icon @click="selectedItem.alignX = 0">
+                    <v-icon>{{ mdiFormatHorizontalAlignLeft }}</v-icon>
+                  </v-btn>
+                  <v-btn icon @click="selectedItem.alignX = options.canvas.width / 2 - selectedItem.width / 2">
+                    <v-icon>{{ mdiFormatHorizontalAlignCenter }}</v-icon>
+                  </v-btn>
+                  <v-btn icon @click="selectedItem.alignX = options.canvas.width - selectedItem.width">
+                    <v-icon>{{ mdiFormatHorizontalAlignRight }}</v-icon>
+                  </v-btn>
+                </template>
+              </v-text-field>
+              <v-text-field v-model.number="selectedItem.alignY" type="number" label="Y" min="0" hide-details="auto">
+                <template #append>
+                  <v-btn icon @click="selectedItem.alignY = 0">
+                    <v-icon>{{ mdiFormatVerticalAlignTop }}</v-icon>
+                  </v-btn>
+                  <v-btn icon @click="selectedItem.alignY = options.canvas.height / 2 - selectedItem.height / 2">
+                    <v-icon>{{ mdiFormatVerticalAlignCenter }}</v-icon>
+                  </v-btn>
+                  <v-btn icon @click="selectedItem.alignY = options.canvas.height - selectedItem.height">
+                    <v-icon>{{ mdiFormatVerticalAlignBottom }}</v-icon>
+                  </v-btn>
+                </template>
+              </v-text-field>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </component>
@@ -139,10 +172,34 @@
           <v-expansion-panel readonly>
             <v-expansion-panel-header>Position / Size</v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-text-field type="number" v-model.number="selectedItem.width" label="Width" min="1" hide-details="auto"/>
-              <v-text-field type="number" v-model.number="selectedItem.height" label="Height" min="1" hide-details="auto"/>
-              <v-text-field type="number" v-model.number="selectedItem.alignX" label="X" min="0" hide-details="auto"/>
-              <v-text-field type="number" v-model.number="selectedItem.alignY" label="Y" min="0" hide-details="auto"/>
+              <v-text-field v-model.number="selectedItem.width" type="number" label="Width" min="1" hide-details="auto" />
+              <v-text-field v-model.number="selectedItem.height" type="number" label="Height" min="1" hide-details="auto" />
+              <v-text-field v-model.number="selectedItem.alignX" type="number" label="X" min="0" hide-details="auto">
+                <template #append>
+                  <v-btn icon @click="selectedItem.alignX = 0">
+                    <v-icon>{{ mdiFormatHorizontalAlignLeft }}</v-icon>
+                  </v-btn>
+                  <v-btn icon @click="selectedItem.alignX = options.canvas.width / 2 - selectedItem.width / 2">
+                    <v-icon>{{ mdiFormatHorizontalAlignCenter }}</v-icon>
+                  </v-btn>
+                  <v-btn icon @click="selectedItem.alignX = options.canvas.width - selectedItem.width">
+                    <v-icon>{{ mdiFormatHorizontalAlignRight }}</v-icon>
+                  </v-btn>
+                </template>
+              </v-text-field>
+              <v-text-field v-model.number="selectedItem.alignY" type="number" label="Y" min="0" hide-details="auto">
+                <template #append>
+                  <v-btn icon @click="selectedItem.alignY = 0">
+                    <v-icon>{{ mdiFormatVerticalAlignTop }}</v-icon>
+                  </v-btn>
+                  <v-btn icon @click="selectedItem.alignY = options.canvas.height / 2 - selectedItem.height / 2">
+                    <v-icon>{{ mdiFormatVerticalAlignCenter }}</v-icon>
+                  </v-btn>
+                  <v-btn icon @click="selectedItem.alignY = options.canvas.height - selectedItem.height">
+                    <v-icon>{{ mdiFormatVerticalAlignBottom }}</v-icon>
+                  </v-btn>
+                </template>
+              </v-text-field>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -153,7 +210,10 @@
 
 <script lang="ts">
 import {
-  mdiMenuDown, mdiMenuUp, mdiPlus,
+  mdiFormatHorizontalAlignCenter, mdiFormatHorizontalAlignLeft, mdiFormatHorizontalAlignRight,
+  mdiFormatVerticalAlignBottom, mdiFormatVerticalAlignCenter,
+  mdiFormatVerticalAlignTop, mdiMenuDown,
+  mdiMenuUp, mdiPlus,
 } from '@mdi/js';
 import {
   computed,
@@ -163,10 +223,13 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   cloneDeep,
+  defaultsDeep,
   isEqual,
+  pick,
 } from 'lodash';
 import { v4 } from 'uuid';
 
+import type { OverlayMapperGroup } from '~/.bot/src/database/entity/overlay';
 import { haveAnyOptions } from '~/pages/registry/overlays/_id.vue';
 
 export default defineComponent({
@@ -201,19 +264,19 @@ export default defineComponent({
     const initialResize = ref(false);
     const dialog = ref(false);
 
-    const items = ref(
-      (Array.isArray(props.value) ? props.value : []) as {
-        id: string,
-        type: string,
-        alignX: number,
-        alignY: number,
-        width: number,
-        height: number,
-        opts: null | Record<string, any>
-      }[]);
+    const options = ref(
+      pick(
+        defaultsDeep(Array.isArray(props.value) ? null : props.value, {
+          canvas: {
+            height: 1080,
+            width:  1920,
+          },
+          items: [],
+        }),
+        ['canvas', 'items']) as OverlayMapperGroup['opts']);
 
-    watch(items, (val) => {
-      if (!isEqual(props.value, items.value)) {
+    watch(options, (val) => {
+      if (!isEqual(props.value, options.value)) {
         ctx.emit('input', val);
       }
     }, { deep: true, immediate: true });
@@ -251,13 +314,13 @@ export default defineComponent({
     ];
 
     const selected = ref(null as null | string);
-    const moveItem = ref(null as null | typeof items.value[number]);
+    const moveItem = ref(null as null | typeof options.value.items[number]);
     const responsive = ref(null as null | { '$el': HTMLElement });
     const ratio = ref(0);
-    const height = ref(1920);
+    const height = ref(1080);
 
     const selectedItem = computed(() => {
-      return items.value.find(o => o.id === selected.value);
+      return options.value.items.find(o => o.id === selected.value);
     });
 
     watch(dialog, (val) => {
@@ -267,7 +330,7 @@ export default defineComponent({
     });
 
     const keydownHandler: EventListener = (event) => {
-      const item = items.value.find(o => o.id === selected.value);
+      const item = options.value.items.find(o => o.id === selected.value);
       if (!item || (event as any).path[0].nodeName === 'INPUT') {
         return;
       }
@@ -331,9 +394,9 @@ export default defineComponent({
       if (!responsiveRef) {
         return;
       }
-      height.value = window.innerHeight - 100;
+      height.value = window.innerHeight - 300;
       nextTick(() => {
-        ratio.value = responsiveRef.$el.clientHeight / 1080;
+        ratio.value = responsiveRef.$el.clientHeight / options.value.canvas.height;
       });
     };
 
@@ -355,8 +418,10 @@ export default defineComponent({
     });
 
     const startMove = (event: { ev: MouseEvent, id: string}) => {
+      resize(responsive.value);
+
       // determinate if we are resizing
-      const item = items.value.find(o => o.id === event.id);
+      const item = options.value.items.find(o => o.id === event.id);
 
       // get the mouse cursor position at startup:
       positions.value.clientX = event.ev.clientX;
@@ -395,18 +460,20 @@ export default defineComponent({
     };
 
     const moveUp = (idx: number) => {
-      [items.value[idx - 1], items.value[idx]] = [items.value[idx], items.value[idx - 1]];
-      items.value = cloneDeep(items.value); // triggers watchers
+      [options.value.items[idx - 1], options.value.items[idx]] = [options.value.items[idx], options.value.items[idx - 1]];
+      options.value.items = cloneDeep(options.value.items); // triggers watchers
     };
 
     const moveDown = (idx: number) => {
-      [items.value[idx + 1], items.value[idx]] = [items.value[idx], items.value[idx + 1]];
-      items.value = cloneDeep(items.value); // triggers watchers
+      [options.value.items[idx + 1], options.value.items[idx]] = [options.value.items[idx], options.value.items[idx + 1]];
+      options.value.items = cloneDeep(options.value.items); // triggers watchers
     };
 
     const addItem = () => {
+      resize(responsive.value);
+
       if (itemToAdd.value) {
-        items.value.push({
+        options.value.items.push({
           id:     v4(),
           type:   itemToAdd.value,
           width:  200,
@@ -420,16 +487,16 @@ export default defineComponent({
     };
 
     const deleteItem = (id: string) => {
-      const idx = items.value.findIndex(o => o.id === id);
+      const idx = options.value.items.findIndex(o => o.id === id);
       if (idx >= 0) {
-        items.value.splice(idx, 1);
+        options.value.items.splice(idx, 1);
       }
     };
 
     return {
       // refs
       translate,
-      items,
+      options,
       selected,
       ButtonStates,
       responsive,
@@ -458,6 +525,12 @@ export default defineComponent({
       mdiPlus,
       mdiMenuUp,
       mdiMenuDown,
+      mdiFormatHorizontalAlignLeft,
+      mdiFormatHorizontalAlignRight,
+      mdiFormatHorizontalAlignCenter,
+      mdiFormatVerticalAlignTop,
+      mdiFormatVerticalAlignBottom,
+      mdiFormatVerticalAlignCenter,
     };
   },
 });
