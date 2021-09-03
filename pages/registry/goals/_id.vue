@@ -6,10 +6,12 @@
         :text="!$vuetify.breakpoint.xs"
         :icon="$vuetify.breakpoint.xs"
         :loading="isSaving"
-        @click="save"
         :disabled="!valid1 || !valid2 || isLoading"
+        @click="save"
       >
-        <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+        <v-icon class="d-flex d-sm-none">
+          {{ mdiFloppy }}
+        </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
     </portal>
@@ -151,12 +153,22 @@
                           :items="goalType"
                         />
 
-                        <v-checkbox
-                          v-if="goal.type === 'tips'"
-                          v-model="goal.countBitsAsTips"
-                          :label="translate('registry.goals.input.countBitsAsTips.title')"
-                        />
+                        <v-expand-transition>
+                          <v-checkbox
+                            v-if="['tips', 'intervalTips'].includes(goal.type)"
+                            v-model="goal.countBitsAsTips"
+                            :label="translate('registry.goals.input.countBitsAsTips.title')"
+                          />
+                        </v-expand-transition>
 
+                        <v-expand-transition>
+                          <v-select
+                            v-if="goal.type.includes('interval')"
+                            v-model="goal.interval"
+                            :label="translate('registry.goals.input.interval.title')"
+                            :items="intervalItems"
+                          />
+                        </v-expand-transition>
                         <v-text-field
                           :id="goal.id + '|goalAmount'"
                           v-model="goal.goalAmount"
@@ -165,6 +177,7 @@
                         />
 
                         <v-text-field
+                          :readonly="goal.type.includes('interval')"
                           v-if="!goal.type.includes('current')"
                           :id="goal.id + '|currentAmount'"
                           v-model="goal.currentAmount"
@@ -312,12 +325,12 @@ import {
   mdiClose, mdiExclamationThick, mdiFloppy, mdiPlus,
 } from '@mdi/js';
 import {
-  useContext, useRoute, useRouter,
+  defineAsyncComponent, defineComponent, onMounted,
+
+  ref,
+  useContext, useRoute, useRouter, watch,
 } from '@nuxtjs/composition-api';
-import {
-  defineAsyncComponent,
-  defineComponent, onMounted, ref, watch,
-} from '@nuxtjs/composition-api';
+import { DAY, HOUR } from '@sogebot/ui-helpers/constants';
 import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
@@ -369,8 +382,11 @@ export default defineComponent({
 
     const item = ref(cloneDeep(emptyItem) as GoalGroupInterface);
 
+    const intervalItems = [{ value: HOUR, text: 'hour' }, { value: HOUR * 24, text: 'day' }, { value: DAY * 7, text: 'week' }, { value: DAY * 31, text: 'month' }, { value: DAY * 365, text: 'year' }];
     const groupType = ['fade', 'multi'];
-    const goalType = ['followers', 'currentFollowers', 'currentSubscribers', 'subscribers', 'tips', 'bits'];
+    const goalType = [
+      'followers', 'currentFollowers', 'currentSubscribers', 'subscribers',
+      'tips', 'bits', 'intervalSubscribers', 'intervalFollowers', 'intervalTips', 'intervalBits'];
     const displayType = ['simple', 'full', 'custom'];
 
     const rules = {
@@ -487,6 +503,7 @@ export default defineComponent({
             timestamp:       Date.now(),
             goalAmount:      1000,
             currentAmount:   0,
+            interval:        HOUR,
             endAfter:        Date.now() + 24 * 60 * 60 * 1000,
             endAfterIgnore:  true,
             countBitsAsTips: false,
@@ -565,6 +582,7 @@ export default defineComponent({
       customTab,
       selectedTab,
       tabs,
+      intervalItems,
 
       // functions
       save,
