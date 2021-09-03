@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.0.0](https://github.com/sogebot/ui-admin/compare/v9.0.0...v10.0.0) (2021-09-03)
+
+
+### Features
+
+* **goals:** add interval goals ([ffacc3f](https://github.com/sogebot/ui-admin/commit/ffacc3f1ca7495ecf43a7d3245b99745790dd648))
+
 ## [9.0.0](https://github.com/sogebot/ui-admin/compare/v8.0.12...v9.0.0) (2021-09-02)
 
 
