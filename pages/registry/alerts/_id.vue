@@ -42,6 +42,28 @@
             </template>
           </v-slider>
 
+          <v-switch
+            class="mt-0 pt-0"
+            v-model="item.parry.enabled"
+            :label="translate('registry.alerts.parryEnabled.name')"
+          />
+
+          <v-slider
+            v-model.number="item.parry.delay"
+            :label="translate('registry.alerts.parryDelay.name')"
+            min="0"
+            max="60000"
+            step="500"
+            :thumb-size="0"
+            thumb-label="always"
+          >
+            <template #thumb-label="{ value }">
+              <div style="transform: translateY(-8px);">
+                {{ value / 1000 }}s
+              </div>
+            </template>
+          </v-slider>
+
           <v-select
             v-model="item.profanityFilterType"
             :items="profanityFilterTypeOptions"
@@ -211,11 +233,15 @@ import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 
 const emptyItem: AlertInterface = {
-  id:                        v4(),
-  updatedAt:                 Date.now(),
-  name:                      '',
-  alertDelayInMs:            0,
-  profanityFilterType:       'replace-with-asterisk',
+  id:                  v4(),
+  updatedAt:           Date.now(),
+  name:                '',
+  alertDelayInMs:      0,
+  profanityFilterType: 'replace-with-asterisk',
+  parry:               {
+    enabled: false,
+    delay:   0,
+  },
   loadStandardProfanityList: {
     cs: false,
     en: true,
