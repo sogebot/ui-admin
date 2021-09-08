@@ -26,7 +26,7 @@
               </v-col>
               <v-col cols="auto">
                 <v-select
-                  :value="selected"
+                  v-model="selected"
                   :label="translate('menu.api')"
                   :items="apiItems"
                 />
