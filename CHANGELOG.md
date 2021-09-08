@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [12.0.1](https://github.com/sogebot/ui-admin/compare/v12.0.0...v12.0.1) (2021-09-08)
+
+
+### Bug Fixes
+
+* **api:** use v-model for selected type ([9d2d427](https://github.com/sogebot/ui-admin/commit/9d2d4279fde9c3a2f90fc5339240a1bbc8932887))
+
 ## [12.0.0](https://github.com/sogebot/ui-admin/compare/v11.0.0...v12.0.0) (2021-09-08)
 
 
