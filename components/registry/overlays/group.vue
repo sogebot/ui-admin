@@ -237,6 +237,7 @@ export default defineComponent({
   components: {
     alerts:          () => import('~/components/registry/overlays/alerts.vue'),
     alertsRegistry:  () => import('~/components/registry/overlays/alertsRegistry.vue'),
+    countdown:       () => import('~/components/registry/overlays/countdown.vue'),
     textRegistry:    () => import('~/components/registry/overlays/textRegistry.vue'),
     goalRegistry:    () => import('~/components/registry/overlays/goalRegistry.vue'),
     emotes:          () => import('~/components/registry/overlays/emotes.vue'),
@@ -299,6 +300,7 @@ export default defineComponent({
       { value: 'carousel', text: 'carousel' },
       { value: 'clips', text: 'clips' },
       { value: 'clipscarousel', text: 'clipscarousel' },
+      { value: 'countdown', text: 'countdown' },
       { value: 'credits', text: 'credits' },
       { value: 'emotes', text: 'emotes' },
       { value: 'emotescombo', text: 'emotescombo' },
