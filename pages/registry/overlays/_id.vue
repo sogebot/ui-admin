@@ -59,13 +59,18 @@ import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 
 export const haveAnyOptions = (type: string) => {
-  const withOpts = ['goalRegistry', 'alertsRegistry', 'textRegistry', 'group', 'eventlist', 'alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts', 'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes'];
+  const withOpts = [
+    'goalRegistry', 'alertsRegistry', 'textRegistry', 'group', 'eventlist',
+    'alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts',
+    'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes',
+    'countdown'];
   return withOpts.includes(type);
 };
 
 export default defineComponent({
   components: {
     alerts:          () => import('~/components/registry/overlays/alerts.vue'),
+    countdown:       () => import('~/components/registry/overlays/countdown.vue'),
     emotes:          () => import('~/components/registry/overlays/emotes.vue'),
     emotesexplode:   () => import('~/components/registry/overlays/emotesexplode.vue'),
     emotesfireworks: () => import('~/components/registry/overlays/emotesfireworks.vue'),
@@ -97,6 +102,7 @@ export default defineComponent({
       { value: 'alerts', text: 'alerts' },
       { value: 'bets', text: 'bets' },
       { value: 'carousel', text: 'carousel' },
+      { value: 'countdown', text: 'countdown' },
       { value: 'clips', text: 'clips' },
       { value: 'clipscarousel', text: 'clipscarousel' },
       { value: 'credits', text: 'credits' },
