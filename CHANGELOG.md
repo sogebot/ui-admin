@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.0.0](https://github.com/sogebot/ui-admin/compare/v11.0.0...v12.0.0) (2021-09-08)
+
+
+### Features
+
+* **overlays:** add countdown support ([26031fc](https://github.com/sogebot/ui-admin/commit/26031fc3ce772dfcb1bbadea8f8ad555cee571e9))
+
 ## [11.0.0](https://github.com/sogebot/ui-admin/compare/v10.0.0...v11.0.0) (2021-09-06)
 
 ## [10.0.0](https://github.com/sogebot/ui-admin/compare/v9.0.0...v10.0.0) (2021-09-03)
