@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [12.1.1](https://github.com/sogebot/ui-admin/compare/v12.1.0...v12.1.1) (2021-09-09)
+
+
+### Bug Fixes
+
+* **overlays:** add key for settings to force redraw on change ([3ae0bbf](https://github.com/sogebot/ui-admin/commit/3ae0bbf571b007d65b66e3fb722622639f26abbe))
+
 ## [12.1.0](https://github.com/sogebot/ui-admin/compare/v12.0.2...v12.1.0) (2021-09-09)
 
 
