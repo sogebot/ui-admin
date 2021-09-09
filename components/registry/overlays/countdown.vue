@@ -4,14 +4,14 @@
       <v-expansion-panel>
         <v-expansion-panel-header>Settings</v-expansion-panel-header>
         <v-expansion-panel-content>
-          <v-text-field v-model.lazy="time" label="Countdown" @keydown.up="options.time += 1000" @keydown.down="options.time -= 1000" />
-          <v-row>
-            <v-col cols="auto" align-self="center">
-              <v-simple-checkbox v-model="options.showMessageWhenReachedZero" />
-            </v-col>
-            <v-col>
-              <v-text-field v-model="options.messageWhenReachedZero" label="Message to show, when countdown reaches zero" :disabled="!options.showMessageWhenReachedZero" />
-            </v-col>
+          <v-text-field v-model.lazy="time" label="Countdown" @keydown.up="options.time += 1000" @keydown.down="options.time -= 1000" hide-details="auto"/>
+
+          <v-switch label="Persistent" :persistent-hint="true" :hint="(options.isPersistent ? 'Countdown will keep value on browser source load, you will need to reset by dashboard\'s action button.' : 'Countdown will reset on browser source load.')" v-model="options.isPersistent"/>
+          <v-switch label="Start automatically" :persistent-hint="true" :hint="(options.isStartedOnSourceLoad ? 'Countdown will start automatically on browser source load.' : 'Countdown won\'t start on browser source load, you will need to start it by dashboard\'s action button.')" v-model="options.isStartedOnSourceLoad"/>
+
+          <v-row align="center" class="pa-2 pt-4">
+            <v-simple-checkbox v-model="options.showMessageWhenReachedZero" class="shrink" />
+            <v-text-field v-model="options.messageWhenReachedZero" label="Message to show, when countdown reaches zero" :disabled="!options.showMessageWhenReachedZero" />
           </v-row>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -54,6 +54,9 @@ export default defineComponent({
       pick(
         defaultsDeep(props.value, {
           time:                       60000,
+          currentTime:                60000,
+          isPersistent:               false,
+          isStartedOnSourceLoad:      true,
           messageWhenReachedZero:     '',
           showMessageWhenReachedZero: false,
           countdownFont:              {
@@ -75,13 +78,17 @@ export default defineComponent({
             shadow:      [],
           },
         }),
-        ['time', 'countdownFont', 'messageFont', 'messageWhenReachedZero', 'showMessageWhenReachedZero'],
+        [
+          'time', 'currentTime', 'countdownFont', 'messageFont', 'messageWhenReachedZero',
+          'showMessageWhenReachedZero', 'isPersistent', 'isStartedOnSourceLoad',
+        ],
       ));
 
     watch(() => options.value.time, (val) => {
       if (val < 0) {
         options.value.time = 0;
       }
+      options.value.currentTime = options.value.time;
     });
 
     const time = computed({
@@ -95,21 +102,21 @@ export default defineComponent({
       set (value: string) {
         const regex = /((?<days>\d+)d)? ?((?<hours>\d+)h)? ?((?<minutes>\d+)m)? ?((?<seconds>\d+)s)?/g;
         const exec = regex.exec(value);
-        let newTime = 0;
         if (exec?.groups) {
+          let newTime = 0;
           for (const key of Object.keys(exec.groups)) {
             if (key === 'days') {
-              newTime += Number(exec.groups[key]) * DAY;
+              newTime += Number(exec.groups[key] ?? 0) * DAY;
             } else if (key === 'hours') {
-              newTime += Number(exec.groups[key]) * HOUR;
+              newTime += Number(exec.groups[key] ?? 0) * HOUR;
             } else if (key === 'minutes') {
-              newTime += Number(exec.groups[key]) * MINUTE;
+              newTime += Number(exec.groups[key] ?? 0) * MINUTE;
             } else if (key === 'seconds') {
-              newTime += Number(exec.groups[key]) * SECOND;
+              newTime += Number(exec.groups[key] ?? 0) * SECOND;
             }
           }
+          options.value.time = newTime;
         }
-        options.value.time = newTime;
       },
     });
 
