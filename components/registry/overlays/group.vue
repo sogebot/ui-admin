@@ -126,7 +126,7 @@
     </v-row>
 
     <v-fade-transition>
-      <div v-if="selectedItem" class="pt-4">
+      <div v-if="selectedItem" class="pt-4" :key="selectedItem.id">
         <component
           :is="selectedItem.type"
           v-if="haveAnyOptions(selectedItem.type)"
