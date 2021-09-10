@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.2.0](https://github.com/sogebot/ui-admin/compare/v12.1.1...v12.2.0) (2021-09-10)
+
+
+### Features
+
+* **dashboard:** add action button for countdown ([dd5413d](https://github.com/sogebot/ui-admin/commit/dd5413d40ec42b1eccda2ed4b24ef4fd4e9653ff))
+
 ### [12.1.1](https://github.com/sogebot/ui-admin/compare/v12.1.0...v12.1.1) (2021-09-09)
 
 
