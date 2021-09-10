@@ -13,7 +13,7 @@
         <v-col cols="auto" align-self="center" class="pr-2">
           <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
             <v-icon>
-              {{ mdiCheckBoxMultipleOutline }}
+              {{ mdiCheckboxMultipleMarkedOutline }}
             </v-icon>
           </v-btn>
         </v-col>
@@ -336,7 +336,7 @@
 import { normalize } from 'path';
 
 import {
-  mdiCheckBoxMultipleOutline, mdiFileImage, mdiFileMusic, mdiFileVideo, mdiFolder, mdiFolderOpen, mdiLink, mdiThumbUp,
+  mdiCheckboxMultipleMarkedOutline, mdiFileImage, mdiFileMusic, mdiFileVideo, mdiFolder, mdiFolderOpen, mdiLink, mdiThumbUp,
 } from '@mdi/js';
 import {
   computed,
@@ -692,7 +692,7 @@ export default defineComponent({
       mdiFileMusic,
       mdiLink,
       mdiThumbUp,
-      mdiCheckBoxMultipleOutline,
+      mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
     };
   },

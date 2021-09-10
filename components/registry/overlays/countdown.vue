@@ -4,7 +4,7 @@
       <v-expansion-panel>
         <v-expansion-panel-header>Settings</v-expansion-panel-header>
         <v-expansion-panel-content>
-          <v-text-field v-model.lazy="time" label="Countdown" @keydown.up="options.time += 1000" @keydown.down="options.time -= 1000" hide-details="auto"/>
+          <v-text-field v-model.lazy="time" label="Countdown" @keydown="keydownHandler" hide-details="auto"/>
 
           <v-switch label="Persistent" :persistent-hint="true" :hint="(options.isPersistent ? 'Countdown will keep value on browser source load, you will need to reset by dashboard\'s action button.' : 'Countdown will reset on browser source load.')" v-model="options.isPersistent"/>
           <v-switch label="Start automatically" :persistent-hint="true" :hint="(options.isStartedOnSourceLoad ? 'Countdown will start automatically on browser source load.' : 'Countdown won\'t start on browser source load, you will need to start it by dashboard\'s action button.')" v-model="options.isStartedOnSourceLoad"/>
@@ -120,6 +120,27 @@ export default defineComponent({
       },
     });
 
+    const keydownHandler: EventListener = (event) => {
+      const key = (event as KeyboardEvent).key;
+      const shiftKey = (event as KeyboardEvent).shiftKey;
+      const ctrlKey = (event as KeyboardEvent).ctrlKey;
+
+      let offset = SECOND;
+      if (shiftKey && ctrlKey) {
+        offset = HOUR;
+      } else if (shiftKey) {
+        offset = MINUTE;
+      } else if (ctrlKey) {
+        offset = 15 * SECOND;
+      }
+
+      if (key === 'ArrowUp') {
+        options.value.time += offset;
+      } else if (key === 'ArrowDown') {
+        options.value.time -= offset;
+      }
+    };
+
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {
         ctx.emit('input', val);
@@ -131,6 +152,7 @@ export default defineComponent({
       options,
       time,
       translate,
+      keydownHandler,
     };
   },
 });

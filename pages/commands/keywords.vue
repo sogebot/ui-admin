@@ -30,7 +30,7 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckBoxMultipleOutline }}
+                  {{ mdiCheckboxMultipleMarkedOutline }}
                 </v-icon>
               </v-btn>
             </v-col>
@@ -168,7 +168,7 @@
 </template>
 
 <script lang="ts">
-import { mdiCheckBoxMultipleOutline, mdiMagnify } from '@mdi/js';
+import { mdiCheckboxMultipleMarkedOutline, mdiMagnify } from '@mdi/js';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
@@ -377,7 +377,7 @@ export default defineComponent({
       refresh,
       headersDelete,
       mdiMagnify,
-      mdiCheckBoxMultipleOutline,
+      mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
     };
   },

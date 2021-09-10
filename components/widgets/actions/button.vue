@@ -76,10 +76,11 @@ const rgbToHex = function (rgb: number | string) {
 export default defineComponent({
   props:      { item: Object, editing: Boolean },
   components: {
-    command:        defineAsyncComponent(() => import('./button/command.vue')),
-    customvariable: defineAsyncComponent(() => import('./button/customvariable.vue')),
-    randomizer:     defineAsyncComponent(() => import('./button/randomizer.vue')),
-    edit:           defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit.vue') }),
+    command:          defineAsyncComponent(() => import('./button/command.vue')),
+    customvariable:   defineAsyncComponent(() => import('./button/customvariable.vue')),
+    randomizer:       defineAsyncComponent(() => import('./button/randomizer.vue')),
+    overlayCountdown: defineAsyncComponent(() => import('./button/overlayCountdown.vue')),
+    edit:             defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit.vue') }),
   },
   setup (props: Props, ctx) {
     const { $axios } = useContext();

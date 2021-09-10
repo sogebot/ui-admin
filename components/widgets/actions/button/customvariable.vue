@@ -161,6 +161,8 @@ export default defineComponent({
         const getClassList = (el: Element) => {
           if (el.tagName === 'path') {
             return (Array.from(el.parentElement?.parentElement?.classList ?? []));
+          } if (el.tagName === 'SPAN') {
+            return (Array.from(el.classList ?? []));
           } else {
             return (Array.from(el.parentElement?.classList ?? []));
           }

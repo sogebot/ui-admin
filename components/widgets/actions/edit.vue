@@ -87,9 +87,10 @@ type Props = {
 export default defineComponent({
   props:      { item: Object },
   components: {
-    command:        defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/command.vue') }),
-    customvariable: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/customvariable.vue') }),
-    randomizer:     defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/randomizer.vue') }),
+    command:          defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/command.vue') }),
+    customvariable:   defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/customvariable.vue') }),
+    randomizer:       defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/randomizer.vue') }),
+    overlayCountdown: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/overlayCountdown.vue') }),
   },
   setup (props: Props, ctx) {
     const stepper = ref('1');
@@ -155,6 +156,7 @@ export default defineComponent({
       { text: 'Run Command', value: 'command' },
       { text: '+/-/= Custom Variable', value: 'customvariable' },
       { text: 'Randomizer', value: 'randomizer' },
+      { text: 'Countdown overlay or countdown in group overlay', value: 'overlayCountdown' },
     ];
 
     watch(clonedItem, (val) => {

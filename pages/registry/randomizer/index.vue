@@ -18,7 +18,7 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckBoxMultipleOutline }}
+                  {{ mdiCheckboxMultipleMarkedOutline }}
                 </v-icon>
               </v-btn>
             </v-col>
@@ -125,7 +125,7 @@
 
 <script lang="ts">
 import {
-  mdiCheckBoxMultipleOutline, mdiContentCopy, mdiEye, mdiEyeOff, mdiMagnify, mdiPencil, mdiPlay,
+  mdiCheckboxMultipleMarkedOutline, mdiContentCopy, mdiEye, mdiEyeOff, mdiMagnify, mdiPencil, mdiPlay,
 } from '@mdi/js';
 import {
   defineComponent, onMounted, ref, useContext,
@@ -320,7 +320,7 @@ export default defineComponent({
 
       // icons
       mdiMagnify,
-      mdiCheckBoxMultipleOutline,
+      mdiCheckboxMultipleMarkedOutline,
       mdiContentCopy,
       mdiPencil,
       mdiEye,
