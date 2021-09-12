@@ -2,6 +2,10 @@ import { Context } from '@nuxt/types';
 import translate from '@sogebot/ui-helpers/translate';
 import { validate } from 'uuid';
 
+const haveTranslation = (o: string) => {
+  return !translate(`menu.${o}`).startsWith('{');
+};
+
 export default ({ app: { store, router } }: Context) => {
   if (!(router && store)) {
     return;
@@ -27,7 +31,7 @@ export default ({ app: { store, router } }: Context) => {
       const path = to.path.split('/').filter(String);
       store.commit('panel/breadcrumbs',
         path.map((o: string) => {
-          return { text: validate(o) ? o : translate(`menu.${o}`) };
+          return { text: validate(o) || !haveTranslation(o) ? o : translate(`menu.${o}`) };
         }) ?? [],
       );
 
