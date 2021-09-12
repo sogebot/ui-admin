@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [12.2.1](https://github.com/sogebot/ui-admin/compare/v12.2.0...v12.2.1) (2021-09-12)
+
+
+### Bug Fixes
+
+* **beforeEach:** show translation only if exists ([f805122](https://github.com/sogebot/ui-admin/commit/f8051229dc59ab72b800c6838cd988d78444a5fc))
+
 ## [12.2.0](https://github.com/sogebot/ui-admin/compare/v12.1.1...v12.2.0) (2021-09-10)
 
 
