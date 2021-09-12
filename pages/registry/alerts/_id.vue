@@ -526,16 +526,7 @@ export default defineComponent({
               allowEmotes: {
                 twitch: true, ffz: true, bttv: true,
               },
-              font: {
-                align:       'left',
-                family:      'PT Sans',
-                size:        12,
-                borderPx:    2,
-                borderColor: '#000000',
-                weight:      500,
-                color:       '#ffffff',
-                shadow:      [],
-              },
+              font: null,
             },
           });
           break;
@@ -548,16 +539,7 @@ export default defineComponent({
               allowEmotes:     {
                 twitch: true, ffz: true, bttv: true,
               },
-              font: {
-                align:       'left',
-                family:      'PT Sans',
-                size:        12,
-                borderPx:    2,
-                borderColor: '#000000',
-                weight:      500,
-                color:       '#ffffff',
-                shadow:      [],
-              },
+              font: null,
             },
           });
           break;
