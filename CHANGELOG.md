@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.0.0](https://github.com/sogebot/ui-admin/compare/v13.1.0...v14.0.0) (2021-09-13)
+
+
+### Features
+
+* **updated:** add manual check trigger ([4f1440a](https://github.com/sogebot/ui-admin/commit/4f1440a0575996adb2fdea7d5670e1f97e1fdebe))
+
 ## [13.1.0](https://github.com/sogebot/ui-admin/compare/v13.0.0...v13.1.0) (2021-09-13)
 
 
