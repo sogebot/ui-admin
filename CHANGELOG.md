@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [13.1.0](https://github.com/sogebot/ui-admin/compare/v13.0.0...v13.1.0) (2021-09-13)
+
+
+### Features
+
+* **donationalerts:** add token validation ([4743ee7](https://github.com/sogebot/ui-admin/commit/4743ee70e17f208107e830bb6603bf41221c480a))
+
 ## [13.0.0](https://github.com/sogebot/ui-admin/compare/v12.2.1...v13.0.0) (2021-09-13)
 
 
