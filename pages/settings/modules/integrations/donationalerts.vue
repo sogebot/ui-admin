@@ -12,7 +12,6 @@
             <v-text-field
               v-model.trim="settings.access_token[0]"
               type="password"
-              dense
               :label="translate('integrations.donationalerts.settings.access_token.title')"
               :hint="translate('integrations.donationalerts.settings.access_token.help')"
               persistent-hint
@@ -23,6 +22,11 @@
                 </v-btn>
               </template>
             </v-text-field>
+            <v-text-field
+              v-model.trim="settings.refresh_token[0]"
+              type="password"
+              :label="translate('integrations.donationalerts.settings.refresh_token.title')"
+            />
             <v-btn class="mt-4" href="https://www.sogebot.xyz/integrations/#DonationAlerts">
               {{ translate('integrations.donationalerts.settings.accessTokenBtn') }}
             </v-btn>
