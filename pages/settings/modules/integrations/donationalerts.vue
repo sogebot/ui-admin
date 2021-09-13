@@ -2,18 +2,30 @@
   <loading v-if="!settings" />
   <v-form v-else v-model="valid" lazy-validation>
     <v-tabs v-model="tab">
-      <v-tab>{{translate('categories.general')}}</v-tab>
+      <v-tab>{{ translate('categories.general') }}</v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="tab">
       <v-tab-item eager>
         <v-card>
           <v-card-text>
-            <v-text-field v-model="settings.access_token[0]" type="password" dense
+            <v-text-field
+              v-model.trim="settings.access_token[0]"
+              type="password"
+              dense
               :label="translate('integrations.donationalerts.settings.access_token.title')"
-              :hint="translate('integrations.donationalerts.settings.access_token.help')" persistent-hint />
+              :hint="translate('integrations.donationalerts.settings.access_token.help')"
+              persistent-hint
+            >
+              <template #append-outer>
+                <v-btn v-if="settings.access_token[0].length > 0" :loading="isValidating" @click="validate">
+                  Validate
+                </v-btn>
+              </template>
+            </v-text-field>
             <v-btn class="mt-4" href="https://www.sogebot.xyz/integrations/#DonationAlerts">
-              {{ translate('integrations.donationalerts.settings.accessTokenBtn') }}</v-btn>
+              {{ translate('integrations.donationalerts.settings.accessTokenBtn') }}
+            </v-btn>
           </v-card-text>
         </v-card>
       </v-tab-item>
@@ -30,6 +42,7 @@ import {
 } from '@vue/composition-api';
 
 import { error } from '~/functions/error';
+import { EventBus } from '~/functions/event-bus';
 import { saveSettings } from '~/functions/settings';
 import { minValue, required } from '~/functions/validators';
 
@@ -40,6 +53,7 @@ export default defineComponent({
     const store = useStore<any>();
     const valid = ref(true);
     const tab = ref(null);
+    const isValidating = ref(false);
 
     watch(settings, () => {
       store.commit('settings/pending', true);
@@ -70,14 +84,34 @@ export default defineComponent({
         });
     });
 
+    const validate = () => {
+      if (!settings.value) {
+        return;
+      }
+      isValidating.value = true;
+      console.log({ token: settings.value.access_token[0] });
+      getSocket('/integrations/donationalerts').emit('donationalerts::validate', settings.value.access_token[0], (err: null | Error) => {
+        if (err) {
+          EventBus.$emit('snack', 'error', 'Invalid Access Token, please recheck if you copied your token correctly');
+        } else {
+          EventBus.$emit('snack', 'success', 'Access token is valid.');
+        }
+        setTimeout(() => {
+          isValidating.value = false;
+        }, 1000);
+      });
+    };
+
     return {
       settings,
       ui,
       translate,
       valid,
       tab,
+      isValidating,
 
       // functions
+      validate,
 
       // validators
       required,
