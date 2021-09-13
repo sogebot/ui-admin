@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.0.0](https://github.com/sogebot/ui-admin/compare/v14.0.0...v15.0.0) (2021-09-13)
+
+
+### Features
+
+* **donationalerts:** add refresh token settings ([6ca8631](https://github.com/sogebot/ui-admin/commit/6ca86315cf59a5fd757258f597583b0c9c02de2d))
+
 ## [14.0.0](https://github.com/sogebot/ui-admin/compare/v13.1.0...v14.0.0) (2021-09-13)
 
 
