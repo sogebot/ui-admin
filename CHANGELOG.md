@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [15.0.1](https://github.com/sogebot/ui-admin/compare/v15.0.0...v15.0.1) (2021-09-13)
+
+
+### Bug Fixes
+
+* **spotify:** update visuals on switches ([91986bb](https://github.com/sogebot/ui-admin/commit/91986bb5977843ffa78d9d5ffa2c2cb3796e765e))
+
 ## [15.0.0](https://github.com/sogebot/ui-admin/compare/v14.0.0...v15.0.0) (2021-09-13)
 
 
