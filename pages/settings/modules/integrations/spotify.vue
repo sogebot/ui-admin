@@ -11,15 +11,15 @@
       <v-tab-item eager>
         <v-card>
           <v-card-text>
-            <v-switch v-model="settings.songRequests[0]" class="mt-0" dense
+            <v-switch v-model="settings.songRequests[0]" class="mt-1" dense hide-details="auto"
               :label="translate('integrations.spotify.settings.songRequests')" />
-            <v-switch v-model="settings.fetchCurrentSongWhenOffline[0]" class="mt-0" dense
+            <v-switch v-model="settings.fetchCurrentSongWhenOffline[0]" dense hide-details="auto"
               :label="translate('integrations.spotify.settings.fetchCurrentSongWhenOffline.title')" persistent-hint
               :hint="translate('integrations.spotify.settings.fetchCurrentSongWhenOffline.help')" />
-            <v-switch v-model="settings.queueWhenOffline[0]" class="mt-0" dense
+            <v-switch v-model="settings.queueWhenOffline[0]" dense hide-details="auto"
               :label="translate('integrations.spotify.settings.queueWhenOffline.title')" persistent-hint
               :hint="translate('integrations.spotify.settings.queueWhenOffline.help')" />
-            <v-switch v-model="settings.notify[0]" class="mt-0" dense
+            <v-switch v-model="settings.notify[0]" dense hide-details="auto"
               :label="translate('integrations.spotify.settings.notify')" />
           </v-card-text>
         </v-card>
