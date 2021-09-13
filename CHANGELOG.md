@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [13.0.0](https://github.com/sogebot/ui-admin/compare/v12.2.1...v13.0.0) (2021-09-13)
+
+
+### Features
+
+* **stopwatch:** add stopwatch overlay support ([5b0bbc2](https://github.com/sogebot/ui-admin/commit/5b0bbc24410d75b4c75827b6e64d4f146570b96c))
+
 ### [12.2.1](https://github.com/sogebot/ui-admin/compare/v12.2.0...v12.2.1) (2021-09-12)
 
 
