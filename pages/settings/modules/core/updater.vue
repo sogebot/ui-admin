@@ -9,8 +9,15 @@
       <v-tab-item eager>
         <v-card>
           <v-card-text>
-            <v-switch v-model="settings.isAutomaticUpdateEnabled[0]" class="mt-0" dense
-              :label="translate('core.updater.settings.isAutomaticUpdateEnabled')" />
+            <v-row>
+              <v-col>
+                <v-switch v-model="settings.isAutomaticUpdateEnabled[0]" class="mt-0" dense
+                  :label="translate('core.updater.settings.isAutomaticUpdateEnabled')" />
+              </v-col>
+              <v-col>
+                <v-btn @click="manualCheck" :loading="isChecking">Check for new versions</v-btn>
+              </v-col>
+            </v-row>
 
             <v-simple-table>
               <template #default>
@@ -84,6 +91,7 @@ export default defineComponent({
     const tab = ref(null);
     const dialog = ref({});
     const updating = reactive({} as Record<string, boolean>);
+    const isChecking = ref(false);
 
     watch(settings, () => {
       store.commit('settings/pending', true);
@@ -118,6 +126,15 @@ export default defineComponent({
       refresh();
     });
 
+    const manualCheck = () => {
+      isChecking.value = true;
+      getSocket(`/core/updater`)
+        .emit('updater::check', () => {
+          isChecking.value = false;
+          refresh();
+        });
+    };
+
     const refresh = () => {
       getSocket(`/core/updater`)
         .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
@@ -138,8 +155,10 @@ export default defineComponent({
       tab,
       dialog,
       updating,
+      isChecking,
       update,
       translate,
+      manualCheck,
       marked,
     };
   },
