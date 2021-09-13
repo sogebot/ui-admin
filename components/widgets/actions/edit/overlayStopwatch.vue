@@ -2,11 +2,11 @@
   <div>
     <v-form ref="form" v-model="valid" lazy-validation>
       <v-select
-        v-model="clonedItem.options.countdownId"
+        v-model="clonedItem.options.stopwatchId"
         item-value="id"
-        :items="overlaysCountdown"
-        label="Countdown"
-        :rules="rules.countdownId"
+        :items="overlaysStopwatch"
+        label="Stopwatch"
+        :rules="rules.stopwatchId"
         :loading="isLoading"
       >
         <template #selection="data">
@@ -40,7 +40,7 @@ import api from '../../../../functions/api';
 import { error } from '../../../../functions/error';
 
 import type {
-  OverlayMapperCountdown, OverlayMapperGroup, OverlayMappers,
+  OverlayMapperGroup, OverlayMappers, OverlayMapperStopwatch,
 } from '.bot/src/database/entity/overlay';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
@@ -58,17 +58,17 @@ export default defineComponent({
     const overlays = ref([] as OverlayMappers[]);
     const { $axios } = useContext();
 
-    const overlaysCountdown = computed(() => {
-      const countdowns: ((OverlayMapperGroup['opts']['items'][number] & {groupId: string}) | OverlayMapperCountdown)[] = overlays.value.filter((o): o is OverlayMapperCountdown => o.value === 'countdown');
+    const overlaysStopwatch = computed(() => {
+      const stopwatchs: ((OverlayMapperGroup['opts']['items'][number] & {groupId: string}) | OverlayMapperStopwatch)[] = overlays.value.filter((o): o is OverlayMapperStopwatch => o.value === 'stopwatch');
       overlays.value.filter((o): o is OverlayMapperGroup => o.value === 'group').forEach((item) => {
         if (item.opts) {
-          item.opts.items.filter(o => o.type === 'countdown').forEach(item2 => countdowns.push({
+          item.opts.items.filter(o => o.type === 'stopwatch').forEach(item2 => stopwatchs.push({
             groupId: item.id,
             ...item2,
           }));
         }
       });
-      return countdowns;
+      return stopwatchs;
     });
 
     onMounted(() => {
@@ -89,7 +89,7 @@ export default defineComponent({
       EventBus.$off(`quickaction::${props.item.id}::valid`);
     });
 
-    const rules = { countdownId: [required] };
+    const rules = { stopwatchId: [required] };
 
     watch(clonedItem, (val) => {
       ctx.emit('update:item', val);
@@ -100,7 +100,7 @@ export default defineComponent({
     });
 
     return {
-      clonedItem, rules, valid, form, isLoading, overlaysCountdown, mdiChevronRight,
+      clonedItem, rules, valid, form, isLoading, overlaysStopwatch, mdiChevronRight,
     };
   },
 });

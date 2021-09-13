@@ -80,6 +80,7 @@ export default defineComponent({
     customvariable:   defineAsyncComponent(() => import('./button/customvariable.vue')),
     randomizer:       defineAsyncComponent(() => import('./button/randomizer.vue')),
     overlayCountdown: defineAsyncComponent(() => import('./button/overlayCountdown.vue')),
+    overlayStopwatch: defineAsyncComponent(() => import('./button/overlayStopwatch.vue')),
     edit:             defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit.vue') }),
   },
   setup (props: Props, ctx) {
