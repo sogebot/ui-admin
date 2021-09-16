@@ -63,6 +63,7 @@ export default defineComponent({
     });
 
     const options: { value: string, text: string }[] = [
+      { value: 'none', text: 'none' },
       { value: 'fadeOut', text: 'fadeOut' },
       { value: 'fadeOutDown', text: 'fadeOutDown' },
       { value: 'fadeOutLeft', text: 'fadeOutLeft' },
