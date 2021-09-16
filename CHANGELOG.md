@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [16.0.0](https://github.com/sogebot/ui-admin/compare/v15.0.1...v16.0.0) (2021-09-16)
+
+
+### Features
+
+* **alerts:** add none animation ([0f62b41](https://github.com/sogebot/ui-admin/commit/0f62b413fba7d71a0d0ba3747acef8a6b572e722))
+
 ### [15.0.1](https://github.com/sogebot/ui-admin/compare/v15.0.0...v15.0.1) (2021-09-13)
 
 
