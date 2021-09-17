@@ -19,6 +19,8 @@
               v-model="settings.shuffle[0]" />
             <v-switch class="mt-0" :label="translate('systems.songs.settings.onlyMusicCategory')" dense
               v-model="settings.onlyMusicCategory[0]" />
+            <v-switch class="mt-0" :label="translate('systems.songs.settings.allowRequestsOnlyFromPlaylist')" dense
+              v-model="settings.allowRequestsOnlyFromPlaylist[0]" />
             <v-switch class="mt-0 pb-4" :label="translate('systems.songs.settings.calculateVolumeByLoudness')" dense
               v-model="settings.calculateVolumeByLoudness[0]" />
             <revert-text-field class="pt-3" v-model="settings.volume" type="number" min="0"
