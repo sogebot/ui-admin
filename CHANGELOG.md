@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.0.0](https://github.com/sogebot/ui-admin/compare/v16.0.0...v17.0.0) (2021-09-17)
+
+
+### Features
+
+* **songs:** add allowRequestsOnlyFromPlaylist support ([dcf4300](https://github.com/sogebot/ui-admin/commit/dcf4300120ecc9bee46dc9374b810edcea7df511))
+
 ## [16.0.0](https://github.com/sogebot/ui-admin/compare/v15.0.1...v16.0.0) (2021-09-16)
 
 
