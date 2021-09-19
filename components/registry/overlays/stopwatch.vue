@@ -8,6 +8,7 @@
 
           <v-switch v-model="options.isPersistent" label="Persistent" :persistent-hint="true" :hint="(options.isPersistent ? 'Countdown will keep value on browser source load, you will need to reset by dashboard\'s action button.' : 'Countdown will reset on browser source load.')" />
           <v-switch v-model="options.isStartedOnSourceLoad" label="Start automatically" :persistent-hint="true" :hint="(options.isStartedOnSourceLoad ? 'Countdown will start automatically on browser source load.' : 'Countdown won\'t start on browser source load, you will need to start it by dashboard\'s action button.')" />
+          <v-switch v-model="options.showMilliseconds" label="Show milliseconds" />
         </v-expansion-panel-content>
       </v-expansion-panel>
       <v-expansion-panel>
@@ -45,6 +46,7 @@ export default defineComponent({
           currentTime:           0,
           isPersistent:          false,
           isStartedOnSourceLoad: true,
+          showMilliseconds:      true,
           stopwatchFont:         {
             family:      'PT Sans',
             size:        16,
@@ -56,7 +58,7 @@ export default defineComponent({
           },
         }),
         [
-          'currentTime', 'stopwatchFont', 'isPersistent', 'isStartedOnSourceLoad',
+          'currentTime', 'stopwatchFont', 'isPersistent', 'isStartedOnSourceLoad', 'showMilliseconds',
         ],
       ));
 
