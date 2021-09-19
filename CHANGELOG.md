@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.1.0](https://github.com/sogebot/ui-admin/compare/v17.0.0...v17.1.0) (2021-09-19)
+
+
+### Features
+
+* **quickactions:** add millis stopwatch/countdown to buttons ([5c509f1](https://github.com/sogebot/ui-admin/commit/5c509f1d481a74a03d8d5360cfbfdbb86700b596))
+
 ## [17.0.0](https://github.com/sogebot/ui-admin/compare/v16.0.0...v17.0.0) (2021-09-17)
 
 
