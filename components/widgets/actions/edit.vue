@@ -92,6 +92,7 @@ export default defineComponent({
     randomizer:       defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/randomizer.vue') }),
     overlayCountdown: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/overlayCountdown.vue') }),
     overlayStopwatch: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/overlayStopwatch.vue') }),
+    overlayMarathon:  defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/overlayMarathon.vue') }),
   },
   setup (props: Props, ctx) {
     const stepper = ref('1');
@@ -159,6 +160,7 @@ export default defineComponent({
       { text: 'Randomizer', value: 'randomizer' },
       { text: 'Countdown overlay or countdown in group overlay', value: 'overlayCountdown' },
       { text: 'Stopwatch overlay or stopwatch in group overlay', value: 'overlayStopwatch' },
+      { text: 'Marathon overlay or marathon in group overlay', value: 'overlayMarathon' },
     ];
 
     watch(clonedItem, (val) => {
