@@ -134,7 +134,7 @@ export default defineComponent({
       api.getOne<OverlayMappers>($axios, `/api/v1/overlay`, props.item.options.marathonId)
         .then((response) => {
           marathon.value = response.data as OverlayMapperMarathon;
-          timestamp.value = Math.max(marathon.value.opts?.endTime, Date.now());
+          timestamp.value = Math.max(marathon.value.opts?.endTime ?? 0, Date.now());
         }).catch((e) => {
           // we need to search for group
           api.get<OverlayMappers[]>($axios, `/api/v1/overlay`)
