@@ -590,11 +590,11 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { minValue, required } from '~/functions/validators';
 
-const timeToDate = (value: number) => {
-  return new Date(value).toISOString().substr(0, 10);
+const timeToDate = (value: number | string) => {
+  return new Date(Number(value)).toISOString().substr(0, 10);
 };
-const timeToTime = (value: number) => {
-  return dayjs(value).format('HH:mm:ss');
+const timeToTime = (value: number | string) => {
+  return dayjs(Number(value)).format('HH:mm:ss');
 };
 
 export default defineComponent({
