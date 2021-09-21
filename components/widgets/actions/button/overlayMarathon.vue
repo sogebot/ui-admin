@@ -7,7 +7,7 @@
       :style="{ 'color': color }"
       @click="!editing ? trigger($event) : showDialog()"
     >
-      <v-row v-if="marathon" no-gutters ripple>
+      <v-row no-gutters ripple>
         <v-slide-x-transition>
           <v-col v-if="editing" cols="auto" class="d-flex">
             <v-simple-checkbox v-if="color !== 'white'" v-model="selected" light />
@@ -59,7 +59,7 @@ import {
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import {
   computed,
-  defineComponent, onMounted, ref, watch,
+  defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@vue/composition-api';
 
 import api from '../../../../functions/api';
@@ -78,6 +78,7 @@ export default defineComponent({
     color: string,
     editing: boolean,
   }, ctx) {
+    let interval = 0;
     const { $axios } = useContext();
     const selected = ref(props.item.selected);
     const tick = ref(0);
@@ -186,17 +187,21 @@ export default defineComponent({
 
     onMounted(() => {
       refresh();
-      setInterval(() => {
+      interval = window.setInterval(() => {
         tick.value = Date.now();
         // get actual status of opened overlay
         if (marathon.value && !showMenu.value) {
           getSocket('/overlays/marathon').emit('marathon::check', marathon.value.id, (_err: null, data?: OverlayMapperMarathon) => {
-            if (data.opts && marathon.value) {
+            if (data && data.opts && marathon.value) {
               timestamp.value = Math.max(data.opts.endTime, Date.now());
             }
           });
         }
       }, 1000);
+    });
+
+    onUnmounted(() => {
+      clearInterval(interval);
     });
 
     const updateTime = () => {

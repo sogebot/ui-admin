@@ -479,8 +479,9 @@ export default defineComponent({
       resize(responsive.value);
 
       if (itemToAdd.value) {
+        const id = v4();
         options.value.items.push({
-          id:     v4(),
+          id,
           type:   itemToAdd.value,
           width:  200,
           height: 200,
@@ -489,6 +490,7 @@ export default defineComponent({
           opts:   null,
         });
         dialog.value = false;
+        selected.value = id;
       }
     };
 
