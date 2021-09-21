@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.0.0](https://github.com/sogebot/ui-admin/compare/v17.1.0...v18.0.0) (2021-09-21)
+
+
+### Features
+
+* **marathon:** add marathon support ([#149](https://github.com/sogebot/ui-admin/issues/149)) ([6b4e87e](https://github.com/sogebot/ui-admin/commit/6b4e87e14bc02ca5af915d78e3e94e83f4b4d77b))
+
 ## [17.1.0](https://github.com/sogebot/ui-admin/compare/v17.0.0...v17.1.0) (2021-09-19)
 
 
