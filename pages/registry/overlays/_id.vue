@@ -63,7 +63,7 @@ export const haveAnyOptions = (type: string) => {
     'goalRegistry', 'alertsRegistry', 'textRegistry', 'group', 'eventlist',
     'alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts',
     'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes',
-    'countdown', 'stopwatch'];
+    'countdown', 'stopwatch', 'marathon'];
   return withOpts.includes(type);
 };
 
@@ -72,6 +72,7 @@ export default defineComponent({
     alerts:          () => import('~/components/registry/overlays/alerts.vue'),
     countdown:       () => import('~/components/registry/overlays/countdown.vue'),
     stopwatch:       () => import('~/components/registry/overlays/stopwatch.vue'),
+    marathon:        () => import('~/components/registry/overlays/marathon.vue'),
     emotes:          () => import('~/components/registry/overlays/emotes.vue'),
     emotesexplode:   () => import('~/components/registry/overlays/emotesexplode.vue'),
     emotesfireworks: () => import('~/components/registry/overlays/emotesfireworks.vue'),
@@ -112,6 +113,7 @@ export default defineComponent({
       { value: 'emotesfireworks', text: 'emotesfireworks' },
       { value: 'emotesexplode', text: 'emotesexplode' },
       { value: 'eventlist', text: 'eventlist' },
+      { value: 'marathon', text: 'marathon' },
       { value: 'obswebsocket', text: 'obswebsocket' },
       { value: 'polls', text: 'polls' },
       { value: 'randomizer', text: 'randomizer' },

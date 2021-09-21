@@ -238,6 +238,7 @@ export default defineComponent({
     alerts:          () => import('~/components/registry/overlays/alerts.vue'),
     alertsRegistry:  () => import('~/components/registry/overlays/alertsRegistry.vue'),
     countdown:       () => import('~/components/registry/overlays/countdown.vue'),
+    marathon:        () => import('~/components/registry/overlays/marathon.vue'),
     stopwatch:       () => import('~/components/registry/overlays/stopwatch.vue'),
     textRegistry:    () => import('~/components/registry/overlays/textRegistry.vue'),
     goalRegistry:    () => import('~/components/registry/overlays/goalRegistry.vue'),
@@ -309,6 +310,7 @@ export default defineComponent({
       { value: 'emotesfireworks', text: 'emotesfireworks' },
       { value: 'emotesexplode', text: 'emotesexplode' },
       { value: 'eventlist', text: 'eventlist' },
+      { value: 'marathon', text: 'marathon' },
       { value: 'obswebsocket', text: 'obswebsocket' },
       { value: 'polls', text: 'polls' },
       { value: 'randomizer', text: 'randomizer' },
@@ -477,8 +479,9 @@ export default defineComponent({
       resize(responsive.value);
 
       if (itemToAdd.value) {
+        const id = v4();
         options.value.items.push({
-          id:     v4(),
+          id,
           type:   itemToAdd.value,
           width:  200,
           height: 200,
@@ -487,6 +490,7 @@ export default defineComponent({
           opts:   null,
         });
         dialog.value = false;
+        selected.value = id;
       }
     };
 
