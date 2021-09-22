@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.0.0](https://github.com/sogebot/ui-admin/compare/v18.0.0...v19.0.0) (2021-09-22)
+
+
+### Features
+
+* **general:** add numberFormat support ([e9b7344](https://github.com/sogebot/ui-admin/commit/e9b734491f3ea4443438b3021cc18a0f892f4269))
+
+
+### Bug Fixes
+
+* **viewers:** fix string getting passed to date ([be1962d](https://github.com/sogebot/ui-admin/commit/be1962d85ff8a41ed17b6448ca8af282e0847ea8))
+
 ## [18.0.0](https://github.com/sogebot/ui-admin/compare/v17.1.0...v18.0.0) (2021-09-21)
 
 
