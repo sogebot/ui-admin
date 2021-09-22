@@ -213,6 +213,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { useStore } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { getLocalizedName } from '@sogebot/ui-helpers/getLocalized';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash';
@@ -224,7 +225,6 @@ import {
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
-import { getLocalizedName } from '~/functions/getLocalized';
 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/price-newItem.vue') }) },
