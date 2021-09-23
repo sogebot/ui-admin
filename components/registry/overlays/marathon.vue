@@ -14,10 +14,14 @@
             hide-details="auto"
           />
 
-          <label class="v-label theme--dark">
-            Maximum end time
-          </label>
-          <datetime v-model="options.maxEndTime" />
+          <v-switch
+            v-model="maxEndTimeEnabled"
+            label="Enable maximum end time"
+            hide-details="auto"
+          />
+          <v-expand-transition>
+            <datetime v-model="options.maxEndTime" v-if="options.maxEndTime !== null"/>
+          </v-expand-transition>
 
           <v-switch v-model="options.showProgressGraph" label="Show progress graph" hide-details="auto" />
           <v-switch v-model="options.disableWhenReachedZero" label="Disable when reached zero" hide-details="auto" :persistent-hint="true" :hint="(options.disableWhenReachedZero ? 'Will disable adding new time when reached zero. Will reenable on manual time addition from quickactions.' : 'Time will be added even when reached zero.')" />
@@ -139,7 +143,7 @@ export default defineComponent({
           showProgressGraph:      false,
           disableWhenReachedZero: true,
           endTime:                Date.now(),
-          maxEndTime:             Date.now() + 24 * HOUR,
+          maxEndTime:             null,
           showMilliseconds:       false,
           values:                 {
             sub: {
@@ -179,6 +183,18 @@ export default defineComponent({
         ],
       ));
 
+    const maxEndTimeEnabled = computed({
+      get () {
+        return options.value.maxEndTime !== null;
+      },
+      set (val: boolean) {
+        if (val) {
+          options.value.maxEndTime = Date.now() + DAY;
+        } else {
+          options.value.maxEndTime = null;
+        }
+      },
+    });
     const time = computed(() => {
       const calculateTime = options.value.endTime - Date.now();
 
@@ -201,6 +217,7 @@ export default defineComponent({
 
     return {
       model,
+      maxEndTimeEnabled,
       options,
       translate,
       time,
