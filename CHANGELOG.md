@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [19.0.1](https://github.com/sogebot/ui-admin/compare/v19.0.0...v19.0.1) (2021-09-23)
+
+
+### Bug Fixes
+
+* **marathon:** add enable/disable of maximum end time ([5e06823](https://github.com/sogebot/ui-admin/commit/5e06823557b37785f313a2a1a7e6ccf791eaf21c))
+
 ## [19.0.0](https://github.com/sogebot/ui-admin/compare/v18.0.0...v19.0.0) (2021-09-22)
 
 
