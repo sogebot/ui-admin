@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.0.0](https://github.com/sogebot/ui-admin/compare/v19.0.1...v20.0.0) (2021-09-25)
+
+
+### Features
+
+* **bannedevents:** add banned events list ([1bc067a](https://github.com/sogebot/ui-admin/commit/1bc067a7d4e55b3823fe97e550a8607919de80c4))
+
 ### [19.0.1](https://github.com/sogebot/ui-admin/compare/v19.0.0...v19.0.1) (2021-09-23)
 
 
