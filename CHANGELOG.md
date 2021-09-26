@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [20.0.1](https://github.com/sogebot/ui-admin/compare/v20.0.0...v20.0.1) (2021-09-26)
+
+
+### Bug Fixes
+
+* **credits:** remove unsupported social types ([90ce3f9](https://github.com/sogebot/ui-admin/commit/90ce3f909efdcf5e43673033073ff3de8046f8c9))
+
 ## [20.0.0](https://github.com/sogebot/ui-admin/compare/v19.0.1...v20.0.0) (2021-09-25)
 
 
