@@ -67,6 +67,22 @@
                       v-model="o.definitions[defKey]"
                       :label="translate(`events.definitions.${defKey}.label`)"
                     />
+                    <v-select
+                      v-if="defKey === 'taskId'"
+                      v-model="o.definitions[defKey]"
+                      :label="translate(`events.definitions.${defKey}.label`)"
+                      :items="obsWebsocketsTaskIds"
+                      :rules="rules[defKey]"
+                      :return-object="false"
+                      item-value="id"
+                    >
+                      <template v-slot:selection="data">
+                        {{ data.item.name }}&nbsp;<small>{{ data.item.id }}</small>
+                      </template>
+                      <template v-slot:item="data">
+                        {{ data.item.name }}&nbsp;<small>{{ data.item.id }}</small>
+                      </template>
+                    </v-select>
                     <v-text-field
                       v-else-if="typeof o.definitions[defKey] === 'string'"
                       v-model="o.definitions[defKey]"
@@ -75,13 +91,13 @@
                       :hint="translate('events.definitions.' + defKey + '.placeholder')"
                       persistent-hint
                     >
-                    <template #append>
-                      <input-variables
-                        v-if="['commandToRun', 'messageToSend'].includes(defKey)"
-                        :filters="filters"
-                        @input="o.definitions[defKey] = o.definitions[defKey] + $event"
-                      />
-                    </template>
+                      <template #append>
+                        <input-variables
+                          v-if="['commandToRun', 'messageToSend'].includes(defKey)"
+                          :filters="filters"
+                          @input="o.definitions[defKey] = o.definitions[defKey] + $event"
+                        />
+                      </template>
                     </v-text-field>
                     <v-text-field
                       v-else-if="typeof o.definitions[defKey] === 'number'"
@@ -109,9 +125,9 @@
           </v-list-item>
         </v-form>
 
-        <v-divider/>
+        <v-divider />
 
-        <tester :event="item.name" :events="events" :eventId="item.id"/>
+        <tester :event="item.name" :events="events" :event-id="item.id" />
       </v-card-text>
 
       <v-card-actions>
@@ -144,7 +160,7 @@ import { mdiTrashCan } from '@mdi/js';
 import {
   computed,
   defineAsyncComponent,
-  defineComponent, onMounted, ref, watch,
+  defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -154,6 +170,8 @@ import {
 import { v4 as uuid } from 'uuid';
 
 import type { EventOperationInterface, Events } from '~/.bot/src/database/entity/event';
+import { OBSWebsocketInterface } from '~/.bot/src/database/entity/obswebsocket.js';
+import api from '~/functions/api';
 import { error } from '~/functions/error';
 
 export default defineComponent({
@@ -162,6 +180,7 @@ export default defineComponent({
     operations: Array, item: Object, rules: Object, filters: Array, variables: Object, events: Array,
   },
   setup (props, ctx) {
+    const { $axios } = useContext();
     let operationsBackup: any[] = [];
 
     const valid = ref(true);
@@ -178,7 +197,13 @@ export default defineComponent({
       }));
     });
 
+    const obsWebsocketsTaskIds = ref([] as OBSWebsocketInterface[]);
+
     onMounted(() => {
+      api.get<OBSWebsocketInterface[]>($axios, '/api/v1/integration/obswebsocket')
+        .then((response) => {
+          obsWebsocketsTaskIds.value = response.data.data;
+        });
       getSocket('/core/events').emit('list.supported.operations', (err: string | null, data: Events.SupportedOperation[]) => {
         if (err) {
           error(err);
@@ -269,6 +294,7 @@ export default defineComponent({
       mdiTrashCan,
       valid,
       form,
+      obsWebsocketsTaskIds,
     };
   },
 });

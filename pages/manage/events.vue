@@ -338,6 +338,7 @@ export default defineComponent({
       numberToDecrement:    [required, minValue(1)],
       numberToIncrement:    [required, minValue(1)],
       durationOfCommercial: [required],
+      taskId:               [required],
     };
 
     const state = ref({ loading: ButtonStates.progress } as {
