@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [21.0.0](https://github.com/sogebot/ui-admin/compare/v20.0.1...v21.0.0) (2021-09-27)
+
+
+### Features
+
+* **events:** add support for obswebsocket operation ([1a4eeb1](https://github.com/sogebot/ui-admin/commit/1a4eeb1227173557df58b0da9e4fa674fe623d94))
+
 ### [20.0.1](https://github.com/sogebot/ui-admin/compare/v20.0.0...v20.0.1) (2021-09-26)
 
 
