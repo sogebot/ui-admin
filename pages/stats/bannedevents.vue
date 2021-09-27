@@ -37,7 +37,7 @@ import { capitalize, orderBy } from 'lodash';
 
 import api from '../../functions/api';
 
-import type { BannedEventsInterface } from '~/.bot/src/database/entity/bannedevents';
+import type { BannedEventsInterface } from '~/.bot/src/database/entity/bannedEvents';
 
 export default defineComponent({
   setup () {
