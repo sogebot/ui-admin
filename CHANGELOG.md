@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [22.1.0](https://github.com/sogebot/ui-admin/compare/v22.0.0...v22.1.0) (2021-09-29)
+
+
+### Features
+
+* **randomizer:** add tape type ([5acb755](https://github.com/sogebot/ui-admin/commit/5acb755dbbb1935ef5082316f1693c595c39903d))
+
 ## [22.0.0](https://github.com/sogebot/ui-admin/compare/v21.0.0...v22.0.0) (2021-09-29)
 
 
