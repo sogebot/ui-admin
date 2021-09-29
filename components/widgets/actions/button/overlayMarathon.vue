@@ -16,9 +16,7 @@
         </v-slide-x-transition>
         <v-col v-if="!editing" cols="auto" class="d-flex" />
         <v-col :key="tick" style="align-self: center;" class="text">
-          <div style="font-size: 0.8rem;">
-            {{ time() }}
-          </div>
+          <div style="font-size: 0.8rem;" v-html="time()"/>
         </v-col>
 
         <v-col v-if="!editing" cols="auto" class="d-flex">
@@ -111,13 +109,12 @@ export default defineComponent({
       const hours = Math.floor((_time - days * DAY) / HOUR);
       const minutes = Math.floor((_time - (days * DAY) - (hours * HOUR)) / MINUTE);
       const seconds = Math.floor((_time - (days * DAY) - (hours * HOUR) - (minutes * MINUTE)) / SECOND);
-      let millis: number | string = Math.floor((_time - (days * DAY) - (hours * HOUR) - (minutes * MINUTE) - (seconds * SECOND)));
+      let millis: number | string = Math.floor((_time - (days * DAY) - (hours * HOUR) - (minutes * MINUTE) - (seconds * SECOND)) / 10);
 
       if (millis < 10) {
-        millis = `00${millis}`;
-      } else if (millis < 100) {
         millis = `0${millis}`;
       }
+
       let output = '';
       if (days > 0) {
         output += `${days}d`;
@@ -125,7 +122,7 @@ export default defineComponent({
 
       output += `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
       if (marathon.value?.opts.showMilliseconds) {
-        output += `.${millis}`;
+        output += `<small>.${millis}</small>`;
       }
       return output;
     };
