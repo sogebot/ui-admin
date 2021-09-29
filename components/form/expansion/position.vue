@@ -5,17 +5,20 @@
     </v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-select
+        v-if="!disableAnchorX"
         v-model="model.anchorX"
         :label="translate('dialog.position.anchorX')"
         :items="anchorXOptions"
       />
       <v-select
+        v-if="!disableAnchorY"
         v-model="model.anchorY"
         :label="translate('dialog.position.anchorY')"
         :items="anchorYOptions"
       />
 
       <v-slider
+        v-if="!disableX"
         v-model="model.x"
         :label="translate('dialog.position.x')"
         :max="100"
@@ -32,6 +35,7 @@
       </v-slider>
 
       <v-slider
+        v-if="!disableY"
         v-model="model.y"
         :label="translate('dialog.position.y')"
         :max="100"
@@ -80,10 +84,16 @@ import type { RandomizerInterface } from '~/.bot/src/database/entity/randomizer'
 interface Props {
   value: RandomizerInterface['position'];
   disabled: boolean,
+  disableX: boolean,
+  disableY: boolean,
+  disableAnchorX: boolean,
+  disableAnchorY: boolean,
 }
 
 export default defineComponent({
-  props: { value: Object, disabled: Boolean },
+  props: {
+    value: Object, disabled: Boolean, disableX: Boolean, disableY: Boolean, disableAnchorX: Boolean, disableAnchorY: Boolean,
+  },
   setup (props: Props, ctx) {
     const model = reactive(props.value);
     const uuid = ref(v4());
@@ -116,9 +126,7 @@ export default defineComponent({
           const el = refType === 'text' ? HTMLRef[refType] as any : (HTMLRef[refType] as any).$el as HTMLElement;
           const widthPxPerCent = (example.value as any).$el.getBoundingClientRect().width / 100;
           const heightPxPerCent = (example.value as any).$el.getBoundingClientRect().height / 100;
-          console.log({
-            el, refType, HTMLRef,
-          });
+
           let top = 0;
           if (model.anchorY === 'middle') {
             top = el.getBoundingClientRect().height / 2;
@@ -143,6 +151,18 @@ export default defineComponent({
     };
 
     watch(model, (value) => {
+      if (props.disableX && value.x !== 0) {
+        model.x = 0;
+      }
+      if (props.disableY && value.y !== 0) {
+        model.y = 0;
+      }
+      if (props.disableAnchorY && value.anchorY !== 'top') {
+        model.anchorY = 'top';
+      }
+      if (props.disableAnchorX && value.anchorX !== 'left') {
+        model.anchorX = 'left';
+      }
       ctx.emit('input', value);
     });
 

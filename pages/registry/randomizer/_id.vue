@@ -56,7 +56,7 @@
         </v-form>
 
         <v-expansion-panels :value="3">
-          <position v-model="item.position" :disabled="item.type !== 'simple'" />
+          <position v-model="item.position" :disabled="item.type === 'wheelOfFortune'" :disable-x="item.type === 'tape'" :disable-anchor-x="item.type === 'tape'" :disable-anchor-y="item.type === 'tape'" />
           <tts v-model="item.tts" />
           <v-expansion-panel>
             <v-expansion-panel-header>
@@ -209,7 +209,11 @@ export default defineComponent({
     const item = ref(cloneDeep(emptyItem) as RandomizerInterface);
     const permissions = ref([] as PermissionsInterface[]);
 
-    const typeItems = [{ text: translate('registry.randomizer.form.simple'), value: 'simple' }, { text: translate('registry.randomizer.form.wheelOfFortune'), value: 'wheelOfFortune' }];
+    const typeItems = [
+      { text: translate('registry.randomizer.form.simple'), value: 'simple' },
+      { text: translate('registry.randomizer.form.wheelOfFortune'), value: 'wheelOfFortune' },
+      { text: translate('registry.randomizer.form.tape'), value: 'tape' },
+    ];
     const permissionItems = computed(() => {
       return permissions.value.map(o => ({
         text:     o.name,
