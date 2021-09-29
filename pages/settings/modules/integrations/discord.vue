@@ -56,7 +56,7 @@
               :label="translate('integrations.discord.settings.ignorelist.title')"
               :hint="translate('one-record-per-line') + '. ' + translate('integrations.discord.settings.ignorelist.help')"
               :value="settings.bot.ignorelist[0].filter(String).join('\n')"
-              @input="settings.bot.ignorelist[0] = $event.split('\n').filter(String)" />
+              @input="settings.bot.ignorelist[0] = $event.split('\n').filter(String); store.commit('settings/pending', true);" />
           </v-card-text>
         </v-card>
       </v-tab-item>

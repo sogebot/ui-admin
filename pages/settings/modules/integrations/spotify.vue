@@ -21,6 +21,13 @@
               :hint="translate('integrations.spotify.settings.queueWhenOffline.help')" />
             <v-switch v-model="settings.notify[0]" dense hide-details="auto"
               :label="translate('integrations.spotify.settings.notify')" />
+            <v-switch v-model="settings.allowApprovedArtistsOnly[0]" dense hide-details="auto"
+              :label="translate('integrations.spotify.settings.allowApprovedArtistsOnly')" />
+            <v-textarea class="mt-3 pt-3" outlined rows="5" persistent-hint
+              :label="translate('integrations.spotify.settings.approvedArtists.title')"
+              :hint="translate('integrations.spotify.settings.approvedArtists.help')"
+              :value="settings.approvedArtists[0].filter(String).join('\n')"
+              @input="settings.approvedArtists[0] = $event.split('\n').filter(String); store.commit('settings/pending', true);"/>
           </v-card-text>
         </v-card>
       </v-tab-item>
@@ -166,6 +173,7 @@ export default defineComponent({
       valid,
       tab,
       gettingActive,
+      store,
 
       // functions
       authorize,
