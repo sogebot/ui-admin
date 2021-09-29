@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [22.0.0](https://github.com/sogebot/ui-admin/compare/v21.0.0...v22.0.0) (2021-09-29)
+
+
+### Features
+
+* **spotify:** add approvedArtists support ([8879e93](https://github.com/sogebot/ui-admin/commit/8879e937a2a8fbe225b777bab0914c9c50b82b8b))
+
+
+### Bug Fixes
+
+* **actions:** make millis smaller ([7bf55a0](https://github.com/sogebot/ui-admin/commit/7bf55a0eabce090ac82a3db17a2df571e3c26f1e))
+
 ## [21.0.0](https://github.com/sogebot/ui-admin/compare/v20.0.1...v21.0.0) (2021-09-27)
 
 
