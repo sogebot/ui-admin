@@ -67,6 +67,40 @@ const api = {
       throw e; // rethrow
     }
   },
+  gql: async <T>(axios: NuxtAxiosInstance, query: string, variables?: Record<string, any>) => {
+    try {
+      await refreshToken(axios);
+      const request = await new Promise((resolve, reject) => {
+        fetch('/graphql', {
+          method:  'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept:         'application/json',
+            Authorization:  'Bearer ' + localStorage.accessToken,
+          },
+          body: JSON.stringify({ query, variables }),
+        })
+          .then((r) => {
+            if (!r.ok) {
+              r.json().then((json) => {
+                const messages = [];
+                for (const error of json.errors) {
+                  messages.push(error.message);
+                }
+                reject(messages.join(' '));
+              });
+              return;
+            }
+            return r.json();
+          })
+          .then(data => resolve(data.data));
+      });
+      return request as T;
+    } catch (e) {
+      console.error(e);
+      throw e; // rethrow
+    }
+  },
   get: async <T>(axios: NuxtAxiosInstance, url: string, options?: AxiosRequestConfig) => {
     try {
       await refreshToken(axios);

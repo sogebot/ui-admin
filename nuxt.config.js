@@ -95,6 +95,10 @@ export default {
   // enable api proxy
   ...process.env.NODE_ENV === 'development' && {
     proxy: {
+      '/graphql': {
+        changeOrigin: true,
+        target:       'http://localhost:20000',
+      },
       '/api': {
         changeOrigin: true,
         target:       'http://localhost:20000',

@@ -1,6 +1,6 @@
 <template>
   <v-container class="fill-height" fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <iframe :src="url + 'frame-api-explorer'" width="100%" height="100%" style="border: 0; filter: invert(0.945) hue-rotate(170deg);" />
+    <iframe :src="url + 'graphql'" width="100%" height="100%" style="border: 0" />
   </v-container>
 </template>
 

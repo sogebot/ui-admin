@@ -46,11 +46,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from '@nuxtjs/composition-api';
+import {
+  defineComponent, ref, useContext,
+} from '@nuxtjs/composition-api';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 as uuid } from 'uuid';
+
+import api from '../../functions/api';
+import { error } from '../../functions/error';
 
 import type { AliasInterface } from '.bot/src/database/entity/alias';
 
@@ -60,6 +64,7 @@ export default defineComponent({
     const newItemAlias = ref('');
     const newItemCommand = ref('');
     const newItemSaving = ref(false);
+    const { $axios } = useContext();
     const valid = ref(true);
 
     const form = ref(null);
@@ -68,8 +73,8 @@ export default defineComponent({
       if ((form.value as unknown as HTMLFormElement).validate()) {
         newItemSaving.value = true;
         await new Promise((resolve) => {
-          const item: AliasInterface = {
-            id:         uuid(),
+          const id = uuid();
+          const data: AliasInterface = {
             alias:      newItemAlias.value,
             command:    newItemCommand.value,
             enabled:    true,
@@ -77,13 +82,18 @@ export default defineComponent({
             permission: defaultPermissions.VIEWERS,
             group:      null,
           };
-          console.log('Saving', { item });
-          getSocket('/systems/alias').emit('generic::setById', { id: item.id, item }, () => {
-            resolve(true);
-            ctx.emit('save');
-            newItemSaving.value = false;
-          });
+          console.log('Saving', { data });
+          const query = `mutation setAlias($id: String!, $data: AliasInput!) {
+              setAlias(id: $id, data: $data) {
+                id
+              }
+            }`;
+          api.gql<any>($axios, query, {
+            id,
+            data,
+          }).then(() => ctx.emit('save')).catch(error).finally(() => resolve(true));
         });
+        newItemSaving.value = false;
       }
     };
 

@@ -275,7 +275,6 @@ import {
   computed, defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash';
 
@@ -419,12 +418,10 @@ export default defineComponent({
           permissions.value = response.data.data;
           state.value.loadingPrm = ButtonStates.success;
         });
-      getSocket('/systems/alias').emit('generic::getAll', (err: string | null, itemsGetAll: typeof items.value) => {
-        if (err) {
-          error(err);
-          return;
-        }
-        items.value = orderBy(itemsGetAll, 'alias', 'asc');
+
+      api.gql<{ aliases: AliasInterfaceUI[] }>($axios, '{ aliases { id alias command enabled permission group } }').then((d) => {
+        items.value = orderBy(d.aliases, 'alias', 'asc');
+
         for (const item of items.value) {
           item.groupToBeShownInTable = item.group; // we need this to have group shown even when group-by
         }
@@ -466,15 +463,15 @@ export default defineComponent({
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-            getSocket('/systems/alias').emit('generic::setById', {
+            const query = `mutation setAlias($id: String!, $data: AliasInput!) {
+              setAlias(id: $id, data: $data) {
+                id
+              }
+            }`;
+            api.gql<any>($axios, query, {
               id:   itemToUpdate.id,
-              item: {
-                ...itemToUpdate,
-                [attr]: item[attr], // save new value for all selected items
-              },
-            }, () => {
-              resolve(true);
-            });
+              data: { [attr]: item[attr] },
+            }).catch(error).finally(() => resolve(true));
           });
         }),
       );
@@ -487,12 +484,9 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/alias').emit('generic::deleteById', item.id, (err: string | null) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
+            api.gql<{ alias: AliasInterfaceUI[] }>($axios, `mutation { removeAlias(id:"${item.id}") }`)
+              .then(resolve)
+              .catch(err => reject(error(err)));
           });
         }),
       );
