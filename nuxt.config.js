@@ -111,6 +111,10 @@ export default {
         changeOrigin: true,
         target:       'http://localhost:3002',
       },
+      '/public': {
+        changeOrigin: true,
+        target:       'http://localhost:3003',
+      },
     },
   },
 };

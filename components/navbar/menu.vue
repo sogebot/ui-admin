@@ -68,19 +68,19 @@ const icons = new Map<string, string>([
 
 export default defineComponent({
   setup () {
+    const { $axios } = useContext();
     const menu = ref([] as menuWithEnabled[]);
     const categories = ['commands', 'manage', 'settings', 'registry', /* 'logs', */ 'stats'];
     const isDisabledHidden = ref(true);
-    const context = useContext();
 
     onMounted(() => {
-      api.get<any[]>(context.$axios, '/api/v1/menu/private')
-        .then((response) => {
+      api.gql<{ menuPrivate: menuWithEnabled[]}>($axios, '{ menuPrivate { id name enabled category } }')
+        .then((data) => {
           console.groupCollapsed('menu::menu');
-          console.log({ menu: response.data.data });
+          console.log({ menu: data.menuPrivate });
           console.groupEnd();
 
-          for (const item of response.data.data.sort((a, b) => {
+          for (const item of data.menuPrivate.sort((a, b) => {
             return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
           })) {
             menu.value.push(item);
