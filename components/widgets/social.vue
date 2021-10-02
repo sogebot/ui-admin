@@ -59,9 +59,10 @@ export default defineComponent({
       height.value = Math.max(newHeight, 300);
     }
 
-    const refresh = async () => {
-      const response = await api.get<WidgetSocialInterface[]>(context.$axios, `/api/v1/social`);
-      items.value = response.data.data;
+    const refresh = () => {
+      api.gql<{ widgeSocialGet: typeof items.value }>(context.$axios, '{ widgeSocialGet { id type hashtag text username displayname url timestamp } }').then((data) => {
+        items.value = data.widgeSocialGet;
+      });
     };
 
     onMounted(() => {
