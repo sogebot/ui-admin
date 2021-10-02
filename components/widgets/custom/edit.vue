@@ -23,7 +23,9 @@
           :loading="isSaving"
           @click="save"
         >
-          <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+          <v-icon class="d-flex d-sm-none">
+            {{ mdiFloppy }}
+          </v-icon>
           <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
         </v-btn>
       </v-toolbar>
@@ -77,6 +79,8 @@ import {
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
+import { error } from '../../../functions/error';
+
 import { WidgetCustomInterface } from '~/.bot/src/database/entity/widget';
 import api from '~/functions/api';
 
@@ -91,7 +95,7 @@ export default defineComponent({
     const dialogController = ref(props.dialog);
     const isLoaded = ref(false);
     const isSaving = ref(false);
-    const items = ref([] as Omit<WidgetCustomInterface, 'userId'>[]);
+    const items = ref([] as Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[]);
     const valid = ref(true);
     const markedToDelete = ref([] as string[]);
 
@@ -99,22 +103,40 @@ export default defineComponent({
       ctx.emit('update:dialog', val);
     });
 
-    const refresh = async () => {
-      const response = await api.get<WidgetCustomInterface[]>($axios, `/api/v1/custom`);
-      items.value = response.data.data;
-      isLoaded.value = true;
+    const refresh = () => {
+      api.gql<{ widgetCustomGet: typeof items.value }>($axios, '{ widgetCustomGet { id url name } }').then((data) => {
+        items.value = data.widgetCustomGet;
+        isLoaded.value = true;
+      });
     };
 
     const save = async () => {
       isSaving.value = true;
-      for (const id of markedToDelete.value) {
-        api.delete<WidgetCustomInterface>($axios, `/api/v1/custom/${id}`).catch(() => {
-          return true;
-        });
-      }
-      for (const item of items.value) {
-        await api.post<Omit<WidgetCustomInterface, 'userId'>>($axios, `/api/v1/custom`, item);
-      }
+      await Promise.all(
+        markedToDelete.value.map((id) => {
+          return new Promise((resolve) => {
+            const query = `mutation widgetCustomRemove($id: String!) { widgetCustomRemove(id: $id) }`;
+            api.gql<any>($axios, query, { id }).catch(error).finally(() => resolve(true));
+          });
+        }),
+      );
+      await Promise.all(
+        items.value.map((item) => {
+          return new Promise((resolve) => {
+            const query = `mutation widgetCustomSet($id: String!, $data: WidgetCustomInput!) {
+              widgetCustomSet(id: $id, data: $data) {
+                id
+              }
+            }`;
+
+            const { id, ...data } = item;
+            api.gql<any>($axios, query, {
+              id,
+              data,
+            }).then(() => ctx.emit('save')).catch(error).finally(() => resolve(true));
+          });
+        }),
+      );
       markedToDelete.value = [];
       isSaving.value = false;
       dialogController.value = false;

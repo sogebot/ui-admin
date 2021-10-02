@@ -39,7 +39,7 @@
             <iframe
               frameborder="0"
               scrolling="no"
-              :src="item.url"
+              :src="item.url.includes('://') ? item.url : `http://${item.url}`"
               width="100%"
               :height="height + 'px'"
             />
@@ -70,7 +70,7 @@ export default defineComponent({
     const isPopout = computed(() => location.href.includes('popout'));
     const height = ref(600);
     const show = ref(false);
-    const items = ref([] as WidgetCustomInterface[]);
+    const items = ref([] as Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[]);
 
     const dialog = ref(false);
 
@@ -84,9 +84,10 @@ export default defineComponent({
       height.value = Math.max(newHeight, 300);
     }
 
-    const refresh = async () => {
-      const response = await api.get<WidgetCustomInterface[]>(context.$axios, `/api/v1/custom`);
-      items.value = response.data.data;
+    const refresh = () => {
+      api.gql<{ widgetCustomGet: typeof items.value }>(context.$axios, '{ widgetCustomGet { id url name } }').then((data) => {
+        items.value = data.widgetCustomGet;
+      });
     };
 
     watch(dialog, (val) => {
