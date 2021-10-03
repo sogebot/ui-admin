@@ -14,7 +14,7 @@
       group-by="group"
       :show-select="selectable"
       :search="search"
-      :loading="state.loadingAls !== ButtonStates.success && state.loadingPrm !== ButtonStates.success"
+      :loading="loading"
       :headers="headers"
       :items-per-page="-1"
       :items="items"
@@ -272,17 +272,19 @@ import {
   mdiCheckboxMultipleMarkedOutline, mdiMagnify, mdiMinus, mdiPlus,
 } from '@mdi/js';
 import {
-  computed, defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
+  computed, defineAsyncComponent, defineComponent, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { capitalize, orderBy } from 'lodash';
 
 import type { AliasInterface } from '.bot/src/database/entity/alias';
 import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
-import api from '~/functions/api';
-import { error } from '~/functions/error';
+import { error as errorLog } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
 import { truncate } from '~/functions/truncate';
@@ -295,7 +297,52 @@ type AliasInterfaceUI = AliasInterface & { groupToBeShownInTable: null | string 
 export default defineComponent({
   components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/alias-newItem.vue') }) },
   setup () {
-    const { $axios } = useContext();
+    const { result, loading, error, refetch } = useQuery(gql`
+      query {
+        aliases { id alias command enabled permission group }
+        permissions { id name }
+      }
+    `);
+    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
+    const items = useResult<{ aliases: AliasInterfaceUI[] }, AliasInterfaceUI[], AliasInterfaceUI[]>(result, [], (data) => {
+      const output = orderBy(data.aliases, 'alias', 'asc');
+
+      for (const item of output) {
+        item.groupToBeShownInTable = item.group; // we need this to have group shown even when group-by
+      }
+
+      // we also need to reset selection values
+      if (selected.value.length > 0) {
+        selected.value.forEach((selectedItem, index) => {
+          selectedItem = output.find(o => o.id === selectedItem.id) || selectedItem;
+          selected.value[index] = selectedItem;
+        });
+      }
+      return output;
+    });
+    watch(error, val => errorLog(val?.message ?? ''));
+
+    const { mutate: updateMutation, onDone: onDoneUpdate, onError: onErrorUpdate } = useMutation(gql`
+      mutation setAlias($id: String!, $data: AliasInput!) {
+        setAlias(id: $id, data: $data) {
+          id
+        }
+      }`);
+    function saveSuccess () {
+      EventBus.$emit('snack', 'success', 'Data updated.');
+      newDialog.value = false;
+      refetch();
+    }
+    onDoneUpdate(saveSuccess);
+    onErrorUpdate(errorLog);
+
+    const { mutate: removeMutation, onDone: onDoneRemove, onError: onErrorRemove } = useMutation(gql`
+      mutation removeAlias($id: String!) {
+        removeAlias(id: $id)
+      }`);
+    onDoneRemove(saveSuccess);
+    onErrorRemove(errorLog);
+
     const timestamp = ref(Date.now());
 
     const selected = ref([] as AliasInterfaceUI[]);
@@ -312,32 +359,16 @@ export default defineComponent({
       }
     });
 
-    const items = ref([] as AliasInterfaceUI[]);
-    const permissions = ref([] as PermissionsInterface[]);
-
     const rules = {
       alias:   [startsWith(['!']), required],
       command: [startsWith(['!', '$_']), minLength(2)],
     };
 
     const search = ref('');
-    const state = ref({
-      loadingAls: ButtonStates.progress,
-      loadingPrm: ButtonStates.idle,
-    } as {
-      loadingAls: number;
-      loadingPrm: number;
-    });
 
     watch(newDialog, () => {
       timestamp.value = Date.now();
     });
-
-    const saveSuccess = () => {
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
-      newDialog.value = false;
-    };
 
     const truncateLength = computed(() => {
       const breakpoint = useContext().$vuetify.breakpoint;
@@ -361,10 +392,6 @@ export default defineComponent({
         value:    item,
         disabled: false,
       }));
-    });
-
-    onMounted(() => {
-      refresh();
     });
 
     const isGroupSelected = (group: string) => {
@@ -411,32 +438,7 @@ export default defineComponent({
       { value: 'alias', text: translate('alias') },
       { value: 'command', text: translate('command') },
     ];
-
-    const refresh = () => {
-      api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
-        .then((response) => {
-          permissions.value = response.data.data;
-          state.value.loadingPrm = ButtonStates.success;
-        });
-
-      api.gql<{ aliases: AliasInterfaceUI[] }>($axios, '{ aliases { id alias command enabled permission group } }').then((d) => {
-        items.value = orderBy(d.aliases, 'alias', 'asc');
-
-        for (const item of items.value) {
-          item.groupToBeShownInTable = item.group; // we need this to have group shown even when group-by
-        }
-
-        // we also need to reset selection values
-        if (selected.value.length > 0) {
-          selected.value.forEach((selectedItem, index) => {
-            selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
-            selected.value[index] = selectedItem;
-          });
-        }
-        state.value.loadingAls = ButtonStates.success;
-      });
-    };
-    const update = async (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
+    const update = (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
       if (attr === 'group') {
         item.group = item.groupToBeShownInTable;
       }
@@ -448,7 +450,6 @@ export default defineComponent({
             continue;
           } else {
             EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-            refresh();
             return;
           }
         }
@@ -459,50 +460,30 @@ export default defineComponent({
         (i as any)[attr] = item[attr];
       }
 
-      await Promise.all(
-        [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
-          return new Promise((resolve) => {
-            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-            const query = `mutation setAlias($id: String!, $data: AliasInput!) {
-              setAlias(id: $id, data: $data) {
-                id
-              }
-            }`;
-            api.gql<any>($axios, query, {
-              id:   itemToUpdate.id,
-              data: { [attr]: item[attr] },
-            }).catch(error).finally(() => resolve(true));
-          });
-        }),
-      );
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
+      [item, ...(multi ? selected.value : [])].forEach((itemToUpdate) => {
+        console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+        updateMutation({
+          id:   itemToUpdate.id,
+          data: { [attr]: item[attr] },
+        });
+      });
     };
 
-    const deleteSelected = async () => {
+    const deleteSelected = () => {
       deleteDialog.value = false;
-      await Promise.all(
-        selected.value.map((item) => {
-          return new Promise((resolve, reject) => {
-            api.gql<{ alias: AliasInterfaceUI[] }>($axios, `mutation { removeAlias(id:"${item.id}") }`)
-              .then(resolve)
-              .catch(err => reject(error(err)));
-          });
-        }),
-      );
-      refresh();
-
-      EventBus.$emit('snack', 'success', 'Data removed.');
+      selected.value.forEach((item) => {
+        removeMutation({ id: item.id });
+      });
       selected.value = [];
     };
 
     return {
+      result,
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       saveCurrentItems,
       items,
       permissions,
       search,
-      state,
       headers,
       headersDelete,
       groupItems,
@@ -513,6 +494,7 @@ export default defineComponent({
       truncate,
       truncateLength,
       selectable,
+      loading,
 
       selected,
       deleteDialog,
@@ -530,8 +512,6 @@ export default defineComponent({
       mdiMinus,
       mdiMagnify,
       mdiCheckboxMultipleMarkedOutline,
-
-      ButtonStates,
     };
   },
 });

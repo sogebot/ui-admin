@@ -32,7 +32,8 @@
       "@types/node",
       "@nuxtjs/axios",
       "@nuxtjs/proxy",
-      "@nuxtjs/vuetify"
+      "@nuxtjs/vuetify",
+      "vue-apollo/types",
     ]
   },
   "exclude": [

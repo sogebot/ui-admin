@@ -41,6 +41,7 @@ export default {
   plugins: [
     '@/plugins/remove-shift-selection',
     '@/plugins/before-each.ts',
+    '@/plugins/apollo-hook.ts',
     { src: '@/plugins/log-version.js', ssr: false },
   ],
 
@@ -74,10 +75,13 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/proxy',
     'portal-vue/nuxt',
+    '@nuxtjs/apollo',
   ],
 
+  apollo: { clientConfigs: { default: '~/plugins/apollo-config.js' } },
+
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
+  build: { hotMiddleware: { client: { overlay: false } } },
 
   router: {
     mode: 'hash',
