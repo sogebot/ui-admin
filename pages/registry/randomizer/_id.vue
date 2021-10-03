@@ -1,5 +1,5 @@
 <template>
-  <v-card :loading="isLoading" class="fill-height">
+  <v-card :loading="isLoading || loading" class="fill-height">
     <portal to="navbar">
       <v-btn
         small
@@ -7,7 +7,7 @@
         :icon="$vuetify.breakpoint.xs"
         :loading="isSaving"
         @click="save"
-        :disabled="!valid1 || isLoading"
+        :disabled="!valid1 || isLoading || loading"
       >
         <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
@@ -137,6 +137,8 @@ import {
 import { getContrastColor, getRandomColor } from '@sogebot/ui-helpers/colors';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import {
   cloneDeep, isEqual, orderBy,
 } from 'lodash';
@@ -194,6 +196,12 @@ export default defineComponent({
     optionsTable: defineAsyncComponent({ loader: () => import('~/components/randomizer/table.vue') }),
   },
   setup () {
+    const { result, loading } = useQuery(gql`
+      query {
+        permissions { id name }
+      }
+    `);
+    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
     const { $axios } = useContext();
     const store = useStore();
     const stepper = ref(1);
@@ -207,7 +215,6 @@ export default defineComponent({
     const isLoading = ref(false);
 
     const item = ref(cloneDeep(emptyItem) as RandomizerInterface);
-    const permissions = ref([] as PermissionsInterface[]);
 
     const typeItems = [
       { text: translate('registry.randomizer.form.simple'), value: 'simple' },
@@ -237,11 +244,6 @@ export default defineComponent({
           .catch(() => {
             router.push({ path: '/registry/randomizer' });
             EventBus.$emit('snack', 'error', 'Data not found.');
-          });
-
-        api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
-          .then((response) => {
-            permissions.value = response.data.data;
           });
       }
     });
@@ -333,6 +335,7 @@ export default defineComponent({
       typeItems,
       permissionItems,
       rules,
+      loading,
 
       // functions
       save,

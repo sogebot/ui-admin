@@ -13,7 +13,7 @@
       calculate-widths
       :show-select="selectable"
       :search="search"
-      :loading="state.loading !== ButtonStates.success && state.loadingPrm !== ButtonStates.success"
+      :loading="state.loading !== ButtonStates.success || loading"
       :headers="headers"
       :items-per-page="-1"
       :items="items"
@@ -170,17 +170,18 @@
 <script lang="ts">
 import { mdiCheckboxMultipleMarkedOutline, mdiMagnify } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { capitalize, orderBy } from 'lodash';
 
 import type { KeywordInterface } from '.bot/src/database/entity/keyword';
 import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
@@ -194,10 +195,14 @@ export default defineComponent({
     responses: defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
   },
   setup () {
-    const { $axios } = useContext();
+    const { result, loading } = useQuery(gql`
+      query {
+        permissions { id name }
+      }
+    `);
+    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
     const search = ref('');
     const items = ref([] as Required<KeywordInterface>[]);
-    const permissions = ref([] as PermissionsInterface[]);
 
     const timestamp = ref(Date.now());
     const selected = ref([] as KeywordInterface[]);
@@ -243,11 +248,6 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
-        .then((response) => {
-          permissions.value = response.data.data;
-          state.value.loadingPrm = ButtonStates.success;
-        });
       getSocket('/systems/keywords').emit('generic::getAll', (err: string | null, keywordsGetAll: Required<KeywordInterface>[]) => {
         if (err) {
           return error(err);
@@ -379,6 +379,7 @@ export default defineComponent({
       mdiMagnify,
       mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
+      loading,
     };
   },
 });

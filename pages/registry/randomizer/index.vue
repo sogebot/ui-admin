@@ -4,7 +4,7 @@
       v-model="selected"
       :show-select="selectable"
       :search="search"
-      :loading="state.loading !== ButtonStates.success"
+      :loading="state.loading !== ButtonStates.success || loading"
       :headers="headers"
       :items-per-page="-1"
       :items="items"
@@ -134,6 +134,8 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { orderBy } from 'lodash';
 import { v4 } from 'uuid';
 
@@ -147,12 +149,17 @@ import { getPermissionName } from '~/functions/getPermissionName';
 
 export default defineComponent({
   setup () {
+    const { result, loading } = useQuery(gql`
+      query {
+        permissions { id name }
+      }
+    `);
+    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
     const items = ref([] as RandomizerInterface[]);
     const search = ref('');
     const { $axios } = useContext();
 
     const selected = ref([] as RandomizerInterface[]);
-    const permissions = ref([] as PermissionsInterface[]);
     const currentItems = ref([] as RandomizerInterface[]);
     const deleteDialog = ref(false);
     const spin = ref(false);
@@ -210,13 +217,6 @@ export default defineComponent({
             })
             .catch(err => error(err))
             .finally(() => resolve());
-        }),
-        new Promise<void>((resolve) => {
-          api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
-            .then((response) => {
-              permissions.value = response.data.data;
-              resolve();
-            });
         }),
       ]);
       state.value.loading = ButtonStates.success;
@@ -309,6 +309,7 @@ export default defineComponent({
       currentItems,
       permissions,
       spin,
+      loading,
 
       // functions
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),

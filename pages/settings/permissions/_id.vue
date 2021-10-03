@@ -57,18 +57,20 @@
     </v-card-text>
 
     <v-card-actions v-if="model && !model.isCorePermission">
-      <v-btn color="error" :loading="isRemoving" @click="remove(model.id)">
+      <v-btn color="error" :loading="removing" @click="remove(model.id)">
         {{ translate('delete') }}
       </v-btn>
       <v-spacer />
       <v-btn
         :text="!$vuetify.breakpoint.xs"
         :icon="$vuetify.breakpoint.xs"
-        :loading="isSaving"
+        :loading="saving"
         :disabled="!valid"
         @click="save"
       >
-        <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+        <v-icon class="d-flex d-sm-none">
+          {{ mdiFloppy }}
+        </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
     </v-card-actions>
@@ -78,15 +80,14 @@
 <script lang="ts">
 import { mdiFloppy } from '@mdi/js';
 import {
-  useContext, useRoute, useRouter,
-} from '@nuxtjs/composition-api';
-import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  defineAsyncComponent, defineComponent,
+  ref, useRoute, useRouter, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
+import { useMutation, useQuery } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 
 import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
@@ -98,64 +99,74 @@ export default defineComponent({
     test:      defineAsyncComponent(() => import('~/components/settings/permissions/test.vue')),
   },
   setup () {
-    const { $axios } = useContext();
     const router = useRouter();
     const route = useRoute();
+    const { result, variables } = useQuery(gql`
+      query getPermissions($id: String) {
+        permissions(id: $id) {
+          id name order isCorePermission isWaterfallAllowed automation userIds excludeUserIds
+          filters {
+            id
+            comparator
+            type
+            value
+          }
+        }
+      }
+    `, { id: route.value.params.id });
+    watch(result, (value) => {
+      if (value && value.permissions && value.permissions[0]) {
+        const { __typename, ...data } = value.permissions[0];
+        model.value = data;
+      }
+    });
+    watch(() => route.value.params.id, (id) => {
+      variables.value = { id };
+    });
+    const { mutate: updateMutation, onDone: onDoneUpdate, onError: onErrorUpdate, loading: saving } = useMutation(gql`
+      mutation permissionUpdate($id: String!, $data: PermissionInput!) {
+        permissionUpdate(id: $id, data: $data) {
+          id
+        }
+      }`);
+    function saveSuccess () {
+      EventBus.$emit('settings::permissions::refresh');
+      EventBus.$emit('snack', 'success', 'Data updated.');
+    }
+    onDoneUpdate(saveSuccess);
+    onErrorUpdate(error);
+    const { mutate: removeMutation, onDone: onDoneRemove, onError: onErrorRemove, loading: removing } = useMutation(gql`
+      mutation permissionDelete($id: String!) {
+        permissionDelete(id: $id)
+      }`);
+    onDoneRemove(() => {
+      router.push('/settings/permissions');
+    });
+    onErrorRemove(error);
+
     const model = ref(null as PermissionsInterface | null);
-    const isRemoving = ref(false);
-    const isSaving = ref(false);
     const valid = ref(true);
 
     const automationItems = ['none', 'casters', 'moderators', 'subscribers', 'vip', 'viewers', 'followers']
       .map(o => ({ value: o, text: translate('core.permissions.' + o) }));
 
-    const refresh = (val?: string) => {
-      model.value = null;
-      if (val) {
-        api.getOne<PermissionsInterface>($axios, '/api/v1/settings/permissions/', val)
-          .then(response => (model.value = response.data));
-      }
-    };
-
     const remove = (id: string) => {
-      isRemoving.value = true;
-      api.delete($axios, '/api/v1/settings/permissions/' + id)
-        .then(() => {
-          isRemoving.value = false;
-          router.push('/settings/permissions');
-        });
+      removeMutation({ id });
     };
 
     const save = () => {
       if (model.value && model.value.id && valid) {
-        isSaving.value = true;
-        api.patch($axios, '/api/v1/settings/permissions/' + model.value.id, model.value)
-          .then(() => {
-            EventBus.$emit('settings::permissions::refresh');
-          })
-          .catch((e) => {
-            error(e);
-          })
-          .finally(() => {
-            isSaving.value = false;
-          });
+        const { id, ...data } = model.value;
+        updateMutation({ id, data });
       }
     };
-
-    watch(() => route.value.params.id, (val) => {
-      refresh(val);
-    });
-
-    onMounted(() => {
-      refresh(route.value.params.id);
-    });
 
     return {
       // refs
       model,
       automationItems,
-      isRemoving,
-      isSaving,
+      removing,
+      saving,
       valid,
 
       // functions

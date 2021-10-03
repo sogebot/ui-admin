@@ -1,5 +1,5 @@
 <template>
-  <v-overlay v-if="isLoading" absolute>
+  <v-overlay v-if="loading" absolute>
     <v-row>
       <v-col class="text-center">
         <v-progress-circular indeterminate size="48" />
@@ -30,15 +30,18 @@
                 nuxt
                 :to="'/settings/permissions/' + permission.id"
               >
-                <template v-if="permission.id !== defaultPermissions.VIEWERS && permission.id !== defaultPermissions.CASTERS" >
+                <template v-if="permission.id !== defaultPermissions.VIEWERS && permission.id !== defaultPermissions.CASTERS">
                   <template v-if="$vuetify.breakpoint.mobile">
-                    <v-icon v-if="permission.order > 1" @click.stop="swapOrder(permission.order, permission.order - 1)">{{ mdiChevronUp }}</v-icon>
-                    <v-icon v-if="permission.order !== permissions.length - 2" @click.stop="swapOrder(permission.order, permission.order + 1)">{{ mdiChevronDown }}</v-icon>
+                    <v-icon v-if="permission.order > 1" @click.stop="swapOrder(permission.order, permission.order - 1)">
+                      {{ mdiChevronUp }}
+                    </v-icon>
+                    <v-icon v-if="permission.order !== permissions.length - 2" @click.stop="swapOrder(permission.order, permission.order + 1)">
+                      {{ mdiChevronDown }}
+                    </v-icon>
                   </template>
                   <v-icon v-else :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, permission.id)">
                     {{ mdiDrag }}
                   </v-icon>
-
                 </template>
                 <v-icon left small>
                   {{ permission.isWaterfallAllowed ? mdiGreaterThanOrEqual : mdiEqual }}
@@ -72,19 +75,17 @@ import {
   mdiEqual, mdiGreaterThanOrEqual, mdiPlus,
 } from '@mdi/js';
 import {
-  useContext, useRoute, useRouter,
-} from '@nuxtjs/composition-api';
-import {
-  defineComponent, onMounted, ref, watch,
+  defineComponent, onMounted, ref, useRoute, useRouter, watch,
 } from '@nuxtjs/composition-api';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import translate from '@sogebot/ui-helpers/translate';
+import { useMutation, useQuery } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { cloneDeep, sortBy } from 'lodash';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
 
 import type { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
@@ -180,10 +181,35 @@ function handleDragStart (e: DragEvent) {
 
 export default defineComponent({
   setup () {
-    const { $axios } = useContext();
+    const { result, loading, refetch } = useQuery(gql`
+      query getPermissions {
+        permissions {
+          id name order isCorePermission isWaterfallAllowed automation userIds excludeUserIds
+          filters {
+            id
+            comparator
+            type
+            value
+          }
+        }
+      }
+    `);
+    watch(result, (value) => {
+      const { __typename, ...data } = value.permissions;
+      permissions.value = data;
+      if (!route.value.params.id) {
+        router.replace('/settings/permissions/' + permissions.value[0].id);
+      }
+    });
+    const { mutate: updateMutation } = useMutation(gql`
+      mutation permissionUpdate($id: String!, $data: PermissionInput!) {
+        permissionUpdate(id: $id, data: $data) {
+          id
+        }
+      }`);
+
     const route = useRoute();
     const router = useRouter();
-    const isLoading = ref(true);
     const tab = ref(0);
     const permissions = ref([] as PermissionsInterface[]);
     const tabsRef = ref(null as any);
@@ -194,16 +220,18 @@ export default defineComponent({
     });
 
     watch(() => route.value.params.id, (val?: string) => {
-      if (!val && !isLoading.value) {
-        refresh();
+      if (!val && !loading.value) {
+        if (!route.value.params.id) {
+          router.replace('/settings/permissions/' + permissions.value[0].id);
+        }
       }
     });
 
     onMounted(() => {
-      refresh();
+      refetch();
       EventBus
         .$off('settings::permissions::refresh')
-        .$on('settings::permissions::refresh', refresh);
+        .$on('settings::permissions::refresh', refetch);
 
       EventBus.$off(`permissions::dragdrop`).$off(`permissions::dragstart`);
       EventBus.$on(`permissions::dragstart`, () => {
@@ -213,7 +241,6 @@ export default defineComponent({
         state.value.dragging = false;
       });
       EventBus.$on(`permissions::dragdrop`, async () => {
-        state.value.saving = true;
         // we need to go through 'A', get list of Ids and resave
         const potentiallyAnchors = tabsRef.value.$el.children[0].children[1].children[0].children as HTMLCollection;
         let i = 0;
@@ -231,24 +258,10 @@ export default defineComponent({
           }),
         );
         reorder();
-        state.value.saving = false;
       });
     });
 
-    const refresh = () => {
-      api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
-        .then((response) => {
-          permissions.value = response.data.data;
-          isLoading.value = false;
-
-          if (!route.value.params.id) {
-            router.replace('/settings/permissions/' + permissions.value[0].id);
-          }
-        });
-    };
-
     const reorder = () => {
-      state.value.saving = true;
       // update orders
       const viewers = cloneDeep(permissions.value.find(o => o.id === defaultPermissions.VIEWERS));
       permissions.value = sortBy(permissions.value.filter(o => o.id !== defaultPermissions.VIEWERS), 'order', 'asc');
@@ -258,25 +271,13 @@ export default defineComponent({
         permissions.value.push(viewers);
       }
 
-      Promise.all(
-        permissions.value.map((permission) => {
-          return new Promise((resolve) => {
-            api.patch($axios, '/api/v1/settings/permissions/' + permission.id, permission)
-              .catch((err) => {
-                error(err);
-              })
-              .finally(() => {
-                resolve(true);
-              });
-          });
-        }),
-      ).then(() => {
-        state.value.saving = false;
-        refresh();
+      permissions.value.forEach((permission) => {
+        const { id, ...data } = permission;
+        updateMutation({ id, data });
       });
     };
+
     const addNewPermissionGroup = () => {
-      state.value.saving = true;
       const id = v4();
       const data: PermissionsInterface = {
         id,
@@ -305,7 +306,7 @@ export default defineComponent({
 
     return {
       // refs
-      isLoading,
+      loading,
       permissions,
       tab,
       state,

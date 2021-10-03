@@ -24,7 +24,7 @@ module.exports = {
       ImportDeclaration: { multiline: true, minProperties: 3 },
       ExportDeclaration: { multiline: true, minProperties: 3 },
     }],
-    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
     'no-multiple-empty-lines':           ['error', {
       max: 1, maxEOF: 0, maxBOF: 0,
     }],
