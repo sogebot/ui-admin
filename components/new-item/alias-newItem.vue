@@ -29,7 +29,7 @@
 
     <v-btn
       class="mr-4"
-      :loading="newItemSaving"
+      :loading="loading"
       :disabled="!valid"
       @click="newItem"
     >
@@ -46,14 +46,13 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent, ref, useContext,
-} from '@nuxtjs/composition-api';
+import { defineComponent, ref } from '@nuxtjs/composition-api';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import translate from '@sogebot/ui-helpers/translate';
+import { useMutation } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { v4 as uuid } from 'uuid';
 
-import api from '../../functions/api';
 import { error } from '../../functions/error';
 
 import type { AliasInterface } from '.bot/src/database/entity/alias';
@@ -63,37 +62,35 @@ export default defineComponent({
   setup (_, ctx) {
     const newItemAlias = ref('');
     const newItemCommand = ref('');
-    const newItemSaving = ref(false);
-    const { $axios } = useContext();
     const valid = ref(true);
+
+    const { mutate: updateMutation, onDone: onDoneUpdate, onError: onErrorUpdate, loading } = useMutation(gql`
+      mutation setAlias($id: String!, $data: AliasInput!) {
+        setAlias(id: $id, data: $data) {
+          id
+        }
+      }`);
+    onDoneUpdate(() => ctx.emit('save'));
+    onErrorUpdate(error);
 
     const form = ref(null);
 
-    const newItem = async () => {
+    const newItem = () => {
       if ((form.value as unknown as HTMLFormElement).validate()) {
-        newItemSaving.value = true;
-        await new Promise((resolve) => {
-          const id = uuid();
-          const data: AliasInterface = {
-            alias:      newItemAlias.value,
-            command:    newItemCommand.value,
-            enabled:    true,
-            visible:    true,
-            permission: defaultPermissions.VIEWERS,
-            group:      null,
-          };
-          console.log('Saving', { data });
-          const query = `mutation setAlias($id: String!, $data: AliasInput!) {
-              setAlias(id: $id, data: $data) {
-                id
-              }
-            }`;
-          api.gql<any>($axios, query, {
-            id,
-            data,
-          }).then(() => ctx.emit('save')).catch(error).finally(() => resolve(true));
+        const id = uuid();
+        const data: AliasInterface = {
+          alias:      newItemAlias.value,
+          command:    newItemCommand.value,
+          enabled:    true,
+          visible:    true,
+          permission: defaultPermissions.VIEWERS,
+          group:      null,
+        };
+        console.log('Saving', { data });
+        updateMutation({
+          id,
+          data,
         });
-        newItemSaving.value = false;
       }
     };
 
@@ -105,11 +102,11 @@ export default defineComponent({
       translate,
       newItemAlias,
       newItemCommand,
-      newItemSaving,
       newItem,
       valid,
       closeDlg,
       form,
+      loading,
     };
   },
 });
