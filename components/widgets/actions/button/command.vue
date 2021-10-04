@@ -16,12 +16,11 @@
 </template>
 
 <script lang="ts">
-import { useContext } from '@nuxtjs/composition-api';
+import { useMutation } from '@vue/apollo-composable';
 import {
   defineComponent, ref, watch,
 } from '@vue/composition-api';
-
-import api from '../../../../functions/api';
+import gql from 'graphql-tag';
 
 export default defineComponent({
   props: {
@@ -33,7 +32,10 @@ export default defineComponent({
     color: string,
     editing: boolean,
   }, ctx) {
-    const { $axios } = useContext();
+    const { mutate: triggerMutation } = useMutation(gql`
+      mutation quickActionTrigger($id: String!) {
+        quickActionTrigger(id: $id)
+      }`);
     const selected = ref(props.item.selected);
     watch(selected, (val) => {
       ctx.emit(val ? 'select' : 'unselect');
@@ -46,7 +48,7 @@ export default defineComponent({
     const trigger = () => {
       if (props.item) {
         console.log(`quickaction::trigger::${props.item.id}`);
-        api.post($axios, `/api/v1/quickaction/${props.item.id}/trigger`);
+        triggerMutation({ id: props.item.id });
       }
     };
 
