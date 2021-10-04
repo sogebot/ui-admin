@@ -1,5 +1,5 @@
 <template>
-  <v-card id="c7eff6a7-dc62-4c0b-bad6-90df9d5b605f" width="100%" height="100%" :loading="loading">
+  <v-card id="c7eff6a7-dc62-4c0b-bad6-90df9d5b605f" width="100%" height="100%" :loading="loading" style="overflow: inherit">
     <v-toolbar color="blue-grey darken-4" class="mb-1" height="36">
       <v-toolbar-title class="text-button">
         Actions
@@ -88,14 +88,15 @@ import {
 import {
   computed,
   defineAsyncComponent,
-  defineComponent, onMounted, ref, useContext, useStore, watch,
+  defineComponent, onMounted, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
-import { useQuery } from '@vue/apollo-composable';
+import { useMutation, useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
+import { error } from '../../functions/error';
+
 import type { QuickActions } from '.bot/src/database/entity/dashboard';
-import api from '~/functions/api';
 
 export default defineComponent({
   components: { actionButton: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/button.vue') }) },
@@ -121,7 +122,12 @@ export default defineComponent({
       });
     });
 
-    const context = useContext();
+    const { mutate: removeMutation, onError: onErrorRemove } = useMutation(gql`
+      mutation quickActionDelete($id: String!) {
+        quickActionDelete(id: $id)
+      }`);
+    onErrorRemove(error);
+
     const fab = ref(false);
     const editing = ref(false);
     const timestamp = ref(Date.now());
@@ -166,7 +172,7 @@ export default defineComponent({
       const selected = items.value.filter(item => item.selected);
       for (const item of selected) {
         item.show = false;
-        api.delete(context.$axios, `/api/v1/quickaction/${item.id}`);
+        removeMutation({ id: item.id });
       }
       setTimeout(() => {
         items.value = items.value.filter(item => !item.selected);

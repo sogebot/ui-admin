@@ -1,5 +1,5 @@
 <template>
-  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e5" :loading="isLoading" width="100%" :height="isPopout ? '100%' : undefined">
+  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e5" :loading="isLoading" width="100%" :height="isPopout ? '100%' : undefined" style="overflow: inherit">
     <v-card-text class="pa-0 ma-0">
       <v-tabs
         v-model="tab"
