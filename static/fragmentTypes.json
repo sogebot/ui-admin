@@ -1,0 +1,1 @@
+{"__schema":{"types":[{"kind":"UNION","name":"SearchResult","possibleTypes":[{"name":"CommandItem"},{"name":"CustomVariableItem"},{"name":"RandomizerItem"},{"name":"OverlayCountdownItem"},{"name":"OverlayMarathonItem"},{"name":"OverlayStopwatchItem"}]}]}}
