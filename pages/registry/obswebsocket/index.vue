@@ -5,7 +5,7 @@
       calculate-widths
       :show-select="selectable"
       :search="search"
-      :loading="state.loading !== ButtonStates.success"
+      :loading="loading"
       :headers="headers"
       :items-per-page="-1"
       :items="items"
@@ -119,20 +119,38 @@ import {
   mdiCheckboxMultipleMarkedOutline, mdiClipboard, mdiClipboardCheck, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
+import { useMutation, useQuery } from '@vue/apollo-composable';
 
 import type { OBSWebsocketInterface } from '.bot/src/database/entity/obswebsocket';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
+import GET_ALL from '~/queries/obsWebsocket/getAll.gql';
+import REMOVE from '~/queries/obsWebsocket/remove.gql';
 
 export default defineComponent({
   setup () {
-    const { $axios } = useContext();
+    const { result, loading, onError, refetch } = useQuery(GET_ALL);
+    onError(error);
+    watch(result, (value) => {
+      items.value = value.OBSWebsocket;
+
+      // we also need to reset selection values
+      if (selected.value.length > 0) {
+        selected.value.forEach((selectedItem, index) => {
+          selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
+          selected.value[index] = selectedItem;
+        });
+      }
+    });
+
+    const { mutate: removeMutation, onError: onErrorRemove } = useMutation(REMOVE);
+    onErrorRemove(error);
+
     const items = ref([] as OBSWebsocketInterface[]);
     const search = ref('');
 
@@ -161,10 +179,6 @@ export default defineComponent({
       }
     });
 
-    const state = ref({ loading: ButtonStates.progress } as {
-      loading: number;
-    });
-
     const headers = [
       { value: 'name', text: translate('timers.dialog.name') },
       { value: 'command', text: translate('integrations.obswebsocket.command') },
@@ -178,37 +192,18 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      refresh();
-      EventBus.$on('integrations::obswebsocket::refresh', refresh);
+      EventBus.$on('integrations::obswebsocket::refresh', refetch);
     });
 
-    const refresh = () => {
-      api.get<OBSWebsocketInterface[]>($axios, '/api/v1/integration/obswebsocket')
-        .then((response) => {
-          items.value = response.data.data;
-          // we also need to reset selection values
-          if (selected.value.length > 0) {
-            selected.value.forEach((selectedItem, index) => {
-              selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
-              selected.value[index] = selectedItem;
-            });
-          }
-        })
-        .catch(err => error(err))
-        .finally(() => (state.value.loading = ButtonStates.success));
-    };
-
-    const deleteSelected = async () => {
+    const deleteSelected = () => {
       deleteDialog.value = false;
-      await Promise.all(
-        selected.value.map((item) => {
-          return new Promise((resolve) => {
-            api.delete($axios, `/api/v1/integration/obswebsocket/${item.id}`)
-              .finally(() => resolve(true));
-          });
-        }),
-      );
-      refresh();
+      selected.value.forEach((item) => {
+        removeMutation({ id: item.id }, {
+          refetchQueries: [
+            'OBSWebsocketGetAll',
+          ],
+        });
+      });
 
       EventBus.$emit('snack', 'success', 'Data removed.');
       selected.value = [];
@@ -218,7 +213,7 @@ export default defineComponent({
       // refs
       items,
       search,
-      state,
+      loading,
       headers,
       headersDelete,
       selected,

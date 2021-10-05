@@ -1,7 +1,7 @@
 <template>
-  <v-card :loading="isLoading">
+  <v-card :loading="loading">
     <portal to="navbar">
-      <v-btn text :loading="isTesting" :disabled="!valid1" @click="test">
+      <v-btn text :loading="testing" :disabled="!valid1" @click="test">
         {{ translate('dialog.buttons.test.idle') }}
       </v-btn>
       <v-btn
@@ -9,15 +9,17 @@
         :text="!$vuetify.breakpoint.xs"
         :icon="$vuetify.breakpoint.xs"
         :loading="isSaving"
-        @click="save"
         :disabled="!valid1"
+        @click="save"
       >
-        <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+        <v-icon class="d-flex d-sm-none">
+          {{ mdiFloppy }}
+        </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
     </portal>
 
-    <v-overlay :value="isLoading" dark absolute>
+    <v-overlay :value="loading" dark absolute>
       <v-row>
         <v-col class="text-center">
           <v-progress-circular indeterminate size="48" />
@@ -26,7 +28,7 @@
     </v-overlay>
 
     <v-fade-transition>
-      <div v-if="!isLoading" class="pa-4">
+      <div v-if="!loading" class="pa-4">
         <v-form ref="form1" v-model="valid1" lazy-validation>
           <v-text-field
             v-model="item.name"
@@ -274,12 +276,13 @@ import {
 } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, ref, useContext, useRoute, useRouter, useStore,
+  defineComponent, onMounted, ref, useContext, useRoute, useRouter, useStore, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
+import { useMutation, useQuery } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { cloneDeep } from 'lodash';
 // import highlighting library (you can use any library you want just return html string)
-import ObsWebSocket from 'obs-websocket-js';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
 
@@ -291,6 +294,8 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { highlighterJS, PrismEditor } from '~/functions/prismjs';
 import { required } from '~/functions/validators';
+import GET_ONE from '~/queries/obsWebsocket/getOne.gql';
+import SCENES_AND_SOURCES from '~/queries/obsWebsocket/scenes.gql';
 
 const emptyItem: OBSWebsocketInterface = {
   id:               '',
@@ -303,17 +308,55 @@ const emptyItem: OBSWebsocketInterface = {
 export default defineComponent({
   components: { PrismEditor },
   setup (_, ctx) {
+    const route = useRoute();
+    let loading = ref(true);
+
+    if (route.value.params.id !== 'new') {
+      const query = useQuery(GET_ONE, { id: route.value.params.id });
+      query.onError(error);
+      loading = query.loading;
+
+      watch(query.result, (value) => {
+        if (value) {
+          if (value.OBSWebsocket.length === 0) {
+            EventBus.$emit('snack', 'error', 'Data not found.');
+            router.push({ path: '/registry/obswebsocket' });
+          } else {
+            item.value = value.OBSWebsocket[0];
+          }
+        }
+      });
+    }
+    const { result: sceneResult } = useQuery(SCENES_AND_SOURCES, null, { pollInterval: 1000 });
+    watch(sceneResult, (value) => {
+      if (value) {
+        availableScenes.value = [
+          { value: '', text: translate('integrations.obswebsocket.noSceneSelected') },
+          ...value.OBSWebsocketGetScenes.map((scene: { name: string }) => ({
+            value: scene.name,
+            text:  scene.name,
+          })),
+        ];
+        availableSources.value = value.OBSWebsocketGetSources;
+        sourceTypes.value = value.OBSWebsocketGetSourceTypes;
+      }
+    }, { deep: true });
+
+    const { mutate: trigger, loading: testing, onDone: onDone1, onError: onError1 } = useMutation(gql`
+      mutation OBSWebsocketTrigger($tasks: String!) {
+        OBSWebsocketTrigger(tasks: $tasks)
+      }`);
+    onDone1(() => EventBus.$emit('snack', 'success', 'Test done!'));
+    onError1(() => EventBus.$emit('snack', 'error', 'Something went wrong. Check the logs.'));
+
     const context = useContext();
     const store = useStore();
     const router = useRouter();
-    const route = useRoute();
 
     const form1 = ref(null);
     const valid1 = ref(true);
 
     const isSaving = ref(false);
-    const isTesting = ref(false);
-    const isLoading = ref(false);
 
     const item = ref(cloneDeep(emptyItem) as OBSWebsocketInterface);
 
@@ -338,11 +381,8 @@ export default defineComponent({
     });
 
     const initial = () => {
-      refreshScenes();
-      refreshSources();
-
       if (route.value.params.id === 'new') {
-        isLoading.value = true;
+        loading.value = true;
         // fetch default advancedModeCode
         fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/obswebsocket-code.txt')
           .then(response => response.text())
@@ -352,22 +392,10 @@ export default defineComponent({
               id:               shortid.generate(),
               advancedModeCode: data,
             });
-            isLoading.value = false;
+            loading.value = false;
           })
           .catch((e) => {
             error(e);
-          });
-      } else {
-        // load initial item
-        isLoading.value = true;
-        api.getOne<OBSWebsocketInterface>(context.$axios, `/api/v1/integration/obswebsocket`, String(route.value.params.id) ?? '')
-          .then((response) => {
-            item.value = response.data;
-            isLoading.value = false;
-          })
-          .catch(() => {
-            router.push({ path: '/registry/obswebsocket' });
-            EventBus.$emit('snack', 'error', 'Data not found.');
           });
       }
     };
@@ -424,26 +452,6 @@ export default defineComponent({
       });
     };
 
-    const refreshScenes = () => {
-      api.get<ObsWebSocket.Scene[]>(context.$axios, '/api/v1/integration/obswebsocket/listScene')
-        .then((response) => {
-          availableScenes.value = [{ value: '', text: translate('integrations.obswebsocket.noSceneSelected') }, ...response.data.data.map((scene) => {
-            return {
-              value: scene.name,
-              text:  scene.name,
-            };
-          })];
-        });
-    };
-
-    const refreshSources = () => {
-      api.get<{ sources: Source[], types: Type[] }>(context.$axios, '/api/v1/integration/obswebsocket/sources')
-        .then((response) => {
-          availableSources.value = response.data.data.sources;
-          sourceTypes.value = response.data.data.types;
-        });
-    };
-
     const deleteAction = (idx: number) => {
       if (item.value) {
         item.value.simpleModeTasks.splice(idx, 1);
@@ -451,21 +459,18 @@ export default defineComponent({
     };
 
     const test = () => {
-      isTesting.value = true;
-      api.post(context.$axios, '/api/v1/integration/obswebsocket/trigger',
-        item.value.advancedMode
+      trigger({
+        tasks: JSON.stringify(item.value.advancedMode
           ? item.value.advancedModeCode
-          : item.value.simpleModeTasks)
-        .then(() => EventBus.$emit('snack', 'success', 'Test done!'))
-        .catch(() => EventBus.$emit('snack', 'error', 'Something went wrong. Check the logs.'))
-        .finally(() => (isTesting.value = false));
+          : item.value.simpleModeTasks),
+      });
     };
 
     return {
       // refs
       isSaving,
-      isTesting,
-      isLoading,
+      testing,
+      loading,
       closeDlg,
       form1,
       valid1,
