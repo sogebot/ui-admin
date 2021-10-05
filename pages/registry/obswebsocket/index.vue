@@ -123,7 +123,9 @@ import {
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
-import { useMutation, useQuery } from '@vue/apollo-composable';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
 
 import type { OBSWebsocketInterface } from '.bot/src/database/entity/obswebsocket';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
@@ -136,22 +138,24 @@ export default defineComponent({
   setup () {
     const { result, loading, onError, refetch } = useQuery(GET_ALL);
     onError(error);
-    watch(result, (value) => {
-      items.value = value.OBSWebsocket;
-
+    const items = useResult<{ OBSWebsocket: OBSWebsocketInterface[] }, OBSWebsocketInterface[], OBSWebsocketInterface[]>(result, [], (data) => {
       // we also need to reset selection values
       if (selected.value.length > 0) {
         selected.value.forEach((selectedItem, index) => {
-          selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
+          selectedItem = data.OBSWebsocket.find(o => o.id === selectedItem.id) || selectedItem;
           selected.value[index] = selectedItem;
         });
       }
+      return data.OBSWebsocket;
+    });
+
+    onMounted(() => {
+      refetch();
     });
 
     const { mutate: removeMutation, onError: onErrorRemove } = useMutation(REMOVE);
     onErrorRemove(error);
 
-    const items = ref([] as OBSWebsocketInterface[]);
     const search = ref('');
 
     const command = ref('!obsws run');
@@ -190,10 +194,6 @@ export default defineComponent({
     const headersDelete = [
       { value: 'name', text: 'Name' },
     ];
-
-    onMounted(() => {
-      EventBus.$on('integrations::obswebsocket::refresh', refetch);
-    });
 
     const deleteSelected = () => {
       deleteDialog.value = false;

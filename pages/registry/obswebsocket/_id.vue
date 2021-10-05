@@ -8,7 +8,7 @@
         small
         :text="!$vuetify.breakpoint.xs"
         :icon="$vuetify.breakpoint.xs"
-        :loading="isSaving"
+        :loading="saving"
         :disabled="!valid1"
         @click="save"
       >
@@ -276,10 +276,12 @@ import {
 } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, ref, useContext, useRoute, useRouter, useStore, watch,
+  defineComponent, onMounted, ref, useRoute, useRouter, useStore, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { useMutation, useQuery } from '@vue/apollo-composable';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { cloneDeep } from 'lodash';
 // import highlighting library (you can use any library you want just return html string)
@@ -289,7 +291,6 @@ import { v4 } from 'uuid';
 import { OBSWebsocketInterface } from '~/.bot/src/database/entity/obswebsocket';
 import { availableActions } from '~/.bot/src/helpers/obswebsocket/actions';
 import type { Source, Type } from '~/.bot/src/helpers/obswebsocket/sources';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { highlighterJS, PrismEditor } from '~/functions/prismjs';
@@ -308,24 +309,29 @@ const emptyItem: OBSWebsocketInterface = {
 export default defineComponent({
   components: { PrismEditor },
   setup (_, ctx) {
+    const router = useRouter();
     const route = useRoute();
+
     let loading = ref(true);
+    const item = ref(cloneDeep(emptyItem) as OBSWebsocketInterface);
 
     if (route.value.params.id !== 'new') {
       const query = useQuery(GET_ONE, { id: route.value.params.id });
       query.onError(error);
       loading = query.loading;
-
-      watch(query.result, (value) => {
-        if (value) {
-          if (value.OBSWebsocket.length === 0) {
-            EventBus.$emit('snack', 'error', 'Data not found.');
-            router.push({ path: '/registry/obswebsocket' });
-          } else {
-            item.value = value.OBSWebsocket[0];
-          }
+      const cache = useResult<{ OBSWebsocket: OBSWebsocketInterface[] }, null>(query.result, null);
+      watch(cache, (value) => {
+        if (!value) {
+          return;
         }
-      });
+
+        if (value.length === 0) {
+          EventBus.$emit('snack', 'error', 'Data not found.');
+          router.push({ path: '/registry/obswebsocket' });
+        } else {
+          item.value = cloneDeep(value[0]);
+        }
+      }, { immediate: true, deep: true });
     }
     const { result: sceneResult } = useQuery(SCENES_AND_SOURCES, null, { pollInterval: 1000 });
     watch(sceneResult, (value) => {
@@ -348,17 +354,20 @@ export default defineComponent({
       }`);
     onDone1(() => EventBus.$emit('snack', 'success', 'Test done!'));
     onError1(() => EventBus.$emit('snack', 'error', 'Something went wrong. Check the logs.'));
+    const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(gql`
+      mutation OBSWebsocketSave($data: String!) {
+        OBSWebsocketSave(data: $data) { id }
+      }`);
+    onDoneSave((result) => {
+      router.push({ params: { id: result.data.OBSWebsocketSave.id } });
+      EventBus.$emit('snack', 'success', 'Data saved.');
+    });
+    onErrorSave(error);
 
-    const context = useContext();
     const store = useStore();
-    const router = useRouter();
 
     const form1 = ref(null);
     const valid1 = ref(true);
-
-    const isSaving = ref(false);
-
-    const item = ref(cloneDeep(emptyItem) as OBSWebsocketInterface);
 
     const rules = { name: [required] };
 
@@ -404,18 +413,12 @@ export default defineComponent({
       if (
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
-        isSaving.value = true;
-        api.patch(context.$axios, `/api/v1/integration/obswebsocket/${item.value.id ?? v4()}`, item.value)
-          .then((response) => {
-            router.push({ params: { id: response.id ?? '' } });
-            EventBus.$emit('snack', 'success', 'Data saved.');
-            EventBus.$emit('integrations::obswebsocket::refresh');
-          })
-          .catch((e) => {
-            console.error(e.response.data);
-            error(JSON.stringify(e.response.data));
-          })
-          .finally(() => (isSaving.value = false));
+        saveMutation({
+          data: JSON.stringify({
+            ...item.value,
+            id: item.value.id ?? v4(),
+          }),
+        });
       }
     };
 
@@ -468,7 +471,7 @@ export default defineComponent({
 
     return {
       // refs
-      isSaving,
+      saving,
       testing,
       loading,
       closeDlg,

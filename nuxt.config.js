@@ -78,7 +78,10 @@ export default {
     '@nuxtjs/apollo',
   ],
 
-  apollo: { clientConfigs: { default: '~/plugins/apollo-config.js' } },
+  apollo: {
+    includeNodeModules: true,
+    clientConfigs:      { default: '~/plugins/apollo-config.js' },
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: { hotMiddleware: { client: { overlay: false } } },
