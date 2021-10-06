@@ -1,0 +1,3 @@
+mutation goalsSave($data_json: String!) {
+  goalsSave(data: $data_json) { id }
+}
