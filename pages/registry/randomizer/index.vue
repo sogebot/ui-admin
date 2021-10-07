@@ -4,7 +4,7 @@
       v-model="selected"
       :show-select="selectable"
       :search="search"
-      :loading="state.loading !== ButtonStates.success || loading"
+      :loading="loading"
       :headers="headers"
       :items-per-page="-1"
       :items="items"
@@ -56,7 +56,7 @@
                         hide-default-footer
                       >
                         <template #[`item.items`]="{ item }">
-                          {{ item.goals.map(o => o.name). join(', ') }}
+                          {{ item.items.map(o => o.name). join(', ') }}
                         </template>
                       </v-data-table>
                     </v-card-text>
@@ -128,13 +128,14 @@ import {
   mdiCheckboxMultipleMarkedOutline, mdiContentCopy, mdiEye, mdiEyeOff, mdiMagnify, mdiPencil, mdiPlay,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useContext,
+  defineComponent, onMounted, ref,
   watch,
 } from '@nuxtjs/composition-api';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { useQuery, useResult } from '@vue/apollo-composable';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { orderBy } from 'lodash';
 import { v4 } from 'uuid';
@@ -142,22 +143,40 @@ import { v4 } from 'uuid';
 import type { RandomizerInterface } from '.bot/src/database/entity/randomizer';
 import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
+import GET_ALL from '~/queries/randomizer/getAll.gql';
+import REMOVE from '~/queries/randomizer/remove.gql';
+import SAVE from '~/queries/randomizer/save.gql';
 
 export default defineComponent({
   setup () {
-    const { result, loading } = useQuery(gql`
-      query {
-        permissions { id name }
-      }
-    `);
+    const { result, loading, refetch } = useQuery(GET_ALL);
     const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
-    const items = ref([] as RandomizerInterface[]);
+    const items = useResult<{randomizers: RandomizerInterface[] }, RandomizerInterface[], RandomizerInterface[]>(result, [], (data) => {
+      if (selected.value.length > 0) {
+        selected.value.forEach((selectedItem, index) => {
+          selectedItem = data.randomizers.find(o => o.id === selectedItem.id) || selectedItem;
+          selected.value[index] = selectedItem;
+        });
+      }
+      return data.randomizers;
+    });
+
+    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, { refetchQueries: ['randomizerGetAll'] });
+    onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
+    onErrorRemove(error);
+
+    const { mutate: saveMutation, onError: onErrorSave, onDone: onDoneSave } = useMutation(SAVE, { refetchQueries: ['randomizerGetAll'] });
+    onDoneSave(() => EventBus.$emit('snack', 'success', 'Data saved.'));
+    onErrorSave(error);
+
+    const { mutate: hideMutation, onError: onErrorHide, onDone: onDoneHide } = useMutation(gql`mutation randomizerSetVisibility($id: String!, $value: Boolean!) { randomizerSetVisibility(id: $id, value: $value) }`, { refetchQueries: ['randomizerGetAll'] });
+    onDoneHide(() => EventBus.$emit('snack', 'success', 'Visibility changed.'));
+    onErrorHide(error);
+
     const search = ref('');
-    const { $axios } = useContext();
 
     const selected = ref([] as RandomizerInterface[]);
     const currentItems = ref([] as RandomizerInterface[]);
@@ -171,10 +190,6 @@ export default defineComponent({
       if (!val) {
         selected.value = [];
       }
-    });
-
-    const state = ref({ loading: ButtonStates.progress } as {
-      loading: number;
     });
 
     const headers = [
@@ -197,44 +212,12 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      refresh();
-      EventBus.$on('goals::refresh', refresh);
+      refetch();
     });
 
-    const refresh = async () => {
-      await Promise.all([
-        new Promise<void>((resolve) => {
-          api.get<RandomizerInterface[]>($axios, '/api/v1/registry/randomizer')
-            .then((response) => {
-              items.value = response.data.data;
-              // we also need to reset selection values
-              if (selected.value.length > 0) {
-                selected.value.forEach((selectedItem, index) => {
-                  selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
-                  selected.value[index] = selectedItem;
-                });
-              }
-            })
-            .catch(err => error(err))
-            .finally(() => resolve());
-        }),
-      ]);
-      state.value.loading = ButtonStates.success;
-    };
-
-    const deleteSelected = async () => {
+    const deleteSelected = () => {
+      selected.value.forEach(item => removeMutation({ id: item.id }));
       deleteDialog.value = false;
-      await Promise.all(
-        selected.value.map((item) => {
-          return new Promise((resolve) => {
-            api.delete($axios, `/api/v1/registry/randomizer/${item.id}`)
-              .finally(() => resolve(true));
-          });
-        }),
-      );
-      refresh();
-
-      EventBus.$emit('snack', 'success', 'Data removed.');
       selected.value = [];
     };
 
@@ -250,6 +233,7 @@ export default defineComponent({
 
       const clonedItem = {
         ...item,
+        isShown: false, // forcefully hide
         id:      clonedItemId,
         name:    item.name + ' (clone)',
         command: `!${Math.random().toString(36).substr(2, 5)}`,
@@ -257,31 +241,15 @@ export default defineComponent({
         items:   clonedItems.map(o => ({ ...o, groupId: o.groupId === null ? o.groupId : clonedItemsRemapId.get(o.groupId) })),
       };
 
-      api.post($axios, '/api/v1/registry/randomizer', clonedItem)
-        .then(() => {
-          EventBus.$emit('snack', 'success', 'Data cloned.');
-        })
-        .catch(err => error(err))
-        .finally(refresh);
+      saveMutation({ data_json: JSON.stringify(clonedItem) });
     };
 
-    const toggleVisibility = async (item: Required<RandomizerInterface>) => {
+    const toggleVisibility = (item: Required<RandomizerInterface>) => {
       item.isShown = !item.isShown;
-      await new Promise((resolve) => {
-        api.post<void>($axios, '/api/v1/registry/randomizer/hideall')
-          .finally(() => resolve(true));
+      hideMutation({
+        id:    item.id,
+        value: item.isShown,
       });
-      await new Promise((resolve) => {
-        api.patch<RandomizerInterface>($axios, '/api/v1/registry/randomizer/' + item.id, { isShown: item.isShown }).finally(() => resolve(true));
-      });
-      for (const i of items.value) {
-        if (i.id === item.id) {
-          i.isShown = item.isShown;
-        } else {
-          i.isShown = false;
-        }
-      }
-      EventBus.$emit('snack', 'success', 'Visibility changed.');
     };
 
     const startSpin = () => {
@@ -298,7 +266,6 @@ export default defineComponent({
       // refs
       items,
       search,
-      state,
       headers,
       headersDelete,
       selected,
@@ -330,7 +297,6 @@ export default defineComponent({
 
       // others
       orderBy,
-      ButtonStates,
     };
   },
 });
