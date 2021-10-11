@@ -9,7 +9,7 @@
       calculate-widths
       :show-select="selectable"
       :search="search"
-      :loading="state.loading !== ButtonStates.success || state.saving"
+      :loading="loading || state.saving"
       :headers="headers"
       :items-per-page="-1"
       hide-default-footer
@@ -293,10 +293,10 @@
         <v-img
           :id="item.id"
           contain
-          :src="item.imageUrl"
+          :src="`/api/v1/carousel/image/${item.id}`"
           max-height="75px"
           max-width="150px"
-          @click.stop="imageShow = item.imageUrl"
+          @click.stop="imageShow = `/api/v1/carousel/image/${item.id}`"
         />
       </template>
 
@@ -338,6 +338,8 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
+import { cloneDeep } from 'lodash';
 
 import type { CarouselInterface } from '.bot/src/database/entity/carousel';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
@@ -345,6 +347,7 @@ import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { minValue, required } from '~/functions/validators';
+import GET_ALL from '~/queries/carousel/getAll.gql';
 
 const originalWidths: string[] = [];
 let originalHeight = 0;
@@ -419,6 +422,16 @@ function handleDragStart (e: DragEvent, id: string) {
 
 export default defineComponent({
   setup () {
+    const { result, loading, refetch } = useQuery(GET_ALL);
+    const cache = useResult<{ carousels: CarouselInterface[] }, null, CarouselInterface[]>(result, null, data => data.carousels);
+    watch(cache, (value) => {
+      console.log({ value });
+      if (!value) {
+        return;
+      }
+      items.value = cloneDeep([...value]);
+    }, { immediate: true, deep: true });
+
     const { $axios } = useContext();
     const items = ref([] as CarouselInterface[]);
 
@@ -478,10 +491,9 @@ export default defineComponent({
     });
 
     const state = ref({
-      dragging: false, saving: false, loading: ButtonStates.progress, uploading: ButtonStates.idle,
+      dragging: false, saving: false, uploading: ButtonStates.idle,
     } as {
       uploading: number;
-      loading: number;
       dragging: boolean;
       saving: boolean;
     });
@@ -532,7 +544,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      refresh();
+      refetch();
       EventBus.$off(`carousel::dragdrop`).$off(`carousel::dragstart`);
       EventBus.$on(`carousel::dragstart`, () => {
         state.value.dragging = true;
@@ -576,14 +588,8 @@ export default defineComponent({
       saveSuccess();
     };
 
-    const refresh = () => {
-      api.get<CarouselInterface[]>($axios, `/api/v1/carousel/`)
-        .then(response => (items.value = response.data.data))
-        .then(() => (state.value.loading = ButtonStates.success));
-    };
-
     const saveSuccess = () => {
-      refresh();
+      refetch();
       EventBus.$emit('snack', 'success', 'Data updated.');
       state.value.saving = false;
     };
@@ -595,7 +601,7 @@ export default defineComponent({
           return true;
         });
       });
-      refresh();
+      refetch();
 
       EventBus.$emit('snack', 'success', 'Data removed.');
       selected.value = [];
@@ -610,7 +616,7 @@ export default defineComponent({
             continue;
           } else {
             EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-            refresh();
+            refetch();
             return;
           }
         }
@@ -631,7 +637,7 @@ export default defineComponent({
           });
         }),
       );
-      refresh();
+      refetch();
       EventBus.$emit('snack', 'success', 'Data updated.');
     };
 
@@ -687,6 +693,7 @@ export default defineComponent({
 
     return {
       // refs
+      loading,
       timestamp,
       update,
       items,
