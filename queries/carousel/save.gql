@@ -1,0 +1,3 @@
+mutation CarouselSave($data_json: String!) {
+  carouselSave(data: $data_json) { id }
+}
