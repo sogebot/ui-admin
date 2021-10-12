@@ -219,7 +219,6 @@ export default defineComponent({
           return;
         }
 
-        console.log({ value, item: item.value });
         if (value.length === 0) {
           EventBus.$emit('snack', 'error', 'Data not found.');
           router.push({ path: '/registry/randomizer' });

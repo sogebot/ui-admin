@@ -1,12 +1,12 @@
 <template>
-  <v-card :loading="isLoading" class="fill-height">
+  <v-card :loading="loading" class="fill-height">
     <portal to="navbar">
       <v-btn
         small
         :text="!$vuetify.breakpoint.xs"
         :icon="$vuetify.breakpoint.xs"
-        :loading="isSaving"
-        :disabled="!valid1 || isLoading"
+        :loading="saving"
+        :disabled="!valid1 || loading"
         @click="save"
       >
         <v-icon class="d-flex d-sm-none">
@@ -17,7 +17,7 @@
     </portal>
 
     <v-fade-transition>
-      <v-container v-if="!isLoading" fluid>
+      <v-container v-if="!loading" fluid>
         <v-form ref="form1" v-model="valid1" lazy-validation>
           <v-text-field
             v-model="item.name"
@@ -43,8 +43,8 @@
           </v-slider>
 
           <v-switch
-            class="mt-0 pt-0"
             v-model="item.parry.enabled"
+            class="mt-0 pt-0"
             :label="translate('registry.alerts.parryEnabled.name')"
           />
 
@@ -201,7 +201,7 @@
       </v-container>
     </v-fade-transition>
 
-    <v-overlay v-if="isLoading">
+    <v-overlay v-if="loading">
       <v-row>
         <v-col class="text-center">
           <v-progress-circular indeterminate size="48" />
@@ -217,20 +217,25 @@ import {
 } from '@mdi/js';
 import {
   defineAsyncComponent,
-  defineComponent, onMounted, ref, useContext, useRoute, useRouter, useStore,
+  defineComponent, onMounted, ref, useRoute, useRouter, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { getContrastColor } from '@sogebot/ui-helpers/colors';
 import translate from '@sogebot/ui-helpers/translate';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
 import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 
-import {
-  AlertInterface, AlertMediaInterface, CommonSettingsInterface,
-} from '~/.bot/src/database/entity/alert';
-import api from '~/functions/api';
+import { getBase64FromUrl } from '../../../functions/getBase64FromURL';
+
+import { AlertInterface, CommonSettingsInterface } from '~/.bot/src/database/entity/alert';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
+import GET_ONE from '~/queries/alert/getOne.gql';
+import SAVE from '~/queries/alert/save.gql';
+import UPLOAD from '~/queries/alert/upload.gql';
 
 const emptyItem: AlertInterface = {
   id:                  v4(),
@@ -306,8 +311,40 @@ export default defineComponent({
   },
   setup () {
     const store = useStore();
-    const { $axios } = useContext();
     const router = useRouter();
+    const route = useRoute();
+
+    const item = ref(cloneDeep(emptyItem) as AlertInterface);
+
+    const { result, loading } = useQuery(GET_ONE, { id: route.value.params.id });
+    if (route.value.params.id !== 'new') {
+      const cache = useResult<{ alerts: AlertInterface[] }, null, AlertInterface[]>(result, null, data => data.alerts);
+      watch(cache, (value) => {
+        if (!value) {
+          return;
+        }
+
+        if (value.length === 0) {
+          EventBus.$emit('snack', 'error', 'Data not found.');
+          router.push({ path: '/registry/alert' });
+        } else {
+          item.value = cloneDeep(value[0]);
+          console.groupCollapsed(`alert::${route.value.params.id}`);
+          console.log(value[0]);
+          console.groupEnd();
+        }
+      }, { immediate: true, deep: true });
+    }
+    const { mutate: uploadMutation, onError: onErrorUpload } = useMutation(UPLOAD);
+    onErrorUpload(error);
+
+    const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(SAVE);
+    onDoneSave((res) => {
+      router.push({ params: { id: res.data.alertSave.id } });
+      EventBus.$emit('snack', 'success', 'Data saved.');
+    });
+    onErrorSave(error);
+
     const tabs = ref(null);
     const variantTabs = ref(
       supportedEvents.map(ev => ({ [ev]: 0 })),
@@ -315,11 +352,6 @@ export default defineComponent({
 
     const form1 = ref(null);
     const valid1 = ref(true);
-
-    const isSaving = ref(false);
-    const isLoading = ref(false);
-
-    const item = ref(cloneDeep(emptyItem) as AlertInterface);
 
     const profanityFilterTypeOptions: { value: string; text: string }[] = [
       { value: 'disabled', text: translate('registry.alerts.profanityFilterType.disabled') },
@@ -331,19 +363,6 @@ export default defineComponent({
 
     onMounted(() => {
       store.commit('panel/back', '/registry/alerts');
-      if (useRoute().value.params.id && useRoute().value.params.id !== 'new') {
-        // load initial item
-        isLoading.value = true;
-        api.getOne<AlertInterface>($axios, `/api/v1/registry/alerts`, String(useRoute().value.params.id) ?? '')
-          .then((response) => {
-            item.value = cloneDeep(response.data);
-            isLoading.value = false;
-          })
-          .catch(() => {
-            router.push({ path: '/registry/alerts' });
-            EventBus.$emit('snack', 'error', 'Data not found.');
-          });
-      }
     });
 
     const save = async () => {
@@ -361,17 +380,7 @@ export default defineComponent({
       if (
         (form1.value as unknown as HTMLFormElement).validate() && isValid
       ) {
-        isSaving.value = true;
-        api.patch($axios, `/api/v1/registry/alerts/${item.value.id ?? v4()}`, item.value)
-          .then((response) => {
-            router.push({ params: { id: response.id ?? '' } });
-            EventBus.$emit('snack', 'success', 'Data saved.');
-          })
-          .catch((e) => {
-            console.error(e.response.data);
-            error(JSON.stringify(e.response.data));
-          })
-          .finally(() => (isSaving.value = false));
+        saveMutation({ data_json: JSON.stringify({ ...item.value, id: item.value.id ?? v4() }) });
       }
     };
 
@@ -381,28 +390,18 @@ export default defineComponent({
 
       const [defaultAudioId, defaultImageId, defaultJs, defaultHtml] = await Promise.all([
         new Promise<string>((resolve) => {
-          fetch('/_static/' + defaultAudio)
-            .then(response => response.blob())
-            .then((data) => {
-              const fd = new FormData();
-              fd.append('file', data);
-              api.post<FormData, AlertMediaInterface>($axios, '/api/v1/registry/alerts/media/', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
-                .then((data2) => {
-                  resolve(data2.id);
-                });
+          getBase64FromUrl('/_static/' + defaultAudio).then((data) => {
+            uploadMutation({ data }).then((res) => {
+              resolve(res?.data.alertMediaUpload);
             });
+          });
         }),
         new Promise<string>((resolve) => {
-          fetch('/_static/' + defaultImage)
-            .then(response => response.blob())
-            .then((data) => {
-              const fd = new FormData();
-              fd.append('file', data);
-              api.post<FormData, AlertMediaInterface>($axios, '/api/v1/registry/alerts/media/', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
-                .then((data2) => {
-                  resolve(data2.id);
-                });
+          getBase64FromUrl('/_static/' + defaultImage).then((data) => {
+            uploadMutation({ data }).then((res) => {
+              resolve(res?.data.alertMediaUpload);
             });
+          });
         }),
         new Promise<string>((resolve) => {
           fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/alerts-js.txt')
@@ -579,15 +578,9 @@ export default defineComponent({
 
       for (const mediaId of mediaMap.keys()) {
         await new Promise<void>((resolve) => {
-        // we need to get data first -> then upload new
-          fetch(`/api/v1/registry/alerts/media/${mediaId}`)
-            .then(response => response.blob())
-            .then(async (data) => {
-              const fd = new FormData();
-              fd.append('file', data);
-              await api.put($axios, `/api/v1/registry/alerts/media/${mediaMap.get(mediaId)}`, fd);
-              resolve();
-            });
+          getBase64FromUrl(`/api/v1/registry/alerts/media/${mediaId}`).then((data) => {
+            uploadMutation({ id: mediaMap.get(mediaId), data }).then(() => resolve());
+          });
         });
       }
 
@@ -596,8 +589,8 @@ export default defineComponent({
 
     return {
       // refs
-      isSaving,
-      isLoading,
+      saving,
+      loading,
       form1,
       valid1,
       item,

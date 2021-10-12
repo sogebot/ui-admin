@@ -1,0 +1,3 @@
+mutation AlertMediaUpload($data: String!, $id: String) {
+  alertMediaUpload(data: $data, id: $id)
+}

@@ -179,7 +179,7 @@ type Props = {
 export default defineComponent({
   components: { queryFilter: defineAsyncComponent(() => import('~/components/registry/alerts/inputs/query-filter.vue')) },
   props:      {
-    value:     Object,
+    value:     String,
     rules:     Array,
     noInput:   Boolean,
     deletable: Boolean,

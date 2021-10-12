@@ -1,0 +1,3 @@
+mutation AlertSave($data_json: String!) {
+  alertSave(data: $data_json) { id }
+}

@@ -133,14 +133,17 @@ import {
   mdiDelete, mdiPlay, mdiStop, mdiUpload,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, onUnmounted, ref, useContext, watch,
+  defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { v4 } from 'uuid';
+import { useMutation } from '@vue/apollo-composable';
 import Vue from 'vue';
 import AudioVisual from 'vue-audio-visual';
 
-import api from '~/functions/api';
+import { error } from '../../../../functions/error';
+import { getBase64FromUrl } from '../../../../functions/getBase64FromURL';
+
+import UPLOAD from '~/queries/alert/upload.gql';
 
 Vue.use(AudioVisual);
 
@@ -156,7 +159,9 @@ export default defineComponent({
     volume:  Number,
   },
   setup (props: Props, ctx) {
-    const context = useContext();
+    const { mutate: uploadMutation, onError: onErrorUpload } = useMutation(UPLOAD);
+    onErrorUpload(error);
+
     let interval = 0;
     const duration = ref(0);
     const isUploading = ref(false);
@@ -233,8 +238,8 @@ export default defineComponent({
               img.src = `/api/v1/registry/alerts/media/${model.value}`;
             }
           })
-          .catch((error) => {
-            console.error(error);
+          .catch((err) => {
+            console.error(err);
             console.error(`Image/Video ${props.value} was not found on server.`);
           });
       } else {
@@ -248,8 +253,8 @@ export default defineComponent({
               audioAvailable.value = true;
             }
           })
-          .catch((error) => {
-            console.error(error);
+          .catch((err) => {
+            console.error(err);
             console.error(`Audio ${props.value} was not found on server.`);
           });
       }
@@ -353,12 +358,10 @@ export default defineComponent({
       isUploading.value = true;
 
       for (let i = 0, l = filesUpload.length; i < l; i++) {
-        const fd = new FormData();
         console.debug(`upload::${filesUpload[i].name}`);
-        fd.append('file', filesUpload[i]);
-        const id = v4();
-        await api.put(context.$axios, `/api/v1/registry/alerts/media/${id}`, fd);
-        model.value = id;
+        const data = await getBase64FromUrl(URL.createObjectURL(filesUpload[i]));
+        const res = await uploadMutation({ data });
+        model.value = res?.data.alertMediaUpload;
         isUploading.value = false;
       }
       refresh();

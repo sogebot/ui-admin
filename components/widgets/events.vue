@@ -291,23 +291,45 @@ import {
 } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, ref, useContext, useStore, watch,
+  defineComponent, onMounted, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
 import { get } from 'lodash';
 
 import type { EventListInterface } from '~/.bot/src/database/entity/eventList';
-import api from '~/functions/api';
+import GET_CFG from '~/queries/alert/getCfg.gql';
+import SET_CFG from '~/queries/alert/setCfg.gql';
 
 export default defineComponent({
   setup () {
-    const context = useContext();
     const store = useStore<any>();
+
     const areAlertsMuted = ref(false);
     const isTTSMuted = ref(false);
     const isSoundMuted = ref(false);
+
+    const { result } = useQuery(GET_CFG);
+    const cache = useResult<{
+      areAlertsMuted: boolean,
+      isTTSMuted: boolean,
+      isSoundMuted: boolean,
+    }>(result);
+    watch(cache, (value) => {
+      if (!value) {
+        return;
+      }
+
+      areAlertsMuted.value = value.areAlertsMuted;
+      isTTSMuted.value = value.isTTSMuted;
+      isSoundMuted.value = value.isSoundMuted;
+    }, { immediate: true, deep: true });
+    const { mutate: saveMutation } = useMutation(SET_CFG);
+
     const isLoading = ref(true);
     const height = ref(600);
     const events = ref([] as EventListInterface[]);
@@ -399,9 +421,9 @@ export default defineComponent({
     }
 
     watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
-      api.post(context.$axios, '/api/v1/registry/alerts/settings?name=areAlertsMuted', { value: val[0] });
-      api.post(context.$axios, '/api/v1/registry/alerts/settings?name=isTTSMuted', { value: val[1] });
-      api.post(context.$axios, '/api/v1/registry/alerts/settings?name=isSoundMuted', { value: val[2] });
+      saveMutation({ name: 'areAlertsMuted', value: val[0] });
+      saveMutation({ name: 'isTTSMuted', value: val[1] });
+      saveMutation({ name: 'isSoundMuted', value: val[2] });
     });
 
     function updateHeight () {
@@ -472,12 +494,6 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      api.getOne<boolean>(context.$axios, '/api/v1/registry/alerts/settings?name=areAlertsMuted', '')
-        .then(response => (areAlertsMuted.value = response.data));
-      api.getOne<boolean>(context.$axios, '/api/v1/registry/alerts/settings?name=isTTSMuted', '')
-        .then(response => (isTTSMuted.value = response.data));
-      api.getOne<boolean>(context.$axios, '/api/v1/registry/alerts/settings?name=isSoundMuted', '')
-        .then(response => (isSoundMuted.value = response.data));
       getSocket('/widgets/eventlist').on('askForGet', () => getSocket('/widgets/eventlist').emit('eventlist::get', 100));
       getSocket('/widgets/eventlist').on('update', (values: any) => {
         isLoading.value = false;
