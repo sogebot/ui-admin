@@ -296,10 +296,10 @@
         <v-img
           :id="item.id"
           contain
-          :src="`/api/v1/carousel/image/${item.id}`"
+          :src="`/api/v2/carousel/image/${item.id}`"
           max-height="75px"
           max-width="150px"
-          @click.stop="imageShow = `/api/v1/carousel/image/${item.id}`"
+          @click.stop="imageShow = `/api/v2/carousel/image/${item.id}`"
         />
       </template>
 

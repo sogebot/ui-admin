@@ -1,6 +1,11 @@
 <template>
-  <v-card-text v-ripple class="text-button pa-1 mb-1 text-center" style="font-size: 12px !important; display: block;"
-    :style="{ 'color': color }" @click="!editing ? trigger($event) : showDialog()">
+  <v-card-text
+    v-ripple
+    class="text-button pa-1 mb-1 text-center"
+    style="font-size: 12px !important; display: block;"
+    :style="{ 'color': color }"
+    @click="!editing ? trigger($event) : showDialog()"
+  >
     <v-row v-if="randomizer" no-gutters ripple>
       <v-slide-x-transition>
         <v-col v-if="editing" cols="auto" class="d-flex">
@@ -33,14 +38,19 @@
 import {
   mdiEye, mdiEyeOff, mdiPlay,
 } from '@mdi/js';
-import { useContext } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import {
-  defineComponent, onMounted, ref, watch,
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
+import {
+  computed,
+  defineComponent, ref, watch,
 } from '@vue/composition-api';
+import gql from 'graphql-tag';
 
 import { RandomizerInterface } from '../../../../.bot/src/database/entity/randomizer';
-import api from '../../../../functions/api';
+
+import GET_ONE from '~/queries/randomizer/getOne.gql';
 
 export default defineComponent({
   props: {
@@ -52,34 +62,30 @@ export default defineComponent({
     color: string,
     editing: boolean,
   }, ctx) {
-    const { $axios } = useContext();
     const selected = ref(props.item.selected);
     watch(selected, (val) => {
       ctx.emit(val ? 'select' : 'unselect');
     });
 
-    const randomizer = ref(null as RandomizerInterface | null);
+    const { result } = useQuery(GET_ONE, { id: props.item.options.randomizerId }, { pollInterval: 5000 });
+    const cache = useResult<{ randomizers: RandomizerInterface[] }, null, RandomizerInterface[]>(result, null, data => data.randomizers);
+    const randomizer = computed(() => {
+      if (cache.value && cache.value.length > 0) {
+        return cache.value[0];
+      } else {
+        return null;
+      }
+    });
+
+    const { mutate: hideMutation } = useMutation(gql`mutation randomizerSetVisibility($id: String!, $value: Boolean!) { randomizerSetVisibility(id: $id, value: $value) }`, { refetchQueries: ['randomizerGetAll'] });
+
     const randomizerSpin = ref(false);
 
     const showDialog = () => {
       ctx.emit('update:dialog', true);
     };
 
-    onMounted(() => {
-      api.getOne<RandomizerInterface>($axios, `/api/v1/registry/randomizer`, props.item.options.randomizerId)
-        .then((response) => {
-          randomizer.value = response.data;
-        });
-      setInterval(() => {
-        // don't refresh if in middle update
-        api.getOne<RandomizerInterface>($axios, `/api/v1/registry/randomizer`, props.item.options.randomizerId)
-          .then((response) => {
-            randomizer.value = response.data;
-          });
-      }, 5000);
-    });
-
-    const trigger = async (ev: MouseEvent) => {
+    const trigger = (ev: MouseEvent) => {
       if (randomizer.value) {
         // determinate which part of button is pushed
         const card = document.getElementById(`quickaction-${props.item.id}`) as HTMLElement;
@@ -102,9 +108,10 @@ export default defineComponent({
           && (getClassList(ev.target as Element).includes('minus') || mouseOffsetX < ((isText ? text.clientWidth : card.clientWidth) / 2));
 
         if (isDecrement) {
-          randomizer.value.isShown = !randomizer.value.isShown;
-          await api.post<void>($axios, '/api/v1/registry/randomizer/hideall');
-          await api.patch<RandomizerInterface>($axios, '/api/v1/registry/randomizer/' + randomizer.value.id, { isShown: randomizer.value.isShown });
+          hideMutation({
+            id:    randomizer.value.id,
+            value: !randomizer.value.isShown,
+          }, { refetchQueries: ['randomizerGetOne'] });
         } else {
           randomizerSpin.value = true;
           getSocket('/registries/randomizer').emit('randomizer::startSpin', () => {

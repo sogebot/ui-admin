@@ -578,7 +578,7 @@ export default defineComponent({
 
       for (const mediaId of mediaMap.keys()) {
         await new Promise<void>((resolve) => {
-          getBase64FromUrl(`/api/v1/registry/alerts/media/${mediaId}`).then((data) => {
+          getBase64FromUrl(`/api/v2/registry/alerts/media/${mediaId}`).then((data) => {
             uploadMutation({ id: mediaMap.get(mediaId), data }).then(() => resolve());
           });
         });

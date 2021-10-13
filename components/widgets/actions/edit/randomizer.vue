@@ -1,15 +1,21 @@
 <template>
   <div>
     <v-form ref="form" v-model="valid" lazy-validation>
-      <v-select item-value="id" v-model="clonedItem.options.randomizerId" :items="randomizers" label="Randomizer"
-        :rules="rules.randomizerId" :loading="isLoading">
-        <template v-slot:selection="data">
-          <strong>{{data.item.name}}</strong>
-          <small class="pl-1 font-italic">{{data.item.id}}</small>
+      <v-select
+        v-model="clonedItem.options.randomizerId"
+        item-value="id"
+        :items="randomizers"
+        label="Randomizer"
+        :rules="rules.randomizerId"
+        :loading="loading"
+      >
+        <template #selection="data">
+          <strong>{{ data.item.name }}</strong>
+          <small class="pl-1 font-italic">{{ data.item.id }}</small>
         </template>
-        <template v-slot:item="data">
-          <strong>{{data.item.name}}</strong>
-          <small class="pl-1 font-italic">{{data.item.id}}</small>
+        <template #item="data">
+          <strong>{{ data.item.name }}</strong>
+          <small class="pl-1 font-italic">{{ data.item.id }}</small>
         </template>
       </v-select>
     </v-form>
@@ -18,17 +24,17 @@
 
 <script lang="ts">
 import {
-  defineComponent, onMounted, onUnmounted, ref, useContext, watch,
+  defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
-import { cloneDeep } from 'lodash';
+import { useQuery, useResult } from '@vue/apollo-composable';
+import { cloneDeep, pick } from 'lodash';
 
 import { RandomizerInterface } from '../../../../.bot/src/database/entity/randomizer';
-import api from '../../../../functions/api';
-import { error } from '../../../../functions/error';
 
 import type { RandomizerItem } from '.bot/src/database/entity/dashboard';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
+import GET_ALL from '~/queries/randomizer/getAll.gql';
 
 type Props = {
   item: RandomizerItem
@@ -36,20 +42,15 @@ type Props = {
 export default defineComponent({
   props: { item: Object },
   setup (props: Props, ctx) {
+    const { result, loading, refetch } = useQuery(GET_ALL);
+    const randomizers = useResult<{randomizers: RandomizerInterface[] }, RandomizerInterface[], RandomizerInterface[]>(result, [], data => data.randomizers);
+
     const clonedItem = ref(cloneDeep(props.item));
     const valid = ref(true);
     const form = ref(null);
-    const isLoading = ref(true);
-    const randomizers = ref([] as RandomizerInterface[]);
-    const { $axios } = useContext();
 
     onMounted(() => {
-      api.get<RandomizerInterface[]>($axios, '/api/v1/registry/randomizer')
-        .then((response) => {
-          randomizers.value = response.data.data;
-          isLoading.value = false;
-        })
-        .catch(err => error(err));
+      refetch();
 
       EventBus.$on(`quickaction::${props.item.id}::valid`, () => {
         console.debug(`quickaction::${props.item.id}::valid`);
@@ -64,7 +65,7 @@ export default defineComponent({
     const rules = { randomizerId: [required] };
 
     watch(clonedItem, (val) => {
-      ctx.emit('update:item', val);
+      ctx.emit('update:item', pick(val, ['id', 'userId', 'order', 'type', 'options.label', 'options.color', 'options.randomizerId']));
     }, { deep: true });
 
     watch(valid, (val) => {
@@ -72,7 +73,7 @@ export default defineComponent({
     });
 
     return {
-      clonedItem, rules, valid, form, isLoading, randomizers,
+      clonedItem, rules, valid, form, loading, randomizers,
     };
   },
 });

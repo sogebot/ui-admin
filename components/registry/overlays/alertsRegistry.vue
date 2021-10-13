@@ -1,13 +1,13 @@
 <template>
   <v-expansion-panels v-model="model">
-    <slot/>
+    <slot />
     <v-expansion-panel :readonly="typeof $slots.default === 'undefined'">
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-select
-          :loading="isLoading"
-          :items="itemsOptions"
           v-model="options.id"
+          :loading="loading"
+          :items="itemsOptions"
           label="Alert Registry to use"
         />
       </v-expansion-panel-content>
@@ -18,22 +18,22 @@
 <script lang="ts">
 import {
   computed,
-  defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
 import {
   defaults, isEqual, pick,
 } from 'lodash';
 
 import type { AlertInterface } from '.bot/src/database/entity/alert';
-import api from '~/functions/api';
+import GET_ALL from '~/queries/alert/getAll.gql';
 
 export default defineComponent({
   props: { value: [Object, Array] },
   setup (props: any, ctx) {
-    const { $axios } = useContext();
-    const isLoading = ref(true);
-    const items = ref([] as AlertInterface[]);
+    const { result, loading } = useQuery(GET_ALL, null, { pollInterval: 5000 });
+    const items = useResult<{alerts: AlertInterface[] }, AlertInterface[], AlertInterface[]>(result, [], data => data.alerts);
 
     const itemsOptions = computed(() => {
       return items.value.map(o => ({
@@ -49,14 +49,6 @@ export default defineComponent({
         ['id'],
       ));
 
-    onMounted(() => {
-      api.get<AlertInterface[]>($axios, '/api/v1/registry/alerts/')
-        .then((response) => {
-          items.value = response.data.data;
-          isLoading.value = false;
-        });
-    });
-
     watch(options, (val: any) => {
       if (!isEqual(props.value, options.value)) {
         ctx.emit('input', val);
@@ -66,7 +58,7 @@ export default defineComponent({
     return {
       model,
       options,
-      isLoading,
+      loading,
       translate,
       itemsOptions,
     };

@@ -34,7 +34,7 @@ import {
   computed,
   defineComponent, onMounted, onUnmounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, pick } from 'lodash';
 
 import api from '../../../../functions/api';
 import { error } from '../../../../functions/error';
@@ -92,7 +92,7 @@ export default defineComponent({
     const rules = { marathonId: [required] };
 
     watch(clonedItem, (val) => {
-      ctx.emit('update:item', val);
+      ctx.emit('update:item', pick(val, ['id', 'userId', 'order', 'type', 'options.label', 'options.color', 'options.marathonId']));
     }, { deep: true });
 
     watch(valid, (val) => {

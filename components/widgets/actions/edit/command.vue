@@ -11,7 +11,7 @@
 import {
   defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, pick } from 'lodash';
 
 import type { CommandItem } from '.bot/src/database/entity/dashboard';
 import { EventBus } from '~/functions/event-bus';
@@ -46,7 +46,7 @@ export default defineComponent({
     };
 
     watch(clonedItem, (val) => {
-      ctx.emit('update:item', val);
+      ctx.emit('update:item', pick(val, ['id', 'userId', 'order', 'type', 'options.label', 'options.color', 'options.command']));
     }, { deep: true });
 
     watch(valid, (val) => {

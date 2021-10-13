@@ -18,7 +18,7 @@
       <v-col>
         <v-card>
           <v-card-text v-if="model">
-            <v-img class="ma-auto text-center" :src="`/api/v1/registry/alerts/media/${value}`" :height="sizeOfMedia[1]" :width="sizeOfMedia[0]" />
+            <v-img class="ma-auto text-center" :src="`/api/v2/registry/alerts/media/${value}`" :height="sizeOfMedia[1]" :width="sizeOfMedia[0]" />
           </v-card-text>
           <v-card-actions>
             <div class="ma-auto text-center">
@@ -53,7 +53,7 @@
                 }"
               >
                 <source
-                  :src="`/api/v1/registry/alerts/media/${value}`"
+                  :src="`/api/v2/registry/alerts/media/${value}`"
                   type="video/webm"
                 >
                 Your browser does not support the video tag.
@@ -94,7 +94,7 @@
               v-if="audioAvailable"
               ref="audio"
               :audio-controls="false"
-              :audio-src="`/api/v1/registry/alerts/media/${value}`"
+              :audio-src="`/api/v2/registry/alerts/media/${value}`"
               canv-class="w-100"
               :canv-width="1000"
             />
@@ -211,7 +211,7 @@ export default defineComponent({
 
     const refresh = () => {
       if (props.type === 'image') {
-        fetch(`/api/v1/registry/alerts/media/${model.value}`)
+        fetch(`/api/v2/registry/alerts/media/${model.value}`)
           .then(async (response) => {
             if (!response.ok) {
               throw new Error('Network response was not ok');
@@ -227,7 +227,7 @@ export default defineComponent({
                 console.log('Size of video', [el.videoWidth, el.videoHeight]);
                 sizeOfMedia.value = [el.videoWidth, el.videoHeight];
               });
-              vid.src = `/api/v1/registry/alerts/media/${model.value}`;
+              vid.src = `/api/v2/registry/alerts/media/${model.value}`;
             } else {
               const img = new Image();
               img.addEventListener('load', (ev) => {
@@ -235,7 +235,7 @@ export default defineComponent({
                 console.log('Size of image', [el.naturalWidth, el.naturalHeight]);
                 sizeOfMedia.value = [el.naturalWidth, el.naturalHeight];
               });
-              img.src = `/api/v1/registry/alerts/media/${model.value}`;
+              img.src = `/api/v2/registry/alerts/media/${model.value}`;
             }
           })
           .catch((err) => {
@@ -244,7 +244,7 @@ export default defineComponent({
           });
       } else {
         audioAvailable.value = false;
-        fetch(`/api/v1/registry/alerts/media/${model.value}`)
+        fetch(`/api/v2/registry/alerts/media/${model.value}`)
           .then((response) => {
             if (!response.ok) {
               throw new Error('Network response was not ok');

@@ -10,7 +10,7 @@
 import {
   defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, pick } from 'lodash';
 
 import type { CustomVariableItem } from '.bot/src/database/entity/dashboard';
 import { EventBus } from '~/functions/event-bus';
@@ -42,7 +42,7 @@ export default defineComponent({
     const rules = { customvariable: [required, startsWith(['$_']), minLength(3)] };
 
     watch(clonedItem, (val) => {
-      ctx.emit('update:item', val);
+      ctx.emit('update:item', pick(val, ['id', 'userId', 'order', 'type', 'options.label', 'options.color', 'options.customvariable']));
     }, { deep: true });
 
     watch(valid, (val) => {
