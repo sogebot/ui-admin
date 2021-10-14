@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [23.1.0](https://github.com/sogebot/ui-admin/compare/v23.0.0...v23.1.0) (2021-10-14)
+
+
+### Features
+
+* **oauth:** add SogeBot Token Generator ([6b06415](https://github.com/sogebot/ui-admin/commit/6b064157a846e713a322533459728033d84534e7))
+
+
+### Bug Fixes
+
+* **deps:** bump actions/setup-node from 2.4.0 to 2.4.1 ([#153](https://github.com/sogebot/ui-admin/issues/153)) ([709cfae](https://github.com/sogebot/ui-admin/commit/709cfaeb6fe9969087bddf198059f8c973230567))
+
 ## [23.0.0](https://github.com/sogebot/ui-admin/compare/v22.1.0...v23.0.0) (2021-10-14)
 
 ## [22.1.0](https://github.com/sogebot/ui-admin/compare/v22.0.0...v22.1.0) (2021-09-29)
