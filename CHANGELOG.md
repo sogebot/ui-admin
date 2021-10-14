@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [23.1.2](https://github.com/sogebot/ui-admin/compare/v23.1.1...v23.1.2) (2021-10-14)
+
+
+### Bug Fixes
+
+* **quickaction:** fix infinite loading for select widget ([eb9b2f0](https://github.com/sogebot/ui-admin/commit/eb9b2f08c38e496565fe63bff5c6bb0012e27615))
+
 ### [23.1.1](https://github.com/sogebot/ui-admin/compare/v23.1.0...v23.1.1) (2021-10-14)
 
 
