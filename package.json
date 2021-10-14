@@ -3,11 +3,11 @@
   "version": "22.1.0",
   "author": "sogehige@gmail.com",
   "engines": {
-    "npm": ">7.19.0"
+    "npm": ">=8.0.0"
   },
   "description": "Nuxt.js version of ui-admin",
   "scripts": {
-    "build-fragment" : "node schemaQuery.js",
+    "build-fragment": "node schemaQuery.js",
     "postinstall": "patch-package || true",
     "release": "standard-version && git push --follow-tags origin main",
     "release:major": "standard-version -r major && git push --follow-tags origin main",
@@ -38,11 +38,12 @@
     "@vue/apollo-composable": "^4.0.0-alpha.15",
     "animate.css": "^4.1.1",
     "chart.js": "^2.9.4",
-    "core-js": "^3.18.2",
+    "core-js": "^3.18.3",
     "gsap": "^3.8.0",
-    "marked": "^3.0.4",
+    "jwt-decode": "^3.1.2",
+    "marked": "^3.0.7",
     "nuxt": "^2.15.8",
-    "plyr": "^3.6.8",
+    "plyr": "^3.6.9",
     "portal-vue": "^2.1.7",
     "prismjs": "^1.25.0",
     "shortid": "^2.2.16",
@@ -63,7 +64,7 @@
     "@mdi/js": "^6.2.95",
     "@nuxt/types": "^2.15.8",
     "@nuxt/typescript-build": "^2.1.0",
-    "@nuxtjs/composition-api": "^0.29.2",
+    "@nuxtjs/composition-api": "^0.29.3",
     "@nuxtjs/eslint-config-typescript": "^6.0.1",
     "@nuxtjs/eslint-module": "^3.0.2",
     "@nuxtjs/stylelint-module": "^4.0.0",
@@ -80,16 +81,16 @@
     "eslint-plugin-nuxt": "^2.0.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-unused-imports": "^1.1.5",
-    "eslint-plugin-vue": "^7.19.0",
-    "lint-staged": "^11.2.0",
+    "eslint-plugin-vue": "^7.19.1",
+    "lint-staged": "^11.2.3",
     "obs-websocket-js": "^4.0.3",
     "patch-package": "^6.4.7",
     "simple-git-hooks": "^2.6.1",
     "standard-version": "^9.3.1",
     "stylelint": "^13.13.1",
-    "stylelint-config-prettier": "^8.0.2",
+    "stylelint-config-prettier": "^9.0.2",
     "stylelint-config-standard": "^22.0.0",
     "typeorm": "^0.2.38",
-    "vuetify": "^2.5.9"
+    "vuetify": "^2.5.10"
   }
 }

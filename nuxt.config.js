@@ -43,6 +43,7 @@ export default {
     '@/plugins/before-each.ts',
     '@/plugins/apollo-hook.ts',
     { src: '@/plugins/log-version.js', ssr: false },
+    { src: '@/plugins/check-token-validity.ts', ssr: false },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

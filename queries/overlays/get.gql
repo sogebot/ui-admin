@@ -1,5 +1,5 @@
-query OverlayGetAll {
-  overlays {
+query OverlayGet($id: String) {
+  overlays(id: $id) {
     marathon {
       id
       value
@@ -298,7 +298,5 @@ query OverlayGetAll {
         }
       }
     }
-  }
-}
   }
 }

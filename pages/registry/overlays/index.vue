@@ -6,11 +6,12 @@
     <v-data-table
       v-model="selected"
       :show-select="selectable"
-      :loading="state.loading !== ButtonStates.success || state.saving"
+      :loading="loading || state.saving"
       :headers="headers"
       :items-per-page="-1"
       hide-default-footer
       hide-default-header
+      sort-by="value"
       :items="items"
       @current-items="saveCurrentItems"
       @click:row="addToSelectedItem"
@@ -108,10 +109,6 @@
         <code>{{ item.id }}</code>
       </template>
 
-      <template #[`item.overlay`]="{ item }">
-        {{ item.value }}
-      </template>
-
       <template #[`item.arrow`]="{ }">
         <v-icon>{{ mdiChevronRight }}</v-icon>
       </template>
@@ -166,24 +163,50 @@ import {
   mdiCheckboxMultipleMarkedOutline, mdiChevronRight, mdiClipboard, mdiClipboardCheck, mdiLink, mdiPencil,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useContext, useRouter, watch,
+  defineComponent, onMounted, ref, useRouter, watch,
 } from '@nuxtjs/composition-api';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
-import { cloneDeep } from 'lodash';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
 import { v4 } from 'uuid';
+
+import { error } from '../../../functions/error';
 
 import type { OverlayMappers } from '.bot/src/database/entity/overlay';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
-import api from '~/functions/api';
 import { EventBus } from '~/functions/event-bus';
+import GET from '~/queries/overlays/get.gql';
+import REMOVE from '~/queries/overlays/remove.gql';
 
 export default defineComponent({
   setup () {
-    const { $axios } = useContext();
+    const { result, loading, onError, refetch } = useQuery(GET);
+    onError(error);
+
+    const items = useResult<{ overlays: any[] }, OverlayMappers[], OverlayMappers[]>(result, [], (data) => {
+      const outputData: OverlayMappers[] = [];
+      for (const key of Object.keys(data.overlays)) {
+        if (key.startsWith('__')) {
+          continue;
+        }
+        outputData.push(...data.overlays[key as any]);
+      }
+      // we also need to reset selection values
+      if (selected.value.length > 0) {
+        selected.value.forEach((selectedItem, index) => {
+          selectedItem = outputData.find(o => o.id === selectedItem.id) || selectedItem;
+          selected.value[index] = selectedItem;
+        });
+      }
+      return outputData;
+    });
+
+    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, { refetchQueries: [{ query: GET }] });
+    onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
+    onErrorRemove(error);
+
     const router = useRouter();
-    const items = ref([] as OverlayMappers[]);
-    const cacheItems = ref([] as OverlayMappers[]);
 
     const selected = ref([] as OverlayMappers[]);
     const copied = ref('');
@@ -210,8 +233,7 @@ export default defineComponent({
       }
     });
 
-    const state = ref({ saving: false, loading: ButtonStates.progress } as {
-      loading: number;
+    const state = ref({ saving: false } as {
       saving: boolean;
     });
 
@@ -223,7 +245,7 @@ export default defineComponent({
         value: 'arrow', text: '', sortable: false,
       },
       {
-        value: 'overlay', text: '', sortable: false,
+        value: 'value', text: '', sortable: false,
       },
       {
         value: 'actions', text: '', sortable: false,
@@ -231,26 +253,14 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      refresh();
+      refetch();
     });
-
-    const refresh = () => {
-      api.get<OverlayMappers[]>($axios, `/api/v1/overlay/`)
-        .then((response) => {
-          items.value = cloneDeep(response.data.data);
-          cacheItems.value = cloneDeep(response.data.data);
-        })
-        .then(() => (state.value.loading = ButtonStates.success));
-    };
 
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        api.delete($axios, `/api/v1/overlay/${item.id}`).catch(() => {
-          return true;
-        });
+        removeMutation({ id: item.id });
       });
-      refresh();
 
       EventBus.$emit('snack', 'success', 'Data removed.');
       selected.value = [];
@@ -264,13 +274,13 @@ export default defineComponent({
       // refs
       items,
       state,
+      loading,
       headers,
       selected,
       deleteSelected,
       selectable,
       deleteDialog,
       translate,
-      ButtonStates,
       copied,
 
       // functions

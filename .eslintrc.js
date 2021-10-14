@@ -14,8 +14,10 @@ module.exports = {
   plugins: ['unused-imports'],
   // add your custom rules here
   rules:   {
-    'unused-imports/no-unused-imports': 'error',
-    'key-spacing':                      ['error', {
+    'func-call-spacing':                    'off',
+    '@typescript-eslint/func-call-spacing': ['error'],
+    'unused-imports/no-unused-imports':     'error',
+    'key-spacing':                          ['error', {
       beforeColon: false, afterColon: true, align: 'value',
     }],
     'object-curly-spacing': ['error', 'always'],

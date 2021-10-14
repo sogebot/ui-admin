@@ -130,9 +130,9 @@
         <component
           :is="selectedItem.type"
           v-if="haveAnyOptions(selectedItem.type)"
-          v-model="selectedItem.opts"
+          :value="JSON.parse(selectedItem.opts)"
           class="overlayItem"
-          @update="selectedItem.opts = $event;"
+          @update="selectedItem.opts = JSON.stringify($event);"
         >
           <v-expansion-panel>
             <v-expansion-panel-header>Position / Size</v-expansion-panel-header>
@@ -487,7 +487,7 @@ export default defineComponent({
           height: 200,
           alignX: 0,
           alignY: 0,
-          opts:   null,
+          opts:   JSON.stringify(null),
         });
         dialog.value = false;
         selected.value = id;

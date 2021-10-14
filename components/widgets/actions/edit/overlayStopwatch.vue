@@ -32,18 +32,17 @@
 import { mdiChevronRight } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, onUnmounted, ref, useContext, watch,
+  defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
+import { useQuery, useResult } from '@vue/apollo-composable';
 import { cloneDeep, pick } from 'lodash';
-
-import api from '../../../../functions/api';
-import { error } from '../../../../functions/error';
 
 import type {
   OverlayMapperGroup, OverlayMappers, OverlayMapperStopwatch,
 } from '.bot/src/database/entity/overlay';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
+import GET from '~/queries/overlays/get.gql';
 
 type Props = {
   item: OverlayMappers
@@ -55,8 +54,6 @@ export default defineComponent({
     const valid = ref(true);
     const form = ref(null);
     const isLoading = ref(true);
-    const overlays = ref([] as OverlayMappers[]);
-    const { $axios } = useContext();
 
     const overlaysStopwatch = computed(() => {
       const stopwatchs: ((OverlayMapperGroup['opts']['items'][number] & {groupId: string}) | OverlayMapperStopwatch)[] = overlays.value.filter((o): o is OverlayMapperStopwatch => o.value === 'stopwatch');
@@ -71,13 +68,11 @@ export default defineComponent({
       return stopwatchs;
     });
 
+    const { result, refetch } = useQuery(GET);
+    const overlays = useResult<{ overlays: Record<string, any> }, (OverlayMapperStopwatch | OverlayMapperGroup)[], (OverlayMapperStopwatch | OverlayMapperGroup)[]>(result, [], data => [...data.overlays.stopwatch, ...data.overlays.group]);
+
     onMounted(() => {
-      api.get<OverlayMappers[]>($axios, '/api/v1/overlay')
-        .then((response) => {
-          overlays.value = response.data.data;
-          isLoading.value = false;
-        })
-        .catch(err => error(err));
+      refetch();
 
       EventBus.$on(`quickaction::${props.item.id}::valid`, () => {
         console.debug(`quickaction::${props.item.id}::valid`);
