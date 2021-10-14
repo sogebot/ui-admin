@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [23.1.1](https://github.com/sogebot/ui-admin/compare/v23.1.0...v23.1.1) (2021-10-14)
+
+
+### Bug Fixes
+
+* **overlay:** show carousel items ([cf1cb98](https://github.com/sogebot/ui-admin/commit/cf1cb9829ba31cd315e19b41281b99f8572ef7ff))
+
 ## [23.1.0](https://github.com/sogebot/ui-admin/compare/v23.0.0...v23.1.0) (2021-10-14)
 
 
