@@ -7,7 +7,7 @@
         :items="overlaysMarathon"
         label="Marathon"
         :rules="rules.marathonId"
-        :loading="isLoading"
+        :loading="loading"
       >
         <template #selection="data">
           <template v-if="data.item.groupId">
@@ -53,7 +53,6 @@ export default defineComponent({
     const clonedItem = ref(cloneDeep(props.item));
     const valid = ref(true);
     const form = ref(null);
-    const isLoading = ref(true);
 
     const overlaysMarathon = computed(() => {
       const marathons: ((OverlayMapperGroup['opts']['items'][number] & {groupId: string}) | OverlayMapperMarathon)[] = overlays.value.filter((o): o is OverlayMapperMarathon => o.value === 'marathon');
@@ -67,7 +66,7 @@ export default defineComponent({
       });
       return marathons;
     });
-    const { result, refetch } = useQuery(GET);
+    const { result, refetch, loading } = useQuery(GET);
     const overlays = useResult<{ overlays: Record<string, any> }, (OverlayMapperMarathon | OverlayMapperGroup)[], (OverlayMapperMarathon | OverlayMapperGroup)[]>(result, [], data => [...data.overlays.marathon, ...data.overlays.group]);
 
     onMounted(() => {
@@ -94,7 +93,7 @@ export default defineComponent({
     });
 
     return {
-      clonedItem, rules, valid, form, isLoading, overlaysMarathon, mdiChevronRight,
+      clonedItem, rules, valid, form, loading, overlaysMarathon, mdiChevronRight,
     };
   },
 });

@@ -7,7 +7,7 @@
         :items="overlaysStopwatch"
         label="Stopwatch"
         :rules="rules.stopwatchId"
-        :loading="isLoading"
+        :loading="loading"
       >
         <template #selection="data">
           <template v-if="data.item.groupId">
@@ -53,7 +53,6 @@ export default defineComponent({
     const clonedItem = ref(cloneDeep(props.item));
     const valid = ref(true);
     const form = ref(null);
-    const isLoading = ref(true);
 
     const overlaysStopwatch = computed(() => {
       const stopwatchs: ((OverlayMapperGroup['opts']['items'][number] & {groupId: string}) | OverlayMapperStopwatch)[] = overlays.value.filter((o): o is OverlayMapperStopwatch => o.value === 'stopwatch');
@@ -68,7 +67,7 @@ export default defineComponent({
       return stopwatchs;
     });
 
-    const { result, refetch } = useQuery(GET);
+    const { result, refetch, loading } = useQuery(GET);
     const overlays = useResult<{ overlays: Record<string, any> }, (OverlayMapperStopwatch | OverlayMapperGroup)[], (OverlayMapperStopwatch | OverlayMapperGroup)[]>(result, [], data => [...data.overlays.stopwatch, ...data.overlays.group]);
 
     onMounted(() => {
@@ -95,7 +94,7 @@ export default defineComponent({
     });
 
     return {
-      clonedItem, rules, valid, form, isLoading, overlaysStopwatch, mdiChevronRight,
+      clonedItem, rules, valid, form, loading, overlaysStopwatch, mdiChevronRight,
     };
   },
 });

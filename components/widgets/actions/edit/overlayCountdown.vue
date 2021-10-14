@@ -7,7 +7,7 @@
         :items="overlaysCountdown"
         label="Countdown"
         :rules="rules.countdownId"
-        :loading="isLoading"
+        :loading="loading"
       >
         <template #selection="data">
           <template v-if="data.item.groupId">
@@ -53,7 +53,6 @@ export default defineComponent({
     const clonedItem = ref(cloneDeep(props.item));
     const valid = ref(true);
     const form = ref(null);
-    const isLoading = ref(true);
 
     const overlaysCountdown = computed(() => {
       const countdowns: ((OverlayMapperGroup['opts']['items'][number] & {groupId: string}) | OverlayMapperCountdown)[] = overlays.value.filter((o): o is OverlayMapperCountdown => o.value === 'countdown');
@@ -67,7 +66,7 @@ export default defineComponent({
       });
       return countdowns;
     });
-    const { result, refetch } = useQuery(GET);
+    const { result, refetch, loading } = useQuery(GET);
     const overlays = useResult<{ overlays: Record<string, any> }, (OverlayMapperCountdown | OverlayMapperGroup)[], (OverlayMapperCountdown | OverlayMapperGroup)[]>(result, [], data => [...data.overlays.countdown, ...data.overlays.group]);
 
     onMounted(() => {
@@ -94,7 +93,7 @@ export default defineComponent({
     });
 
     return {
-      clonedItem, rules, valid, form, isLoading, overlaysCountdown, mdiChevronRight,
+      clonedItem, rules, valid, form, loading, overlaysCountdown, mdiChevronRight,
     };
   },
 });
