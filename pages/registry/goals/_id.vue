@@ -378,7 +378,7 @@ export default defineComponent({
       const query = useQuery(GET_ONE, { id: route.value.params.id });
       query.onError(error);
       loading = query.loading;
-      const cache = useResult<{ OBSWebsocket: GoalGroupInterface[] }, null>(query.result, null);
+      const cache = useResult<{ goals: GoalGroupInterface[] }, null>(query.result, null);
       watch(cache, (value) => {
         if (!value) {
           return;
@@ -391,6 +391,8 @@ export default defineComponent({
           item.value = cloneDeep(value[0]);
         }
       }, { immediate: true, deep: true });
+    } else {
+      loading.value = false;
     }
     const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(gql`
       mutation goalsSave($data_json: String!) {
