@@ -11,6 +11,14 @@
       <v-tab-item eager>
         <v-card>
           <v-card-text>
+            <v-select
+              class="pb-2 mb-2"
+              v-model="settings.general.tokenService[0]"
+              :items="['Twitch Token Generator', 'SogeBot Token Generator']"
+              label="Token Generator"
+              hint="If you change token generator, you need to re-do all tokens!"
+              persistent-hint/>
+
             <v-text-field :label="translate('core.oauth.settings.generalChannel')"
               v-model="settings.general.generalChannel[0]" />
 
@@ -28,9 +36,13 @@
               v-model="settings.bot.botAccessToken[0]" type="password" />
             <v-text-field :label="translate('core.oauth.settings.botRefreshToken')"
               v-model="settings.bot.botRefreshToken[0]" type="password" />
+            <v-text-field label="Client ID" v-model="settings.bot.botClientId[0]" />
             <v-text-field :label="translate('core.oauth.settings.botUsername')" v-model="settings.bot.botUsername[0]"
               disabled />
-            <v-btn href="https://twitchtokengenerator.com/quick/jLbq7v1pzF" target="_blank">
+            <v-btn
+              :href="settings.general.tokenService[0] === 'Twitch Token Generator'
+                ? 'https://twitchtokengenerator.com/quick/jLbq7v1pzF'
+                : 'https://twitch-token-generator.soge.workers.dev/request-tokens?scope=channel:edit:commercial channel:moderate chat:edit chat:read clips:edit user:edit:broadcast user:read:broadcast whispers:edit whispers:read'" target="_blank">
               {{ translate('commons.generate') }}
             </v-btn>
           </v-card-text>
@@ -43,9 +55,14 @@
               v-model="settings.broadcaster.broadcasterAccessToken[0]" type="password" />
             <v-text-field :label="translate('core.oauth.settings.broadcasterRefreshToken')"
               v-model="settings.broadcaster.broadcasterRefreshToken[0]" type="password" />
+            <v-text-field label="Client ID" v-model="settings.broadcaster.broadcasterClientId[0]" />
             <v-text-field :label="translate('core.oauth.settings.broadcasterUsername')"
               v-model="settings.broadcaster.broadcasterUsername[0]" disabled />
-            <v-btn href="https://twitchtokengenerator.com/quick/VHavigHX0P" target="_blank">
+
+            <v-btn
+              :href="settings.general.tokenService[0] === 'Twitch Token Generator'
+                ? 'https://twitchtokengenerator.com/quick/VHavigHX0P'
+                : 'https://twitch-token-generator.soge.workers.dev/request-tokens?scope=channel:edit:commercial channel:moderate channel:read:hype_train channel:read:redemptions channel:read:subscriptions channel_editor chat:edit chat:read moderation:read user:edit:broadcast user:read:broadcast'" target="_blank">
               {{ translate('commons.generate') }}
             </v-btn>
           </v-card-text>
