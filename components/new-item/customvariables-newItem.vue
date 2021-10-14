@@ -308,17 +308,18 @@
 import { mdiDelete, mdiLink } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
 import type { VariableInterface } from '.bot/src/database/entity/variable';
 import type { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { origin } from '~/functions/origin';
@@ -334,7 +335,12 @@ export default defineComponent({
   components: { PrismEditor },
   props:      { rules: Object, item: Object },
   setup (props: Props, ctx) {
-    const context = useContext();
+    const { result } = useQuery(gql`
+      query {
+        permissions { id name }
+      }
+    `);
+    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
     const computedRules = {
       runEveryX:    [required, minValue(0)],
       variableName: [
@@ -358,7 +364,6 @@ export default defineComponent({
     const e1 = ref(1);
     const newItemSaving = ref(false);
 
-    const permissions = ref([] as PermissionsInterface[]);
     const permissionItems = computed(() => {
       return permissions.value.map(item => ({
         text:     item.name,
@@ -459,9 +464,6 @@ export default defineComponent({
             error(e);
           });
       }
-
-      api.get<PermissionsInterface[]>(context.$axios, '/api/v1/settings/permissions')
-        .then(response => (permissions.value = response.data.data));
     });
 
     const newItem = async () => {

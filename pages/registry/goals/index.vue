@@ -8,7 +8,7 @@
       calculate-widths
       :show-select="selectable"
       :search="search"
-      :loading="state.loading !== ButtonStates.success"
+      :loading="loading"
       :headers="headers"
       :items-per-page="-1"
       :items="items"
@@ -93,7 +93,7 @@
         <v-simple-table dense class="transparent">
           <template #default>
             <tbody>
-              <tr v-for="key of Object.keys(item.display)" :key="key" dense>
+              <tr v-for="key of Object.keys(item.display).filter(o => !o.startsWith('__'))" :key="key" dense>
                 <td>
                   {{ translate('registry.goals.input.' + key + '.title') }}
                 </td>
@@ -197,23 +197,51 @@ import {
   mdiCheckboxMultipleMarkedOutline, mdiContentCopy, mdiInfinity, mdiLink, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
 import { v4 } from 'uuid';
 
 import type { GoalGroupInterface } from '.bot/src/database/entity/goal';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
+import GET_ALL from '~/queries/goals/getAll.gql';
+import REMOVE from '~/queries/goals/remove.gql';
+import SAVE from '~/queries/goals/save.gql';
 
 export default defineComponent({
   setup () {
-    const { $axios } = useContext();
-    const items = ref([] as GoalGroupInterface[]);
+    const { result, loading, onError, refetch } = useQuery(GET_ALL);
+    onError(error);
+    const items = useResult<{ goals: GoalGroupInterface[] }, GoalGroupInterface[], GoalGroupInterface[]>(result, [], (data) => {
+      // we also need to reset selection values
+      if (selected.value.length > 0) {
+        selected.value.forEach((selectedItem, index) => {
+          selectedItem = data.goals.find(o => o.id === selectedItem.id) || selectedItem;
+          selected.value[index] = selectedItem;
+        });
+      }
+      return data.goals;
+    });
+
+    onMounted(() => {
+      refetch();
+    });
+
+    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, { refetchQueries: ['GoalsGetAll'] });
+    onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
+    onErrorRemove(error);
+
+    const { mutate: saveMutation, onError: onErrorSave, onDone: onDoneSave } = useMutation(SAVE, { refetchQueries: ['GoalsGetAll'] });
+    onDoneSave(() => EventBus.$emit('snack', 'success', 'Data saved.'));
+    onErrorSave(error);
+
     const search = ref('');
 
     const selected = ref([] as GoalGroupInterface[]);
@@ -228,10 +256,6 @@ export default defineComponent({
       if (!val) {
         selected.value = [];
       }
-    });
-
-    const state = ref({ loading: ButtonStates.progress } as {
-      loading: number;
     });
 
     const headers = [
@@ -252,40 +276,9 @@ export default defineComponent({
       { value: 'items', text: 'Items' },
     ];
 
-    onMounted(() => {
-      refresh();
-      EventBus.$on('goals::refresh', refresh);
-    });
-
-    const refresh = () => {
-      api.get<GoalGroupInterface[]>($axios, '/api/v1/registry/goals')
-        .then((response) => {
-          items.value = response.data.data;
-          // we also need to reset selection values
-          if (selected.value.length > 0) {
-            selected.value.forEach((selectedItem, index) => {
-              selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
-              selected.value[index] = selectedItem;
-            });
-          }
-        })
-        .catch(err => error(err))
-        .finally(() => (state.value.loading = ButtonStates.success));
-    };
-
-    const deleteSelected = async () => {
+    const deleteSelected = () => {
       deleteDialog.value = false;
-      await Promise.all(
-        selected.value.map((item) => {
-          return new Promise((resolve) => {
-            api.delete($axios, `/api/v1/registry/goals/${item.id}`)
-              .finally(() => resolve(true));
-          });
-        }),
-      );
-      refresh();
-
-      EventBus.$emit('snack', 'success', 'Data removed.');
+      selected.value.forEach(item => removeMutation({ id: item.id }));
       selected.value = [];
     };
 
@@ -300,19 +293,14 @@ export default defineComponent({
         })),
       };
 
-      api.post($axios, '/api/v1/registry/goals', clonedGroup)
-        .then(() => {
-          EventBus.$emit('snack', 'success', 'Data cloned.');
-        })
-        .catch(err => error(err))
-        .finally(refresh);
+      saveMutation({ data_json: JSON.stringify(clonedGroup) });
     };
 
     return {
       // refs
       items,
       search,
-      state,
+      loading,
       headers,
       headersDelete,
       selected,

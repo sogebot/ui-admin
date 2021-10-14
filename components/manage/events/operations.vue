@@ -160,10 +160,11 @@ import { mdiTrashCan } from '@mdi/js';
 import {
   computed,
   defineAsyncComponent,
-  defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
 import {
   capitalize, cloneDeep, orderBy,
 } from 'lodash';
@@ -171,8 +172,8 @@ import { v4 as uuid } from 'uuid';
 
 import type { EventOperationInterface, Events } from '~/.bot/src/database/entity/event';
 import { OBSWebsocketInterface } from '~/.bot/src/database/entity/obswebsocket.js';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
+import GET_ALL from '~/queries/obsWebsocket/getAll.gql';
 
 export default defineComponent({
   components: { tester: defineAsyncComponent({ loader: () => import('~/components/manage/events/test-dialog.vue') }) },
@@ -180,8 +181,9 @@ export default defineComponent({
     operations: Array, item: Object, rules: Object, filters: Array, variables: Object, events: Array,
   },
   setup (props, ctx) {
-    const { $axios } = useContext();
     let operationsBackup: any[] = [];
+    const { result } = useQuery(GET_ALL, null, { pollInterval: 5000 });
+    const obsWebsocketsTaskIds = useResult<{ OBSWebsocket: OBSWebsocketInterface[] }, OBSWebsocketInterface[], OBSWebsocketInterface[]>(result, [], data => data.OBSWebsocket);
 
     const valid = ref(true);
     const form = ref(null);
@@ -197,13 +199,7 @@ export default defineComponent({
       }));
     });
 
-    const obsWebsocketsTaskIds = ref([] as OBSWebsocketInterface[]);
-
     onMounted(() => {
-      api.get<OBSWebsocketInterface[]>($axios, '/api/v1/integration/obswebsocket')
-        .then((response) => {
-          obsWebsocketsTaskIds.value = response.data.data;
-        });
       getSocket('/core/events').emit('list.supported.operations', (err: string | null, data: Events.SupportedOperation[]) => {
         if (err) {
           error(err);

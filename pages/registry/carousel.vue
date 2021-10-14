@@ -3,13 +3,12 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
-
     <v-data-table
       v-model="selected"
       calculate-widths
       :show-select="selectable"
       :search="search"
-      :loading="state.loading !== ButtonStates.success || state.saving"
+      :loading="loading || saving"
       :headers="headers"
       :items-per-page="-1"
       hide-default-footer
@@ -125,10 +124,14 @@
 
       <template #[`item.drag`]="{ item }">
         <template v-if="$vuetify.breakpoint.mobile">
-          <v-icon v-if="item.order !== 0" @click.stop="swapOrder(item.order, item.order - 1)">{{ mdiChevronUp }}</v-icon>
-          <v-icon v-if="item.order !== items.length - 1" @click.stop="swapOrder(item.order, item.order + 1)">{{ mdiChevronDown }}</v-icon>
+          <v-icon v-if="item.order !== 0" @click.stop="swapOrder(item.order, item.order - 1)">
+            {{ mdiChevronUp }}
+          </v-icon>
+          <v-icon v-if="item.order !== items.length - 1" @click.stop="swapOrder(item.order, item.order + 1)">
+            {{ mdiChevronDown }}
+          </v-icon>
         </template>
-        <v-icon v-else :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, item.id)">
+        <v-icon v-else :disabled="state.dragging || saving" @mousedown.prevent="handleDragStart($event, item.id)">
           {{ mdiDrag }}
         </v-icon>
       </template>
@@ -293,10 +296,10 @@
         <v-img
           :id="item.id"
           contain
-          :src="item.imageUrl"
+          :src="`/api/v2/carousel/image/${item.id}`"
           max-height="75px"
           max-width="150px"
-          @click.stop="imageShow = item.imageUrl"
+          @click.stop="imageShow = `/api/v2/carousel/image/${item.id}`"
         />
       </template>
 
@@ -333,18 +336,27 @@ import {
   mdiCheckboxMultipleMarkedOutline, mdiChevronDown, mdiChevronUp, mdiDrag, mdiMagnify,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
+import { cloneDeep, sortBy } from 'lodash';
+
+import { error } from '../../functions/error';
 
 import type { CarouselInterface } from '.bot/src/database/entity/carousel';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
-import api from '~/functions/api';
-import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
+import { getBase64FromUrl } from '~/functions/getBase64FromURL';
 import { minValue, required } from '~/functions/validators';
+import GET_ALL from '~/queries/carousel/getAll.gql';
+import REMOVE from '~/queries/carousel/remove.gql';
+import SAVE from '~/queries/carousel/save.gql';
+import UPLOAD from '~/queries/carousel/upload.gql';
 
 const originalWidths: string[] = [];
 let originalHeight = 0;
@@ -419,7 +431,31 @@ function handleDragStart (e: DragEvent, id: string) {
 
 export default defineComponent({
   setup () {
-    const { $axios } = useContext();
+    const { result, loading, refetch } = useQuery(GET_ALL);
+    const cache = useResult<{ carousels: CarouselInterface[] }, null, CarouselInterface[]>(result, null, data => data.carousels);
+    watch(cache, (value) => {
+      console.log({ value });
+      if (!value) {
+        return;
+      }
+      items.value = cloneDeep([...value]);
+    }, { immediate: true, deep: true });
+
+    const { mutate: uploadMutation, onDone: onDoneUpload } = useMutation(UPLOAD);
+    onDoneUpload((res) => {
+      console.debug('Uploaded', res);
+      uploadedFiles.value++;
+      refetch();
+    });
+
+    const { mutate: saveMutation, onDone: onDoneSave, loading: saving } = useMutation(SAVE, { refetchQueries: ['CarouselGetAll'] });
+    onDoneSave(() => {
+      EventBus.$emit('snack', 'success', 'Data saved.');
+    });
+
+    const { mutate: removeMutation, onError: onErrorRemove } = useMutation(REMOVE, { refetchQueries: ['CarouselGetAll'] });
+    onErrorRemove(error);
+
     const items = ref([] as CarouselInterface[]);
 
     const imageShowOverlay = ref(false);
@@ -477,13 +513,9 @@ export default defineComponent({
       }
     });
 
-    const state = ref({
-      dragging: false, saving: false, loading: ButtonStates.progress, uploading: ButtonStates.idle,
-    } as {
+    const state = ref({ dragging: false, uploading: ButtonStates.idle } as {
       uploading: number;
-      loading: number;
       dragging: boolean;
-      saving: boolean;
     });
 
     const headers = [
@@ -532,7 +564,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      refresh();
+      refetch();
       EventBus.$off(`carousel::dragdrop`).$off(`carousel::dragstart`);
       EventBus.$on(`carousel::dragstart`, () => {
         state.value.dragging = true;
@@ -562,46 +594,30 @@ export default defineComponent({
       });
     });
 
-    const reorder = async () => {
+    const reorder = () => {
       // reorder
       for (let i = 0; i < items.value.length; i++) {
         items.value[i].order = i;
       }
-      state.value.saving = true;
-      await Promise.all(
-        items.value.map((item) => {
-          return api.patch<{ order: number }>($axios, `/api/v1/carousel/${item.id}`, { order: item.order });
-        }),
-      );
-      saveSuccess();
-    };
-
-    const refresh = () => {
-      api.get<CarouselInterface[]>($axios, `/api/v1/carousel/`)
-        .then(response => (items.value = response.data.data))
-        .then(() => (state.value.loading = ButtonStates.success));
+      items.value.forEach(item => saveMutation({ data_json: JSON.stringify({ id: item.id, order: item.order }) }));
     };
 
     const saveSuccess = () => {
-      refresh();
+      refetch();
       EventBus.$emit('snack', 'success', 'Data updated.');
-      state.value.saving = false;
     };
 
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        api.delete($axios, `/api/v1/carousel/${item.id}`).catch(() => {
-          return true;
-        });
+        removeMutation({ id: item.id });
       });
-      refresh();
 
       EventBus.$emit('snack', 'success', 'Data removed.');
       selected.value = [];
     };
 
-    const update = async (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
+    const update = (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
       // check validity
       for (const key of Object.keys(rules)) {
         for (const rule of (rules as any)[key]) {
@@ -610,7 +626,7 @@ export default defineComponent({
             continue;
           } else {
             EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-            refresh();
+            refetch();
             return;
           }
         }
@@ -621,53 +637,29 @@ export default defineComponent({
         (i as any)[attr] = item[attr];
       }
 
-      await Promise.all(
-        [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
-          return new Promise((resolve) => {
-            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-            api.patch<CarouselInterface>($axios, `/api/v1/carousel/${itemToUpdate.id}`, { [attr]: item[attr] }).then(() => {
-              resolve(true);
-            });
-          });
-        }),
-      );
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
+      [item, ...(multi ? selected.value : [])].forEach((itemToUpdate) => {
+        console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+        saveMutation({
+          data_json: JSON.stringify({
+            itemToUpdate,
+            [attr]: item[attr],
+          }),
+        });
+      });
     };
 
     const filesChange = async (filesUpload: HTMLInputElement['files']) => {
       if (!filesUpload) {
         return;
       }
-      state.value.uploading = ButtonStates.progress;
+      // state.value.uploading = ButtonStates.progress;
       isUploadingNum.value = filesUpload.length;
       uploadedFiles.value = 0;
 
-      for (let i = 0, l = filesUpload.length; i < l; i++) {
-        const fd = new FormData();
-        console.debug(`upload::${filesUpload[i].name}`);
-        fd.append('file', filesUpload[i]);
-        await new Promise((resolve) => {
-          api.post<FormData, string>($axios, '/api/v1/carousel/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
-            .then((id) => {
-              console.debug(`done::${filesUpload[i].name}::${id}`);
-              api.getOne<CarouselInterface>($axios, `/api/v1/carousel`, id)
-                .then((response) => {
-                  console.debug('Uploaded', response.data.id);
-                  uploadedFiles.value++;
-                  items.value.push(response.data);
-                  resolve(true);
-                })
-                .catch((err) => {
-                  error(err);
-                  resolve(false);
-                });
-            })
-            .catch((err) => {
-              error(err);
-              resolve(false);
-            });
-        });
+      for (const file of filesUpload) {
+        const type = file.type;
+        const base64 = (await getBase64FromUrl(URL.createObjectURL(file))).split(',')[1];
+        uploadMutation({ data_json: JSON.stringify({ type, base64 }) });
       }
     };
 
@@ -678,6 +670,7 @@ export default defineComponent({
         item1.order = order2;
         item2.order = order1;
       }
+      items.value = sortBy(items.value, 'order', 'ASC');
       reorder();
     };
 
@@ -687,6 +680,8 @@ export default defineComponent({
 
     return {
       // refs
+      loading,
+      saving,
       timestamp,
       update,
       items,

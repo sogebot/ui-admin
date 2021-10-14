@@ -2,7 +2,7 @@
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-data-table
       v-model="selected"
-      :loading="state.loading !== ButtonStates.success || state.loadingPrm !== ButtonStates.success"
+      :loading="state.loading !== ButtonStates.success || loading"
       :headers="headers"
       :items-per-page="-1"
       :items="fItems"
@@ -86,15 +86,16 @@ import {
 } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, ref, useContext,
+  defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { capitalize, orderBy } from 'lodash';
 
 import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
@@ -113,20 +114,20 @@ type CommandsInterface = {
 
 export default defineComponent({
   setup () {
+    const { result, loading } = useQuery(gql`
+      query {
+        permissions { id name }
+      }
+    `);
+    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
     const rules = { command: [startsWith(['!']), required, minLength(2)] };
-    const { $axios } = useContext();
 
     const search = ref('');
     const items = ref([] as CommandsInterface[]);
-    const permissions = ref([] as PermissionsInterface[]);
 
     const selected = ref([] as CommandsInterface[]);
 
-    const state = ref({
-      loadingPrm: ButtonStates.progress,
-      loading:    ButtonStates.progress,
-    } as {
-      loadingPrm: number;
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
@@ -157,11 +158,6 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
-        .then((response) => {
-          permissions.value = response.data.data;
-          state.value.loadingPrm = ButtonStates.success;
-        });
       getSocket('/core/general').emit('generic::getCoreCommands', (err: string | null, commands: Required<CommandsInterface>[]) => {
         if (err) {
           return error(err);
@@ -240,6 +236,7 @@ export default defineComponent({
       headers,
       search,
       items,
+      loading,
       state,
       permissionItems,
       permissions,

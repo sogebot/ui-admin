@@ -1,5 +1,5 @@
 <template>
-  <loading v-if="!settings" />
+  <loading v-if="!settings || loading" />
   <v-form v-else v-model="valid" lazy-validation>
     <v-tabs v-model="tab">
       <v-tab>{{translate('categories.general')}}</v-tab>
@@ -122,16 +122,17 @@
 </template>
 
 <script lang="ts">
-import { useContext, useStore } from '@nuxtjs/composition-api';
+import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
 import {
   defineAsyncComponent,
   defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
+import gql from 'graphql-tag';
 
 import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
 import { minValue, required } from '~/functions/validators';
@@ -142,17 +143,22 @@ type Channel = { text: string, value: string };
 export default defineComponent({
   components: { revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')) },
   setup () {
+    const { result, loading } = useQuery(gql`
+      query {
+        permissions { id name }
+      }
+    `);
+    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
+
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
     const valid = ref(true);
     const tab = ref(null);
-    const { $axios } = useContext();
 
     const guilds = ref([] as Guild[]);
     const channels = ref([] as Channel[]);
     const roles = ref([] as Guild[]);
-    const permissions = ref([] as PermissionsInterface[]);
 
     watch(settings, () => {
       store.commit('settings/pending', true);
@@ -225,10 +231,6 @@ export default defineComponent({
             settings.value.bot.listenAtChannels = [settings.value.bot.listenAtChannels[0].filter(Boolean), settings.value.bot.listenAtChannels[1]];
             channels.value = channels2;
           });
-          api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
-            .then((response) => {
-              permissions.value = response.data.data;
-            });
         });
     });
 
@@ -252,6 +254,7 @@ export default defineComponent({
       channels,
       permissions,
       roles,
+      loading,
 
       // functions
       authorize,

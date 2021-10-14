@@ -1,12 +1,12 @@
 <template>
-  <v-card :loading="isLoading">
+  <v-card :loading="loading">
     <portal to="navbar">
       <v-btn
         small
         :text="!$vuetify.breakpoint.xs"
         :icon="$vuetify.breakpoint.xs"
-        :loading="isSaving"
-        :disabled="!valid1 || !valid2 || isLoading"
+        :loading="saving"
+        :disabled="!valid1 || !valid2 || loading"
         @click="save"
       >
         <v-icon class="d-flex d-sm-none">
@@ -17,7 +17,7 @@
     </portal>
 
     <v-stepper
-      v-if="!isLoading"
+      v-if="!loading"
       v-model="stepper"
       vertical
       dark
@@ -177,10 +177,10 @@
                         />
 
                         <v-text-field
-                          :readonly="goal.type.includes('interval')"
                           v-if="!goal.type.includes('current')"
                           :id="goal.id + '|currentAmount'"
                           v-model="goal.currentAmount"
+                          :readonly="goal.type.includes('interval')"
                           :rules="rules.currentAmount"
                           :label="translate('registry.goals.input.currentAmount.title')"
                         />
@@ -327,22 +327,25 @@ import {
 import {
   defineAsyncComponent, defineComponent, onMounted,
 
-  ref,
-  useContext, useRoute, useRouter, watch,
+  ref, useRoute, useRouter, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { DAY, HOUR } from '@sogebot/ui-helpers/constants';
 import translate from '@sogebot/ui-helpers/translate';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 
 import { GoalGroupInterface, GoalInterface } from '~/.bot/src/database/entity/goal';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import {
   highlighterCSS, highlighterHTML, highlighterJS, PrismEditor,
 } from '~/functions/prismjs';
 import { minValue, required } from '~/functions/validators';
+import GET_ONE from '~/queries/goals/getOne.gql';
 
 const emptyItem: GoalGroupInterface = {
   goals:     [],
@@ -364,9 +367,40 @@ export default defineComponent({
     font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
   },
   setup () {
-    const { $axios } = useContext();
+    const route = useRoute();
+    const store = useStore();
     const stepper = ref(1);
     const router = useRouter();
+
+    let loading = ref(true);
+    const item = ref(cloneDeep(emptyItem) as GoalGroupInterface);
+    if (route.value.params.id !== 'new') {
+      const query = useQuery(GET_ONE, { id: route.value.params.id });
+      query.onError(error);
+      loading = query.loading;
+      const cache = useResult<{ OBSWebsocket: GoalGroupInterface[] }, null>(query.result, null);
+      watch(cache, (value) => {
+        if (!value) {
+          return;
+        }
+
+        if (value.length === 0) {
+          EventBus.$emit('snack', 'error', 'Data not found.');
+          router.push({ path: '/registry/goals' });
+        } else {
+          item.value = cloneDeep(value[0]);
+        }
+      }, { immediate: true, deep: true });
+    }
+    const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(gql`
+      mutation goalsSave($data_json: String!) {
+        goalsSave(data: $data_json) { id }
+      }`);
+    onDoneSave((result) => {
+      router.push({ params: { id: result.data.goalsSave.id } });
+      EventBus.$emit('snack', 'success', 'Data saved.');
+    });
+    onErrorSave(error);
 
     const form1 = ref(null);
     const valid1 = ref(true);
@@ -374,13 +408,8 @@ export default defineComponent({
     const valid2 = ref(true);
     const tabs = ref(null as null | HTMLElement);
 
-    const isSaving = ref(false);
-    const isLoading = ref(false);
-
     const selectedTab = ref(0);
     const customTab = ref(0);
-
-    const item = ref(cloneDeep(emptyItem) as GoalGroupInterface);
 
     const intervalItems = [{ value: HOUR, text: 'hour' }, { value: HOUR * 24, text: 'day' }, { value: DAY * 7, text: 'week' }, { value: DAY * 31, text: 'month' }, { value: DAY * 365, text: 'year' }];
     const groupType = ['fade', 'multi'];
@@ -430,19 +459,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      if (useRoute().value.params.id && useRoute().value.params.id !== 'new') {
-        // load initial item
-        isLoading.value = true;
-        api.getOne<GoalGroupInterface>($axios, `/api/v1/registry/goals/`, String(useRoute().value.params.id) ?? '')
-          .then((response) => {
-            item.value = response.data;
-            isLoading.value = false;
-          })
-          .catch(() => {
-            router.push({ path: '/registry/goals' });
-            EventBus.$emit('snack', 'error', 'Data not found.');
-          });
-      }
+      store.commit('panel/back', '/registry/goals');
     });
 
     const addItem = () => {
@@ -524,18 +541,12 @@ export default defineComponent({
         (form1.value as unknown as HTMLFormElement).validate()
         && (form2.value as unknown as HTMLFormElement).validate()
       ) {
-        isSaving.value = true;
-        api.patch($axios, `/api/v1/registry/goals/${item.value.id ?? v4()}`, item.value)
-          .then((response) => {
-            router.push({ params: { id: response.id ?? '' } });
-            EventBus.$emit('snack', 'success', 'Data saved.');
-            EventBus.$emit('goals::refresh');
-          })
-          .catch((e) => {
-            console.error(e.response.data);
-            error(JSON.stringify(e.response.data));
-          })
-          .finally(() => (isSaving.value = false));
+        saveMutation({
+          data_json: JSON.stringify({
+            ...item.value,
+            id: item.value.id ?? v4(),
+          }),
+        });
       }
       updateTabWidth();
     };
@@ -567,8 +578,8 @@ export default defineComponent({
 
     return {
       // refs
-      isSaving,
-      isLoading,
+      saving,
+      loading,
       form1,
       valid1,
       form2,

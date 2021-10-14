@@ -12,29 +12,25 @@
 </template>
 
 <script lang="ts">
-import { useContext } from '@nuxtjs/composition-api';
+import { useQuery, useResult } from '@vue/apollo-composable';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref,
+  defineAsyncComponent, defineComponent, ref,
 } from '@vue/composition-api';
-import { orderBy } from 'lodash';
+import gql from 'graphql-tag';
 
 import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
-import api from '~/functions/api';
 
 export default defineComponent({
   props:      { ignored: Array },
   components: { loading: defineAsyncComponent(() => import('~/components/loading.vue')) },
-  setup (props) {
-    const permissions = ref([] as PermissionsInterface[]);
-    const { $axios } = useContext();
+  setup () {
+    const { result } = useQuery(gql`
+      query {
+        permissions { id name }
+      }
+    `);
+    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
     const tab = ref(0);
-
-    onMounted(() => {
-      api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
-        .then((response) => {
-          permissions.value = orderBy(response.data.data.filter(o => !(props.ignored ?? []).includes(o.id)), 'order', 'desc');
-        });
-    });
 
     return {
       permissions,

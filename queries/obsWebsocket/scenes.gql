@@ -1,0 +1,14 @@
+query OBSWebsocketGetScenesAndSources {
+  OBSWebsocketGetScenes {
+    name
+  }
+  OBSWebsocketGetSources {
+    name type typeId
+  }
+  OBSWebsocketGetSourceTypes {
+    type displayName typeId
+    caps {
+      canInteract doNotDuplicate doNotSelfMonitor hasAudio hasVideo isAsync isComposite isDeprecated
+    }
+  }
+}

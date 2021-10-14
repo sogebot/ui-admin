@@ -1,0 +1,17 @@
+query AlertGetAll {
+  alerts {
+    id
+    name
+    follows { id }
+    subs { id }
+    subgifts { id }
+    subcommunitygifts { id }
+    hosts { id }
+    raids { id }
+    tips { id }
+    cheers { id }
+    resubs { id }
+    cmdredeems { id }
+    rewardredeems { id }
+  }
+}

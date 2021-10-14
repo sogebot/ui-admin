@@ -1,0 +1,3 @@
+mutation randomizersRemove($id: String!) {
+  randomizersRemove(id: $id)
+}

@@ -14,8 +14,10 @@ module.exports = {
   plugins: ['unused-imports'],
   // add your custom rules here
   rules:   {
-    'unused-imports/no-unused-imports': 'error',
-    'key-spacing':                      ['error', {
+    'func-call-spacing':                    'off',
+    '@typescript-eslint/func-call-spacing': ['error'],
+    'unused-imports/no-unused-imports':     'error',
+    'key-spacing':                          ['error', {
       beforeColon: false, afterColon: true, align: 'value',
     }],
     'object-curly-spacing': ['error', 'always'],
@@ -24,7 +26,7 @@ module.exports = {
       ImportDeclaration: { multiline: true, minProperties: 3 },
       ExportDeclaration: { multiline: true, minProperties: 3 },
     }],
-    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
     'no-multiple-empty-lines':           ['error', {
       max: 1, maxEOF: 0, maxBOF: 0,
     }],

@@ -1,0 +1,3 @@
+mutation carouselRemove($id: String!) {
+  carouselRemove(id: $id)
+}

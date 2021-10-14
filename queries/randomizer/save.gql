@@ -1,0 +1,3 @@
+mutation randomizersSave($data_json: String!) {
+  randomizersSave(data: $data_json) { id }
+}

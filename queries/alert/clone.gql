@@ -1,0 +1,3 @@
+mutation AlertClone($id: String!) {
+  alertClone(id: $id) { id }
+}

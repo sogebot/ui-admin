@@ -1,0 +1,3 @@
+mutation CarouselUpload($data_json: String!) {
+  carouselUpload(data: $data_json)
+}

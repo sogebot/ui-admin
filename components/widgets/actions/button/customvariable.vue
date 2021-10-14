@@ -1,7 +1,12 @@
 <template>
   <div>
-    <v-card-text v-ripple class="text-button pa-1 mb-1 text-center" style="font-size: 12px !important; display: block;"
-      :style="{ 'color': color }" @click="!editing ? trigger($event) : showDialog()">
+    <v-card-text
+      v-ripple
+      class="text-button pa-1 mb-1 text-center"
+      style="font-size: 12px !important; display: block;"
+      :style="{ 'color': color }"
+      @click="!editing ? trigger($event) : showDialog()"
+    >
       <v-row v-if="item.type === 'customvariable'" no-gutters ripple>
         <v-slide-x-transition>
           <v-col v-if="editing" cols="auto" class="d-flex">
@@ -71,8 +76,15 @@
 
     <v-expand-transition>
       <div v-if="showMenu && customVariable && customVariable.type === 'text'">
-        <v-text-field v-model="customVariable.currentValue" filled dense hide-details placeholder="Set your value"
-          class="pa-0 ma-0" @input="debouncedTrigger($event, customVariable.currentValue)" />
+        <v-text-field
+          v-model="customVariable.currentValue"
+          filled
+          dense
+          hide-details
+          placeholder="Set your value"
+          class="pa-0 ma-0"
+          @input="debouncedTrigger($event, customVariable.currentValue)"
+        />
       </div>
     </v-expand-transition>
 
@@ -94,13 +106,12 @@
 import {
   mdiChevronDown, mdiMinus, mdiPencil, mdiPlus,
 } from '@mdi/js';
-import { useContext } from '@nuxtjs/composition-api';
+import { useMutation, useQuery } from '@vue/apollo-composable';
 import {
-  defineComponent, onMounted, ref, watch,
+  defineComponent, ref, watch,
 } from '@vue/composition-api';
+import gql from 'graphql-tag';
 import { debounce } from 'lodash';
-
-import api from '../../../../functions/api';
 
 import { VariableInterface } from '~/.bot/src/database/entity/variable';
 
@@ -114,7 +125,21 @@ export default defineComponent({
     color: string,
     editing: boolean,
   }, ctx) {
-    const { $axios } = useContext();
+    const { result } = useQuery(gql`
+      query customVariable($name: String!) {
+        customVariable(name: $name) { id currentValue type }
+      }
+    `, { name: props.item.options.customvariable }, { pollInterval: 5000 });
+    watch(result, (value) => {
+      if (value) {
+        customVariable.value = value.customVariable[0];
+      }
+    });
+    const { mutate: triggerMutation } = useMutation(gql`
+      mutation quickActionTrigger($id: String!, $value: String!) {
+        quickActionTrigger(id: $id, value: $value)
+      }`);
+
     const selected = ref(props.item.selected);
     watch(selected, (val) => {
       ctx.emit(val ? 'select' : 'unselect');
@@ -122,22 +147,6 @@ export default defineComponent({
 
     const customVariable = ref(null as VariableInterface | null);
     const showMenu = ref(false);
-
-    onMounted(() => {
-      api.get($axios, `/api/v1/quickaction/${props.item.id}`)
-        .then((response) => {
-          customVariable.value = (response.data as any).customvariable;
-        });
-      setInterval(() => {
-        // don't refresh if in middle update
-        if (!showMenu.value) {
-          api.get($axios, `/api/v1/quickaction/${props.item.id}`)
-            .then((response) => {
-              customVariable.value = (response.data as any).customvariable;
-            });
-        }
-      }, 5000);
-    });
 
     const showDialog = () => {
       ctx.emit('update:dialog', true);
@@ -151,7 +160,7 @@ export default defineComponent({
         } else {
           console.log(`quickaction::trigger::${props.item.id}`);
           customVariable.value.currentValue = value;
-          api.post($axios, `/api/v1/quickaction/${props.item.id}/trigger`, { value: value.trim() });
+          triggerMutation({ id: props.item.id, value: value.trim() });
         }
       } else if (customVariable.value && customVariable.value.type === 'number') {
         // determinate which part of button is pushed
@@ -178,10 +187,10 @@ export default defineComponent({
           ? Number(customVariable.value.currentValue) - 1
           : Number(customVariable.value.currentValue) + 1);
         console.log(`quickaction::trigger::${props.item.id}`);
-        api.post($axios, `/api/v1/quickaction/${props.item.id}/trigger`, { value: isDecrement ? '-1' : '+1' });
+        triggerMutation({ id: props.item.id, value: isDecrement ? '-1' : '+1' });
       } else {
         console.log(`quickaction::trigger::${props.item.id}`);
-        api.post($axios, `/api/v1/quickaction/${props.item.id}/trigger`);
+        triggerMutation({ id: props.item.id });
       }
     };
 

@@ -1,5 +1,5 @@
 <template>
-  <v-card id="27ff4cdf-2ffc-4c14-b619-c1660f5e0491" width="100%" :height="isPopout ? '100%' : undefined">
+  <v-card id="27ff4cdf-2ffc-4c14-b619-c1660f5e0491" width="100%" :height="isPopout ? '100%' : undefined" :loading="loading" style="overflow: inherit">
     <v-tabs
       v-model="tab"
       height="36"
@@ -39,7 +39,7 @@
             <iframe
               frameborder="0"
               scrolling="no"
-              :src="item.url"
+              :src="item.url.includes('://') ? item.url : `http://${item.url}`"
               width="100%"
               :height="height + 'px'"
             />
@@ -56,21 +56,28 @@ import { mdiPencil } from '@mdi/js';
 import {
   computed,
   defineAsyncComponent,
-  defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
+
+import { error } from '../../functions/error';
 
 import type { WidgetCustomInterface } from '.bot/src/database/entity/widget';
-import api from '~/functions/api';
 
 export default defineComponent({
   components: { edit: defineAsyncComponent({ loader: () => import('~/components/widgets/custom/edit.vue') }) },
   setup () {
-    const context = useContext();
+    const { result, loading, refetch, onError } = useQuery(gql`
+      query { widgetCustomGet { id url name } }
+    `);
+    onError(error);
+    const items = useResult<{ widgetCustomGet: Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[] }, Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[], Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[]>(result, [], data => data.widgetCustomGet);
+
     const isPopout = computed(() => location.href.includes('popout'));
     const height = ref(600);
     const show = ref(false);
-    const items = ref([] as WidgetCustomInterface[]);
 
     const dialog = ref(false);
 
@@ -84,14 +91,9 @@ export default defineComponent({
       height.value = Math.max(newHeight, 300);
     }
 
-    const refresh = async () => {
-      const response = await api.get<WidgetCustomInterface[]>(context.$axios, `/api/v1/custom`);
-      items.value = response.data.data;
-    };
-
     watch(dialog, (val) => {
       if (!val) {
-        refresh();
+        refetch();
       }
     });
 
@@ -101,8 +103,6 @@ export default defineComponent({
       setTimeout(() => {
         show.value = true;
       }, 100);
-
-      refresh();
     });
 
     return {
@@ -113,6 +113,7 @@ export default defineComponent({
       dialog,
       items,
       show,
+      loading,
 
       // functions
 

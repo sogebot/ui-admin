@@ -1,7 +1,7 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <v-data-table
-      :loading="state.loading !== ButtonStates.success"
+      :loading="loading"
       :headers="headers"
       :items="items"
     >
@@ -27,26 +27,41 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent, onMounted, ref, useContext,
-} from '@nuxtjs/composition-api';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { defineComponent } from '@nuxtjs/composition-api';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { capitalize, orderBy } from 'lodash';
-
-import api from '../../functions/api';
 
 import type { BannedEventsInterface } from '~/.bot/src/database/entity/bannedEvents';
 
 export default defineComponent({
   setup () {
-    const items = ref([] as Required<BannedEventsInterface>[]);
-    const { $axios } = useContext();
-
-    const state = ref({ loading: ButtonStates.progress } as {
-      loading: number;
-    });
+    const { result, loading } = useQuery(gql`
+      query {
+        bannedEventsGet {
+          id
+          event_type
+          event_timestamp
+          version
+          event_data {
+            broadcaster_id
+            broadcaster_login
+            broadcaster_name
+            user_id
+            user_login
+            expires_at
+            moderator_id
+            moderator_login
+            moderator_name
+            reason
+            user_name
+          }
+        }
+      }
+    `, null, { pollInterval: 10000 });
+    const items = useResult<{ bannedEventsGet: BannedEventsInterface[] }, BannedEventsInterface[], BannedEventsInterface[]>(result, [], data => data.bannedEventsGet);
 
     const headers = [
       { value: 'event_timestamp', text: capitalize(translate('date')) },
@@ -61,25 +76,12 @@ export default defineComponent({
         value: 'reason', text: capitalize('reason'), sortable: false,
       },
     ];
-
-    const refresh = () => {
-      api.get<BannedEventsInterface[]>($axios, '/api/v1/moderation/bannedevents')
-        .then(response => (items.value = response.data.data))
-        .then(() => (state.value.loading = ButtonStates.success));
-    };
-
-    onMounted(() => {
-      refresh();
-    });
-
     return {
       orderBy,
       headers,
       items,
-      state,
       translate,
-      ButtonStates,
-      refresh,
+      loading,
       dayjs,
     };
   },

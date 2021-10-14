@@ -27,11 +27,13 @@ export default defineComponent({
 
     onMounted(() => {
       EventBus.$on('snack', (color: string, message: string) => {
-        snacks.value.push({
-          color,
-          message,
-          timeout: 5000,
-        });
+        if (!snacks.value.find(item => item.color === color && item.message === message)) {
+          snacks.value.push({
+            color,
+            message,
+            timeout: 5000,
+          });
+        }
       });
     });
 

@@ -32,7 +32,11 @@
       "@types/node",
       "@nuxtjs/axios",
       "@nuxtjs/proxy",
-      "@nuxtjs/vuetify"
+      "@nuxtjs/vuetify",
+      "vue-apollo/types",
+    ],
+    "typeRoots": [
+      "./d.ts/"
     ]
   },
   "exclude": [

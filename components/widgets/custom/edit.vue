@@ -2,11 +2,12 @@
   <v-dialog
     v-model="dialogController"
     persistent
+
     :fullscreen="$vuetify.breakpoint.mobile"
     transition="dialog-bottom-transition"
     max-width="600"
   >
-    <v-card :loading="!isLoaded">
+    <v-card :loading="loading">
       <v-toolbar dense color="dark">
         <v-btn
           icon
@@ -20,10 +21,12 @@
           small
           :text="!$vuetify.breakpoint.xs"
           :icon="$vuetify.breakpoint.xs"
-          :loading="isSaving"
+          :loading="saving || removing"
           @click="save"
         >
-          <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+          <v-icon class="d-flex d-sm-none">
+            {{ mdiFloppy }}
+          </v-icon>
           <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
         </v-btn>
       </v-toolbar>
@@ -72,13 +75,16 @@ import {
   mdiClose, mdiDelete, mdiExclamationThick, mdiFloppy,
 } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
+import { useMutation, useQuery } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
+import { error } from '../../../functions/error';
+
 import { WidgetCustomInterface } from '~/.bot/src/database/entity/widget';
-import api from '~/functions/api';
 
 type Props = {
   dialog: boolean,
@@ -87,11 +93,35 @@ type Props = {
 export default defineComponent({
   props: { dialog: Boolean },
   setup (props: Props, ctx) {
-    const { $axios } = useContext();
+    const { loading, onError, refetch, onResult } = useQuery(gql`
+      query widgetCustomGetInEdit { widgetCustomGet { id url name } }
+    `);
+    onResult((value) => {
+      items.value = value.data.widgetCustomGet;
+    });
+    onError(error);
+    const items = ref([] as Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[]);
+
+    const { mutate: updateMutation, onDone: onDoneUpdate, onError: onErrorUpdate, loading: saving } = useMutation(gql`
+      mutation widgetCustomSet($id: String!, $data: WidgetCustomInput!) {
+          widgetCustomSet(id: $id, data: $data) {
+            id
+          }
+        }`);
+    onDoneUpdate(() => {
+      ctx.emit('save');
+      refetch();
+    });
+    onErrorUpdate(error);
+    const { mutate: removeMutation, onDone: onDoneRemove, onError: onErrorRemove, loading: removing } = useMutation(gql`
+      mutation widgetCustomRemove($id: String!) { widgetCustomRemove(id: $id) }`);
+    onDoneRemove(() => {
+      ctx.emit('save');
+      refetch();
+    });
+    onErrorRemove(error);
+
     const dialogController = ref(props.dialog);
-    const isLoaded = ref(false);
-    const isSaving = ref(false);
-    const items = ref([] as Omit<WidgetCustomInterface, 'userId'>[]);
     const valid = ref(true);
     const markedToDelete = ref([] as string[]);
 
@@ -99,24 +129,15 @@ export default defineComponent({
       ctx.emit('update:dialog', val);
     });
 
-    const refresh = async () => {
-      const response = await api.get<WidgetCustomInterface[]>($axios, `/api/v1/custom`);
-      items.value = response.data.data;
-      isLoaded.value = true;
-    };
-
-    const save = async () => {
-      isSaving.value = true;
-      for (const id of markedToDelete.value) {
-        api.delete<WidgetCustomInterface>($axios, `/api/v1/custom/${id}`).catch(() => {
-          return true;
-        });
-      }
-      for (const item of items.value) {
-        await api.post<Omit<WidgetCustomInterface, 'userId'>>($axios, `/api/v1/custom`, item);
-      }
+    const save = () => {
+      markedToDelete.value.forEach((id) => {
+        removeMutation({ id });
+      });
+      items.value.forEach((item) => {
+        const { id, name, url } = item;
+        updateMutation({ id, data: { name, url } });
+      });
       markedToDelete.value = [];
-      isSaving.value = false;
       dialogController.value = false;
     };
 
@@ -133,17 +154,14 @@ export default defineComponent({
       markedToDelete.value.push(id);
     };
 
-    onMounted(() => {
-      refresh();
-    });
-
     return {
       // refs
       dialogController,
-      isLoaded,
-      isSaving,
       items,
       valid,
+      loading,
+      saving,
+      removing,
 
       // functions
       translate,

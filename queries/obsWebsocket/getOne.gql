@@ -1,0 +1,56 @@
+query OBSWebsocketGetOne($id: String!) {
+  OBSWebsocket(id: $id) {
+    id
+    name
+    advancedMode
+    advancedModeCode
+    simpleModeTasks {
+      ...on WaitMS {
+        id
+        event
+        args {
+          miliseconds
+        }
+      }
+      ...on Recording {
+        id
+        event
+      }
+      ...on ReplayBuffer {
+        id
+        event
+      }
+      ...on SetCurrentScene {
+        id
+        event
+        args {
+          sceneName
+        }
+      }
+      ...on SetMute {
+        id
+        event
+        args {
+          source
+          mute
+        }
+      }
+      ...on SetVolume {
+        id
+        event
+        args {
+          source
+          volume
+        }
+      }
+      ...on TaskLog {
+        id
+        event
+        args {
+          logMessage
+        }
+      }
+      __typename
+    }
+  }
+}

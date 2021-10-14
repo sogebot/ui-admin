@@ -1,38 +1,52 @@
 <template>
-  <v-card id="c7eff6a7-dc62-4c0b-bad6-90df9d5b605f" width="100%" height="100%" :loading="loading">
+  <v-card id="c7eff6a7-dc62-4c0b-bad6-90df9d5b605f" width="100%" height="100%" :loading="loading" style="overflow: inherit">
     <v-toolbar color="blue-grey darken-4" class="mb-1" height="36">
       <v-toolbar-title class="text-button">
         Actions
       </v-toolbar-title>
     </v-toolbar>
 
-    <v-speed-dial absolute v-model="fab" right style="right: 2px; top: -15px;" direction="bottom" top>
-          <template v-slot:activator>
-            <v-btn v-model="fab" color="blue-grey darken-2" dark fab x-small>
-              <v-icon v-if="fab">
-                {{ mdiClose }}
-              </v-icon>
-              <v-icon v-else>
-                {{ mdiDotsVertical }}
-              </v-icon>
-            </v-btn>
-          </template>
+    <v-speed-dial
+      v-model="fab"
+      absolute
+      right
+      style="right: 2px; top: -15px;"
+      direction="bottom"
+      top
+    >
+      <template #activator>
+        <v-btn v-model="fab" color="blue-grey darken-2" dark fab x-small>
+          <v-icon v-if="fab">
+            {{ mdiClose }}
+          </v-icon>
+          <v-icon v-else>
+            {{ mdiDotsVertical }}
+          </v-icon>
+        </v-btn>
+      </template>
 
-          <v-btn fab x-small :color="editing ? 'primary' : 'secondary lighten-2'" @click="editing = !editing">
-            <v-icon>{{ mdiCircleEditOutline }}</v-icon>
+      <v-btn fab x-small :color="editing ? 'primary' : 'secondary lighten-2'" @click="editing = !editing">
+        <v-icon>{{ mdiCircleEditOutline }}</v-icon>
+      </v-btn>
+      <v-tooltip v-if="!isPopout" bottom>
+        <template #activator="{ on, attrs }">
+          <v-btn
+            color="secondary"
+            fab
+            x-small
+            v-bind="attrs"
+            href="#/popout/actions"
+            target="_blank"
+            v-on="on"
+          >
+            <v-icon>{{ mdiOpenInNew }}</v-icon>
           </v-btn>
-          <v-tooltip bottom v-if="!isPopout">
-            <template #activator="{ on, attrs }">
-              <v-btn color="secondary" fab x-small v-bind="attrs" href="#/popout/actions" target="_blank"
-                v-on="on">
-                <v-icon>{{ mdiOpenInNew }}</v-icon>
-              </v-btn>
-            </template>
-            <span>Popout</span>
-          </v-tooltip>
-        </v-speed-dial>
+        </template>
+        <span>Popout</span>
+      </v-tooltip>
+    </v-speed-dial>
 
-    <v-row dense :key="timestamp">
+    <v-row :key="timestamp" dense>
       <v-col cols="12">
         <template v-for="item of items">
           <span :key="item.id + 'transition'">
@@ -42,7 +56,7 @@
                 :key="item.id"
                 :item="item"
                 :editing="editing"
-                @save="refresh"
+                @save="refetch"
                 @selected="item.selected = $event"
               />
             </v-expand-transition>
@@ -74,24 +88,51 @@ import {
 import {
   computed,
   defineAsyncComponent,
-  defineComponent, nextTick, onMounted, ref, useContext, useStore,
+  defineComponent, onMounted, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
+import { useMutation, useQuery } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
+import { error } from '../../functions/error';
+
 import type { QuickActions } from '.bot/src/database/entity/dashboard';
-import api from '~/functions/api';
-import { error } from '~/functions/error';
 
 export default defineComponent({
   components: { actionButton: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/button.vue') }) },
   setup () {
-    const context = useContext();
+    const { result, loading, refetch } = useQuery(gql`
+      query quickAction {
+        quickAction {
+          ... on CommandItem { id type options { label color command }  }
+          ... on CustomVariableItem { id type options { label color customvariable } }
+          ... on RandomizerItem { id type options { label color randomizerId } }
+          ... on OverlayCountdownItem { id type options { label color countdownId } }
+          ... on OverlayMarathonItem { id type options { label color marathonId } }
+          ... on OverlayStopwatchItem { id type options { label color stopwatchId } }
+        }
+      }
+    `);
+    watch(result, (value) => {
+      items.value = value.quickAction.map((o: any) => {
+        const { __typename, ...item } = o;
+        return {
+          ...item, selected: items.value.find(b => b.id === o.id)?.selected ?? false, temporary: false, show: true,
+        };
+      });
+    });
+
+    const { mutate: removeMutation, onError: onErrorRemove } = useMutation(gql`
+      mutation quickActionDelete($id: String!) {
+        quickActionDelete(id: $id)
+      }`);
+    onErrorRemove(error);
+
     const fab = ref(false);
     const editing = ref(false);
     const timestamp = ref(Date.now());
     const height = ref(600);
     const isPopout = computed(() => location.href.includes('popout'));
-    const loading = ref(true);
     const store = useStore<any>();
 
     const selectedItems = computed(() => {
@@ -131,42 +172,15 @@ export default defineComponent({
       const selected = items.value.filter(item => item.selected);
       for (const item of selected) {
         item.show = false;
-        api.delete(context.$axios, `/api/v1/quickaction/${item.id}`);
+        removeMutation({ id: item.id });
       }
       setTimeout(() => {
         items.value = items.value.filter(item => !item.selected);
       }, 1);
     }
 
-    const refresh = async () => {
-      if (store.state.loggedUser === 'undefined' || store.state.loggedUser === null) {
-        setTimeout(() => refresh(), 10);
-      } else {
-        try {
-          const response = await api.get<(QuickActions.Item)[]>(context.$axios, '/api/v1/quickaction');
-          items.value = response.data.data.map(o => ({
-            ...o, selected: items.value.find(b => b.id === o.id)?.selected ?? false, temporary: false, show: false,
-          }));
-
-          setTimeout(() => {
-            nextTick(() => {
-              // set as temporary false to show animation
-              for (const item of items.value) {
-                item.show = true;
-              }
-              loading.value = false;
-              timestamp.value = Date.now();
-            });
-          }, 200);
-        } catch (e) {
-          error(e);
-        }
-      }
-    };
-
     onMounted(() => {
       setInterval(() => updateHeight(), 100);
-      refresh();
     });
 
     return {
@@ -184,7 +198,7 @@ export default defineComponent({
       /* functions */
       addItem,
       deleteItems,
-      refresh,
+      refetch,
 
       /* icons */
       mdiCircleEditOutline,

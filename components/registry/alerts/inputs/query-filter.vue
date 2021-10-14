@@ -171,7 +171,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import type { CommonSettingsInterface } from '~/.bot/src/database/entity/alert';
 
 type Props = {
-  value: CommonSettingsInterface['filter'],
+  value: string,
   noInput: boolean,
   deletable: boolean,
   rules: [[string, string]]
@@ -179,14 +179,14 @@ type Props = {
 export default defineComponent({
   components: { queryFilter: defineAsyncComponent(() => import('~/components/registry/alerts/inputs/query-filter.vue')) },
   props:      {
-    value:     Object,
+    value:     String,
     rules:     Array,
     noInput:   Boolean,
     deletable: Boolean,
   },
   setup (props: Props, ctx) {
     const _filter = ref((props.value !== null
-      ? props.value
+      ? JSON.parse(props.value)
       : {
         operator: 'and',
         items:    [],
@@ -307,7 +307,7 @@ export default defineComponent({
     };
 
     watch(_filter, (val) => {
-      ctx.emit('input', val);
+      ctx.emit('input', JSON.stringify(val));
     }, { deep: true });
 
     return {

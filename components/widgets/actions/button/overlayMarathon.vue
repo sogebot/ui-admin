@@ -16,7 +16,7 @@
         </v-slide-x-transition>
         <v-col v-if="!editing" cols="auto" class="d-flex" />
         <v-col :key="tick" style="align-self: center;" class="text">
-          <div style="font-size: 0.8rem;" v-html="time()"/>
+          <div style="font-size: 0.8rem;" v-html="time()" />
         </v-col>
 
         <v-col v-if="!editing" cols="auto" class="d-flex">
@@ -50,21 +50,20 @@
 
 <script lang="ts">
 import { mdiAlarmPlus, mdiPlus } from '@mdi/js';
-import { useContext } from '@nuxtjs/composition-api';
 import {
   DAY, HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
 import { getSocket } from '@sogebot/ui-helpers/socket';
+import { useQuery, useResult } from '@vue/apollo-composable';
 import {
   computed,
   defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@vue/composition-api';
 
-import api from '../../../../functions/api';
-
 import type {
   OverlayMapperGroup, OverlayMapperMarathon, OverlayMappers,
 } from '.bot/src/database/entity/overlay';
+import GET from '~/queries/overlays/get.gql';
 
 export default defineComponent({
   props: {
@@ -77,7 +76,6 @@ export default defineComponent({
     editing: boolean,
   }, ctx) {
     let interval = 0;
-    const { $axios } = useContext();
     const selected = ref(props.item.selected);
     const tick = ref(0);
     const newTime = ref(0);
@@ -85,7 +83,6 @@ export default defineComponent({
       ctx.emit(val ? 'select' : 'unselect');
     });
 
-    const marathon = ref(null as OverlayMapperGroup['opts']['items'][number] | OverlayMapperMarathon | null);
     const timestamp = ref(0);
     const showMenu = ref(false);
 
@@ -127,31 +124,26 @@ export default defineComponent({
       return output;
     };
 
-    const refresh = () => {
-      api.getOne<OverlayMappers>($axios, `/api/v1/overlay`, props.item.options.marathonId)
-        .then((response) => {
-          marathon.value = response.data as OverlayMapperMarathon;
-          timestamp.value = Math.max(marathon.value.opts?.endTime ?? 0, Date.now());
-        }).catch((e) => {
-          // we need to search for group
-          api.get<OverlayMappers[]>($axios, `/api/v1/overlay`)
-            .then((response) => {
-              for (const overlay of response.data.data) {
-                const groupCheck = (item: OverlayMappers): item is OverlayMapperGroup => {
-                  return item.value === 'group';
-                };
-                if (groupCheck(overlay)) {
-                  const found = overlay.opts.items.find(o => o.id === props.item.options.marathonId && o.type === 'marathon');
-                  if (found) {
-                    marathon.value = found;
-                  }
-                }
-              }
-            });
+    const { result, refetch } = useQuery(GET);
+    const items = useResult<{ overlays: Record<string, any> }, (OverlayMapperMarathon | OverlayMapperGroup)[], (OverlayMapperMarathon | OverlayMapperGroup)[]>(result, [], data => [...data.overlays.marathon, ...data.overlays.group]);
 
-          console.log({ e });
-        });
+    const groupCheck = (item: OverlayMappers): item is OverlayMapperGroup => {
+      return item.value === 'group';
     };
+    const marathon = computed(() => {
+      for (const item of items.value) {
+        if (groupCheck(item)) {
+          const found = item.opts.items.find(o => o.id === props.item.options.marathonId && o.type === 'marathon');
+          if (found) {
+            found.opts = JSON.parse(found.opts);
+            return found;
+          }
+        } else if (item.id === props.item.options.marathonId) {
+          return item;
+        }
+      }
+      return null;
+    });
 
     const timeInput = computed({
       get () {
@@ -183,7 +175,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      refresh();
+      refetch();
       interval = window.setInterval(() => {
         tick.value = Date.now();
         // get actual status of opened overlay

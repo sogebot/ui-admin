@@ -1,0 +1,3 @@
+mutation OBSWebsocketRemove($id: String!) {
+  OBSWebsocketRemove(id: $id)
+}

@@ -41,7 +41,9 @@ export default {
   plugins: [
     '@/plugins/remove-shift-selection',
     '@/plugins/before-each.ts',
+    '@/plugins/apollo-hook.ts',
     { src: '@/plugins/log-version.js', ssr: false },
+    { src: '@/plugins/check-token-validity.ts', ssr: false },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -74,10 +76,16 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/proxy',
     'portal-vue/nuxt',
+    '@nuxtjs/apollo',
   ],
 
+  apollo: {
+    includeNodeModules: true,
+    clientConfigs:      { default: '~/plugins/apollo-config.js' },
+  },
+
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
+  build: { hotMiddleware: { client: { overlay: false } } },
 
   router: {
     mode: 'hash',
@@ -95,6 +103,10 @@ export default {
   // enable api proxy
   ...process.env.NODE_ENV === 'development' && {
     proxy: {
+      '/graphql': {
+        changeOrigin: true,
+        target:       'http://localhost:20000',
+      },
       '/api': {
         changeOrigin: true,
         target:       'http://localhost:20000',
@@ -106,6 +118,10 @@ export default {
       '/overlays': {
         changeOrigin: true,
         target:       'http://localhost:3002',
+      },
+      '/public': {
+        changeOrigin: true,
+        target:       'http://localhost:3003',
       },
     },
   },

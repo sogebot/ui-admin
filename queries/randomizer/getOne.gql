@@ -1,0 +1,30 @@
+query randomizerGetOne($id: String!) {
+  permissions { id name }
+  randomizers(id: $id) {
+    id
+    createdAt
+    command
+    permissionId
+    name
+    isShown
+    shouldPlayTick
+    tickVolume
+    widgetOrder
+    type
+    position {
+      x y anchorX anchorY
+    }
+    customizationFont {
+      family color size weight borderColor borderPx
+      shadow {
+        shiftRight shiftDown blur opacity color
+      }
+    }
+    tts {
+      enabled voice pitch volume rate
+    }
+    items {
+      id groupId name color numOfDuplicates minimalSpacing order
+    }
+  }
+}

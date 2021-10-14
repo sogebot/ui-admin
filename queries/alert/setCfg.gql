@@ -1,0 +1,3 @@
+mutation AlertSetCfg($name: String!, $value: Boolean!) {
+  alertsSettingsSet(name: $name, value: $value)
+}

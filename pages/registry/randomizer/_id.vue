@@ -1,21 +1,23 @@
 <template>
-  <v-card :loading="isLoading" class="fill-height">
+  <v-card :loading="loading" class="fill-height">
     <portal to="navbar">
       <v-btn
         small
         :text="!$vuetify.breakpoint.xs"
         :icon="$vuetify.breakpoint.xs"
-        :loading="isSaving"
+        :loading="saving"
+        :disabled="!valid1 || loading"
         @click="save"
-        :disabled="!valid1 || isLoading"
       >
-        <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+        <v-icon class="d-flex d-sm-none">
+          {{ mdiFloppy }}
+        </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
     </portal>
 
     <v-fade-transition>
-      <v-container v-if="!isLoading" fluid>
+      <v-container v-if="!loading" fluid>
         <v-form ref="form1" v-model="valid1" lazy-validation>
           <v-text-field
             v-model.trim="item.name"
@@ -41,7 +43,12 @@
           <v-expand-transition>
             <div v-if="item.type === 'wheelOfFortune'">
               <v-checkbox v-model="item.shouldPlayTick" :label="translate('registry.randomizer.form.tick')" />
-              <v-slider v-model="item.tickVolume" min="0" max="100" step="1" :label="translate('volume')"
+              <v-slider
+                v-model="item.tickVolume"
+                min="0"
+                max="100"
+                step="1"
+                :label="translate('volume')"
                 :thumb-size="0"
                 thumb-label="always"
               >
@@ -112,7 +119,7 @@
       </v-container>
     </v-fade-transition>
 
-    <v-overlay v-if="isLoading">
+    <v-overlay v-if="loading">
       <v-row>
         <v-col class="text-center">
           <v-progress-circular indeterminate size="48" />
@@ -127,16 +134,19 @@ import {
   mdiClose, mdiExclamationThick, mdiFloppy, mdiPlus,
 } from '@mdi/js';
 import {
-  useContext, useRoute, useRouter, useStore,
-} from '@nuxtjs/composition-api';
-import {
-  computed,
-  defineAsyncComponent,
-  defineComponent, onMounted, ref,
+  computed, defineAsyncComponent, defineComponent, onMounted,
+
+  ref,
+  useRoute,
+  useRouter, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { getContrastColor, getRandomColor } from '@sogebot/ui-helpers/colors';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import translate from '@sogebot/ui-helpers/translate';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import {
   cloneDeep, isEqual, orderBy,
 } from 'lodash';
@@ -144,12 +154,12 @@ import { v4 } from 'uuid';
 
 import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
 import { RandomizerInterface, RandomizerItemInterface } from '~/.bot/src/database/entity/randomizer';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import {
   minLength, required, startsWith,
 } from '~/functions/validators';
+import GET_ONE from '~/queries/randomizer/getOne.gql';
 
 const emptyItem: RandomizerInterface = {
   id:             v4(),
@@ -194,20 +204,43 @@ export default defineComponent({
     optionsTable: defineAsyncComponent({ loader: () => import('~/components/randomizer/table.vue') }),
   },
   setup () {
-    const { $axios } = useContext();
     const store = useStore();
-    const stepper = ref(1);
-    const router = useRouter();
     const route = useRoute();
+    const router = useRouter();
+
+    const item = ref(cloneDeep(emptyItem) as RandomizerInterface);
+
+    const { result, loading } = useQuery(GET_ONE, { id: route.value.params.id });
+    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
+    if (route.value.params.id !== 'new') {
+      const cache = useResult<{ randomizers: RandomizerInterface[] }, null, RandomizerInterface[]>(result, null, data => data.randomizers);
+      watch(cache, (value) => {
+        if (!value) {
+          return;
+        }
+
+        if (value.length === 0) {
+          EventBus.$emit('snack', 'error', 'Data not found.');
+          router.push({ path: '/registry/randomizer' });
+        } else {
+          item.value = cloneDeep(value[0]);
+        }
+      }, { immediate: true, deep: true });
+    }
+    const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(gql`
+      mutation randomizersSave($data_json: String!) {
+        randomizersSave(data: $data_json) { id }
+      }`);
+    onDoneSave((res) => {
+      router.push({ params: { id: res.data.randomizersSave.id } });
+      EventBus.$emit('snack', 'success', 'Data saved.');
+    });
+    onErrorSave(error);
+
+    const stepper = ref(1);
 
     const form1 = ref(null);
     const valid1 = ref(true);
-
-    const isSaving = ref(false);
-    const isLoading = ref(false);
-
-    const item = ref(cloneDeep(emptyItem) as RandomizerInterface);
-    const permissions = ref([] as PermissionsInterface[]);
 
     const typeItems = [
       { text: translate('registry.randomizer.form.simple'), value: 'simple' },
@@ -226,41 +259,13 @@ export default defineComponent({
 
     onMounted(() => {
       store.commit('panel/back', '/registry/randomizer/');
-      if (route.value.params.id && route.value.params.id !== 'new') {
-        // load initial item
-        isLoading.value = true;
-        api.getOne<RandomizerInterface>($axios, `/api/v1/registry/randomizer/`, String(route.value.params.id) ?? '')
-          .then((response) => {
-            item.value = response.data;
-            isLoading.value = false;
-          })
-          .catch(() => {
-            router.push({ path: '/registry/randomizer' });
-            EventBus.$emit('snack', 'error', 'Data not found.');
-          });
-
-        api.get<PermissionsInterface[]>($axios, '/api/v1/settings/permissions')
-          .then((response) => {
-            permissions.value = response.data.data;
-          });
-      }
     });
 
     const save = () => {
       if (
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
-        isSaving.value = true;
-        api.patch($axios, `/api/v1/registry/randomizer/${item.value.id ?? v4()}`, item.value)
-          .then((response) => {
-            router.push({ params: { id: response.id ?? '' } });
-            EventBus.$emit('snack', 'success', 'Data saved.');
-          })
-          .catch((e) => {
-            console.error(e.response.data);
-            error(JSON.stringify(e.response.data));
-          })
-          .finally(() => (isSaving.value = false));
+        saveMutation({ data_json: JSON.stringify(item.value) });
       }
     };
 
@@ -324,8 +329,6 @@ export default defineComponent({
 
     return {
       // refs
-      isSaving,
-      isLoading,
       form1,
       valid1,
       item,
@@ -333,6 +336,8 @@ export default defineComponent({
       typeItems,
       permissionItems,
       rules,
+      saving,
+      loading,
 
       // functions
       save,

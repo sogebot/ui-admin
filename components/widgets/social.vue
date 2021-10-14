@@ -1,5 +1,5 @@
 <template>
-  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e6" width="100%" :height="isPopout ? '100%' : undefined">
+  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e6" width="100%" :height="isPopout ? '100%' : undefined" :loading="loading" style="overflow: inherit">
     <v-slide-y-transition>
       <v-card-text v-if="items.length === 0" :style="{ height: height + 'px' }">
         <div class="font-weight-light">
@@ -36,20 +36,27 @@
 import { mdiLink, mdiTwitter } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, ref, useContext,
+  defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
+
+import { error } from '../../functions/error';
 
 import type { WidgetSocialInterface } from '.bot/src/database/entity/widget';
-import api from '~/functions/api';
 
 export default defineComponent({
   setup () {
-    const context = useContext();
+    const { result, loading, onError } = useQuery(gql`
+      query { widgeSocialGet { id type hashtag text username displayname url timestamp }
+    `, null, { pollInterval: 10000 });
+    onError(error);
+    const items = useResult<{ widgeSocialGet: WidgetSocialInterface[] }, WidgetSocialInterface[], WidgetSocialInterface[]>(result, [], data => data.widgeSocialGet);
+
     const isPopout = computed(() => location.href.includes('popout'));
     const height = ref(600);
-    const items = ref([] as WidgetSocialInterface[]);
 
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
@@ -59,18 +66,8 @@ export default defineComponent({
       height.value = Math.max(newHeight, 300);
     }
 
-    const refresh = async () => {
-      const response = await api.get<WidgetSocialInterface[]>(context.$axios, `/api/v1/social`);
-      items.value = response.data.data;
-    };
-
     onMounted(() => {
       setInterval(() => updateHeight(), 100);
-
-      refresh();
-      setInterval(() => {
-        refresh();
-      }, 10000);
     });
 
     return {
@@ -78,6 +75,7 @@ export default defineComponent({
       isPopout,
       height,
       items,
+      loading,
 
       // functions
 

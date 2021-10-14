@@ -8,7 +8,7 @@
       calculate-widths
       :show-select="selectable"
       :search="search"
-      :loading="state.loading !== ButtonStates.success"
+      :loading="loading || cloning"
       :headers="headers"
       :items-per-page="-1"
       :items="items"
@@ -148,7 +148,7 @@
           <v-btn
             icon
             :color="hover ? 'primary' : 'secondary lighten-3'"
-            @click.stop="clone(item)"
+            @click.stop="clone(item.id)"
           >
             <v-icon>{{ mdiContentCopy }}</v-icon>
           </v-btn>
@@ -172,26 +172,46 @@ import {
   mdiCheckboxMultipleMarkedOutline, mdiContentCopy, mdiLink, mdiMagnify, mdiPencil,
 } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
-import { v4 } from 'uuid';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
 
 import type { AlertInterface } from '.bot/src/database/entity/alert';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
+import CLONE from '~/queries/alert/clone.gql';
+import GET_ALL from '~/queries/alert/getAll.gql';
+import REMOVE from '~/queries/alert/remove.gql';
 
 export default defineComponent({
   components: { 'test-dialog': defineAsyncComponent({ loader: () => import('~/components/registry/alerts/test-dialog.vue') }) },
   setup () {
-    const { $axios } = useContext();
+    const { result, loading, refetch } = useQuery(GET_ALL);
+    const items = useResult<{alerts: AlertInterface[] }, AlertInterface[], AlertInterface[]>(result, [], (data) => {
+      if (selected.value.length > 0) {
+        selected.value.forEach((selectedItem, index) => {
+          selectedItem = data.alerts.find(o => o.id === selectedItem.id) || selectedItem;
+          selected.value[index] = selectedItem;
+        });
+      }
+      return data.alerts;
+    });
+    const { mutate: cloneMutation, onError: onErrorClone, onDone: onDoneClone, loading: cloning } = useMutation(CLONE, { refetchQueries: ['AlertGetAll'] });
+    onDoneClone(() => EventBus.$emit('snack', 'success', 'Data cloned.'));
+    onErrorClone(error);
+
+    const { mutate: removeMutation, onError: onErroRemove, onDone: onDoneRemove } = useMutation(REMOVE, { refetchQueries: ['AlertGetAll'] });
+    onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
+    onErroRemove(error);
+
     const rules = { name: [required] };
 
-    const items = ref([] as AlertInterface[]);
     const search = ref('');
 
     const selected = ref([] as AlertInterface[]);
@@ -207,10 +227,6 @@ export default defineComponent({
       }
     });
 
-    const state = ref({ loading: ButtonStates.progress } as {
-      loading: number;
-    });
-
     const headers = [
       { value: 'name', text: translate('registry.alerts.name.name') },
       { value: 'additional', text: translate('registry.customvariables.additional-info') },
@@ -222,159 +238,29 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      refresh();
+      refetch();
     });
 
-    const refresh = () => {
-      api.get<AlertInterface[]>($axios, '/api/v1/registry/alerts/')
-        .then((response) => {
-          items.value = response.data.data;
-          // we also need to reset selection values
-          if (selected.value.length > 0) {
-            selected.value.forEach((selectedItem, index) => {
-              selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
-              selected.value[index] = selectedItem;
-            });
-          }
-          state.value.loading = ButtonStates.success;
-        });
-    };
-
     const saveSuccess = () => {
-      refresh();
       EventBus.$emit('snack', 'success', 'Data updated.');
     };
 
-    const deleteSelected = async () => {
+    const deleteSelected = () => {
       deleteDialog.value = false;
-      await Promise.allSettled(
-        selected.value.map((item) => {
-          return new Promise((resolve) => {
-            api.delete($axios, `/api/v1/registry/alerts/${item.id}`)
-              .then(() => {
-                resolve(true);
-              });
-          });
-        }),
-      );
-      refresh();
-
-      EventBus.$emit('snack', 'success', 'Data removed.');
+      selected.value.forEach(item => removeMutation({ id: item.id }));
       selected.value = [];
     };
 
-    const clone = (item: Required<AlertInterface>) => {
-      const mediaMap = new Map() as Map<string, string>;
-      const clonedItem = {
-        ...item,
-        id:        v4(),
-        updatedAt: Date.now(),
-        name:      item.name + ' (clone)',
-        follows:   item.follows.map((o) => {
-          mediaMap.set(o.soundId, v4());
-          mediaMap.set(o.imageId, v4());
-          return {
-            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
-          };
-        }),
-        subs: item.subs.map((o) => {
-          mediaMap.set(o.soundId, v4());
-          mediaMap.set(o.imageId, v4());
-          return {
-            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
-          };
-        }),
-        subgifts: item.subgifts.map((o) => {
-          mediaMap.set(o.soundId, v4());
-          mediaMap.set(o.imageId, v4());
-          return {
-            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
-          };
-        }),
-        subcommunitygifts: item.subcommunitygifts.map((o) => {
-          mediaMap.set(o.soundId, v4());
-          mediaMap.set(o.imageId, v4());
-          return {
-            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
-          };
-        }),
-        hosts: item.hosts.map((o) => {
-          mediaMap.set(o.soundId, v4());
-          mediaMap.set(o.imageId, v4());
-          return {
-            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
-          };
-        }),
-        raids: item.raids.map((o) => {
-          mediaMap.set(o.soundId, v4());
-          mediaMap.set(o.imageId, v4());
-          return {
-            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
-          };
-        }),
-        tips: item.tips.map((o) => {
-          mediaMap.set(o.soundId, v4());
-          mediaMap.set(o.imageId, v4());
-          return {
-            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
-          };
-        }),
-        cheers: item.cheers.map((o) => {
-          mediaMap.set(o.soundId, v4());
-          mediaMap.set(o.imageId, v4());
-          return {
-            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
-          };
-        }),
-        resubs: item.resubs.map((o) => {
-          mediaMap.set(o.soundId, v4());
-          mediaMap.set(o.imageId, v4());
-          return {
-            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
-          };
-        }),
-        cmdredeems: item.cmdredeems.map((o) => {
-          mediaMap.set(o.soundId, v4());
-          mediaMap.set(o.imageId, v4());
-          return {
-            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
-          };
-        }),
-        rewardredeems: item.rewardredeems.map((o) => {
-          mediaMap.set(o.soundId, v4());
-          mediaMap.set(o.imageId, v4());
-          return {
-            ...o, id: v4(), imageId: mediaMap.get(o.imageId), soundId: mediaMap.get(o.soundId),
-          };
-        }),
-      } as AlertInterface;
-
-      api.post($axios, '/api/v1/registry/alerts', clonedItem)
-        .then(async () => {
-          for (const mediaId of mediaMap.keys()) {
-            await new Promise<void>((resolve) => {
-              // we need to get data first -> then upload new
-              fetch(`/api/v1/registry/alerts/media/${mediaId}`)
-                .then(response => response.blob())
-                .then(async (data) => {
-                  const fd = new FormData();
-                  fd.append('file', data);
-                  await api.put($axios, `/api/v1/registry/alerts/media/${mediaMap.get(mediaId)}`, fd);
-                  resolve();
-                });
-            });
-          }
-          EventBus.$emit('snack', 'success', 'Data cloned.');
-        })
-        .catch(err => error(err))
-        .finally(refresh);
+    const clone = (id: string) => {
+      cloneMutation({ id });
     };
 
     return {
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
+      loading,
+      cloning,
       items,
       search,
-      state,
       headers,
       headersDelete,
       selected,

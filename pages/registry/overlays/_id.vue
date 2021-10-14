@@ -1,12 +1,12 @@
 <template>
-  <v-card :loading="isLoading" class="fill-height">
+  <v-card :loading="loading" class="fill-height">
     <portal to="navbar">
       <v-btn
         small
         :text="!$vuetify.breakpoint.xs"
         :icon="$vuetify.breakpoint.xs"
-        :loading="isSaving"
-        :disabled="!valid1 || isLoading"
+        :loading="saving"
+        :disabled="!valid1 || loading"
         @click="save"
       >
         <v-icon class="d-flex d-sm-none">
@@ -17,7 +17,7 @@
     </portal>
 
     <v-fade-transition>
-      <v-container v-if="!isLoading" fluid>
+      <v-container v-if="!loading" fluid>
         <v-form ref="form1" v-model="valid1" lazy-validation>
           <v-select
             v-model="item.value"
@@ -34,7 +34,7 @@
       </v-container>
     </v-fade-transition>
 
-    <v-overlay v-if="isLoading">
+    <v-overlay v-if="loading">
       <v-row>
         <v-col class="text-center">
           <v-progress-circular indeterminate size="48" />
@@ -47,16 +47,21 @@
 <script lang="ts">
 import { mdiFloppy } from '@mdi/js';
 import {
-  defineComponent, onMounted, ref, useContext, useRoute, useStore, watch,
+  defineComponent, onMounted, ref, useRoute, useStore, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
 import { cloneDeep } from 'lodash';
 
+import { error } from '../../../functions/error';
+import { EventBus } from '../../../functions/event-bus';
+
 import type { OverlayMappers } from '~/.bot/src/database/entity/overlay';
-import api from '~/functions/api';
-import { error } from '~/functions/error';
-import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
+import GET from '~/queries/overlays/get.gql';
+import SAVE from '~/queries/overlays/save.gql';
 
 export const haveAnyOptions = (type: string) => {
   const withOpts = [
@@ -88,15 +93,40 @@ export default defineComponent({
   },
   setup () {
     const store = useStore();
-    const { $axios } = useContext();
     const route = useRoute();
+
+    const item = ref(cloneDeep({
+      id:    route.value.params.id,
+      value: null,
+      opts:  null,
+    }) as OverlayMappers);
+    watch(item, () => {
+      store.commit('settings/pending', true);
+    }, { deep: true });
+
+    const { result, loading } = useQuery(GET, { id: route.value.params.id });
+    const cache = useResult<{ overlays: any[] }, OverlayMappers[]>(result, []);
+    watch(cache, (value) => {
+      for (const key of Object.keys(value)) {
+        if (key.startsWith('__')) {
+          continue;
+        }
+        if (value[key as any].length > 0) {
+          item.value = cloneDeep(value[key as any][0]);
+          setTimeout(() => store.commit('settings/pending', false), 100);
+          break;
+        }
+      }
+    }, { immediate: true, deep: true });
+
+    const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(SAVE);
+    onDoneSave(() => {
+      EventBus.$emit('snack', 'success', 'Data saved.');
+    });
+    onErrorSave(error);
 
     const form1 = ref(null);
     const valid1 = ref(true);
-
-    const isSaving = ref(false);
-    const isNew = ref(false);
-    const isLoading = ref(true);
 
     const overlayOptions = [
       { value: null, text: 'Please select an option' },
@@ -123,75 +153,22 @@ export default defineComponent({
       { value: 'hypetrain', text: 'hypetrain' },
     ];
 
-    const item = ref(cloneDeep({
-      id:    route.value.params.id,
-      value: null,
-      opts:  null,
-    }) as OverlayMappers);
-
     onMounted(() => {
       store.commit('panel/back', '/registry/overlays');
-      if (route.value.params.id) {
-        // load initial item
-        isLoading.value = true;
-        api.getOne<OverlayMappers>($axios, `/api/v1/overlay`, item.value.id)
-          .then((response) => {
-            item.value = cloneDeep(response.data);
-            isLoading.value = false;
-            store.commit('settings/pending', false);
-          })
-          .catch(() => {
-            console.debug('Overlay not found, assuming new creation of overlay');
-            isLoading.value = false;
-            isNew.value = true;
-          }).finally(() => {
-            watch(item, () => {
-              store.commit('settings/pending', true);
-            }, { deep: true });
-          });
-      }
     });
 
     const save = () => {
       if (
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
-        isSaving.value = true;
-        if (!isNew.value) {
-          api.patch<OverlayMappers>($axios, `/api/v1/overlay/${item.value.id}`, item.value)
-            .then(() => {
-              EventBus.$emit('snack', 'success', 'Data saved.');
-            })
-            .catch((e) => {
-              console.error(e.response.data);
-              error(JSON.stringify(e.response.data));
-            })
-            .finally(() => {
-              isSaving.value = false;
-              store.commit('settings/pending', false);
-            });
-        } else {
-          api.post<OverlayMappers>($axios, '/api/v1/overlay', item.value)
-            .then(() => {
-              EventBus.$emit('snack', 'success', 'Data saved.');
-              isNew.value = false;
-            })
-            .catch((e) => {
-              console.error(e.response.data);
-              error(JSON.stringify(e.response.data));
-            })
-            .finally(() => {
-              isSaving.value = false;
-              store.commit('settings/pending', false);
-            });
-        }
+        saveMutation({ data_json: JSON.stringify(item.value) }).then(() => store.commit('settings/pending', false));
       }
     };
 
     return {
       // refs
-      isSaving,
-      isLoading,
+      saving,
+      loading,
       form1,
       valid1,
       item,

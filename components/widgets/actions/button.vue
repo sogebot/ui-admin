@@ -6,7 +6,15 @@
     elevation="2"
     width="100%"
   >
-    <component :is="item.type" :item="item" :dialog.sync="dialog" :color="color" :editing="editing" @select="emitSelect(true)" @unselect="emitSelect(false)"/>
+    <component
+      :is="item.type"
+      :item="item"
+      :dialog.sync="dialog"
+      :color="color"
+      :editing="editing"
+      @select="emitSelect(true)"
+      @unselect="emitSelect(false)"
+    />
 
     <v-dialog
       v-model="dialog"
@@ -29,7 +37,7 @@
             small
             :text="!$vuetify.breakpoint.xs"
             :icon="$vuetify.breakpoint.xs"
-            :loading="isSaving"
+            :loading="saving"
             @click="save"
           >
             <v-icon class="d-flex d-sm-none">
@@ -50,14 +58,15 @@
 import { mdiClose, mdiFloppy } from '@mdi/js';
 import {
   defineAsyncComponent,
-  defineComponent, nextTick, onMounted, ref, useContext, watch,
+  defineComponent, nextTick, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { getContrastColor } from '@sogebot/ui-helpers/colors';
 import translate from '@sogebot/ui-helpers/translate';
+import { useMutation } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 import { cloneDeep } from 'lodash';
 
 import type { QuickActions } from '.bot/src/database/entity/dashboard';
-import api from '~/functions/api';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
@@ -85,10 +94,25 @@ export default defineComponent({
     edit:             defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit.vue') }),
   },
   setup (props: Props, ctx) {
-    const { $axios } = useContext();
+    const { mutate: updateMutation, onError, onDone, loading: saving } = useMutation(gql`
+      mutation quickActionSave($data: QuickActionInput!) {
+        quickActionSave(data: $data) {
+          ... on CommandItem { id }
+          ... on CustomVariableItem { id }
+          ... on RandomizerItem { id }
+          ... on OverlayCountdownItem { id }
+          ... on OverlayMarathonItem { id }
+          ... on OverlayStopwatchItem { id }
+        }
+      }`);
+    onError(error);
+    onDone(() => {
+      ctx.emit('save');
+      dialog.value = false;
+    });
+
     const dialog = ref((props.item as any).temporary);
     const timestamp = ref(Date.now());
-    const isSaving = ref(false);
     const clonedItem = ref(cloneDeep(props.item));
     const valid = ref(true);
     const color = ref('white');
@@ -106,7 +130,6 @@ export default defineComponent({
 
     watch(dialog, (val) => {
       if (val) {
-        isSaving.value = false;
         valid.value = true;
         timestamp.value = Date.now();
         clonedItem.value = cloneDeep(props.item);
@@ -121,20 +144,10 @@ export default defineComponent({
 
     const save = () => {
       EventBus.$emit(`quickaction::${props.item.id}::valid`);
-      nextTick(async () => {
+      nextTick(() => {
         if (valid.value) {
-          isSaving.value = true;
-          try {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { selected, temporary, show, ...item } = clonedItem.value;
-            await api.post<QuickActions.Item>($axios, `/api/v1/quickaction`, item);
-            dialog.value = false;
-          } catch (e) {
-            error(e);
-          } finally {
-            isSaving.value = false;
-            ctx.emit('save');
-          }
+          const { selected, temporary, show, ...item } = clonedItem.value;
+          updateMutation({ data: { [item.type]: [item] } });
         }
       });
     };
@@ -144,7 +157,7 @@ export default defineComponent({
       clonedItem,
       color,
       dialog,
-      isSaving,
+      saving,
       timestamp,
       valid,
 
