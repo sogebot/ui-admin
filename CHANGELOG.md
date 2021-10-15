@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [23.2.0](https://github.com/sogebot/ui-admin/compare/v23.1.2...v23.2.0) (2021-10-15)
+
+
+### Features
+
+* **oauth:** add support for custom twitch app ([90f1a31](https://github.com/sogebot/ui-admin/commit/90f1a315a685bd54343943d916a22fc0ecd89343))
+
+
+### Bug Fixes
+
+* **goals:** fix infinite loading for new item ([2294e46](https://github.com/sogebot/ui-admin/commit/2294e4673feb6a017ec426a47bbb51779865a80d))
+
 ### [23.1.2](https://github.com/sogebot/ui-admin/compare/v23.1.1...v23.1.2) (2021-10-14)
 
 
