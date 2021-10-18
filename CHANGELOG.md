@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [23.2.1](https://github.com/sogebot/ui-admin/compare/v23.2.0...v23.2.1) (2021-10-18)
+
+
+### Bug Fixes
+
+* **oauth:** set correct broadcaster scope ([d2bab64](https://github.com/sogebot/ui-admin/commit/d2bab6457a15fb1bcd678664223de3d3de1d899c))
+
 ## [23.2.0](https://github.com/sogebot/ui-admin/compare/v23.1.2...v23.2.0) (2021-10-15)
 
 
