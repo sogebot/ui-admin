@@ -37,6 +37,7 @@ export default defineComponent({
     const song = ref(null);
     const isLoaded = ref(false);
     onMounted(() => {
+      getSocket('/').emit('panel::resetStatsState');
       getSocket('/').on('panel::stats', (data: Record<string, any>) => {
         console.groupCollapsed('panel::stats::song');
         console.log(data.currentSong);

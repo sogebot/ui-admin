@@ -145,6 +145,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      getSocket('/').emit('panel::resetStatsState');
       getSocket('/').on('panel::stats', async (data: Record<string, any>) => {
         console.groupCollapsed('panel::stats::game');
         console.log(data.game);
