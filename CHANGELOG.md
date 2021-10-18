@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [23.2.4](https://github.com/sogebot/ui-admin/compare/v23.2.3...v23.2.4) (2021-10-18)
+
+
+### Bug Fixes
+
+* **oauth:** add scopes to SogeBot generator ([fdf2251](https://github.com/sogebot/ui-admin/commit/fdf2251c23866641af6af42c0673d9d11459721a))
+
 ### [23.2.3](https://github.com/sogebot/ui-admin/compare/v23.2.2...v23.2.3) (2021-10-18)
 
 
