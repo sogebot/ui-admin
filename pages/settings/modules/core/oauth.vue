@@ -118,7 +118,7 @@ export default defineComponent({
         return '';
       }
 
-      const scope = 'scope=channel:edit:commercial channel:moderate chat:edit chat:read clips:edit user:edit:broadcast user:read:broadcast whispers:edit whispers:read';
+      const scope = 'scope=channel:edit:commercial channel:moderate chat:edit chat:read clips:edit user:edit:broadcast user:read:broadcast whispers:edit whispers:read channel:manage:broadcast';
       const clientId = settings.value.general.tokenServiceCustomClientId[0];
       const clientSecret = settings.value.general.tokenServiceCustomClientSecret[0];
 
