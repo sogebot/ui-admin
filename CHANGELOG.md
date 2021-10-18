@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [23.2.5](https://github.com/sogebot/ui-admin/compare/v23.2.4...v23.2.5) (2021-10-18)
+
+
+### Bug Fixes
+
+* **statsbar:** reset stats state on component load ([27c7264](https://github.com/sogebot/ui-admin/commit/27c7264db349e5016c64bf838d5805fbf68de9ea))
+
 ### [23.2.4](https://github.com/sogebot/ui-admin/compare/v23.2.3...v23.2.4) (2021-10-18)
 
 

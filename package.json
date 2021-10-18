@@ -1,6 +1,6 @@
 {
   "name": "@sogebot/ui-admin",
-  "version": "23.2.4",
+  "version": "23.2.5",
   "author": "sogehige@gmail.com",
   "engines": {
     "npm": ">=8.0.0"
