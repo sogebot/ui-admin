@@ -125,7 +125,7 @@ export default defineComponent({
       if (settings.value.general.tokenService[0] === 'Twitch Token Generator') {
         return 'https://twitchtokengenerator.com/quick/jLbq7v1pzF';
       } else if (settings.value.general.tokenService[0] === 'SogeBot Token Generator') {
-        return 'https://twitch-token-generator.soge.workers.dev/request-tokens?';
+        return `https://twitch-token-generator.soge.workers.dev/request-tokens?${scope}`;
       } else {
         return `${redirectUri.value}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}`;
       }
@@ -143,7 +143,7 @@ export default defineComponent({
       if (settings.value.general.tokenService[0] === 'Twitch Token Generator') {
         return 'https://twitchtokengenerator.com/quick/VHavigHX0P';
       } else if (settings.value.general.tokenService[0] === 'SogeBot Token Generator') {
-        return 'https://twitch-token-generator.soge.workers.dev/request-tokens?scope=channel:edit:commercial channel:moderate channel:read:hype_train channel:read:redemptions channel:read:subscriptions channel_editor chat:edit chat:read moderation:read user:read:broadcast user:edit:broadcast channel:manage:broadcast';
+        return `https://twitch-token-generator.soge.workers.dev/request-tokens?${scope}`;
       } else {
         return `${redirectUri.value}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}`;
       }
