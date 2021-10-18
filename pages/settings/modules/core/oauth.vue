@@ -136,14 +136,14 @@ export default defineComponent({
         return '';
       }
 
-      const scope = 'scope=channel:edit:commercial channel:moderate channel:read:hype_train channel:read:redemptions channel:read:subscriptions channel_editor chat:edit chat:read moderation:read user:read:broadcast channel:manage:broadcast';
+      const scope = 'scope=channel:edit:commercial channel:moderate channel:read:hype_train channel:read:redemptions channel:read:subscriptions channel_editor chat:edit chat:read moderation:read user:read:broadcast channel:manage:broadcast user:edit:broadcast';
       const clientId = settings.value.general.tokenServiceCustomClientId[0];
       const clientSecret = settings.value.general.tokenServiceCustomClientSecret[0];
 
       if (settings.value.general.tokenService[0] === 'Twitch Token Generator') {
         return 'https://twitchtokengenerator.com/quick/VHavigHX0P';
       } else if (settings.value.general.tokenService[0] === 'SogeBot Token Generator') {
-        return 'https://twitch-token-generator.soge.workers.dev/request-tokens?scope=channel:edit:commercial channel:moderate channel:read:hype_train channel:read:redemptions channel:read:subscriptions channel_editor chat:edit chat:read moderation:read user:read:broadcast channel:manage:broadcast';
+        return 'https://twitch-token-generator.soge.workers.dev/request-tokens?scope=channel:edit:commercial channel:moderate channel:read:hype_train channel:read:redemptions channel:read:subscriptions channel_editor chat:edit chat:read moderation:read user:read:broadcast user:edit:broadcast channel:manage:broadcast';
       } else {
         return `${redirectUri.value}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}`;
       }
