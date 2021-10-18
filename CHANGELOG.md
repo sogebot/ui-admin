@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [23.2.3](https://github.com/sogebot/ui-admin/compare/v23.2.2...v23.2.3) (2021-10-18)
+
+
+### Bug Fixes
+
+* **oauth:** add missing scope to bot token ([2e8bc1a](https://github.com/sogebot/ui-admin/commit/2e8bc1ae072f5e00b0884717c11d1bd64bbf6dd5))
+
 ### [23.2.2](https://github.com/sogebot/ui-admin/compare/v23.2.1...v23.2.2) (2021-10-18)
 
 
