@@ -168,7 +168,7 @@ import {
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { CommonSettingsInterface } from '~/.bot/src/database/entity/alert';
+import type { Filter } from '~/.bot/src/database/entity/alert';
 
 type Props = {
   value: string,
@@ -190,7 +190,7 @@ export default defineComponent({
       : {
         operator: 'and',
         items:    [],
-      }) as CommonSettingsInterface['filter']);
+      }) as Filter);
     const editationMode = ref(props.noInput);
     const addRuleType = ref([props.rules[0][0]]);
 
