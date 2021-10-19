@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [23.2.7](https://github.com/sogebot/ui-admin/compare/v23.2.6...v23.2.7) (2021-10-19)
+
+
+### Bug Fixes
+
+* **query-filter:** set correct type ([bb79a90](https://github.com/sogebot/ui-admin/commit/bb79a901dfa11efe63ed95d20b4341af75f8bc61))
+* **quickbuttons:** opts can be stringified ([8203f94](https://github.com/sogebot/ui-admin/commit/8203f94a9976a6911f9f4f2dd10ef149ee66854d))
+
 ### [23.2.6](https://github.com/sogebot/ui-admin/compare/v23.2.5...v23.2.6) (2021-10-19)
 
 
