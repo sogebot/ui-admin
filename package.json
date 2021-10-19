@@ -47,6 +47,7 @@
     "portal-vue": "^2.1.7",
     "prismjs": "^1.25.0",
     "shortid": "^2.2.16",
+    "type-graphql": "^1.1.1",
     "uuid": "^8.3.2",
     "v-snackbars": "^3.2.4",
     "vue-audio-visual": "^2.3.0",
