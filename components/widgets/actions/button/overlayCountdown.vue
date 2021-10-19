@@ -100,7 +100,7 @@ export default defineComponent({
     };
 
     const time = computed(() => {
-      if (timestamp.value === null) {
+      if (timestamp.value === null || !countdown.value) {
         return '--:--:--';
       }
       const days = Math.floor(timestamp.value / DAY);
@@ -119,7 +119,8 @@ export default defineComponent({
       }
 
       output += `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-      if (countdown.value?.opts.showMilliseconds) {
+      const opts = typeof countdown.value.opts === 'string' ? JSON.parse(countdown.value.opts) : countdown.value.opts;
+      if (opts) {
         output += `<small>.${millis}</small>`;
       }
       return output;

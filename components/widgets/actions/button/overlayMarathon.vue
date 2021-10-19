@@ -97,7 +97,7 @@ export default defineComponent({
     };
 
     const time = () => {
-      if (timestamp.value === 0) {
+      if (timestamp.value === 0 || !marathon.value) {
         return '--:--:--';
       }
 
@@ -118,7 +118,8 @@ export default defineComponent({
       }
 
       output += `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-      if (marathon.value?.opts.showMilliseconds) {
+      const opts = typeof marathon.value.opts === 'string' ? JSON.parse(marathon.value.opts) : marathon.value.opts;
+      if (opts.showMilliseconds) {
         output += `<small>.${millis}</small>`;
       }
       return output;
