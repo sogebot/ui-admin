@@ -13,7 +13,7 @@
             <ol>
               <li>Go to <a href="https://dev.twitch.tv/console/apps" target="_blank">https://dev.twitch.tv/console/apps</a> and register your app</li>
               <li>You can choose any <strong>name</strong> of app you want</li>
-              <li>Set <strong>oauth redirect</strong> to your {{origin}}</li>
+              <li>Set <strong>oauth redirect</strong> to your {{origin}}/credentials/eventsub</li>
               <li>Pick Application Integration for <strong>category</strong> and create</li>
               <li>After creation copy clientId and generate clientSecret</li>
               <li>Authorize your broadcaster account to enable subscription with your account</li>

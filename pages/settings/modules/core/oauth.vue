@@ -11,32 +11,29 @@
       <v-tab-item eager>
         <v-card>
           <v-card-text>
-            <v-select
-              class="pb-2 mb-2"
-              v-model="settings.general.tokenService[0]"
-              :items="['Twitch Token Generator', 'SogeBot Token Generator', 'Own Twitch App']"
-              label="Token Generator"
-              hint="If you change token generator, you need to re-do all tokens!"
-              persistent-hint/>
+            <v-select class="pb-2 mb-2" v-model="settings.general.tokenService[0]"
+              :items="['Twitch Token Generator', 'SogeBot Token Generator', 'Own Twitch App']" label="Token Generator"
+              hint="If you change token generator, you need to re-do all tokens!" persistent-hint />
 
             <v-expand-transition>
               <div v-if="settings.general.tokenService[0] === 'Own Twitch App'">
                 <v-card>
                   <v-card-text>
-                <v-alert text color="cyan">
-                  <ul>
-                    <li>Create Twitch App at <a href="https://dev.twitch.tv/console/apps" target="_blank">https://dev.twitch.tv/console/apps</a></li>
-                    <li>For working redirect uri you need https domain or http://localhost</li>
-                  </ul>
-                </v-alert>
-                <v-text-field label="Client ID" hide-details="auto"
-                  v-model="settings.general.tokenServiceCustomClientId[0]" />
-                <v-text-field label="Client Secret"  hide-details="auto" type="password"
-                  v-model="settings.general.tokenServiceCustomClientSecret[0]"
-                  persistent-hint hint="Never share your Client Secret!"/>
-                <v-text-field label="Redirect URI" hide-details="auto" readonly
-                  v-model="redirectUri"
-                  persistent-hint hint="Set this redirect uri in your Twitch App"/>
+                    <v-alert color="info" text class="mt-2">
+                      <ol>
+                        <li>Go to <a href="https://dev.twitch.tv/console/apps"
+                            target="_blank">https://dev.twitch.tv/console/apps</a> and register your app</li>
+                        <li>You can choose any <strong>name</strong> of app you want</li>
+                        <li>Set <strong>oauth redirect</strong> to your {{redirectUri}}</li>
+                        <li>Pick Application Integration for <strong>category</strong> and create</li>
+                        <li>After creation copy clientId and generate clientSecret</li>
+                      </ol>
+                    </v-alert>
+                    <v-text-field label="Client ID" hide-details="auto"
+                      v-model="settings.general.tokenServiceCustomClientId[0]" />
+                    <v-text-field label="Client Secret" hide-details="auto" type="password"
+                      v-model="settings.general.tokenServiceCustomClientSecret[0]" persistent-hint
+                      hint="Never share your Client Secret!" />
                   </v-card-text>
                 </v-card>
               </div>
