@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [23.2.6](https://github.com/sogebot/ui-admin/compare/v23.2.5...v23.2.6) (2021-10-19)
+
+
+### Bug Fixes
+
+* **settings:** update text of oauths ([947de31](https://github.com/sogebot/ui-admin/commit/947de3157219c3a84d57a427b245558c02a28960))
+
 ### [23.2.5](https://github.com/sogebot/ui-admin/compare/v23.2.4...v23.2.5) (2021-10-18)
 
 
