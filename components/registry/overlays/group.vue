@@ -297,7 +297,7 @@ export default defineComponent({
       { value: 'alertsRegistry', text: 'alerts registry' },
       { value: 'textRegistry', text: 'text registry' },
       { value: 'goalRegistry', text: 'goal registry' },
-      { value: 'alerts', text: 'alerts' },
+      { value: 'media', text: 'media' },
       { value: 'bets', text: 'bets' },
       { value: 'carousel', text: 'carousel' },
       { value: 'clips', text: 'clips' },
