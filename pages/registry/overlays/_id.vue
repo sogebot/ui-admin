@@ -66,7 +66,7 @@ import SAVE from '~/queries/overlays/save.gql';
 export const haveAnyOptions = (type: string) => {
   const withOpts = [
     'goalRegistry', 'alertsRegistry', 'textRegistry', 'group', 'eventlist',
-    'alerts', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts',
+    'media', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts',
     'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes',
     'countdown', 'stopwatch', 'marathon'];
   return withOpts.includes(type);
@@ -74,7 +74,7 @@ export const haveAnyOptions = (type: string) => {
 
 export default defineComponent({
   components: {
-    alerts:          () => import('~/components/registry/overlays/alerts.vue'),
+    media:           () => import('~/components/registry/overlays/media.vue'),
     countdown:       () => import('~/components/registry/overlays/countdown.vue'),
     stopwatch:       () => import('~/components/registry/overlays/stopwatch.vue'),
     marathon:        () => import('~/components/registry/overlays/marathon.vue'),
@@ -131,7 +131,7 @@ export default defineComponent({
     const overlayOptions = [
       { value: null, text: 'Please select an option' },
       { value: 'group', text: 'group of overlays' },
-      { value: 'alerts', text: 'alerts' },
+      { value: 'media', text: 'media' },
       { value: 'bets', text: 'bets' },
       { value: 'carousel', text: 'carousel' },
       { value: 'countdown', text: 'countdown' },

@@ -235,7 +235,7 @@ import { haveAnyOptions } from '~/pages/registry/overlays/_id.vue';
 export default defineComponent({
   props:      { value: [Object, Array] },
   components: {
-    alerts:          () => import('~/components/registry/overlays/alerts.vue'),
+    media:           () => import('~/components/registry/overlays/media.vue'),
     alertsRegistry:  () => import('~/components/registry/overlays/alertsRegistry.vue'),
     countdown:       () => import('~/components/registry/overlays/countdown.vue'),
     marathon:        () => import('~/components/registry/overlays/marathon.vue'),
