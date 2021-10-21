@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [23.3.1](https://github.com/sogebot/ui-admin/compare/v23.3.0...v23.3.1) (2021-10-21)
+
+
+### Bug Fixes
+
+* **overlays:** change alerts with media ([4dce9a5](https://github.com/sogebot/ui-admin/commit/4dce9a581e04326c65201ea6d5d50a0cdc5e4e28))
+
 ## [23.3.0](https://github.com/sogebot/ui-admin/compare/v23.2.8...v23.3.0) (2021-10-21)
 
 
