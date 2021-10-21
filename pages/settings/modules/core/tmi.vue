@@ -16,6 +16,8 @@
               :label="translate('core.tmi.settings.whisperListener')" />
             <v-switch class="mt-0" v-model="settings.chat.showWithAt[0]" dense
               :label="translate('core.tmi.settings.showWithAt')" />
+            <v-switch class="mt-0" v-model="settings.chat.sendAsReply[0]" dense
+              :label="translate('core.tmi.settings.sendAsReply')" />
             <v-textarea class="mt-3 pt-3" outlined rows="5" persistent-hint
               :label="translate('core.tmi.settings.ignorelist')"
               :value="settings.chat.ignorelist[0].filter(String).join('\n')" :hint="translate('one-record-per-line')"
