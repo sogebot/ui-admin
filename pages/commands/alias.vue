@@ -240,7 +240,9 @@
           :return-value.sync="item.permission"
           @save="update(item, true, 'permission')"
         >
-          {{ getPermissionName(item.permission, permissions) }}
+          <span :class="{ 'text--lighten-1':item.permission === null, 'red--text': item.permission === null }">
+            {{ item.permission === null ? 'unset' : getPermissionName(item.permission, permissions) }}
+          </span>
           <template #input>
             <v-select
               v-model="item.permission"
@@ -380,11 +382,18 @@ export default defineComponent({
     });
 
     const permissionItems = computed(() => {
-      return permissions.value.map(item => ({
-        text:     item.name,
-        value:    item.id,
-        disabled: false,
-      }));
+      return [
+        {
+          text:     'unset',
+          value:    null,
+          disabled: false,
+        },
+        ...permissions.value.map(item => ({
+          text:     item.name,
+          value:    item.id,
+          disabled: false,
+        })),
+      ];
     });
     const groupItems = computed(() => {
       return [...new Set(items.value.filter(o => o.group !== null).map(o => o.group).sort())].map(item => ({
