@@ -7,7 +7,7 @@
     hide-no-data
     placeholder="Start typing to Search"
     multiple
-    item-text="username"
+    item-text="userName"
     item-value="userId"
     :loading="isLoading"
     chips
@@ -32,7 +32,7 @@ export default defineComponent({
   setup (props: { value: string[] }, ctx) {
     const model = ref(props.value);
     const search = ref('');
-    const searchItems = ref([] as { userId: string, username: string }[]);
+    const searchItems = ref([] as { userId: string, userName: string }[]);
     const isLoading = ref(false);
 
     onMounted(() => {
@@ -40,11 +40,11 @@ export default defineComponent({
       Promise.allSettled(
         model.value.map((userId) => {
           return new Promise((resolve) => {
-            getSocket('/core/users').emit('getNameById', userId, (err: string | null, username: string) => {
+            getSocket('/core/users').emit('getNameById', userId, (err: string | null, userName: string) => {
               if (err) {
                 return console.error(err);
               }
-              searchItems.value.push({ userId, username });
+              searchItems.value.push({ userId, userName });
               resolve(true);
             });
           });

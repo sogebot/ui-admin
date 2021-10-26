@@ -131,7 +131,7 @@
       </template>
 
       <template #[`group.header`]="{ items, isOpen, toggle }">
-        <th colspan="7">
+        <th colspan="5">
           <v-icon
             @click="toggle"
           >
@@ -153,7 +153,38 @@
           >Ungrouped</span>
           <span v-else>
             {{ items[0].group }}
+
+            <span class="px-4" :class="!getGroup[items[0].group].options.permission ? 'red--text' : ''">
+              {{
+                getGroup[items[0].group].options.permission
+                  ? getPermissionName(getGroup[items[0].group].options.permission, permissions)
+                  : '-- unset --'
+              }}
+            </span>
+
+            <span class="px-4">
+              <template v-if="getGroup[items[0].group].options.filter">
+                <v-icon>mdi-filter</v-icon>
+                <code>
+                  {{ getGroup[items[0].group].options.filter }}
+                </code>
+              </template>
+              <template v-else>
+                <v-icon>mdi-filter-off</v-icon>
+                <span class="grey--text text--darken-2">No filters set</span>
+              </template>
+            </span>
           </span>
+        </th>
+        <th colspan="1" style="text-align-last: right;">
+          <group-config
+            v-if="items[0].group"
+            :key="items[0].group"
+            :permissionItems="permissionItems"
+            :permission="getGroup[items[0].group].options.permission"
+            :filter="getGroup[items[0].group].options.filter"
+            @save="updateGroup(items[0].group, $event)"
+          />
         </th>
       </template>
 
@@ -211,7 +242,7 @@
           @save="update(item, true, 'group')"
         >
           <span :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }">
-            {{ item.groupToBeShownInTable === null ? 'unset' : item.groupToBeShownInTable }}
+            {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
           </span>
           <template #input>
             <v-combobox
@@ -240,9 +271,12 @@
           :return-value.sync="item.permission"
           @save="update(item, true, 'permission')"
         >
-          {{ getPermissionName(item.permission, permissions) }}
+          <span :class="{ 'text--lighten-1':item.permission === null, 'red--text': item.permission === null }">
+            {{ item.permission === null ? '-- unset --' : getPermissionName(item.permission, permissions) }}
+          </span>
           <template #input>
             <v-select
+              clearable
               v-model="item.permission"
               :items="permissionItems"
             />
@@ -279,9 +313,11 @@ import {
   useMutation, useQuery, useResult,
 } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
-import { capitalize, orderBy } from 'lodash';
+import {
+  capitalize, isEqual, orderBy,
+} from 'lodash';
 
-import type { AliasInterface } from '.bot/src/database/entity/alias';
+import type { AliasGroupInterface, AliasInterface } from '.bot/src/database/entity/alias';
 import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error as errorLog } from '~/functions/error';
@@ -291,18 +327,18 @@ import { truncate } from '~/functions/truncate';
 import {
   minLength, required, startsWith,
 } from '~/functions/validators';
+import GET_ALL from '~/queries/alias/getAll.gql';
 
 type AliasInterfaceUI = AliasInterface & { groupToBeShownInTable: null | string };
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/alias-newItem.vue') }) },
+  components: {
+    'new-item':     defineAsyncComponent(() => import('~/components/new-item/alias-newItem.vue')),
+    'group-config': defineAsyncComponent(() => import('~/components/manage/alias/groupConfig.vue')),
+  },
   setup () {
-    const { result, loading, error, refetch } = useQuery(gql`
-      query {
-        aliases { id alias command enabled permission group }
-        permissions { id name }
-      }
-    `);
+    const { result, loading, error, refetch } = useQuery(GET_ALL);
+    const groups = useResult<{aliasGroup: AliasGroupInterface[] }, AliasGroupInterface[], AliasGroupInterface[]>(result, [], data => data.aliasGroup);
     const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
     const items = useResult<{ aliases: AliasInterfaceUI[] }, AliasInterfaceUI[], AliasInterfaceUI[]>(result, [], (data) => {
       const output = orderBy(data.aliases, 'alias', 'asc');
@@ -322,6 +358,14 @@ export default defineComponent({
     });
     watch(error, val => errorLog(val?.message ?? ''));
 
+    const { mutate: updateGroupMutation, onDone: onDoneUpdateGroup, onError: onErrorUpdateGroup } = useMutation(gql`
+      mutation setAliasGroup($name: String!, $data: String!) {
+        setAliasGroup(name: $name, data: $data) {
+          name
+        }
+      }`);
+    onDoneUpdateGroup(saveSuccess);
+    onErrorUpdateGroup(errorLog);
     const { mutate: updateMutation, onDone: onDoneUpdate, onError: onErrorUpdate } = useMutation(gql`
       mutation setAlias($id: String!, $data: AliasInput!) {
         setAlias(id: $id, data: $data) {
@@ -380,11 +424,18 @@ export default defineComponent({
     });
 
     const permissionItems = computed(() => {
-      return permissions.value.map(item => ({
-        text:     item.name,
-        value:    item.id,
-        disabled: false,
-      }));
+      return [
+        {
+          text:     '-- unset --',
+          value:    null,
+          disabled: false,
+        },
+        ...permissions.value.map(item => ({
+          text:     item.name,
+          value:    item.id,
+          disabled: false,
+        })),
+      ];
     });
     const groupItems = computed(() => {
       return [...new Set(items.value.filter(o => o.group !== null).map(o => o.group).sort())].map(item => ({
@@ -477,6 +528,48 @@ export default defineComponent({
       selected.value = [];
     };
 
+    const getGroup = computed<{ [name: string]: AliasGroupInterface }>({
+      get () {
+        // set empty groups from aliases
+        const returnGroups: { [name: string]: AliasGroupInterface } = {};
+        for (const alias of items.value) {
+          if (alias.group && !returnGroups[alias.group]) {
+            const group = groups.value.find(o => o.name === alias.group);
+            returnGroups[alias.group] = {
+              name:    alias.group,
+              options: group?.options ?? {
+                filter:     null,
+                permission: null,
+              },
+            };
+          }
+        }
+        return returnGroups;
+      },
+      set (value: { [name: string]: AliasGroupInterface }) {
+        // go through groups and save only changed
+        for (const groupName of Object.keys(getGroup.value)) {
+          if (!isEqual(getGroup.value[groupName], value[groupName])) {
+            updateGroupMutation({
+              name: groupName,
+              data: JSON.stringify(value[groupName].options),
+            }, { refetchQueries: [{ query: GET_ALL }] });
+          }
+        }
+        return true;
+      },
+    });
+
+    function updateGroup (groupName: string, options: { permission: null | string, filter: null | string }) {
+      getGroup.value = {
+        ...getGroup.value,
+        [groupName]: {
+          name: groupName,
+          options,
+        },
+      };
+    }
+
     return {
       result,
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
@@ -495,6 +588,9 @@ export default defineComponent({
       truncateLength,
       selectable,
       loading,
+      groups,
+      getGroup,
+      updateGroup,
 
       selected,
       deleteDialog,

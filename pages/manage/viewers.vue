@@ -166,8 +166,8 @@
         </v-sheet>
       </template>
 
-      <template #[`item.username`]="{ item }">
-        {{ item.username }}<small class="grey--text pl-2">{{ item.userId }}</small>
+      <template #[`item.userName`]="{ item }">
+        {{ item.userName }}<small class="grey--text pl-2">{{ item.userId }}</small>
         <div>
           <v-chip
             x-small
@@ -550,12 +550,12 @@
                 </template>
                 <template v-else-if="item.event === 'subgift'">
                   <div
-                    v-if="item.username === parentItem.username"
+                    v-if="item.userName === parentItem.userName"
                     v-html="translate('managers.viewers.receivedSubscribeFrom').replace('$value', JSON.parse(item.values_json).fromId)"
                   />
                   <div
                     v-else
-                    v-html="translate('managers.viewers.giftedSubscribeTo').replace('$value', item.username)"
+                    v-html="translate('managers.viewers.giftedSubscribeTo').replace('$value', item.userName)"
                   />
                 </template>
               </template>
@@ -652,7 +652,7 @@ export default defineComponent({
     const currentPage = ref(1);
     const count = ref(0);
     const perPage = ref(15);
-    const sortBy = ref('username');
+    const sortBy = ref('userName');
     const sortDesc = ref(false);
     const fab = ref(false);
 
@@ -671,7 +671,7 @@ export default defineComponent({
 
     watch([sortBy, sortDesc], () => {
       if (!sortBy.value) {
-        sortBy.value = 'username';
+        sortBy.value = 'userName';
       }
 
       if (typeof sortDesc.value === 'undefined') {
@@ -692,7 +692,7 @@ export default defineComponent({
       } else {
         return items.value.filter((item) => {
           const userId = item.userId.toLowerCase().includes(search.value.toLowerCase());
-          const userName = item.username.toLowerCase().includes(search.value.toLowerCase());
+          const userName = item.userName.toLowerCase().includes(search.value.toLowerCase());
           return userId || userName;
         });
       }
@@ -704,7 +704,7 @@ export default defineComponent({
 
     const headersDelete = [
       { value: 'userId', text: '' },
-      { value: 'username', text: '' },
+      { value: 'userName', text: '' },
     ];
 
     const headersHistory = [
@@ -714,7 +714,7 @@ export default defineComponent({
     ];
 
     const headers = [
-      { value: 'username', text: capitalize(translate('username')) },
+      { value: 'userName', text: capitalize(translate('username')) },
       { value: 'messages', text: capitalize(translate('messages')) },
       { value: 'level', text: capitalize(translate('level')) },
       { value: 'points', text: capitalize(translate('points')) },

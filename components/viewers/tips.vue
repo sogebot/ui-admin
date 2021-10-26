@@ -214,7 +214,7 @@ export default defineComponent({
             return;
           }
           console.log('User loaded', viewer);
-          username.value = viewer.username;
+          username.value = viewer.userName;
           tips.value = viewer.tips;
         });
       }

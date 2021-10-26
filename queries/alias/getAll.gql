@@ -1,0 +1,5 @@
+query AliasGetAll {
+  aliases { id alias command enabled permission group }
+  permissions { id name }
+  aliasGroup { name options { filter permission } }
+}

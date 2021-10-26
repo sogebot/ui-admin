@@ -279,7 +279,7 @@ export default defineComponent({
     });
     const winnerMessages = computed(() => {
       if (winner.value) {
-        const messages = participants.value.find(o => o.username === winner.value?.username)?.messages ?? [];
+        const messages = participants.value.find(o => o.username === winner.value?.userName)?.messages ?? [];
         return messages.slice(Math.max(messages.length - 5, 0));
       } else {
         return [];
@@ -345,7 +345,7 @@ export default defineComponent({
 
           if (!raffle.winner) {
             winner.value = null;
-          } else if (winner.value === null || winner.value.username !== raffle.winner) {
+          } else if (winner.value === null || winner.value.userName !== raffle.winner) {
             getSocket('/systems/raffles').emit('raffle::getWinner', raffle.winner, (err2: string | null, user: UserInterface) => {
               if (err2) {
                 error(err2);
