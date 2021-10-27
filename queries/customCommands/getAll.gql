@@ -1,0 +1,4 @@
+query CustomCommandsGetAll {
+  permissions { id name }
+  customCommandsGroup { name options { filter permission } }
+}

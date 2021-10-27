@@ -5,7 +5,7 @@ const getPermissionName = (id: string | null, permissions: PermissionsInterface[
     throw new Error('Missing permissions list');
   }
   if (!id) {
-    return 'Disabled';
+    return '-- unset --';
   }
   const permission = permissions.find((o) => {
     return o.id === id;

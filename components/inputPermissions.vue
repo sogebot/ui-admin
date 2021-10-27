@@ -20,6 +20,7 @@
         :value="permission"
         :label="translate('permission')"
         :items="permissionItems"
+        :clearable="nullable"
         @change="triggerEvent"
       />
     </v-menu>
@@ -33,15 +34,36 @@ import translate from '@sogebot/ui-helpers/translate';
 
 import { getPermissionName } from '~/functions/getPermissionName';
 
+type Props = {
+  nullable: boolean,
+  permission: string,
+  permissions: { name: string, id: string }[]
+};
+
 export default defineComponent({
   props: {
     permission:  String,
     permissions: Array,
+    nullable:    Boolean,
   },
-  setup (props, ctx) {
+  setup (props: Props, ctx) {
     const menu = ref(false);
 
     const permissionItems = computed(() => {
+      if (props.nullable) {
+        return [
+          {
+            text:     '-- unset --',
+            value:    null,
+            disabled: false,
+          },
+          ...(props.permissions ?? []).map(item => ({
+            text:     item.name,
+            value:    item.id,
+            disabled: false,
+          })),
+        ];
+      }
       return props.permissions?.map((item: any) => ({
         text:     item.name,
         value:    item.id,
@@ -50,7 +72,7 @@ export default defineComponent({
     });
 
     const triggerEvent = (input: string | null) => {
-      if (input === null) {
+      if (input === null && !props.nullable) {
         return;
       }
       ctx.emit('input', input);

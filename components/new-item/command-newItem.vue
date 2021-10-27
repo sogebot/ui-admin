@@ -60,6 +60,7 @@ export default defineComponent({
             id:        uuid(),
             command:   newItemCommand.value,
             responses: [],
+            group:     null,
             enabled:   true,
             visible:   true,
           };

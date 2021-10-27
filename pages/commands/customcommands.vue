@@ -10,6 +10,7 @@
 
     <v-data-table
       v-model="selected"
+      group-by="group"
       calculate-widths
       :show-select="selectable"
       :search="search"
@@ -129,6 +130,94 @@
         </v-sheet>
       </template>
 
+      <template #[`group.header`]="{ items, isOpen, toggle }">
+        <th colspan="5">
+          <v-icon
+            @click="toggle"
+          >
+            {{ isOpen ? mdiMinus : mdiPlus }}
+          </v-icon>
+
+          <v-simple-checkbox
+            v-if="selectable"
+            class="d-inline-block px-4"
+            style="transform: translateY(5px);"
+            inline
+            :value="isGroupSelected(items[0].group)"
+            @click="toggleGroupSelection(items[0].group)"
+          />
+
+          <span
+            v-if="items[0].group === null"
+            class="red--text text--lighten-1"
+          >Ungrouped</span>
+          <span v-else>
+            {{ items[0].group }}
+
+            <span class="px-4" :class="!getGroup[items[0].group].options.permission ? 'red--text' : ''">
+              {{
+                getGroup[items[0].group].options.permission
+                  ? getPermissionName(getGroup[items[0].group].options.permission, permissions)
+                  : '-- unset --'
+              }}
+            </span>
+
+            <span class="px-4">
+              <template v-if="getGroup[items[0].group].options.filter">
+                <v-icon>mdi-filter</v-icon>
+                <code>
+                  {{ getGroup[items[0].group].options.filter }}
+                </code>
+              </template>
+              <template v-else>
+                <v-icon>mdi-filter-off</v-icon>
+                <span class="grey--text text--darken-2">No filters set</span>
+              </template>
+            </span>
+          </span>
+        </th>
+        <th colspan="1" style="text-align-last: right;">
+          <group-config
+            v-if="items[0].group"
+            :key="items[0].group"
+            :permission-items="permissionItems"
+            :permission="getGroup[items[0].group].options.permission"
+            :filter="getGroup[items[0].group].options.filter"
+            @save="updateGroup(items[0].group, $event)"
+          />
+        </th>
+      </template>
+
+      <template #[`item.groupToBeShownInTable`]="{ item }">
+        <v-edit-dialog
+          persistent
+          large
+          :return-value.sync="item.groupToBeShownInTable"
+          @save="update(item, true, 'group')"
+        >
+          <span :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }">
+            {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
+          </span>
+          <template #input>
+            <v-combobox
+              v-model="item.groupToBeShownInTable"
+              clearable
+              solo
+              :search-input.sync="item.groupToBeShownInTable"
+              :return-object="false"
+              :items="groupItems"
+            >
+              <template #no-data>
+                <v-list-item>
+                  <span class="subheading">Create</span>
+                  <strong class="pl-2">{{ item.groupToBeShownInTable }}</strong>
+                </v-list-item>
+              </template>
+            </v-combobox>
+          </template>
+        </v-edit-dialog>
+      </template>
+
       <template #[`item.command`]="{ item }">
         <v-edit-dialog
           persistent
@@ -198,19 +287,25 @@
 
 <script lang="ts">
 import {
-  mdiCheckboxMultipleMarkedOutline, mdiMagnify, mdiRestore,
+  mdiCheckboxMultipleMarkedOutline, mdiMagnify,
+  mdiMinus, mdiPlus, mdiRestore,
 } from '@mdi/js';
 import {
+  computed,
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { useQuery, useResult } from '@vue/apollo-composable';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
 import gql from 'graphql-tag';
-import { capitalize, orderBy } from 'lodash';
+import {
+  capitalize, isEqual, orderBy,
+} from 'lodash';
 
-import type { CommandsInterface } from '.bot/src/database/entity/commands';
+import type { CommandsGroupInterface, CommandsInterface } from '.bot/src/database/entity/commands';
 import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
@@ -219,25 +314,34 @@ import { getPermissionName } from '~/functions/getPermissionName';
 import {
   minLength, required, startsWith,
 } from '~/functions/validators';
+import GET_ALL from '~/queries/customCommands/getAll.gql';
 
 let count: {
   command: string; count: number;
 }[] = [];
 
-type CommandsInterfaceUI = CommandsInterface & { count: number };
+type CommandsInterfaceUI = CommandsInterface & { count: number, groupToBeShownInTable: null | string };
 
 export default defineComponent({
   components: {
-    'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/command-newItem.vue') }),
-    responses:  defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
+    'new-item':     defineAsyncComponent({ loader: () => import('~/components/new-item/command-newItem.vue') }),
+    responses:      defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
+    'group-config': defineAsyncComponent(() => import('~/components/manage/alias/groupConfig.vue')),
   },
   setup () {
-    const { result, loading } = useQuery(gql`
-      query {
-        permissions { id name }
-      }
-    `);
+    const { result, loading } = useQuery(GET_ALL);
     const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
+    const groups = useResult<{customCommandsGroup: CommandsGroupInterface[] }, CommandsGroupInterface[], CommandsGroupInterface[]>(result, [], data => data.customCommandsGroup);
+
+    const { mutate: updateGroupMutation, onDone: onDoneUpdateGroup, onError: onErrorUpdateGroup } = useMutation(gql`
+      mutation setCustomCommandsGroup($name: String!, $data: String!) {
+        setCustomCommandsGroup(name: $name, data: $data) {
+          name
+        }
+      }`);
+    onDoneUpdateGroup(() => { EventBus.$emit('snack', 'success', 'Data updated.'); });
+    onErrorUpdateGroup(error);
+
     const rules = { command: [startsWith(['!']), required, minLength(2)] };
 
     const search = ref('');
@@ -276,6 +380,9 @@ export default defineComponent({
         value: 'command', text: translate('command'), width: '15rem',
       },
       {
+        value: 'groupToBeShownInTable', text: translate('group'), width: '8rem',
+      },
+      {
         value: 'enabled', text: translate('enabled'), width: '6rem', align: 'center',
       },
       {
@@ -304,8 +411,9 @@ export default defineComponent({
         for (const command of commands) {
           items.value.push({
             ...command,
-            responses: orderBy(command.responses, 'order', 'asc'),
-            count:     count.find(o => o.command === command.command)?.count || 0,
+            groupToBeShownInTable: command.group, // we need this to have group shown even when group-by
+            responses:             orderBy(command.responses, 'order', 'asc'),
+            count:                 count.find(o => o.command === command.command)?.count || 0,
           });
         }
         // we also need to reset selection values
@@ -349,6 +457,9 @@ export default defineComponent({
       selected.value = [];
     };
     const update = async (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
+      if (attr === 'group') {
+        item.group = item.groupToBeShownInTable;
+      }
       // check validity
       for (const key of Object.keys(rules)) {
         for (const rule of (rules as any)[key]) {
@@ -403,6 +514,92 @@ export default defineComponent({
       EventBus.$emit('snack', 'success', 'Data updated.');
     };
 
+    const permissionItems = computed(() => {
+      return [
+        {
+          text:     '-- unset --',
+          value:    null,
+          disabled: false,
+        },
+        ...permissions.value.map(item => ({
+          text:     item.name,
+          value:    item.id,
+          disabled: false,
+        })),
+      ];
+    });
+
+    const groupItems = computed(() => {
+      return [...new Set(items.value.filter(o => o.group !== null).map(o => o.group).sort())].map(item => ({
+        text:     item,
+        value:    item,
+        disabled: false,
+      }));
+    });
+
+    const isGroupSelected = (group: string) => {
+      for (const item of items.value.filter(o => o.group === group)) {
+        if (!selected.value.find(o => o.id === item.id)) {
+          return false;
+        }
+      }
+      return true;
+    };
+    const toggleGroupSelection = (group: string) => {
+      if (isGroupSelected(group)) {
+        // deselect all
+        selected.value = selected.value.filter(o => o.group !== group);
+      } else {
+        for (const item of items.value.filter(o => o.group === group)) {
+          if (!selected.value.find(o => o.id === item.id)) {
+            selected.value.push(item);
+          }
+        }
+      }
+    };
+
+    const getGroup = computed<{ [name: string]: CommandsGroupInterface }>({
+      get () {
+        // set empty groups from aliases
+        const returnGroups: { [name: string]: CommandsGroupInterface } = {};
+        for (const alias of items.value) {
+          if (alias.group && !returnGroups[alias.group]) {
+            const group = groups.value.find(o => o.name === alias.group);
+            returnGroups[alias.group] = {
+              name:    alias.group,
+              options: group?.options ?? {
+                filter:     null,
+                permission: null,
+              },
+            };
+          }
+        }
+        return returnGroups;
+      },
+      set (value: { [name: string]: CommandsGroupInterface }) {
+        // go through groups and save only changed
+        for (const groupName of Object.keys(getGroup.value)) {
+          if (!isEqual(getGroup.value[groupName], value[groupName])) {
+            updateGroupMutation({
+              name: groupName,
+              data: JSON.stringify(value[groupName].options),
+            }, { refetchQueries: [{ query: GET_ALL }] });
+          }
+        }
+        return true;
+      },
+    });
+
+    function updateGroup (groupName: string, options: { permission: null | string, filter: null | string }) {
+      getGroup.value = {
+        ...getGroup.value,
+        [groupName]: {
+          name: groupName,
+          options,
+        },
+      };
+    }
+
     return {
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       saveCurrentItems,
@@ -431,6 +628,16 @@ export default defineComponent({
       mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
       selectable,
+
+      permissionItems,
+      groups,
+      groupItems,
+      getGroup,
+      updateGroup,
+      isGroupSelected,
+      toggleGroupSelection,
+      mdiMinus,
+      mdiPlus,
     };
   },
 });

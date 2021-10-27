@@ -123,6 +123,7 @@
                           :permissions="permissions"
                           :permission="responsesUpdated[i].permission"
                           @input="responsesUpdated[i].permission = $event"
+                          nullable
                         />
                         <v-btn
                           small

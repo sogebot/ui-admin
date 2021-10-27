@@ -11,12 +11,10 @@ module.exports = {
     'plugin:import/typescript',
     'plugin:vue/recommended',
   ],
-  plugins: ['unused-imports'],
   // add your custom rules here
-  rules:   {
+  rules: {
     'func-call-spacing':                    'off',
     '@typescript-eslint/func-call-spacing': ['error'],
-    'unused-imports/no-unused-imports':     'error',
     'key-spacing':                          ['error', {
       beforeColon: false, afterColon: true, align: 'value',
     }],
