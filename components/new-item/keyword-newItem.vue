@@ -58,6 +58,7 @@ export default defineComponent({
         await new Promise((resolve) => {
           const item: KeywordInterface = {
             id:        uuid(),
+            group:     null,
             keyword:   newItemCommand.value,
             responses: [],
             enabled:   true,

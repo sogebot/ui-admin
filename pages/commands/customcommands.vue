@@ -562,11 +562,11 @@ export default defineComponent({
       get () {
         // set empty groups from aliases
         const returnGroups: { [name: string]: CommandsGroupInterface } = {};
-        for (const alias of items.value) {
-          if (alias.group && !returnGroups[alias.group]) {
-            const group = groups.value.find(o => o.name === alias.group);
-            returnGroups[alias.group] = {
-              name:    alias.group,
+        for (const item of items.value) {
+          if (item.group && !returnGroups[item.group]) {
+            const group = groups.value.find(o => o.name === item.group);
+            returnGroups[item.group] = {
+              name:    item.group,
               options: group?.options ?? {
                 filter:     null,
                 permission: null,
