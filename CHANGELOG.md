@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [23.5.0](https://github.com/sogebot/ui-admin/compare/v23.4.0...v23.5.0) (2021-10-28)
+
+
+### Features
+
+* **customcommands:** add groups management ([569bfa6](https://github.com/sogebot/ui-admin/commit/569bfa654ed529db0331e13b42233746070f2784))
+* **keyword:** add groups management ([58f054d](https://github.com/sogebot/ui-admin/commit/58f054d778f5c12d86f122410f3a9e9439ad1ec0))
+
 ## [23.4.0](https://github.com/sogebot/ui-admin/compare/v23.3.2...v23.4.0) (2021-10-26)
 
 
