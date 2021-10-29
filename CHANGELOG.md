@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [23.5.1](https://github.com/sogebot/ui-admin/compare/v23.5.0...v23.5.1) (2021-10-29)
+
+
+### Bug Fixes
+
+* **viewers:** parse number after blur ([022d0dd](https://github.com/sogebot/ui-admin/commit/022d0dddc7f8966ed3f8ea1e3f62ffe209029790))
+
 ## [23.5.0](https://github.com/sogebot/ui-admin/compare/v23.4.0...v23.5.0) (2021-10-28)
 
 
