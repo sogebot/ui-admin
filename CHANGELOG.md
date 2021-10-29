@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [23.5.2](https://github.com/sogebot/ui-admin/compare/v23.5.1...v23.5.2) (2021-10-29)
+
+
+### Bug Fixes
+
+* **oauth:** remove twitch token generator ([e3ef56c](https://github.com/sogebot/ui-admin/commit/e3ef56ce461b1604ee237cb0e3405f9a27caa11a))
+
 ### [23.5.1](https://github.com/sogebot/ui-admin/compare/v23.5.0...v23.5.1) (2021-10-29)
 
 
