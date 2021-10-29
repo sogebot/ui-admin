@@ -5,7 +5,6 @@
         Actions
       </v-toolbar-title>
     </v-toolbar>
-
     <v-speed-dial
       v-model="fab"
       absolute
@@ -94,9 +93,9 @@ import { useMutation, useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
-import { error } from '../../functions/error';
-
 import type { QuickActions } from '.bot/src/database/entity/dashboard';
+import { error } from '~/functions/error';
+import { omitDeep } from '~/functions/omitDeep';
 
 export default defineComponent({
   components: { actionButton: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/button.vue') }) },
@@ -104,20 +103,20 @@ export default defineComponent({
     const { result, loading, refetch } = useQuery(gql`
       query quickAction {
         quickAction {
-          ... on CommandItem { id type options { label color command }  }
-          ... on CustomVariableItem { id type options { label color customvariable } }
-          ... on RandomizerItem { id type options { label color randomizerId } }
-          ... on OverlayCountdownItem { id type options { label color countdownId } }
-          ... on OverlayMarathonItem { id type options { label color marathonId } }
-          ... on OverlayStopwatchItem { id type options { label color stopwatchId } }
+          ... on CommandItem { id userId type order options { label color command }  }
+          ... on CustomVariableItem { id userId type order options { label color customvariable } }
+          ... on RandomizerItem { id userId type order options { label color randomizerId } }
+          ... on OverlayCountdownItem { id userId type order options { label color countdownId } }
+          ... on OverlayMarathonItem { id userId type order options { label color marathonId } }
+          ... on OverlayStopwatchItem { id userId type order options { label color stopwatchId } }
         }
       }
     `);
     watch(result, (value) => {
       items.value = value.quickAction.map((o: any) => {
-        const { __typename, ...item } = o;
+        const item = omitDeep(o, ['__typename']);
         return {
-          ...item, selected: items.value.find(b => b.id === o.id)?.selected ?? false, temporary: false, show: true,
+          ...item, selected: items.value.find(b => b.id === item.id)?.selected ?? false, temporary: false, show: true,
         };
       });
     });
