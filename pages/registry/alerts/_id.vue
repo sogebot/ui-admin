@@ -75,7 +75,7 @@
                 {{ translate('registry.alerts.loadStandardProfanityList') }}
               </label>
             </v-col>
-            <v-col v-for="lang of Object.keys(item.loadStandardProfanityList)" :key="lang" cols="auto">
+            <v-col v-for="lang of Object.keys(item.loadStandardProfanityList).filter(o => !o.startsWith('_'))" :key="lang" cols="auto">
               <v-checkbox
                 v-model="item.loadStandardProfanityList[lang]"
                 class="pa-0 ma-0"
