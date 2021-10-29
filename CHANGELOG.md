@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [23.5.3](https://github.com/sogebot/ui-admin/compare/v23.5.2...v23.5.3) (2021-10-29)
+
+
+### Bug Fixes
+
+* **actions:** send correct data to save action ([43f1538](https://github.com/sogebot/ui-admin/commit/43f153878da82342ecb347c35c01c1c3592ffb77))
+* **alerts:** load standard profanity should not have __typename ([cf14583](https://github.com/sogebot/ui-admin/commit/cf14583fead8519d799b632e7e262b214e271c9c))
+
 ### [23.5.2](https://github.com/sogebot/ui-admin/compare/v23.5.1...v23.5.2) (2021-10-29)
 
 
