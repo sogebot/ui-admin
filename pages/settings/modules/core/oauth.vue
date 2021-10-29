@@ -12,7 +12,7 @@
         <v-card>
           <v-card-text>
             <v-select class="pb-2 mb-2" v-model="settings.general.tokenService[0]"
-              :items="['Twitch Token Generator', 'SogeBot Token Generator', 'Own Twitch App']" label="Token Generator"
+              :items="['SogeBot Token Generator', 'Own Twitch App']" label="Token Generator"
               hint="If you change token generator, you need to re-do all tokens!" persistent-hint />
 
             <v-expand-transition>
@@ -119,9 +119,7 @@ export default defineComponent({
       const clientId = settings.value.general.tokenServiceCustomClientId[0];
       const clientSecret = settings.value.general.tokenServiceCustomClientSecret[0];
 
-      if (settings.value.general.tokenService[0] === 'Twitch Token Generator') {
-        return 'https://twitchtokengenerator.com/quick/jLbq7v1pzF';
-      } else if (settings.value.general.tokenService[0] === 'SogeBot Token Generator') {
+      if (settings.value.general.tokenService[0] === 'SogeBot Token Generator') {
         return `https://twitch-token-generator.soge.workers.dev/request-tokens?${scope}`;
       } else {
         return `${redirectUri.value}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}`;
@@ -137,9 +135,7 @@ export default defineComponent({
       const clientId = settings.value.general.tokenServiceCustomClientId[0];
       const clientSecret = settings.value.general.tokenServiceCustomClientSecret[0];
 
-      if (settings.value.general.tokenService[0] === 'Twitch Token Generator') {
-        return 'https://twitchtokengenerator.com/quick/VHavigHX0P';
-      } else if (settings.value.general.tokenService[0] === 'SogeBot Token Generator') {
+      if (settings.value.general.tokenService[0] === 'SogeBot Token Generator') {
         return `https://twitch-token-generator.soge.workers.dev/request-tokens?${scope}`;
       } else {
         return `${redirectUri.value}?${scope}&clientId=${clientId}&clientSecret=${clientSecret}`;
