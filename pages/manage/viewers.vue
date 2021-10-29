@@ -1,6 +1,5 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-
     <v-speed-dial
       v-model="fab"
       class="actionFab"
@@ -333,7 +332,7 @@
               :rules="rules.watchedTime"
               single-line
               suffix="h"
-              @input="value=>item.watchedTime=value*1000*60*60"
+              @blur="setWatchedTime(item, $event.target._value)"
             />
           </template>
         </v-edit-dialog>
@@ -574,9 +573,9 @@ import {
 import {
   computed,
   defineAsyncComponent,
-  defineComponent, onMounted, ref, watch,
+  defineComponent, onMounted, ref, useRoute,
+  watch,
 } from '@nuxtjs/composition-api';
-import { useRoute, useStore } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -610,7 +609,6 @@ export default defineComponent({
     FilterButton:    defineAsyncComponent({ loader: () => import('~/components/viewers/filterButton.vue') }),
   },
   setup () {
-    const store = useStore<any>();
     const rules = {
       messages:                  [minValue(0), required],
       points:                    [minValue(0), required],
@@ -915,8 +913,12 @@ export default defineComponent({
     };
 
     const watchedTimeFormat = (value: number) => {
-      return Intl.NumberFormat((store.state.configuration ?? { lang: 'en' }).lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value / 1000 / 60 / 60);
+      return (value / 1000 / 60 / 60).toFixed(2);
     };
+
+    function setWatchedTime (item: typeof items.value[number], value: string | number) {
+      item.watchedTime = Number(String(value).replace(/\s/g, '')) * 1000 * 60 * 60;
+    }
 
     return {
       addToSelectedItem: addToSelectedItem(selected, 'userId', currentItems),
@@ -969,6 +971,8 @@ export default defineComponent({
       resetSubgifts,
       watchedTimeFormat,
       ButtonStates,
+
+      setWatchedTime,
     };
   },
 });
