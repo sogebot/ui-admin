@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [24.0.0](https://github.com/sogebot/ui-admin/compare/v23.5.3...v24.0.0) (2021-10-30)
+
+
+### Features
+
+* **checklist:** add checklist as widget ([eb85c70](https://github.com/sogebot/ui-admin/commit/eb85c706557e684e830533b7f34ad9e46d492b66))
+
 ### [23.5.3](https://github.com/sogebot/ui-admin/compare/v23.5.2...v23.5.3) (2021-10-29)
 
 
