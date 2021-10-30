@@ -329,7 +329,6 @@ import {
 
   ref, useRoute, useRouter, useStore, watch,
 } from '@nuxtjs/composition-api';
-import { DAY, HOUR } from '@sogebot/ui-helpers/constants';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   useMutation, useQuery, useResult,
@@ -413,7 +412,7 @@ export default defineComponent({
     const selectedTab = ref(0);
     const customTab = ref(0);
 
-    const intervalItems = [{ value: HOUR, text: 'hour' }, { value: HOUR * 24, text: 'day' }, { value: DAY * 7, text: 'week' }, { value: DAY * 31, text: 'month' }, { value: DAY * 365, text: 'year' }];
+    const intervalItems = ['hour', 'day', 'week', 'month', 'year'];
     const groupType = ['fade', 'multi'];
     const goalType = [
       'followers', 'currentFollowers', 'currentSubscribers', 'subscribers',
@@ -522,7 +521,7 @@ export default defineComponent({
             timestamp:       Date.now(),
             goalAmount:      1000,
             currentAmount:   0,
-            interval:        HOUR,
+            interval:        'hour',
             endAfter:        Date.now() + 24 * 60 * 60 * 1000,
             endAfterIgnore:  true,
             countBitsAsTips: false,
