@@ -1,5 +1,5 @@
 <template>
-  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e5" width="100%">
+  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e5" width="100%" flat>
     <v-toolbar height="36" color="blue-grey darken-4">
       <v-spacer />
 

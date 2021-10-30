@@ -1,5 +1,5 @@
 <template>
-  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e4" width="100%" :loading="isLoading" style="overflow: inherit">
+  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e4" width="100%" :loading="isLoading" style="overflow: inherit" flat>
     <v-toolbar height="36" color="blue-grey darken-4" class="mb-1">
       <v-spacer />
       <v-btn
