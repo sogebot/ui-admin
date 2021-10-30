@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [24.0.1](https://github.com/sogebot/ui-admin/compare/v24.0.0...v24.0.1) (2021-10-30)
+
+
+### Bug Fixes
+
+* **overlay:** add stats to query ([18a41e3](https://github.com/sogebot/ui-admin/commit/18a41e3c0751320684b1e4e0057a53c793b8778d))
+
 ## [24.0.0](https://github.com/sogebot/ui-admin/compare/v23.5.3...v24.0.0) (2021-10-30)
 
 
