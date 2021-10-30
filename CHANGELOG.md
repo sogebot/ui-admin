@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [25.0.0](https://github.com/sogebot/ui-admin/compare/v24.0.1...v25.0.0) (2021-10-30)
+
+
+### Bug Fixes
+
+* **goal:** use interval items as string ([cd5687d](https://github.com/sogebot/ui-admin/commit/cd5687d07b22ebaa0288c37f747ee16bb39b86d6))
+
 ### [24.0.1](https://github.com/sogebot/ui-admin/compare/v24.0.0...v24.0.1) (2021-10-30)
 
 
