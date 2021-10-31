@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [25.0.2](https://github.com/sogebot/ui-admin/compare/v25.0.1...v25.0.2) (2021-10-31)
+
+
+### Bug Fixes
+
+* **widgets:** fix calculation of height ([ded5f4b](https://github.com/sogebot/ui-admin/commit/ded5f4b39a629d143fb0315ef8167b69207948c0))
+
 ### [25.0.1](https://github.com/sogebot/ui-admin/compare/v25.0.0...v25.0.1) (2021-10-31)
 
 
