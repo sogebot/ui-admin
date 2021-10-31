@@ -40,11 +40,11 @@ import { v4 } from 'uuid';
 import type { ChecklistInterface } from '.bot/src/database/entity/checklist';
 
 export default defineComponent({
+  props: { height: Number },
   setup () {
     const id = v4();
 
     const isPopout = computed(() => location.href.includes('popout'));
-    const height = ref(600);
     const loading = ref(true);
 
     const items = ref([] as string[]);
@@ -61,14 +61,6 @@ export default defineComponent({
         });
       }
     });
-
-    function updateHeight () {
-      // so. many. parentElement. to get proper offsetTop as children offset is 0
-      const offsetTop = document.getElementById(id)?.parentElement?.parentElement?.parentElement?.parentElement?.offsetTop || 0;
-      const offset = 86;
-      const newHeight = window.innerHeight - offsetTop - offset;
-      height.value = Math.max(newHeight, 300);
-    }
 
     const update = () => {
       getSocket('/systems/checklist').emit('generic::getAll', (err: Error | null, itemsFromSocket: string[], checkedItemsFromSocket: ChecklistInterface[]) => {
@@ -92,7 +84,6 @@ export default defineComponent({
 
     onMounted(() => {
       update();
-      setInterval(() => updateHeight(), 100);
     });
 
     return {
@@ -100,7 +91,6 @@ export default defineComponent({
 
       // refs
       isPopout,
-      height,
       items,
       loading,
       checkedItemsIdx,

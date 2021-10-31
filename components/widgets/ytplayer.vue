@@ -81,7 +81,7 @@
     </v-card-text>
 
     <v-card-text>
-      <v-simple-table :height="!isPopout ? height : null">
+      <v-simple-table :height="height - 36">
         <template #default>
           <tbody>
             <tr
@@ -119,7 +119,7 @@ import {
 } from '@mdi/js';
 import {
   computed,
-  defineComponent, nextTick, onMounted, onUnmounted, ref, useContext, watch,
+  defineComponent, nextTick, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import VuePlyr from '@skjnldsv/vue-plyr';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -142,8 +142,6 @@ const emptyCurrentSong = {
 export default defineComponent({
   setup () {
     const isPopout = computed(() => location.href.includes('popout'));
-    const height = ref(600);
-    const ctx = useContext();
 
     const currentTag = ref('general');
     const availableTags = ref([] as string[]);
@@ -321,7 +319,6 @@ export default defineComponent({
 
     onMounted(() => {
       refreshPlaylist();
-      setInterval(() => updateHeight(), 100);
 
       getSocket('/systems/songs').on('isPlaying', (cb: (isPlaying: boolean) => void) => {
         if (player.value) {
@@ -364,19 +361,9 @@ export default defineComponent({
       }
     });
 
-    function updateHeight () {
-      // so. many. parentElement. to get proper offsetTop as children offset is 0
-      const offsetTop = document.getElementById('5b90af97-ad95-4776-89e3-9a59c67510e5')?.parentElement?.parentElement?.parentElement?.parentElement?.offsetTop || 0;
-      const ytplayer = document.getElementById('youtubeplayer')?.clientHeight ?? 0;
-      const offset = 52 + 124 + ytplayer;
-      const newHeight = window.innerHeight - offsetTop - offset;
-      height.value = Math.max(newHeight, ctx.$vuetify.breakpoint.mobile ? 350 : 0);
-    }
-
     return {
       // refs
       isPopout,
-      height,
       currentTag,
       availableTags,
       autoplay,
@@ -395,9 +382,6 @@ export default defineComponent({
       formatTime,
 
       translate,
-
-      // functions
-      updateHeight,
 
       // icons
       mdiPlay,

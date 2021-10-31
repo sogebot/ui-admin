@@ -36,7 +36,7 @@
 import { mdiLink, mdiTwitter } from '@mdi/js';
 import {
   computed,
-  defineComponent, onMounted, ref,
+  defineComponent,
 } from '@nuxtjs/composition-api';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
@@ -48,6 +48,7 @@ import { error } from '../../functions/error';
 import type { WidgetSocialInterface } from '.bot/src/database/entity/widget';
 
 export default defineComponent({
+  props: { height: Number },
   setup () {
     const { result, loading, onError } = useQuery(gql`
       query { widgeSocialGet { id type hashtag text username displayname url timestamp }
@@ -56,24 +57,10 @@ export default defineComponent({
     const items = useResult<{ widgeSocialGet: WidgetSocialInterface[] }, WidgetSocialInterface[], WidgetSocialInterface[]>(result, [], data => data.widgeSocialGet);
 
     const isPopout = computed(() => location.href.includes('popout'));
-    const height = ref(600);
-
-    function updateHeight () {
-      // so. many. parentElement. to get proper offsetTop as children offset is 0
-      const offsetTop = document.getElementById('5b90af97-ad95-4776-89e3-9a59c67510e6')?.parentElement?.parentElement?.parentElement?.parentElement?.offsetTop || 0;
-      const offset = 50;
-      const newHeight = window.innerHeight - offsetTop - offset;
-      height.value = Math.max(newHeight, 300);
-    }
-
-    onMounted(() => {
-      setInterval(() => updateHeight(), 100);
-    });
 
     return {
       // refs
       isPopout,
-      height,
       items,
       loading,
 

@@ -26,14 +26,14 @@
     </v-tabs>
 
     <v-slide-y-transition>
-      <v-card-text v-if="items.length === 0" :style="{ height: height + 'px' }">
+      <v-card-text v-if="items.length === 0" :style="{ height: height - 36 + 'px' }">
         <div class="font-weight-light">
           No URLs are defined yet.
         </div>
       </v-card-text>
     </v-slide-y-transition>
     <v-slide-y-transition>
-      <v-card-text v-if="items.length > 0" :style="{ height: height + 'px', overflow: 'auto' }" class="pa-0">
+      <v-card-text v-if="items.length > 0" :style="{ height: height - 36 + 'px', overflow: 'auto' }" class="pa-0">
         <v-tabs-items v-if="show" v-model="tab">
           <v-tab-item v-for="item of items" :key="item.id + 'tab'">
             <iframe
@@ -41,7 +41,7 @@
               scrolling="no"
               :src="item.url.includes('://') ? item.url : `http://${item.url}`"
               width="100%"
-              :height="height + 'px'"
+              :height="height - 36 + 'px'"
             />
           </v-tab-item>
         </v-tabs-items>
@@ -67,6 +67,7 @@ import { error } from '../../functions/error';
 import type { WidgetCustomInterface } from '.bot/src/database/entity/widget';
 
 export default defineComponent({
+  props:      { height: Number },
   components: { edit: defineAsyncComponent({ loader: () => import('~/components/widgets/custom/edit.vue') }) },
   setup () {
     const { result, loading, refetch, onError } = useQuery(gql`
@@ -76,20 +77,11 @@ export default defineComponent({
     const items = useResult<{ widgetCustomGet: Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[] }, Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[], Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[]>(result, [], data => data.widgetCustomGet);
 
     const isPopout = computed(() => location.href.includes('popout'));
-    const height = ref(600);
     const show = ref(false);
 
     const dialog = ref(false);
 
     const tab = ref('0');
-
-    function updateHeight () {
-      // so. many. parentElement. to get proper offsetTop as children offset is 0
-      const offsetTop = document.getElementById('27ff4cdf-2ffc-4c14-b619-c1660f5e0491')?.parentElement?.parentElement?.parentElement?.parentElement?.offsetTop || 0;
-      const offset = 86;
-      const newHeight = window.innerHeight - offsetTop - offset;
-      height.value = Math.max(newHeight, 300);
-    }
 
     watch(dialog, (val) => {
       if (!val) {
@@ -98,8 +90,6 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      setInterval(() => updateHeight(), 100);
-
       setTimeout(() => {
         show.value = true;
       }, 100);
@@ -108,7 +98,6 @@ export default defineComponent({
     return {
       // refs
       isPopout,
-      height,
       tab,
       dialog,
       items,

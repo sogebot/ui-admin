@@ -1,6 +1,6 @@
 <template>
   <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e4" width="100%" :loading="isLoading" style="overflow: inherit" flat>
-    <v-toolbar height="36" color="blue-grey darken-4" class="mb-1">
+    <v-toolbar height="36" color="blue-grey darken-4" class="mb-1" :rounded="false">
       <v-spacer />
       <v-btn
         v-if="selected.length > 0"
@@ -194,7 +194,7 @@
       </v-tooltip>
     </v-toolbar>
 
-    <v-list class="pa-0 ma-0" :height="!isPopout ? height : null" style="overflow: auto;">
+    <v-list class="pa-0 ma-0" style="overflow: auto;" :height="height - 36">
       <v-list-item-group
         v-model="selected"
         multiple
@@ -306,6 +306,7 @@ import GET_CFG from '~/queries/alert/getCfg.gql';
 import SET_CFG from '~/queries/alert/setCfg.gql';
 
 export default defineComponent({
+  props: { height: Number },
   setup () {
     const store = useStore<any>();
 
@@ -331,7 +332,6 @@ export default defineComponent({
     const { mutate: saveMutation } = useMutation(SET_CFG);
 
     const isLoading = ref(true);
-    const height = ref(600);
     const events = ref([] as EventListInterface[]);
     const selected = ref([] as number[]);
     const menu = ref(false);
@@ -426,14 +426,6 @@ export default defineComponent({
       saveMutation({ name: 'isSoundMuted', value: val[2] });
     });
 
-    function updateHeight () {
-      // so. many. parentElement. to get proper offsetTop as children offset is 0
-      const offsetTop = document.getElementById('5b90af97-ad95-4776-89e3-9a59c67510e4')?.parentElement?.parentElement?.parentElement?.parentElement?.offsetTop || 0;
-      const offset = 90;
-      const newHeight = window.innerHeight - offsetTop - offset;
-      height.value = Math.max(newHeight, 500);
-    }
-
     function resendAlert (id: string) {
       console.log(`resendAlert => ${id}`);
       getSocket('/widgets/eventlist').emit('eventlist::resend', id);
@@ -501,7 +493,6 @@ export default defineComponent({
       });
       getSocket('/widgets/eventlist').emit('eventlist::get', 100);
       setInterval(() => getSocket('/widgets/eventlist').emit('eventlist::get', 100), 60000);
-      setInterval(() => updateHeight(), 100);
     });
 
     return {
@@ -523,7 +514,6 @@ export default defineComponent({
       isSoundMuted,
       events,
       isLoading,
-      height,
       selected,
       menu,
       isPopout,

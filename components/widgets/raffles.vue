@@ -12,7 +12,7 @@
         <v-tab>Winner</v-tab>
       </v-tabs>
 
-      <v-tabs-items v-model="tab" :style="{ height: height + 'px' }">
+      <v-tabs-items v-model="tab" :style="{ height: height - 36 + 'px' }">
         <v-tab-item>
           <v-form v-model="valid" lazy-validation>
             <v-text-field
@@ -229,9 +229,9 @@ import {
 } from '~/functions/validators';
 
 export default defineComponent({
+  props: { height: Number },
   setup () {
     const isPopout = computed(() => location.href.includes('popout'));
-    const height = ref(600);
     const tab = ref(0);
     const isLoading = ref(true);
 
@@ -296,7 +296,6 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      setInterval(() => updateHeight(), 100);
       const cache = localStorage.getItem('/widget/raffles/');
       if (cache) {
         const parsed = JSON.parse(cache);
@@ -321,14 +320,6 @@ export default defineComponent({
 
       setInterval(() => refresh(), 1000);
     });
-
-    function updateHeight () {
-      // so. many. parentElement. to get proper offsetTop as children offset is 0
-      const offsetTop = document.getElementById('5b90af97-ad95-4776-89e3-9a59c67510e5')?.parentElement?.parentElement?.parentElement?.parentElement?.offsetTop || 0;
-      const offset = 127 - 40;
-      const newHeight = window.innerHeight - offsetTop - offset;
-      height.value = Math.max(newHeight, 300);
-    }
 
     function refresh () {
       getSocket('/systems/raffles').emit('raffle:getLatest', (err: string | null, raffle: RaffleInterface) => {
@@ -413,7 +404,6 @@ export default defineComponent({
     return {
       // refs
       isPopout,
-      height,
       tab,
       search,
       participants,

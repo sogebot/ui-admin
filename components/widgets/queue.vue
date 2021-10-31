@@ -96,7 +96,7 @@
             </v-col>
           </v-row>
 
-          <v-list dense :height="!isPopout ? height : null" style="overflow: auto;">
+          <v-list dense :height="height - 36" style="overflow: auto;">
             <v-list-item-group
               v-model="selectedUsers"
               multiple
@@ -174,9 +174,9 @@ import { QueueInterface } from '.bot/src/database/entity/queue';
 import { error } from '~/functions/error';
 
 export default defineComponent({
+  props: { height: Number },
   setup () {
     const isPopout = computed(() => location.href.includes('popout'));
-    const height = ref(600);
 
     const picked = ref([] as QueueInterface[]);
     const users = ref([] as QueueInterface[]);
@@ -193,16 +193,7 @@ export default defineComponent({
       }
     });
 
-    function updateHeight () {
-      // so. many. parentElement. to get proper offsetTop as children offset is 0
-      const offsetTop = document.getElementById('5b90af97-ad95-4776-89e3-9a59c67510e5')?.parentElement?.parentElement?.parentElement?.parentElement?.offsetTop || 0;
-      const offset = 90 + 130;
-      const newHeight = window.innerHeight - offsetTop - offset;
-      height.value = Math.max(newHeight, 300);
-    }
-
     onMounted(() => {
-      setInterval(() => updateHeight(), 100);
       setInterval(() => getSocket('/systems/queue').emit('queue::getAllPicked', (err: string | null, users2: QueueInterface[]) => {
         if (err) {
           return error(err);
@@ -322,7 +313,6 @@ export default defineComponent({
       locked,
       updated,
       isPopout,
-      height,
       picked,
       users,
       selectedUsers,

@@ -37,27 +37,27 @@
         </v-tabs>
       </v-col>
     </v-row>
-    <v-tabs-items id="widget-tab-items" v-model="tab" :style="{ height: `${height}px` }">
+    <v-tabs-items id="widget-tab-items" v-model="tab" :style="{ height: `${height}px`, overflow: 'hidden' }">
       <v-tab-item>
-        <events />
+        <events :height="height"/>
       </v-tab-item>
       <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'songs').enabled">
-        <ytplayer />
+        <ytplayer :height="height" />
       </v-tab-item>
       <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'queue').enabled">
-        <queue />
+        <queue :height="height" />
       </v-tab-item>
       <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'raffles').enabled">
-        <raffles />
+        <raffles :height="height" />
       </v-tab-item>
       <v-tab-item v-if="$store.state.$integrations.find(o => o.name === 'twitter').enabled">
-        <social />
+        <social :height="height" />
       </v-tab-item>
       <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'checklist').enabled">
-        <checklist />
+        <checklist :height="height" />
       </v-tab-item>
       <v-tab-item>
-        <custom />
+        <custom :height="height" />
       </v-tab-item>
     </v-tabs-items>
   </div>
@@ -90,7 +90,7 @@ export default defineComponent({
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
       const offsetTop = document.getElementById('widget-tab-items')?.parentElement?.offsetTop || 0;
-      const offset = ctx.$vuetify.breakpoint.mobile ? 45 + 48 : 45;
+      const offset = ctx.$vuetify.breakpoint.mobile ? 41 + 48 : 41;
       const newHeight = window.innerHeight - offsetTop - offset;
       height.value = Math.max(newHeight, 300);
     }
