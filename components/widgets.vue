@@ -90,13 +90,14 @@ export default defineComponent({
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
       const offsetTop = document.getElementById('widget-tab-items')?.parentElement?.offsetTop || 0;
-      const offset = ctx.$vuetify.breakpoint.mobile ? 41 + 48 : 41;
+      const offset = 41;
+      console.log(ctx.$vuetify.breakpoint.mobile);
       const newHeight = window.innerHeight - offsetTop - offset;
       height.value = Math.max(newHeight, 300);
     }
 
     onMounted(() => {
-      setTimeout(() => { updateHeight(); }, 300);
+      setTimeout(() => { updateHeight(); }, 1000);
       window.addEventListener('resize', updateHeight);
     });
 

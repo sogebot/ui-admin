@@ -140,6 +140,7 @@ const emptyCurrentSong = {
 };
 
 export default defineComponent({
+  props: { height: Number },
   setup () {
     const isPopout = computed(() => location.href.includes('popout'));
 
