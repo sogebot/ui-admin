@@ -5,9 +5,9 @@
       <v-tab>{{ translate('categories.general') }}</v-tab>
     </v-tabs>
 
-    <v-tabs-items v-model="tab">
+    <v-tabs-items v-model="tab"  style="overflow: visible;">
       <v-tab-item eager>
-        <v-card>
+        <v-card flat>
           <v-card-text>
             <v-toolbar dense color="#1e1e1e" flat>
               <v-toolbar-title>
@@ -15,19 +15,19 @@
                   Mini-Widgets
                 </label>
               </v-toolbar-title>
-              <v-row no-gutters style="transform: translateY(-6px);">
+              <v-row no-gutters>
                 <v-col cols="10">
                   <v-row>
                     <v-col style="text-align: right;" cols="6">
                       <v-slide-x-transition>
-                        <v-btn v-if="selected && selectedIdx !== 0" class="mt-3" color="info" icon @click="moveLeft()">
+                        <v-btn v-if="selected && selectedIdx !== 0" class="include" color="info" icon @click="moveLeft()">
                           <v-icon>mdi-chevron-left</v-icon>
                         </v-btn>
                       </v-slide-x-transition>
                     </v-col>
                     <v-col cols="6">
                       <v-slide-x-reverse-transition>
-                        <v-btn v-if="selected && selectedIdx !== settings.miniWidgets[0].length - 1" class="mt-3" color="info" icon @click="moveRight()">
+                        <v-btn v-if="selected && selectedIdx !== settings.miniWidgets[0].length - 1" class="include" color="info" icon @click="moveRight()">
                           <v-icon>mdi-chevron-right</v-icon>
                         </v-btn>
                       </v-slide-x-reverse-transition>
@@ -36,7 +36,7 @@
                 </v-col>
                 <v-col cols="2" style="text-align: right;">
                   <v-slide-x-reverse-transition>
-                    <v-btn v-if="selected" class="mt-3" color="error" @click="removeSelected" icon>
+                    <v-btn v-if="selected" class="include" color="error" @click="removeSelected" icon>
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
                   </v-slide-x-reverse-transition>
@@ -44,7 +44,11 @@
               </v-row>
             </v-toolbar>
 
-            <v-row class="py-3">
+            <transition-group
+              name="list"
+              tag="div"
+              class="row py-3"
+              v-on:leave="leave">
               <v-col
                 v-for="item of settings.miniWidgets[0]"
                 :key="item"
@@ -52,19 +56,27 @@
                 :lg="cols[item] ? cols[item][1] : 2"
                 :md="cols[item] ? cols[item][2] : 4"
                 :sm="cols[item] ? cols[item][3] : 4"
-                class="pa-1 move"
+                class="pa-1 include list-item"
+                style="cursor: pointer;"
                 @click="select(item)"
+                v-click-outside="{
+                    handler: () => selected = null,
+                    include: include,
+                  }"
               >
-                <div class="v-card v-sheet theme--dark elevation-5 rounded-0 pa-3" :class="{ 'primary': selected === item, 'border-primary': true }">
-                  <v-icon v-if="item.split('|')[0] === 'twitch'" x-large class="hidden-icon">
+                <div class="v-card v-sheet theme--dark elevation-5 rounded-0 pa-3"  :class="{ 'primary': selected === item, 'border-primary': true }">
+                  <v-icon v-if="item.split('|')[0] === 'twitch'" x-large class="hidden-icon" color="#9146FF">
                     mdi-twitch
+                  </v-icon>
+                  <v-icon v-if="item.split('|')[0] === 'general'" x-large class="hidden-icon">
+                    mdi-circle-double
                   </v-icon>
                   <div class="text-truncate">
                     {{ item.split('|')[1] }}
                   </div>
                 </div>
               </v-col>
-            </v-row>
+            </transition-group>
           </v-card-text>
         </v-card>
       </v-tab-item>
@@ -80,6 +92,7 @@ import {
   computed,
   defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
+import gsap from 'gsap';
 
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
@@ -158,6 +171,20 @@ export default defineComponent({
       }
     }
 
+    const include = () => {
+      return [...document.querySelectorAll('.include')];
+    };
+
+    const leave = (el: HTMLElement, done: () => void) => {
+      el.style.left = `${el.offsetLeft}px`;
+      el.style.top = `${el.offsetTop}px`;
+      el.style.zIndex = '999999';
+      el.style.position = `absolute`;
+      gsap.to(el, {
+        opacity: 0, top: el.offsetTop + 100, duration: 0.2, onComplete: done,
+      });
+    };
+
     return {
       settings,
       ui,
@@ -171,30 +198,39 @@ export default defineComponent({
       removeSelected,
       moveLeft,
       moveRight,
+      include,
+      leave,
     };
   },
 });
 </script>
 
 <style scoped>
-.border-primary {
-  border: 1px dotted var(--v-secondary-base) !important;
+.row {
+  overflow: visible;
 }
 
-.border-dragging {
-  opacity: 0.4 !important;
+.border-primary {
+  border: 1px dotted var(--v-secondary-base) !important;
+  overflow: hidden;
 }
 
 .hidden-icon {
   position: absolute !important;
-  right: 0;
-  color: #9146FF !important;
+  right: 0;;
   transform: rotate(45deg) translateY(7px);
   opacity: 0.4;
 }
 
-.move {
+.include {
   user-select: none;
-  transition: all 1s;
+}
+
+.list {
+  position: absolute;
+}
+
+.list-item {
+  transition: all 0.2s;
 }
 </style>
