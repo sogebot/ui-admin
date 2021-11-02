@@ -36,7 +36,7 @@
                               </v-subheader>
 
                               <v-list-item v-for="item of availableµWidgets.filter(o => o.startsWith('twitch'))" :key="item" @click="addItem(item)">
-                                <v-list-item-title>{{ item.split('|')[1] }}</v-list-item-title>
+                                <v-list-item-title>{{ capitalize(item.split('|')[1].replace(/([A-Z])/g, " $1")) }}</v-list-item-title>
                               </v-list-item>
                             </v-list>
                           </v-col>
@@ -48,7 +48,7 @@
                                 </v-icon>General
                               </v-subheader>
                               <v-list-item v-for="item of availableµWidgets.filter(o => o.startsWith('general'))" :key="item" @click="addItem(item)">
-                                <v-list-item-title>{{ item.split('|')[1] }}</v-list-item-title>
+                                <v-list-item-title>{{ capitalize(item.split('|')[1].replace(/([A-Z])/g, " $1")) }}</v-list-item-title>
                               </v-list-item>
                             </v-list>
                           </v-col>
@@ -126,7 +126,7 @@
                     mdi-circle-double
                   </v-icon>
                   <div class="text-truncate">
-                    {{ item.split('|')[1] }}
+                    {{ capitalize(item.split('|')[1].replace(/([A-Z])/g, " $1")) }}
                   </div>
                 </div>
               </v-col>
@@ -151,6 +151,7 @@ import {
   watch,
 } from '@vue/composition-api';
 import gsap from 'gsap';
+import { capitalize } from 'lodash';
 import { v4 } from 'uuid';
 
 import { error } from '~/functions/error';
@@ -301,6 +302,7 @@ export default defineComponent({
       getItemNameWithoutId,
       availableµWidgets,
       addItem,
+      capitalize,
     };
   },
 });
