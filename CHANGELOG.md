@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [26.1.1](https://github.com/sogebot/ui-admin/compare/v26.1.0...v26.1.1) (2021-11-02)
+
+
+### Bug Fixes
+
+* **overlay:** fix group not propagation settings change ([49e4081](https://github.com/sogebot/ui-admin/commit/49e40814b3c4b1c138ad210d37f93ca3fe12ee14))
+
 ## [26.1.0](https://github.com/sogebot/ui-admin/compare/v26.0.0...v26.1.0) (2021-11-02)
 
 
