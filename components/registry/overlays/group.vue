@@ -253,6 +253,7 @@ export default defineComponent({
     tts:             () => import('~/components/registry/overlays/tts.vue'),
     polls:           () => import('~/components/registry/overlays/polls.vue'),
     eventlist:       () => import('~/components/registry/overlays/eventlist.vue'),
+    wordcloud:       () => import('~/components/registry/overlays/wordcloud.vue'),
     item:            defineAsyncComponent(() => import('~/components/registry/overlays/item.vue')),
   },
   setup (props, ctx) {
@@ -315,6 +316,7 @@ export default defineComponent({
       { value: 'polls', text: 'polls' },
       { value: 'randomizer', text: 'randomizer' },
       { value: 'stats', text: 'stats' },
+      { value: 'wordcloud', text: 'wordcloud' },
       { value: 'tts', text: 'tts' },
       { value: 'hypetrain', text: 'hypetrain' },
     ];

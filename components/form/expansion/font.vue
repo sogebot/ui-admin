@@ -20,6 +20,7 @@
           :items="alignItems"
         />
         <v-slider
+          v-if="model.size"
           v-model="model.size"
           :label="translate('registry.alerts.font.size.name')"
           class="align-center"
@@ -51,6 +52,7 @@
           </template>
         </v-slider>
         <v-slider
+          v-if="model.borderPx"
           v-model="model.borderPx"
           :label="translate('registry.alerts.font.borderPx.name')"
           class="align-center"
@@ -72,6 +74,7 @@
           :label="translate('registry.alerts.font.color.name')"
         />
         <color
+          v-if="model.borderColor"
           :id="id + '|fontbordercolor'"
           v-model="model.borderColor"
           :label="translate('registry.alerts.font.borderColor.name')"
@@ -83,7 +86,7 @@
           :label="translate('registry.alerts.font.highlightcolor.name')"
         />
 
-        <v-card>
+        <v-card v-if="model.shadow">
           <v-card-text class="pa-0">
             <v-row no-gutters>
               <v-col cols="11">

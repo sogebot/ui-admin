@@ -68,7 +68,7 @@ export const haveAnyOptions = (type: string) => {
     'goalRegistry', 'alertsRegistry', 'textRegistry', 'group', 'eventlist',
     'media', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts',
     'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes',
-    'countdown', 'stopwatch', 'marathon'];
+    'countdown', 'stopwatch', 'marathon', 'wordcloud'];
   return withOpts.includes(type);
 };
 
@@ -90,6 +90,7 @@ export default defineComponent({
     polls:           () => import('~/components/registry/overlays/polls.vue'),
     eventlist:       () => import('~/components/registry/overlays/eventlist.vue'),
     group:           () => import('~/components/registry/overlays/group.vue'),
+    wordcloud:       () => import('~/components/registry/overlays/wordcloud.vue'),
   },
   setup () {
     const store = useStore();
@@ -148,6 +149,7 @@ export default defineComponent({
       { value: 'polls', text: 'polls' },
       { value: 'randomizer', text: 'randomizer' },
       { value: 'stats', text: 'stats' },
+      { value: 'wordcloud', text: 'wordcloud' },
       { value: 'stopwatch', text: 'stopwatch' },
       { value: 'tts', text: 'tts' },
       { value: 'hypetrain', text: 'hypetrain' },
