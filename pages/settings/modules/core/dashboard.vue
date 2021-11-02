@@ -126,7 +126,7 @@
                     mdi-circle-double
                   </v-icon>
                   <div class="text-truncate">
-                    {{ capitalize(item.split('|')[1].replace(/([A-Z])/g, " $1")) }}
+                    {{ capitalize(item.split('|')[1].replace(/([A-Z])/g, "$1")) }}
                   </div>
                 </div>
               </v-col>

@@ -88,7 +88,7 @@ import { error } from '~/functions/error';
 
 export default defineComponent({
   props:      { timestamp: Number },
-  components: { changeGameDialog: defineAsyncComponent({ loader: () => import('./change-game-dialog.vue') }) },
+  components: { changeGameDialog: defineAsyncComponent({ loader: () => import('./commons/change-game-dialog.vue') }) },
   setup () {
     const dialog = ref(false);
     const game = ref(null as null | string);

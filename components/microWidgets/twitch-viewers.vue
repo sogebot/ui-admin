@@ -65,18 +65,18 @@ export default defineComponent({
     isLoaded:       Boolean,
     isStreamOnline: Boolean,
     timestamp:      Number,
-    viewers:        Number,
+    current:        Object,
   },
   setup (props) {
     const currentAnimated = ref({ value: 0 });
     const store = useStore<any>();
 
-    watch(() => props.viewers, (val) => {
+    watch(() => props.current?.currentViewers, (val) => {
       val = val ?? 0;
       gsap.to(currentAnimated.value, {
         duration: 0.5, value: val, roundProps: 'value',
       });
-    });
+    }, { deep: true });
 
     const toggleDisplay = () => {
       store.commit('setUIStatsHidden', !store.state.areUIStatsHidden);

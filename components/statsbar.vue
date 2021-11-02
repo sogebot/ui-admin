@@ -39,98 +39,19 @@
         v-html="translate('errors.new_bot_version_available_at').replace(/\$version/gmi, update.version)"
       />
     </v-alert>
-
     <v-row no-gutters>
-      <game :timestamp="timestamp" />
-      <uptime :timestamp="timestamp" :uptime="uptime" :is-loaded="isLoaded" />
-      <viewers :timestamp="timestamp" :is-stream-online="isStreamOnline" :is-loaded="isLoaded" :viewers="currentStats.currentViewers" />
-      <with-trending
-        hide
-        title="max-viewers"
+      <component
+        :is="`${item.split('|')[0]}-${item.split('|')[1].replace(/([A-Z])/g, '-$1').toLowerCase()}`"
+        v-for="item of $store.state.configuration.core.dashboard.µWidgets"
+        :key="item"
         :timestamp="timestamp"
-        :is-stream-online="isStreamOnline"
+        :uptime="uptime"
         :is-loaded="isLoaded"
-        :current="currentStats.maxViewers"
-        :average="averageStats.maxViewers"
-      />
-      <with-trending
-        hide
-        title="new-chatters"
-        :timestamp="timestamp"
         :is-stream-online="isStreamOnline"
-        :is-loaded="isLoaded"
-        :current="currentStats.newChatters"
-        :average="averageStats.newChatters"
+        :current="currentStats"
+        :average="averageStats"
+        :broadcaster-type="broadcasterType"
       />
-      <with-trending
-        type="bigNumber"
-        title="chat-messages"
-        :timestamp="timestamp"
-        :is-stream-online="isStreamOnline"
-        :is-loaded="isLoaded"
-        :current="currentStats.chatMessages"
-        :average="averageStats.chatMessages"
-      />
-      <with-trending
-        offline
-        type="bigNumber"
-        title="views"
-        :timestamp="timestamp"
-        :is-stream-online="isStreamOnline"
-        :is-loaded="isLoaded"
-        :current="currentStats.currentViews"
-        :average="averageStats.currentViews"
-      />
-      <with-trending
-        offline
-        type="bigNumber"
-        title="followers"
-        :timestamp="timestamp"
-        :is-stream-online="isStreamOnline"
-        :is-loaded="isLoaded"
-        :current="currentStats.currentFollowers"
-        :average="averageStats.currentFollowers"
-      />
-      <with-trending
-        offline
-        v-if="broadcasterType !== ''"
-        type="bigNumber"
-        title="subscribers"
-        :timestamp="timestamp"
-        :is-stream-online="isStreamOnline"
-        :is-loaded="isLoaded"
-        :current="currentStats.currentSubscribers"
-        :average="averageStats.currentSubscribers"
-      />
-      <with-trending
-        v-if="broadcasterType !== ''"
-        type="bigNumber"
-        title="bits"
-        :timestamp="timestamp"
-        :is-stream-online="isStreamOnline"
-        :is-loaded="isLoaded"
-        :current="currentStats.currentBits"
-        :average="averageStats.currentBits"
-      />
-      <with-trending
-        type="currency"
-        title="tips"
-        :timestamp="timestamp"
-        :is-stream-online="isStreamOnline"
-        :is-loaded="isLoaded"
-        :current="currentStats.currentTips"
-        :average="averageStats.currentTips"
-      />
-      <with-trending
-        type="hours"
-        title="watched-time"
-        :timestamp="timestamp"
-        :is-stream-online="isStreamOnline"
-        :is-loaded="isLoaded"
-        :current="currentStats.currentWatched"
-        :average="averageStats.currentWatched"
-      />
-      <song :timestamp="timestamp" />
     </v-row>
   </div>
 </template>
@@ -150,11 +71,19 @@ let UIErrorInterval = 0;
 
 export default defineComponent({
   components: {
-    game:         defineAsyncComponent({ loader: () => import('~/components/statsbar/game.vue') }),
-    song:         defineAsyncComponent({ loader: () => import('~/components/statsbar/song.vue') }),
-    uptime:       defineAsyncComponent({ loader: () => import('~/components/statsbar/uptime.vue') }),
-    viewers:      defineAsyncComponent({ loader: () => import('~/components/statsbar/viewers.vue') }),
-    withTrending: defineAsyncComponent({ loader: () => import('~/components/statsbar/withTrending.vue') }),
+    'general-current-song': defineAsyncComponent({ loader: () => import('~/components/microWidgets/general-current-song.vue') }),
+    'general-tips':         defineAsyncComponent({ loader: () => import('~/components/microWidgets/general-tips.vue') }),
+    'twitch-chat-messages': defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-chat-messages.vue') }),
+    'twitch-bits':          defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-bits.vue') }),
+    'twitch-followers':     defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-followers.vue') }),
+    'twitch-subscribers':   defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-subscribers.vue') }),
+    'twitch-viewers':       defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-viewers.vue') }),
+    'twitch-views':         defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-views.vue') }),
+    'twitch-max-viewers':   defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-max-viewers.vue') }),
+    'twitch-new-chatters':  defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-new-chatters.vue') }),
+    'twitch-status':        defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-status.vue') }),
+    'twitch-uptime':        defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-uptime.vue') }),
+    'twitch-watched-time':  defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-watched-time.vue') }),
   },
   setup () {
     const averageStats: any = reactive({});
