@@ -1,5 +1,6 @@
 import { Context } from '@nuxt/types';
 import translate from '@sogebot/ui-helpers/translate';
+import { capitalize } from 'lodash';
 import { validate } from 'uuid';
 
 const haveTranslation = (o: string) => {
@@ -28,7 +29,7 @@ export default ({ app: { store, router } }: Context) => {
         setTimeout(() => init(), 10);
         return;
       }
-      const path = to.path.split('/').filter(String);
+      const path = to.path.split('/').filter(String).map(o => capitalize(o));
       store.commit('panel/breadcrumbs',
         path.map((o: string) => {
           return { text: validate(o) || !haveTranslation(o) ? o : translate(`menu.${o}`) };
