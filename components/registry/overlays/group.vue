@@ -132,7 +132,7 @@
           v-if="haveAnyOptions(selectedItem.type)"
           :value="JSON.parse(selectedItem.opts)"
           class="overlayItem"
-          @update="selectedItem.opts = JSON.stringify($event);"
+          @input="selectedItem.opts = JSON.stringify($event);"
         >
           <v-expansion-panel>
             <v-expansion-panel-header>Position / Size</v-expansion-panel-header>
@@ -281,6 +281,7 @@ export default defineComponent({
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {
+        console.log({ val });
         ctx.emit('input', val);
       }
     }, { deep: true, immediate: true });
