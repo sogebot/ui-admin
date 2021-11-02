@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [26.1.0](https://github.com/sogebot/ui-admin/compare/v26.0.0...v26.1.0) (2021-11-02)
+
+
+### Features
+
+* **overlay:** add wordcloud settings ([a0e84a6](https://github.com/sogebot/ui-admin/commit/a0e84a63627dab272de25bc3709457e3100405d1))
+
 ## [26.0.0](https://github.com/sogebot/ui-admin/compare/v25.0.2...v26.0.0) (2021-11-02)
 
 
