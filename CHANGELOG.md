@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [26.0.0](https://github.com/sogebot/ui-admin/compare/v25.0.2...v26.0.0) (2021-11-02)
+
+
+### Features
+
+* **dashboard:** add µWidgets settings ([#170](https://github.com/sogebot/ui-admin/issues/170)) ([197250d](https://github.com/sogebot/ui-admin/commit/197250ddd18fbf49c817ea5f690c432d48ebeabb))
+
 ### [25.0.2](https://github.com/sogebot/ui-admin/compare/v25.0.1...v25.0.2) (2021-10-31)
 
 
