@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [26.1.2](https://github.com/sogebot/ui-admin/compare/v26.1.1...v26.1.2) (2021-11-03)
+
+
+### Bug Fixes
+
+* **widgets:** add current viewers to interval ([a768c47](https://github.com/sogebot/ui-admin/commit/a768c47b275509a625c5a5d6fe967acd683f8488))
+
 ### [26.1.1](https://github.com/sogebot/ui-admin/compare/v26.1.0...v26.1.1) (2021-11-02)
 
 
