@@ -55,7 +55,7 @@
 
 <script lang="ts">
 import {
-  defineComponent, ref, useStore, watch,
+  defineComponent, onMounted, ref, useStore,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 import { gsap } from 'gsap';
@@ -71,12 +71,13 @@ export default defineComponent({
     const currentAnimated = ref({ value: 0 });
     const store = useStore<any>();
 
-    watch(() => props.current?.currentViewers, (val) => {
-      val = val ?? 0;
-      gsap.to(currentAnimated.value, {
-        duration: 0.5, value: val, roundProps: 'value',
-      });
-    }, { deep: true });
+    onMounted(() => {
+      setInterval(() => {
+        gsap.to(currentAnimated.value, {
+          duration: 0.5, value: props.current?.currentViewers ?? 0, roundProps: 'value',
+        });
+      }, 1000);
+    });
 
     const toggleDisplay = () => {
       store.commit('setUIStatsHidden', !store.state.areUIStatsHidden);

@@ -67,7 +67,7 @@
 import { mdiOpenInNew } from '@mdi/js';
 import {
   computed,
-  defineAsyncComponent, defineComponent, onMounted, ref, useContext, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
@@ -85,13 +85,11 @@ export default defineComponent({
     const tab = ref(Number(localStorage.dashboardTab));
     const isPopout = computed(() => location.href.includes('popout'));
     const height = ref(0);
-    const ctx = useContext();
 
     function updateHeight () {
       // so. many. parentElement. to get proper offsetTop as children offset is 0
       const offsetTop = document.getElementById('widget-tab-items')?.parentElement?.offsetTop || 0;
       const offset = 41;
-      console.log(ctx.$vuetify.breakpoint.mobile);
       const newHeight = window.innerHeight - offsetTop - offset;
       height.value = Math.max(newHeight, 300);
     }
