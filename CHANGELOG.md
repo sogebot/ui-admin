@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [27.0.0](https://github.com/sogebot/ui-admin/compare/v26.1.2...v27.0.0) (2021-11-06)
+
+
+### Bug Fixes
+
+* **overlay:** correctly load media overlays ([a39f0a5](https://github.com/sogebot/ui-admin/commit/a39f0a5bb7dc2f28e307028a6cbaa390c7634127))
+
 ### [26.1.2](https://github.com/sogebot/ui-admin/compare/v26.1.1...v26.1.2) (2021-11-03)
 
 
