@@ -30,6 +30,7 @@
 
     <v-fade-transition>
       <div v-show="!drawer">
+
         <v-card v-for="type of Object.keys(menu)" flat :key="type" class="ma-2">
           <v-card-title v-if="haveActions(menu[type]).length > 0">
             {{ translate(`menu.${type}`) }}
@@ -102,6 +103,7 @@ export default defineComponent({
     const route = useRoute();
     const drawer = ref(false);
     const menu = ref({
+      services:     [] as systemFromIO[],
       core:         [] as systemFromIO[],
       systems:      [] as systemFromIO[],
       integrations: [] as systemFromIO[],

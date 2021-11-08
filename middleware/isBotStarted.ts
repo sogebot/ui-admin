@@ -12,9 +12,11 @@ export default function ({ store }: { store: any, app: any }) {
 
     await populateListOf('core');
     await populateListOf('systems');
+    await populateListOf('services');
     await populateListOf('integrations');
 
     store.commit('$core', cloneDeep(getListOf('core')));
+    store.commit('$services', cloneDeep(getListOf('services')));
     store.commit('$systems', cloneDeep(getListOf('systems')));
     store.commit('$integrations', cloneDeep(getListOf('integrations')));
 

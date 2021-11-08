@@ -9,6 +9,7 @@ export const state = () => ({
   areUIStatsHidden: localStorage.getItem('$store.areUIStatsHidden') === 'true',
   isMobile:         false,
   $core:            [],
+  $services:        [],
   $systems:         [],
   $integrations:    [],
 });
@@ -44,6 +45,9 @@ export const mutations = {
   },
   $core (storeState: { $core: any[] }, value: any) {
     storeState.$core = value;
+  },
+  $services (storeState: { $services: any[] }, value: any) {
+    storeState.$services = value;
   },
   $systems (storeState: { $systems: any[] }, value: any) {
     storeState.$systems = value;
