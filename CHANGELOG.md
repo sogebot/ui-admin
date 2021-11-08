@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [28.0.0](https://github.com/sogebot/ui-admin/compare/v27.0.0...v28.0.0) (2021-11-08)
+
+
+### Features
+
+* **modules:** add service settings ([0c11b99](https://github.com/sogebot/ui-admin/commit/0c11b998157d9d19770163e0842474f877709760))
+
 ## [27.0.0](https://github.com/sogebot/ui-admin/compare/v26.1.2...v27.0.0) (2021-11-06)
 
 
