@@ -465,7 +465,7 @@ export default defineComponent({
     };
 
     const include = () => {
-      return [...document.querySelectorAll('.overlayItem'), ...document.querySelectorAll('.v-list-item')];
+      return [...document.querySelectorAll('.overlayItem'), ...document.querySelectorAll('.v-list-item'), ...document.querySelectorAll('.v-color-picker')];
     };
 
     const moveUp = (idx: number) => {
