@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [28.0.1](https://github.com/sogebot/ui-admin/compare/v28.0.0...v28.0.1) (2021-11-09)
+
+
+### Bug Fixes
+
+* **overlay:** keep selected item on color change ([a383892](https://github.com/sogebot/ui-admin/commit/a383892ed3d70ad8891f09d80d38ddedcb1d95b4))
+
 ## [28.0.0](https://github.com/sogebot/ui-admin/compare/v27.0.0...v28.0.0) (2021-11-08)
 
 
