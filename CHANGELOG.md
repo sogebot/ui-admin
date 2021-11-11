@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [28.1.0](https://github.com/sogebot/ui-admin/compare/v28.0.1...v28.1.0) (2021-11-11)
+
+
+### Features
+
+* **lastfm:** add announce switch ([0470513](https://github.com/sogebot/ui-admin/commit/0470513a22b99fea51b245342debbf9659b5c376))
+
 ### [28.0.1](https://github.com/sogebot/ui-admin/compare/v28.0.0...v28.0.1) (2021-11-09)
 
 
