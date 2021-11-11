@@ -5,8 +5,8 @@
     :timestamp="timestamp"
     :is-stream-online="isStreamOnline"
     :is-loaded="isLoaded"
-    :current="current.chatMessges"
-    :average="average.chatMessges"
+    :current="current.chatMessages"
+    :average="average.chatMessages"
   />
 </template>
 
