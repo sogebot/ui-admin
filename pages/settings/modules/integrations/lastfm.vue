@@ -13,6 +13,8 @@
               :label="translate('integrations.lastfm.settings.apiKey')" />
             <v-text-field v-model="settings.username[0]" dense
               :label="translate('integrations.lastfm.settings.username')" />
+            <v-switch class="mt-0" :label="translate('systems.songs.settings.notify')" dense
+              v-model="settings.notify[0]" />
           </v-card-text>
         </v-card>
       </v-tab-item>
