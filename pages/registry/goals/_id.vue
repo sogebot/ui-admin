@@ -505,8 +505,8 @@ export default defineComponent({
                 + '\n\t\t<div class="col-4 text-nowrap text-right pr-2">$goalAmount</div>'
               + '\n\t</div>'
               + '\n'
-              + '\n\t<div class="progress">'
-                + '\n\t\t<div class="progress-bar" role="progressbar" style="width: $percentageAmount%" aria-valuenow="$percentageAmount" aria-valuemin="0" aria-valuemax="$goalAmount"></div>'
+              + '\n\t<div>'
+                + '\n\t\t<div class="progress-bar" style="width: $percentageAmount%; height: 24px;"></div>'
               + '\n\t</div>'
               + '\n',
             customizationJs: '\n\tfunction onChange(currentAmount) {'
