@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [28.1.2](https://github.com/sogebot/ui-admin/compare/v28.1.1...v28.1.2) (2021-11-12)
+
+
+### Bug Fixes
+
+* **goals:** update default advanced mode progress bar ([0853a63](https://github.com/sogebot/ui-admin/commit/0853a63b76477e97fb1492714730a76ad65c836c))
+
 ### [28.1.1](https://github.com/sogebot/ui-admin/compare/v28.1.0...v28.1.1) (2021-11-11)
 
 
