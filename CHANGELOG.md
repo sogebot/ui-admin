@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [28.1.5](https://github.com/sogebot/ui-admin/compare/v28.1.4...v28.1.5) (2021-11-16)
+
+
+### Bug Fixes
+
+* **permissionTabs:** request missing order ([9c4fe70](https://github.com/sogebot/ui-admin/commit/9c4fe70d6183231e5c0b87f9dd5ed41fea487176))
+
 ### [28.1.4](https://github.com/sogebot/ui-admin/compare/v28.1.3...v28.1.4) (2021-11-16)
 
 
