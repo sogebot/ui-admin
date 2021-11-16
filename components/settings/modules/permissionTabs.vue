@@ -26,7 +26,7 @@ export default defineComponent({
   setup () {
     const { result } = useQuery(gql`
       query {
-        permissions { id name }
+        permissions { id name order }
       }
     `);
     const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
