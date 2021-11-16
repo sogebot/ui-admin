@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [28.1.4](https://github.com/sogebot/ui-admin/compare/v28.1.3...v28.1.4) (2021-11-16)
+
+
+### Bug Fixes
+
+* **events:** remove tester from polls ([e640c2d](https://github.com/sogebot/ui-admin/commit/e640c2de0cbc54619c259e67c72187a614c56ef6))
+
 ### [28.1.3](https://github.com/sogebot/ui-admin/compare/v28.1.2...v28.1.3) (2021-11-16)
 
 
