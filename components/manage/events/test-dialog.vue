@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panels>
+  <v-expansion-panels v-if="!['poll-started', 'poll-ended'].includes(event)">
     <v-expansion-panel>
       <v-expansion-panel-header>Tester</v-expansion-panel-header>
       <v-expansion-panel-content>
