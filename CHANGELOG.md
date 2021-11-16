@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [28.1.3](https://github.com/sogebot/ui-admin/compare/v28.1.2...v28.1.3) (2021-11-16)
+
+
+### Bug Fixes
+
+* **eventsub:** set expected redirectUri ([9bf2e45](https://github.com/sogebot/ui-admin/commit/9bf2e45e2bd28fa3ed891bfb806b590793240d2d))
+
 ### [28.1.2](https://github.com/sogebot/ui-admin/compare/v28.1.1...v28.1.2) (2021-11-12)
 
 
