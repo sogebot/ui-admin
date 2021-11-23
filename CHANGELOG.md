@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [29.0.0](https://github.com/sogebot/ui-admin/compare/v28.1.5...v29.0.0) (2021-11-23)
+
+
+### Features
+
+* **responses:** add is.newchatter filter ([02f3f9d](https://github.com/sogebot/ui-admin/commit/02f3f9ddc8c6393bef054d384eb7a3dc6ebe8de9))
+
 ### [28.1.5](https://github.com/sogebot/ui-admin/compare/v28.1.4...v28.1.5) (2021-11-16)
 
 
