@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed&display=swap');
+
 .w-100 {
   width: 100%;
 }
@@ -90,4 +92,8 @@ td.text-center .v-simple-checkbox {
   -ms-animation: spin 2s linear infinite;
   -o-animation: spin 2s linear infinite;
   animation: spin 2s linear infinite;
+}
+
+.font-condensed {
+  font-family: "Saira Extra Condensed", Arial, Helvetica, sans-serif;
 }

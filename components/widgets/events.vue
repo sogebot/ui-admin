@@ -43,6 +43,8 @@
                     <v-checkbox v-model="showBits" label="Bits" class="pa-0 ma-0" hide-details />
                     <v-checkbox v-model="showRaids" label="Raids" class="pa-0 ma-0" hide-details />
                     <v-checkbox v-model="showRedeems" label="Reward Redeems" class="pa-0 ma-0" hide-details />
+                    <v-checkbox v-model="showSubGifts" label="Subscription gifts" class="pa-0 ma-0" hide-details />
+                    <v-checkbox v-model="showSubCommunityGifts" label="Subscription community gifts" class="pa-0 ma-0" hide-details />
                   </v-col>
                   <v-col>
                     <v-checkbox v-model="showSubs" label="Subs" class="pa-0 ma-0" hide-details />
@@ -205,7 +207,7 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>
-                    <span class="text-h6">{{ item.username }}</span> <span v-html="prepareMessage(item)" />
+                    <span class="font-condensed font-weight-bold" style="font-size: 1.7rem;">{{ item.username.toUpperCase() }}</span> <span v-html="prepareMessage(item)" />
                   </v-list-item-title>
                   <v-list-item-subtitle v-text="dayjs(item.timestamp).fromNow()" />
 
@@ -214,7 +216,7 @@
                       <v-icon color="accent" x-small style="transform: translateY(5px);">
                         {{ mdiFormatQuoteOpen }}
                       </v-icon>
-                      {{ blockquote(item) }}
+                      <span v-html="blockquote(item)" />
                       <v-icon color="accent" x-small style="transform: translateY(-5px);">
                         {{ mdiFormatQuoteClose }}
                       </v-icon>
@@ -234,36 +236,54 @@
                     <v-icon>{{ mdiRefresh }}</v-icon>
                   </v-btn>
                   <template v-else>
-                    <v-icon v-if="item.event === 'follow'" color="red lighten-1">
-                      {{ mdiHeart }}
-                    </v-icon>
-                    <v-icon v-else-if="item.event === 'host'" color="orange lighten-1">
-                      {{ mdiTelevision }}
-                    </v-icon>
-                    <v-icon v-else-if="item.event === 'raid'" color="lime lighten-1">
-                      {{ mdiFencing }}
-                    </v-icon>
-                    <v-icon v-else-if="item.event === 'sub'" color="indigo lighten-1">
-                      {{ mdiYoutubeSubscription }}
-                    </v-icon>
-                    <v-icon v-else-if="item.event === 'subgift'" color="pink lighten-1">
-                      {{ mdiGift }}
-                    </v-icon>
-                    <v-icon v-else-if="item.event === 'subcommunitygift'" color="deep-orange lighten-1">
-                      {{ mdiGiftOpen }}
-                    </v-icon>
-                    <v-icon v-else-if="item.event === 'resub'" color="deep-purple lighten-1">
-                      {{ mdiAutorenew }}
-                    </v-icon>
-                    <v-icon v-else-if="item.event === 'cheer'" color="yellow lighten-1">
-                      {{ mdiDiamond }}
-                    </v-icon>
-                    <v-icon v-else-if="item.event === 'tip'" color="green lighten-1">
-                      {{ mdiCash }}
-                    </v-icon>
-                    <v-icon v-else-if="item.event === 'rewardredeem'" color="blue lighten-1">
-                      {{ mdiTrophyAward }}
-                    </v-icon>
+                    <div v-if="item.event === 'follow'" class="red--text text--lighten-1 font-weight-bold font-condensed" style="font-size:1.2rem;">
+                      follow
+                    </div>
+                    <div v-else-if="item.event === 'host'" class="orange--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
+                      <v-icon size="15" color="orange">
+                        {{ mdiAccountGroup }}
+                      </v-icon>
+                      {{ JSON.parse(item.values_json).viewers }}
+                    </div>
+                    <div v-else-if="item.event === 'raid'" color="lime--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
+                      <v-icon size="15" color="lime">
+                        {{ mdiAccountGroup }}
+                      </v-icon>
+                      {{ JSON.parse(item.values_json).viewers }}
+                    </div>
+                    <div v-else-if="item.event === 'sub'" color="indigo--text text--lighten-1 font-weight-bold font-condensed" style="font-size: 1.2rem;">
+                      {{ JSON.parse(item.values_json).tier !== 'Prime' ? 'Tier ' + JSON.parse(item.values_json).tier : JSON.parse(item.values_json).tier }}
+                    </div>
+                    <div v-else-if="item.event === 'subgift'" class="pink--text text--lighten-1 font-weight-bold font-condensed" style="font-size: 1.2rem;">
+                      <v-icon size="15" color="pink">
+                        {{ mdiGiftOpen }}
+                      </v-icon>{{ JSON.parse(item.values_json).username }}
+                    </div>
+                    <div v-else-if="item.event === 'subcommunitygift'" class="orange--text text--lighten-1 font-weight-bold font-condensed" style="font-size: 1.5rem;">
+                      <v-icon size="15" color="orange">
+                        {{ mdiGift }}
+                      </v-icon>{{ JSON.parse(item.values_json).count }}
+                    </div>
+                    <div v-else-if="item.event === 'resub'" class="deep-purple--text text--lighten-3 font-weight-bold font-condensed" style="font-size: 1.5rem;">
+                      <span v-if="JSON.parse(item.values_json).subStreakShareEnabled" class="orange--text">
+                        <v-icon size="15" color="orange">{{ mdiFire }}</v-icon>{{ JSON.parse(item.values_json).subStreak }}&nbsp;
+                      </span>
+
+                      <span style="font-size:1.2rem;">{{ JSON.parse(item.values_json).tier !== 'Prime' ? 'Tier ' + JSON.parse(item.values_json).tier : JSON.parse(item.values_json).tier }}</span>
+                      <span style="font-size:1.2rem;">x</span>{{ JSON.parse(item.values_json).subCumulativeMonths }}
+                    </div>
+                    <div v-else-if="item.event === 'cheer'" class="yellow--text text--lighten-1 font-weight-bold font-condensed" style="font-size: 1.5rem;">
+                      {{ JSON.parse(item.values_json).bits }}
+                      <v-icon size="15" color="yellow">
+                        {{ mdiDiamond }}
+                      </v-icon>
+                    </div>
+                    <div v-else-if="item.event === 'tip'" class="light-green--text text--lighten-1 font-weight-bold font-condensed" style="font-size:1.5rem;">
+                      {{ Intl.NumberFormat($store.state.configuration.lang, { style: 'currency', currency: get(JSON.parse(item.values_json), 'currency', 'USD') }).format(get(JSON.parse(item.values_json), 'amount', '0')) }}
+                    </div>
+                    <div v-else-if="item.event === 'rewardredeem'" class="blue--text text--lighten-1 font-weight-bold font-condensed" style="font-size:1.2rem;">
+                      {{ JSON.parse(item.values_json).titleOfReward }}
+                    </div>
                   </template>
                 </v-list-item-action>
               </v-list-item>
@@ -283,11 +303,12 @@
 
 <script lang="ts">
 import {
-  mdiAutorenew, mdiBellCancel, mdiBellRing, mdiCash, mdiDelete,
-  mdiDiamond, mdiFencing, mdiFilterMenu, mdiFormatQuoteClose, mdiFormatQuoteOpen,
-  mdiGift, mdiGiftOpen, mdiHeart, mdiRefresh,
-  mdiSkipNext, mdiTelevision, mdiTextToSpeech, mdiTextToSpeechOff,
-  mdiTrophyAward, mdiVolumeHigh, mdiVolumeMute, mdiYoutubeSubscription,
+  mdiAccountGroup, mdiBellCancel, mdiBellRing, mdiCash,
+  mdiDelete, mdiDiamond,
+  mdiFilterMenu, mdiFire, mdiFormatQuoteClose, mdiFormatQuoteOpen,
+  mdiGift, mdiGiftOpen, mdiRefresh,
+  mdiSkipNext, mdiTextToSpeech, mdiTextToSpeechOff,
+  mdiVolumeHigh, mdiVolumeMute,
 } from '@mdi/js';
 import {
   computed,
@@ -357,11 +378,13 @@ export default defineComponent({
     const showHosts = ref((localStorage.showHosts && localStorage.showHosts === 'true') ?? true);
     const showBits = ref((localStorage.showBits && localStorage.showBits === 'true') ?? true);
     const showRaids = ref((localStorage.showRaids && localStorage.showRaids === 'true') ?? true);
+    const showSubGifts = ref((localStorage.showSubGifts && localStorage.showSubGifts === 'true') ?? true);
+    const showSubCommunityGifts = ref((localStorage.showSubCommunityGifts && localStorage.showSubCommunityGifts === 'true') ?? true);
     watch([
       showFollows, showHosts, showBits, showRaids,
       showTips, showTipsMinimal, showTipsMinimalAmount,
       showResubs, showResubsPrime, showResubsTier1, showResubsTier2, showResubsTier3, showResubsMinimal, showResubsMinimalAmount,
-      showSubs, showSubsPrime, showSubsTier1, showSubsTier2, showSubsTier3, showRedeems,
+      showSubs, showSubsPrime, showSubsTier1, showSubsTier2, showSubsTier3, showRedeems, showSubGifts, showSubCommunityGifts,
     ], (val) => {
       localStorage.showFollows = String(val[0]);
       localStorage.showHosts = String(val[1]);
@@ -383,6 +406,8 @@ export default defineComponent({
       localStorage.showSubsTier2 = String(val[17]);
       localStorage.showSubsTier3 = String(val[18]);
       localStorage.showRedeems = String(val[19]);
+      localStorage.showSubGifts = String(val[20]);
+      localStorage.showSubCommunityGifts = String(val[21]);
     });
 
     function filter (event: EventListInterface & { sortAmount: number}) {
@@ -410,6 +435,9 @@ export default defineComponent({
       const subTier2 = showSubsTier2.value && Number(tier) === 2;
       const subTier3 = showSubsTier3.value && Number(tier) === 3;
 
+      const subgift = showSubGifts.value && event.event === 'subgift';
+      const subcommunitygift = showSubCommunityGifts.value && event.event === 'subcommunitygift';
+
       return follow
         || redeem
         || host
@@ -417,7 +445,9 @@ export default defineComponent({
         || (tip && tipMinimal)
         || bit
         || (resub && resubMinimal && (resubPrime || resubTier1 || resubTier2 || resubTier3))
-        || (sub && (subPrime || subTier1 || subTier2 || subTier3));
+        || (sub && (subPrime || subTier1 || subTier2 || subTier3))
+        || subgift
+        || subcommunitygift;
     }
 
     watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
@@ -438,11 +468,6 @@ export default defineComponent({
 
     function prepareMessage (event: any) {
       let t = translate(`eventlist-events.${event.event}`);
-
-      // change resub translate if not shared substreak
-      if (event.event === 'resub' && !event.subStreakShareEnabled) {
-        t = translate(`eventlist-events.resubWithoutStreak`);
-      }
 
       const values = JSON.parse(event.values_json);
       const formattedAmount = Intl.NumberFormat(store.state.configuration.lang, { style: 'currency', currency: get(values, 'currency', 'USD') }).format(get(values, 'amount', '0'));
@@ -498,6 +523,7 @@ export default defineComponent({
     return {
       /* libraries */
       translate,
+      get,
       dayjs,
 
       /* functions */
@@ -539,6 +565,8 @@ export default defineComponent({
       showSubsTier2,
       showSubsTier3,
       showRedeems,
+      showSubCommunityGifts,
+      showSubGifts,
 
       /* icons */
       mdiSkipNext,
@@ -548,21 +576,17 @@ export default defineComponent({
       mdiVolumeMute,
       mdiBellRing,
       mdiBellCancel,
-      mdiHeart,
       mdiFormatQuoteOpen,
       mdiFormatQuoteClose,
-      mdiTelevision,
-      mdiFencing,
-      mdiYoutubeSubscription,
       mdiGift,
       mdiGiftOpen,
-      mdiAutorenew,
       mdiDiamond,
       mdiCash,
       mdiFilterMenu,
       mdiDelete,
       mdiRefresh,
-      mdiTrophyAward,
+      mdiAccountGroup,
+      mdiFire,
     };
   },
 });
