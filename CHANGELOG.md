@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [29.0.1](https://github.com/sogebot/ui-admin/compare/v29.0.0...v29.0.1) (2021-11-24)
+
+
+### Bug Fixes
+
+* **events:** make eventlist widget readable in narrow screens ([a40ff2e](https://github.com/sogebot/ui-admin/commit/a40ff2ef2bcfab46e5773ecb55e8b86033566b52))
+
 ## [29.0.0](https://github.com/sogebot/ui-admin/compare/v28.1.5...v29.0.0) (2021-11-23)
 
 
