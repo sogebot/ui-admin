@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [30.1.0](https://github.com/sogebot/ui-admin/compare/v30.0.0...v30.1.0) (2021-11-25)
+
+
+### Features
+
+* **antihateraid:** add module setting ([5ea6a29](https://github.com/sogebot/ui-admin/commit/5ea6a29b773498ca19e24cc5f6f280e7513af3e0))
+
 ## [30.0.0](https://github.com/sogebot/ui-admin/compare/v29.0.2...v30.0.0) (2021-11-25)
 
 
