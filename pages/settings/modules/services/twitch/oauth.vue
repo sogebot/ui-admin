@@ -3,7 +3,7 @@
     <v-tabs v-model="tab">
       <v-tab>{{ translate('categories.general') }}</v-tab>
       <v-tab>{{ translate('categories.bot') }}</v-tab>
-      <v-tab>{{ translate('categories.broadcaster') }}</v-tab>
+      <v-tab>{{ translate('categories.channel') }}</v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="tab">
@@ -53,11 +53,6 @@
               </div>
             </v-expand-transition>
 
-            <v-text-field
-              v-model="_settings.general.generalChannel[0]"
-              :label="translate('core.oauth.settings.generalChannel')"
-            />
-
             <v-textarea
               auto-grow
               outlined
@@ -100,18 +95,18 @@
           <v-card-text>
             <v-text-field
               v-model="_settings.broadcaster.broadcasterAccessToken[0]"
-              :label="translate('core.oauth.settings.broadcasterAccessToken')"
+              :label="translate('core.oauth.settings.channelAccessToken')"
               type="password"
             />
             <v-text-field
               v-model="_settings.broadcaster.broadcasterRefreshToken[0]"
-              :label="translate('core.oauth.settings.broadcasterRefreshToken')"
+              :label="translate('core.oauth.settings.channelRefreshToken')"
               type="password"
             />
             <v-text-field v-model="_settings.broadcaster.broadcasterClientId[0]" label="Client ID" />
             <v-text-field
               v-model="_settings.broadcaster.broadcasterUsername[0]"
-              :label="translate('core.oauth.settings.broadcasterUsername')"
+              :label="translate('core.oauth.settings.channelUsername')"
               disabled
             />
 

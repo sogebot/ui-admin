@@ -1,19 +1,6 @@
 <template>
   <div>
     <v-alert
-      v-if="!$store.state.configuration.isChannelSet"
-      type="error"
-      dismissible
-      prominent
-      dense
-    >
-      <h5>{{ translate('errors.channel_is_not_set') }}</h5>
-      <div
-        class="text-caption"
-        v-html="translate('errors.please_set_your_channel')"
-      />
-    </v-alert>
-    <v-alert
       v-if="!$store.state.configuration.isCastersSet"
       type="info"
       dismissible
