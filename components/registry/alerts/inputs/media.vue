@@ -1,5 +1,5 @@
 <template>
-  <div :key="model">
+  <div>
     <input
       ref="uploadImage"
       class="d-none"
@@ -28,7 +28,7 @@
                 </v-icon> {{ translate('delete') }}
               </v-btn>
               <v-btn
-                :loading="isUploading"
+                :loading="loading"
                 @click="$refs.uploadImage.click()"
               >
                 <v-icon left>
@@ -74,7 +74,7 @@
                 {{ translate(isPlaying ? 'dialog.buttons.stop' : 'dialog.buttons.play') }} ({{ duration }}s)
               </v-btn>
               <v-btn
-                :loading="isUploading"
+                :loading="loading"
                 @click="$refs.uploadImage.click()"
               >
                 <v-icon left>
@@ -113,7 +113,7 @@
                 {{ translate(isPlaying ? 'dialog.buttons.stop' : 'dialog.buttons.play') }} ({{ duration }}s)
               </v-btn>
               <v-btn
-                :loading="isUploading"
+                :loading="loading"
                 @click="$refs.uploadAudio.click()"
               >
                 <v-icon left>
@@ -159,13 +159,12 @@ export default defineComponent({
     volume:  Number,
   },
   setup (props: Props, ctx) {
-    const { mutate: uploadMutation, onError: onErrorUpload } = useMutation(UPLOAD);
+    const { mutate: uploadMutation, onError: onErrorUpload, loading } = useMutation(UPLOAD);
     onErrorUpload(error);
 
     let interval = 0;
     const duration = ref(0);
-    const isUploading = ref(false);
-    const createdAt = ref(0);
+    const createdAt = ref(Date.now());
     const isPlaying = ref(false);
     const mediaType = ref(props.type as 'image' | 'video' | 'audio');
     const sizeOfMedia = ref([0, 0]);
@@ -174,6 +173,7 @@ export default defineComponent({
     const audioAvailable = ref(false);
 
     watch(model, (val) => {
+      createdAt.value = Date.now();
       ctx.emit('input', val);
     });
 
@@ -265,8 +265,13 @@ export default defineComponent({
     const video = ref(null as null | HTMLVideoElement);
 
     const play = () => {
-      audio.value?.audio.play();
-      video.value?.play();
+      setVolume();
+      if (audio.value) {
+        audio.value.audio.play();
+      }
+      if (video.value) {
+        video.value.play();
+      }
     };
 
     const stop = () => {
@@ -355,14 +360,11 @@ export default defineComponent({
       if (!filesUpload) {
         return;
       }
-      isUploading.value = true;
-
       for (let i = 0, l = filesUpload.length; i < l; i++) {
         console.debug(`upload::${filesUpload[i].name}`);
         const data = await getBase64FromUrl(URL.createObjectURL(filesUpload[i]));
         const res = await uploadMutation({ data });
         model.value = res?.data.alertMediaUpload;
-        isUploading.value = false;
       }
       refresh();
     };
@@ -371,7 +373,6 @@ export default defineComponent({
       duration,
       audioAvailable,
 
-      isUploading,
       filesChange,
 
       createdAt,
@@ -386,6 +387,7 @@ export default defineComponent({
       sizeOfMedia,
       rowRef,
       model,
+      loading,
 
       // icons
       mdiDelete,
