@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [30.0.0](https://github.com/sogebot/ui-admin/compare/v29.0.2...v30.0.0) (2021-11-25)
+
+
+### Bug Fixes
+
+* **twitch:** replace channel with broadcaster ([59c7e0f](https://github.com/sogebot/ui-admin/commit/59c7e0ffb4885a2bcd803cba7bd06bec80cba219))
+
 ### [29.0.2](https://github.com/sogebot/ui-admin/compare/v29.0.1...v29.0.2) (2021-11-25)
 
 
