@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [30.1.1](https://github.com/sogebot/ui-admin/compare/v30.1.0...v30.1.1) (2021-11-25)
+
+
+### Bug Fixes
+
+* **media:** fix error during image upload ([08a9e29](https://github.com/sogebot/ui-admin/commit/08a9e29f6370a1ec73d1629930d93335d18fba04))
+
 ## [30.1.0](https://github.com/sogebot/ui-admin/compare/v30.0.0...v30.1.0) (2021-11-25)
 
 
