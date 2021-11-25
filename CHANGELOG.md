@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [29.0.2](https://github.com/sogebot/ui-admin/compare/v29.0.1...v29.0.2) (2021-11-25)
+
+
+### Bug Fixes
+
+* **events:** fix incorrect styling ([4b4136d](https://github.com/sogebot/ui-admin/commit/4b4136d3d714f4e7fc2c3f7b4b1966dc4a3ed905))
+
 ### [29.0.1](https://github.com/sogebot/ui-admin/compare/v29.0.0...v29.0.1) (2021-11-24)
 
 
