@@ -15,7 +15,7 @@
             <v-textarea class="mt-3 pt-3" outlined rows="5" persistent-hint
               :label="translate('core.tmi.settings.ignorelist')"
               :value="_settings.chat.ignorelist[0].filter(String).join('\n')" :hint="translate('one-record-per-line')"
-              @input="_settings.chat.ignorelist[0] = $event.split('\n').filter(String); store.commit('settings/pending', true);" />
+              @input="_settings.chat.ignorelist[0] = $event.split('\n').filter(String); $store.commit('settings/pending', true);" />
             <v-autocomplete v-model="_settings.chat.globalIgnoreListExclude[0]"
               :label="translate('core.tmi.settings.globalIgnoreListExclude')"
               :items="Object.keys(globalIgnoreList).map(k => k)" cache-items multiple :filter="customFilter"

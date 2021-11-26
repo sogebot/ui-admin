@@ -33,12 +33,12 @@
             <v-textarea auto-grow outlined type="password" persistent-hint @focus="maskBlacklist = false;"
               @blur="maskBlacklist = true;" :label="translate('systems.moderation.settings.cListsBlacklist')"
               :value="settings.lists.cListsBlacklist[0].filter(String).join('\n').replace(maskBlacklist ? /./g : '', maskBlacklist ? '*' : '')"
-              @input="settings.lists.cListsBlacklist[0] = $event.split('\n').filter(String); store.commit('settings/pending', true);"
+              @input="settings.lists.cListsBlacklist[0] = $event.split('\n').filter(String); $store.commit('settings/pending', true);"
               :hint="translate('one-record-per-line')" />
             <v-textarea auto-grow outlined persistent-hint
               :label="translate('systems.moderation.settings.cListsWhitelist.title')"
               :value="settings.lists.cListsWhitelist[0].filter(String).join('\n')"
-              @input="settings.lists.cListsWhitelist[0] = $event.split('\n').filter(String); store.commit('settings/pending', true);"
+              @input="settings.lists.cListsWhitelist[0] = $event.split('\n').filter(String); $store.commit('settings/pending', true);"
               :hint="translate('one-record-per-line') + translate('systems.moderation.settings.cListsWhitelist.help')" />
             <permission-tabs v-slot:default="{permissions}" :ignored="getIgnoredPermissions(settings, 'lists')">
               <v-tab-item v-for="permission of permissions" :key="permission.id" eager>

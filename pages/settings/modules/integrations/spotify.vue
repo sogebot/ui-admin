@@ -27,7 +27,7 @@
               :label="translate('integrations.spotify.settings.approvedArtists.title')"
               :hint="translate('integrations.spotify.settings.approvedArtists.help')"
               :value="settings.approvedArtists[0].filter(String).join('\n')"
-              @input="settings.approvedArtists[0] = $event.split('\n').filter(String); store.commit('settings/pending', true);"/>
+              @input="settings.approvedArtists[0] = $event.split('\n').filter(String); $store.commit('settings/pending', true);"/>
           </v-card-text>
         </v-card>
       </v-tab-item>
