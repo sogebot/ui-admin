@@ -30,6 +30,10 @@
       <v-tab-item eager>
         <v-card>
           <v-card-text>
+            <v-textarea auto-grow outlined persistent-hint :label="translate('systems.moderation.settings.autobanMessages')"
+              :value="settings.lists.autobanMessages[0]"
+              @input="settings.lists.autobanMessages[0] = $event.split('\n').filter(String); $store.commit('settings/pending', true);"
+              :hint="translate('one-record-per-line')" />
             <v-textarea auto-grow outlined type="password" persistent-hint @focus="maskBlacklist = false;"
               @blur="maskBlacklist = true;" :label="translate('systems.moderation.settings.cListsBlacklist')"
               :value="settings.lists.cListsBlacklist[0].filter(String).join('\n').replace(maskBlacklist ? /./g : '', maskBlacklist ? '*' : '')"
