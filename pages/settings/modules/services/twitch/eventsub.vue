@@ -7,7 +7,7 @@
           <li>Go to <a href="https://dev.twitch.tv/console/apps" target="_blank">https://dev.twitch.tv/console/apps</a>
             and register your app</li>
           <li>You can choose any <strong>name</strong> of app you want</li>
-          <li>Set <strong>oauth redirect</strong> to your {{origin}}/credentials/eventsub</li>
+          <li>Set <strong>oauth redirect</strong> to your {{origin}}/credentials/oauth/eventsub</li>
           <li>Pick Application Integration for <strong>category</strong> and create</li>
           <li>After creation copy clientId and generate clientSecret</li>
           <li>Authorize your broadcaster account to enable subscription with your account</li>
@@ -35,7 +35,7 @@
         minute to subscribe to missing events</v-alert>
 
       <v-btn target="_blank"
-        :href="`https://id.twitch.tv/oauth2/authorize?client_id=${_settings.eventsub.eventSubClientId[0]}&redirect_uri=${origin}/credentials/eventsub&response_type=token&force_verify=true&scope=channel:read:hype_train channel:read:polls channel:manage:polls`"
+        :href="`https://id.twitch.tv/oauth2/authorize?client_id=${_settings.eventsub.eventSubClientId[0]}&redirect_uri=${origin}/credentials/oauth/eventsub&response_type=token&force_verify=true&scope=channel:read:hype_train channel:read:polls channel:manage:polls`"
         :disabled="_settings.eventsub.eventSubClientId[0].trim().length === 0">Authorize to enable EventSub
         subscriptions</v-btn>
 
