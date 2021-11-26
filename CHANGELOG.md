@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [30.2.1](https://github.com/sogebot/ui-admin/compare/v30.2.0...v30.2.1) (2021-11-26)
+
+
+### Bug Fixes
+
+* **eventsub:** fix incorrect redirect uri ([8f0f124](https://github.com/sogebot/ui-admin/commit/8f0f1247883b7d892d5cb1b246e21755275f578e))
+
 ## [30.2.0](https://github.com/sogebot/ui-admin/compare/v30.1.1...v30.2.0) (2021-11-26)
 
 
