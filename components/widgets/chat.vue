@@ -19,24 +19,59 @@
             </v-btn>
           </template>
 
-          <v-btn fab x-small color='secondary' @click="timestamp = Date.now()">
-            <v-icon>{{ mdiRefresh }}</v-icon>
-          </v-btn>
-          <v-btn fab x-small :color="showJoins ? 'green lighten-1' : 'red lighten-1'"
-            @click.stop="showJoins = !showJoins">
-            <v-icon>{{ mdiAccountPlus }}</v-icon>
-          </v-btn>
-          <v-btn fab x-small :color="showParts ? 'green lighten-1' : 'red lighten-1'"
-            @click.stop="showParts = !showParts">
-            <v-icon>{{ mdiAccountMinus }}</v-icon>
-          </v-btn>
-          <v-btn fab x-small color='secondary' @click="dialog = true">
-            <v-icon>{{ mdiCommentPlus }}</v-icon>
-          </v-btn>
-          <v-tooltip bottom v-if="!isPopout">
+          <v-tooltip left v-if="!isPopout">
             <template #activator="{ on, attrs }">
-              <v-btn color="secondary" fab x-small v-bind="attrs" href="#/popout/monitor" target="_blank"
-                v-on="on">
+              <v-btn fab x-small color='secondary' @click="timestamp = Date.now()" v-bind="attrs" v-on="on">
+                <v-icon>{{ mdiRefresh }}</v-icon>
+              </v-btn>
+            </template>
+            <span>Refresh Widget</span>
+          </v-tooltip>
+          <v-tooltip left v-if="!isPopout">
+            <template #activator="{ on, attrs }">
+              <v-btn fab x-small :color="showJoins ? 'green lighten-1' : 'red lighten-1'"
+                @click.stop="showJoins = !showJoins" v-bind="attrs" v-on="on">
+                <v-icon>{{ mdiAccountPlus }}</v-icon>
+              </v-btn>
+            </template>
+            <span>Show JOINs</span>
+          </v-tooltip>
+          <v-tooltip left v-if="!isPopout">
+            <template #activator="{ on, attrs }">
+              <v-btn fab x-small :color="showParts ? 'green lighten-1' : 'red lighten-1'"
+                @click.stop="showParts = !showParts" v-bind="attrs" v-on="on">
+                <v-icon>{{ mdiAccountMinus }}</v-icon>
+              </v-btn>
+            </template>
+            <span>Show PARTs</span>
+          </v-tooltip>
+          <v-tooltip left v-if="!isPopout">
+            <template #activator="{ on, attrs }">
+              <v-btn fab x-small color='secondary' @click="dialog = true" v-bind="attrs" v-on="on">
+                <v-icon>{{ mdiCommentPlus }}</v-icon>
+              </v-btn>
+            </template>
+            <span>Send bot message</span>
+          </v-tooltip>
+          <v-tooltip left v-if="!isPopout">
+            <template #activator="{ on, attrs }">
+              <v-btn fab x-small color='orange darken-3' @click="joinChat" v-bind="attrs" v-on="on">
+                <v-icon>{{ mdiLogin }}</v-icon>
+              </v-btn>
+            </template>
+            <span>Join chat</span>
+          </v-tooltip>
+          <v-tooltip left v-if="!isPopout">
+            <template #activator="{ on, attrs }">
+              <v-btn fab x-small color='orange darken-3' @click="leaveChat" v-bind="attrs" v-on="on">
+                <v-icon>{{ mdiLogout }}</v-icon>
+              </v-btn>
+            </template>
+            <span>Leave chat</span>
+          </v-tooltip>
+          <v-tooltip left v-if="!isPopout">
+            <template #activator="{ on, attrs }">
+              <v-btn color="secondary" fab x-small href="#/popout/monitor" target="_blank" v-bind="attrs" v-on="on">
                 <v-icon>{{ mdiOpenInNew }}</v-icon>
               </v-btn>
             </template>
@@ -94,7 +129,8 @@
 
 <script lang="ts">
 import {
-  mdiAccountMinus, mdiAccountPlus, mdiClose, mdiCommentPlus, mdiDotsVertical, mdiExclamationThick, mdiOpenInNew, mdiRefresh,
+  mdiAccountMinus, mdiAccountPlus, mdiClose, mdiCommentPlus, mdiDotsVertical,
+  mdiExclamationThick, mdiLogin, mdiLogout, mdiOpenInNew, mdiRefresh,
 } from '@mdi/js';
 import {
   computed, defineComponent, onMounted, onUnmounted, ref, watch,
@@ -215,6 +251,13 @@ export default defineComponent({
       }
     };
 
+    const joinChat = () => {
+      getSocket('/').emit('joinBot');
+    };
+    const leaveChat = () => {
+      getSocket('/').emit('leaveBot');
+    };
+
     const sendMessage = () => {
       if (message.value.length > 0) {
         getSocket('/widgets/chat').emit('chat.message.send', message.value);
@@ -237,6 +280,8 @@ export default defineComponent({
       showParts,
       height,
       list,
+      joinChat,
+      leaveChat,
       sendMessage,
       mdiRefresh,
       mdiClose,
@@ -246,6 +291,8 @@ export default defineComponent({
       mdiExclamationThick,
       mdiOpenInNew,
       mdiDotsVertical,
+      mdiLogin,
+      mdiLogout,
       isPopout,
       tab,
       translate,
