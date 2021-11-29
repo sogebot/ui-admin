@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [30.3.0](https://github.com/sogebot/ui-admin/compare/v30.2.1...v30.3.0) (2021-11-29)
+
+
+### Features
+
+* **chat:** add join/leave buttons ([5b32ac7](https://github.com/sogebot/ui-admin/commit/5b32ac761f9e79b18d8ea8a66c4c6315cfcfc3cd))
+
 ### [30.2.1](https://github.com/sogebot/ui-admin/compare/v30.2.0...v30.2.1) (2021-11-26)
 
 
