@@ -105,7 +105,7 @@
                       multiple
                       accept="image/*"
                       @change="filesChange($event.target.files)"
-                    >
+                    />
                   </form>
                 </v-col>
               </v-row>

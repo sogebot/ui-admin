@@ -13,22 +13,16 @@
 
             <v-expand-transition>
               <div v-if="settings.service[0] === 1">
-                <v-text-field v-model="settings.googleClientEmail[0]" dense
-                  :label="translate('core.tts.settings.googleClientEmail.title')"
-                  :hint="translate('core.tts.settings.googleClientEmail.help')" persistent-hint />
-
-                <v-text-field v-model="settings.googlePrivateKey[0]" class="privateKey" type="password"
-                  :label="translate('core.tts.settings.googlePrivateKey.title')"
-                  @blur="settings.googlePrivateKey[0] = settings.googlePrivateKey[0].replace(/\\n/g, '\n')"
-                  @input="settings.googlePrivateKey[0] = settings.googlePrivateKey[0].replace(/\\n/g, '\n')"
-                  :readonly="settings.googlePrivateKey[0] !== ''"
-                  persistent-hint :hint="translate('core.tts.settings.googlePrivateKey.help')" >
-                  <template #append>
-                    <v-btn icon color="grey darken-1" v-if="settings.googlePrivateKey[0] != ''" @click="settings.googlePrivateKey[0] = ''">
-                      <v-icon @click="settings.googlePrivateKey = ['', '']">mdi-close</v-icon>
-                    </v-btn>
+                <v-select :items="privateKeys" v-model="settings.googlePrivateKey[0]" label="Google Private Key" item-value="id">
+                  <template v-slot:selection="data">
+                    <strong>{{data.item.clientEmail}}</strong>
+                    <small class="pl-2">{{data.item.id}}</small>
                   </template>
-                </v-text-field>
+                  <template v-slot:item="data">
+                    <strong>{{data.item.clientEmail}}</strong>
+                    <small class="pl-2">{{data.item.id}}</small>
+                  </template>
+                </v-select>
               </div>
             </v-expand-transition>
 
@@ -50,15 +44,20 @@
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import { useQuery, useResult } from '@vue/apollo-composable';
 import {
   defineComponent, nextTick, onMounted, ref, watch,
 } from '@vue/composition-api';
 
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
+import GET_ALL_PRIVATE_KEYS from '~/queries/google/privateKeysGetAll.gql';
 
 export default defineComponent({
   setup () {
+    const { result, loading } = useQuery(GET_ALL_PRIVATE_KEYS);
+    const privateKeys = useResult<{privateKeys:any[] }, any[], any[]>(result, [], data => data.privateKeys);
+
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);
     const store = useStore<any>();
@@ -106,6 +105,8 @@ export default defineComponent({
       tab,
 
       services,
+      privateKeys,
+      loading,
     };
   },
 });

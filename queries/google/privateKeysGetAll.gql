@@ -1,0 +1,7 @@
+query PrivateKeysGetAll {
+  privateKeys {
+    id
+    createdAt
+    clientEmail
+  }
+}
