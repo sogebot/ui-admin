@@ -173,7 +173,7 @@ export default defineComponent({
       const store = useStore<any>();
       if (store.state.configuration.core.tts.service === -1
         || (store.state.configuration.core.tts.service === 0 && store.state.configuration.core.tts.responsiveVoiceKey.length === 0)
-        || (store.state.configuration.core.tts.service === 1 && (store.state.configuration.core.tts.googlePrivateKey.length === 0 || store.state.configuration.core.tts.googleClientEmail.length === 0))) {
+        || (store.state.configuration.core.tts.service === 1 && (store.state.configuration.core.tts.googlePrivateKey.length === 0))) {
         state.value.loaded = ButtonStates.fail;
       } else if (store.state.configuration.core.tts.service === 0) {
         service.value = 0;
