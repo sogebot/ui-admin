@@ -65,6 +65,7 @@ export const saveSettings = (endpoint: string, store: Store<any>, settings: Reco
     if (err) {
       return error(err);
     } else {
+      getSocket(endpoint).emit('settings.refresh');
       EventBus.$emit('snack', 'success', 'Configuration updated.');
     }
   });

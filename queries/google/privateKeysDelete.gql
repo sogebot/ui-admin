@@ -1,0 +1,3 @@
+mutation PrivateKeyDelete($id: String!) {
+  privateKeyDelete(id: $id)
+}

@@ -4,7 +4,7 @@
       {{ translate('registry.alerts.tts.setting') }}
     </v-expansion-panel-header>
     <v-expansion-panel-content>
-      <v-overlay v-if="state.loaded !== ButtonStates.success" absolute>
+      <v-overlay v-if="state.loaded === ButtonStates.progress" absolute>
         <v-progress-circular indeterminate class="text-center" />
       </v-overlay>
       <div v-else-if="state.loaded === ButtonStates.success">
@@ -14,7 +14,7 @@
           :label="translate('registry.alerts.enabled')"
         />
 
-        <v-select
+        <v-autocomplete
           v-if="!isUndefined(model.voice)"
           v-model="model.voice"
           :label="translate('registry.alerts.voice')"
@@ -43,7 +43,7 @@
           v-model.number="model.rate"
           :label="translate('registry.alerts.rate')"
           min="0"
-          max="1.5"
+          :max="service === 0 ? 1.5 : 4.0"
           step="0.1"
           :thumb-size="0"
           thumb-label="always"
@@ -59,9 +59,9 @@
           v-if="!isUndefined(model.pitch)"
           v-model.number="model.pitch"
           :label="translate('registry.alerts.pitch')"
-          min="0"
-          max="2"
-          step="0.1"
+          :min="service === 0 ? 0.0 : -20.0"
+          :max="service === 0 ? 2.0 : 20.0"
+          :step="service === 0 ? 0.1 : 1"
           :thumb-size="0"
           thumb-label="always"
         >
@@ -92,7 +92,7 @@
           :label="translate('registry.alerts.keepAlertShown')"
         />
 
-        <slot name="append"/>
+        <slot name="append" />
 
         <v-textarea
           v-if="!isUndefined(model.voice)"
@@ -109,11 +109,9 @@
         </v-textarea>
       </div>
       <v-alert v-else text color="info" border="left" class="ma-0">
-        ResponsiveVoices key is not properly set, go to
-        <nuxt-link to="/settings/integrations/responsivevoice">
-          ResponsiveVoice integration settings
-        </nuxt-link>
-        and set your key.
+        TTS is not properly set, go to <nuxt-link to="/settings/modules/core/tts">
+          TTS settings
+        </nuxt-link> and configure.
       </v-alert>
     </v-expansion-panel-content>
   </v-expansion-panel>
@@ -125,6 +123,7 @@ import {
   defineComponent, onMounted, ref, useMeta, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
 import type { AlertInterface, CommonSettingsInterface } from '~/.bot/src/database/entity/alert';
@@ -144,8 +143,13 @@ export default defineComponent({
   setup (props: { value: Partial<CommonSettingsInterface['tts']> | AlertInterface['tts']}, ctx) {
     const text = ref('This message should be said by TTS to test your settings.');
     const state = ref({ loaded: ButtonStates.progress } as { loaded: number });
+
+    const service = ref(0);
+
     const model = ref(props.value ?? {
-      voice:  'UK English Female',
+      voice: useStore<any>().state.configuration.core.tts.service === 0
+        ? 'UK English Female'
+        : 'en-US-Wavenet-A',
       volume: 1,
       rate:   1,
       pitch:  1,
@@ -167,10 +171,17 @@ export default defineComponent({
     onMounted(() => {
       state.value.loaded = ButtonStates.progress;
       const store = useStore<any>();
-      if (store.state.configuration.integrations.ResponsiveVoice.api.key.trim().length === 0) {
+      if (store.state.configuration.core.tts.service === -1
+        || (store.state.configuration.core.tts.service === 0 && store.state.configuration.core.tts.responsiveVoiceKey.length === 0)
+        || (store.state.configuration.core.tts.service === 1 && (store.state.configuration.core.tts.googlePrivateKey.length === 0))) {
         state.value.loaded = ButtonStates.fail;
-      } else {
+      } else if (store.state.configuration.core.tts.service === 0) {
+        service.value = 0;
         initResponsiveVoice();
+      } else if (store.state.configuration.core.tts.service === 1) {
+        service.value = 1;
+        voices.value = store.state.configuration.core.tts.googleVoices;
+        state.value.loaded = ButtonStates.success;
       }
     });
 
@@ -192,9 +203,22 @@ export default defineComponent({
               }
             }
             if (isGlobal(model.value) && model.value) {
-              window.responsiveVoice.speak(toSpeak.trim(), model.value.voice, {
-                rate: model.value.rate, pitch: model.value.pitch, volume: model.value.volume, onend: () => setTimeout(() => resolve(), 500),
-              });
+              if (service.value === 0) {
+                window.responsiveVoice.speak(toSpeak.trim(), model.value.voice, {
+                  rate: model.value.rate, pitch: model.value.pitch, volume: model.value.volume, onend: () => setTimeout(() => resolve(), 500),
+                });
+              } else {
+                // Google TTS
+                getSocket('/core/tts').emit('google::speak', {
+                  rate: model.value.rate, pitch: model.value.pitch, volume: model.value.volume, voice: model.value.voice, text: text.value,
+                }, (err: Error | null, b64mp3: string) => {
+                  if (err) {
+                    console.error(err);
+                  }
+                  const snd = new Audio(`data:audio/mp3;base64,` + b64mp3);
+                  snd.play();
+                });
+              }
             } else {
               console.error('You should not see this message, speak should be disabled in this extension panel - please log a bug');
             }
@@ -203,14 +227,16 @@ export default defineComponent({
       }
     }
 
-    useMeta({
-      script: [
-        {
-          hid: 'responsivevoice',
-          src: 'https://code.responsivevoice.org/responsivevoice.js?key=' + useStore<any>().state.configuration.integrations.ResponsiveVoice.api.key,
-        },
-      ],
-    });
+    if (useStore<any>().state.configuration.core.tts.service === 0) {
+      useMeta({
+        script: [
+          {
+            hid: 'responsivevoice',
+            src: 'https://code.responsivevoice.org/responsivevoice.js?key=' + useStore<any>().state.configuration.core.tts.responsiveVoiceKey,
+          },
+        ],
+      });
+    }
 
     return {
       voices,
@@ -218,6 +244,7 @@ export default defineComponent({
       model,
       state,
       text,
+      service,
       translate,
       ButtonStates,
       mdiPlay,

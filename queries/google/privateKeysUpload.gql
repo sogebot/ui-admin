@@ -1,0 +1,5 @@
+mutation PrivateKeyUpload($data_json: String!) {
+  privateKeyUpload(data: $data_json) {
+    id
+  }
+}
