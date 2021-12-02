@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [31.0.0](https://github.com/sogebot/ui-admin/compare/v30.3.0...v31.0.0) (2021-12-02)
+
+
+### Features
+
+* **tts:** add core tts settings ([#172](https://github.com/sogebot/ui-admin/issues/172)) ([e7e1352](https://github.com/sogebot/ui-admin/commit/e7e13527991e012ff64d2dc5edff5c2625bcd986))
+
 ## [30.3.0](https://github.com/sogebot/ui-admin/compare/v30.2.1...v30.3.0) (2021-11-29)
 
 
