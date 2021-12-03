@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [31.0.1](https://github.com/sogebot/ui-admin/compare/v31.0.0...v31.0.1) (2021-12-03)
+
+
+### Bug Fixes
+
+* **navbar:** update link to github ([0e0816f](https://github.com/sogebot/ui-admin/commit/0e0816fac76f5ccd9ea0fd2fe5de328a07644adf))
+* **permissionsTab:** fix not ignoring expected permissions ([80a50e9](https://github.com/sogebot/ui-admin/commit/80a50e9c56f1bc9864093efd10f10a8a1b5ab2c5))
+
 ## [31.0.0](https://github.com/sogebot/ui-admin/compare/v30.3.0...v31.0.0) (2021-12-02)
 
 
