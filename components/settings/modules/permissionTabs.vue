@@ -2,11 +2,11 @@
   <loading v-if="permissions.length === 0"/>
   <div v-else>
     <v-tabs show-arrows v-model="tab" fixed-tabs>
-      <v-tab v-for="item of permissions" :key="item.id">{{item.name}}</v-tab>
+      <v-tab v-for="item of permissions.filter(o => !ignored.includes(o.id))" :key="item.id">{{item.name}}</v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="tab">
-      <slot :permissions="permissions"/>
+      <slot :permissions="permissions.filter(o => !ignored.includes(o.id))"/>
     </v-tabs-items>
   </div>
 </template>
