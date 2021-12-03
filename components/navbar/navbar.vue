@@ -60,8 +60,8 @@
       <template #append>
         <div v-if="!miniVariant" class="text-center text-caption" @dblclick="setDebug" style="user-select: none;">
           <a href="https://github.com/sogehige/SogeBot">GitHub</a> |
-          <a href="https://github.com/sogehige/SogeBot/issues">Issues</a> |
-          <a href="https://github.com/sogehige/SogeBot/blob/master/LICENSE">GPL-3.0 License</a>
+          <a href="https://github.com/sogebot/sogeBot/issues">Issues</a> |
+          <a href="https://github.com/sogebot/sogeBot/blob/master/LICENSE">GPL-3.0 License</a>
         </div>
       </template>
     </v-navigation-drawer>
