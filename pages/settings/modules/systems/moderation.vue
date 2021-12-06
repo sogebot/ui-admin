@@ -30,10 +30,36 @@
       <v-tab-item eager>
         <v-card>
           <v-card-text>
-            <v-textarea auto-grow outlined persistent-hint :label="translate('systems.moderation.settings.autobanMessages')"
-              :value="settings.lists.autobanMessages[0]"
-              @input="settings.lists.autobanMessages[0] = $event.split('\n').filter(String); $store.commit('settings/pending', true);"
-              :hint="translate('one-record-per-line')" />
+            <label class="v-label theme--dark">
+              {{ translate('systems.moderation.settings.autobanMessages') }}
+            </label>
+            <v-simple-table class="pb-4">
+              <template v-slot:default>
+                <tbody>
+                  <tr
+                    v-for="(item, idx) of settings.lists.autobanMessages[0].filter(String)"
+                    :key="idx + item"
+                  >
+                    <td>{{ item }}</td>
+                    <td class="text-right">
+                      <v-btn icon color="red" @click="settings.lists.autobanMessages = [settings.lists.autobanMessages[0].filter((_, idx2) => idx !== idx2), settings.lists.autobanMessages[1]]">
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <v-text-field filled solo rows="1" class="pa-0 py-2 ma-0" hide-details placeholder="Type a message you want to add to autoban list"  v-model="autobanMessage"/>
+                    </td>
+                    <td class="text-right">
+                      <v-btn icon color="green" @click="settings.lists.autobanMessages = [[...settings.lists.autobanMessages[0], autobanMessage], settings.lists.autobanMessages[1]]; autobanMessage = ''">
+                        <v-icon>mdi-plus</v-icon>
+                      </v-btn>
+                    </td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
             <v-textarea auto-grow outlined type="password" persistent-hint @focus="maskBlacklist = false;"
               @blur="maskBlacklist = true;" :label="translate('systems.moderation.settings.cListsBlacklist')"
               :value="settings.lists.cListsBlacklist[0].filter(String).join('\n').replace(maskBlacklist ? /./g : '', maskBlacklist ? '*' : '')"
@@ -646,6 +672,7 @@ export default defineComponent({
     const valid = ref(true);
     const tab = ref(null);
     const maskBlacklist = ref(true);
+    const autobanMessage = ref('');
 
     const test = (a:any) => {
       console.log({ a });
@@ -686,6 +713,7 @@ export default defineComponent({
       valid,
       tab,
       maskBlacklist,
+      autobanMessage,
 
       // functions
       getIgnoredPermissions,
