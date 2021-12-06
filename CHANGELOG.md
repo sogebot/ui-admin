@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [31.0.2](https://github.com/sogebot/ui-admin/compare/v31.0.1...v31.0.2) (2021-12-06)
+
+
+### Bug Fixes
+
+* **moderation:** update autoban message settings ([ddad82e](https://github.com/sogebot/ui-admin/commit/ddad82e6c51c254adb2adb2435dff26cf441a059))
+
 ### [31.0.1](https://github.com/sogebot/ui-admin/compare/v31.0.0...v31.0.1) (2021-12-03)
 
 
