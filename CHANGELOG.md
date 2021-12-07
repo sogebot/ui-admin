@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [31.0.3](https://github.com/sogebot/ui-admin/compare/v31.0.2...v31.0.3) (2021-12-07)
+
+
+### Bug Fixes
+
+* **events:** densify events widget ([f850f56](https://github.com/sogebot/ui-admin/commit/f850f56e7679d996f79243c52c19d5ad01c0be1e))
+
 ### [31.0.2](https://github.com/sogebot/ui-admin/compare/v31.0.1...v31.0.2) (2021-12-06)
 
 
