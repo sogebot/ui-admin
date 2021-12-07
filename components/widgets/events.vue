@@ -196,7 +196,7 @@
       </v-tooltip>
     </v-toolbar>
 
-    <v-list class="pa-0 ma-0" style="overflow: auto;" :height="height - 36">
+    <v-list class="pa-0 ma-0" style="overflow: auto;" :height="height - 36" dense>
       <v-list-item-group
         v-model="selected"
         multiple
@@ -206,36 +206,43 @@
             <v-hover v-if="filter(item)" v-slot="{ hover }">
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>
-                    <span class="font-condensed font-weight-bold" style="font-size: 1.7rem;">{{ item.username.toUpperCase() }}</span> <span v-html="prepareMessage(item)" />
-                  </v-list-item-title>
-                  <v-list-item-subtitle v-text="dayjs(item.timestamp).fromNow()" />
+                  <v-row no-gutters>
+                    <v-col>
+                      <v-list-item-title>
+                        <span class="font-condensed font-weight-bold" style="font-size: 1.2rem;">{{ item.username.toUpperCase() }}</span> <span v-html="prepareMessage(item)" />
+                      </v-list-item-title>
 
-                  <v-row v-if="blockquote(item)" no-gutters class="pt-2">
-                    <v-col cols="auto">
-                      <v-icon color="accent" x-small style="transform: translateY(5px);">
-                        {{ mdiFormatQuoteOpen }}
-                      </v-icon>
-                      <span v-html="blockquote(item)" />
-                      <v-icon color="accent" x-small style="transform: translateY(-5px);">
-                        {{ mdiFormatQuoteClose }}
-                      </v-icon>
+                      <v-row v-if="blockquote(item)" no-gutters class="pt-2">
+                        <v-col cols="auto">
+                          <v-icon color="accent" x-small style="transform: translateY(5px);">
+                            {{ mdiFormatQuoteOpen }}
+                          </v-icon>
+                          <span v-html="blockquote(item)" />
+                          <v-icon color="accent" x-small style="transform: translateY(-5px);">
+                            {{ mdiFormatQuoteClose }}
+                          </v-icon>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+
+                    <v-col cols="auto" align-self="center">
+                      <v-btn
+                        v-if="hover"
+                        icon
+                        absolute
+                        height="35"
+                        width="35"
+                        style="transform: translate(-30px, -18px)"
+                        @click.stop="resendAlert(item.id)"
+                      >
+                        <v-icon size="30">{{ mdiRefresh }}</v-icon>
+                      </v-btn>
+                      <v-list-item-subtitle v-text="dayjs(item.timestamp).fromNow()" v-else />
                     </v-col>
                   </v-row>
                 </v-list-item-content>
 
                 <v-list-item-action>
-                  <v-btn
-                    v-if="hover"
-                    icon
-                    height="36"
-                    width="36"
-                    style="transform: translateX(5px);"
-                    @click.stop="resendAlert(item.id)"
-                  >
-                    <v-icon>{{ mdiRefresh }}</v-icon>
-                  </v-btn>
-                  <template v-else>
                     <div v-if="item.event === 'follow'" class="red--text text--lighten-1 font-condensed" style="font-size:1.2rem;">
                       follow
                     </div>
@@ -286,7 +293,6 @@
                     <div v-else-if="item.event === 'rewardredeem'" class="blue--text text--lighten-1 font-condensed" style="font-size:1.2rem;">
                       {{ JSON.parse(item.values_json).titleOfReward }}
                     </div>
-                  </template>
                 </v-list-item-action>
               </v-list-item>
             </v-hover>
