@@ -104,3 +104,8 @@ td.text-center .v-simple-checkbox {
 .font-condensed {
   font-family: "PT Sans Narrow", Arial, Helvetica, sans-serif;
 }
+
+.overlay-w-100 .v-overlay__content {
+  width: 100% !important;
+  height: 100% !important;
+}
