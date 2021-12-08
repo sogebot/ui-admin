@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [31.0.4](https://github.com/sogebot/ui-admin/compare/v31.0.3...v31.0.4) (2021-12-08)
+
+
+### Bug Fixes
+
+* **events:** resend button into overlay ([1832b03](https://github.com/sogebot/ui-admin/commit/1832b03f8ddc7f2f856b9d9a3da0aed2d3f18a47))
+
 ### [31.0.3](https://github.com/sogebot/ui-admin/compare/v31.0.2...v31.0.3) (2021-12-07)
 
 
