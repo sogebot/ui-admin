@@ -30,28 +30,10 @@
                       <strong>Latest compatible version:</strong> {{ settings.versionsAvailable[0][key] }}
                     </td>
                     <td>
-                      <v-dialog v-if="settings.changelogs[0][key].length > 0" v-model="dialog[key]" scrollable
-                        width="800">
-                        <template #activator="{ on, attrs }">
-                          <v-btn color="deep-orange" dark v-bind="attrs" v-on="on">
-                            Changelog
-                          </v-btn>
-                        </template>
-
-                        <v-card>
-                          <v-card-title>Changelog for {{ key }}</v-card-title>
-                          <v-card-text v-html="marked(settings.changelogs[0][key].split('\n').splice(3).join('\n'))" />
-
-                          <v-divider />
-
-                          <v-card-actions>
-                            <v-spacer />
-                            <v-btn color="primary" text @click="dialog[key] = false">
-                              Close
-                            </v-btn>
-                          </v-card-actions>
-                        </v-card>
-                      </v-dialog>
+                      <v-btn v-if="settings.versions[0][key] !== settings.versionsAvailable[0][key]" color="accent darken-4"
+                        target="_blank" :href="`https://github.com/${key.replace('@', '')}/compare/v${settings.versions[0][key]}...v${settings.versionsAvailable[0][key]}`">
+                        Changelog
+                      </v-btn>
                       <v-btn v-if="settings.versions[0][key] !== settings.versionsAvailable[0][key]"
                         :loading="updating[key]" @click="update(key)">
                         Update
