@@ -109,3 +109,21 @@ td.text-center .v-simple-checkbox {
   width: 100% !important;
   height: 100% !important;
 }
+
+.v-data-table tr:hover td .hover-hide {
+  visibility: hidden;
+}
+
+.v-data-table tr td .hover-show {
+  display: none !important;
+}
+
+.v-data-table tr:hover td .hover-show {
+  display: block !important;
+  position: absolute;
+  top: 0;
+}
+
+.position-relative {
+  position: relative !important;
+}
