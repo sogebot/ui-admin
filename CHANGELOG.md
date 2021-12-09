@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [31.1.0](https://github.com/sogebot/ui-admin/compare/v31.0.5...v31.1.0) (2021-12-09)
+
+
+### Features
+
+* **alias:** update table design ([c8110ca](https://github.com/sogebot/ui-admin/commit/c8110ca4b80564bc945a6c93ad72bc23c32ff4a6))
+
 ### [31.0.5](https://github.com/sogebot/ui-admin/compare/v31.0.4...v31.0.5) (2021-12-08)
 
 
