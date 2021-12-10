@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [31.2.0](https://github.com/sogebot/ui-admin/compare/v31.1.0...v31.2.0) (2021-12-10)
+
+
+### Features
+
+* **cooldown:** batch update design changes ([ffc0051](https://github.com/sogebot/ui-admin/commit/ffc005191b6cb8aaadea295a6d55bc1af2df1fe8))
+
 ## [31.1.0](https://github.com/sogebot/ui-admin/compare/v31.0.5...v31.1.0) (2021-12-09)
 
 
