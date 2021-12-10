@@ -4,7 +4,7 @@
       v-model="menu"
       offset-y
       :close-on-click="false"
-      min-width="400"
+      min-width="600"
       :close-on-content-click="false"
       offset-overflow
     >
@@ -19,7 +19,7 @@
           New item
         </v-btn>
       </template>
-      <v-card>
+      <v-card outlined>
         <v-card-text>
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-text-field
@@ -53,7 +53,7 @@
               hide-details="auto"
             />
 
-            <v-row>
+            <v-row no-gutters>
               <v-col>
                 <v-switch
                   v-model="item.enabled"

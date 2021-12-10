@@ -26,7 +26,7 @@
           color="dark"
           class="my-2 pb-2 mt-0"
         >
-          <v-row class="px-2" no-gutters>
+          <v-row class="px-2" dense>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
@@ -38,76 +38,88 @@
               />
             </v-col>
             <v-col cols="auto" align-self="center">
-              <v-row no-gutters>
-                <v-col v-if="selected.length > 0" cols="auto" class="pr-1">
-                  <alias-batch
-                    :length="selected.length"
-                    :permission-items="permissionItems"
-                    :group-items="groupItems"
-                    @save="batchUpdate($event)"
-                  />
-                </v-col>
-                <v-col v-if="selected.length > 0" cols="auto">
-                  <v-dialog
-                    v-model="deleteDialog"
-                    max-width="500px"
-                  >
-                    <template #activator="{ on, attrs }">
-                      <v-btn
-                        color="error"
-                        class="mr-1"
-                        v-bind="attrs"
-                        v-on="on"
-                      >
-                        Delete {{ selected.length }} Item(s)
-                      </v-btn>
-                    </template>
-
-                    <v-card>
-                      <v-card-title>
-                        <span class="headline">Delete {{ selected.length }} Item(s)?</span>
-                      </v-card-title>
-
-                      <v-card-text>
-                        <v-data-table
-                          dense
-                          :items="selected"
-                          :headers="headersDelete"
-                          :items-per-page="-1"
-                          hide-default-header
-                          hide-default-footer
-                        />
-                      </v-card-text>
-                      <v-card-actions>
-                        <v-spacer />
-                        <v-btn
-                          text
-                          @click="deleteDialog = false"
-                        >
-                          Cancel
-                        </v-btn>
-                        <v-btn
-                          color="error"
-                          text
-                          @click="deleteSelected"
-                        >
-                          Delete
-                        </v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </v-dialog>
-                </v-col>
-                <v-col cols="auto">
-                <alias-edit
-                  :rules="rules"
-                  :permission-items="permissionItems"
-                  :group-items="groupItems"
-                  @save="refetch()"
-                />
-                </v-col>
-              </v-row>
+              <alias-edit
+                :rules="rules"
+                :permission-items="permissionItems"
+                :group-items="groupItems"
+                @save="refetch()"
+              />
             </v-col>
           </v-row>
+
+          <v-expand-transition>
+            <v-sheet v-show="selected.length > 0" color="blue-grey darken-4" class="pa-2 mt-2">
+              <v-row class="px-2" dense>
+                <v-col cols="auto" align-self="center">
+                  {{ selected.length }} items selected
+                </v-col>
+
+                <v-col cols="auto" align-self="center">
+                  <v-row dense>
+                    <v-col v-if="selected.length > 0" cols="auto" class="pr-1">
+                      <alias-batch
+                        :length="selected.length"
+                        :permission-items="permissionItems"
+                        :group-items="groupItems"
+                        @save="batchUpdate($event)"
+                      />
+                    </v-col>
+                    <v-col v-if="selected.length > 0" cols="auto">
+                      <v-dialog
+                        v-model="deleteDialog"
+                        max-width="500px"
+                      >
+                        <template #activator="{ on, attrs }">
+                          <v-btn
+                            small
+                            color="red"
+                            v-bind="attrs"
+                            v-on="on"
+                          >
+                            <v-icon left>mdi-delete</v-icon>
+                            Delete
+                          </v-btn>
+                        </template>
+
+                        <v-card>
+                          <v-card-title>
+                            <span class="headline">Delete {{ selected.length }} Item(s)?</span>
+                          </v-card-title>
+
+                          <v-card-text>
+                            <v-data-table
+                              dense
+                              :items="selected"
+                              :headers="headersDelete"
+                              :items-per-page="-1"
+                              hide-default-header
+                              hide-default-footer
+                            />
+                          </v-card-text>
+                          <v-card-actions>
+                            <v-spacer />
+                            <v-btn
+                              text
+                              @click="deleteDialog = false"
+                            >
+                              Cancel
+                            </v-btn>
+                            <v-btn
+                              color="error"
+                              text
+                              @click="deleteSelected"
+                            >
+                              Delete
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-sheet>
+          </v-expand-transition>
         </v-sheet>
       </template>
 
@@ -169,16 +181,15 @@
       </template>
 
       <template #[`item.alias`]="{ item }">
-        <div class="position-relative">
-          <div class="hover-hide">
+        <table-hover>
+          <template #hide>
             <strong>{{ item.alias }}</strong>
             <ul style="list-style-type: none;">
               <li>{{ item.command }}</li>
             </ul>
-          </div>
-
-          <div class="hover-show" style="top: 50%; transform: translateY(-50%);">
-            <v-row>
+          </template>
+          <template #show>
+            <v-row dense>
               <v-col cols="auto">
                 <alias-edit
                   :rules="rules"
@@ -197,8 +208,8 @@
                 </v-btn>
               </v-col>
             </v-row>
-          </div>
-        </div>
+          </template>
+        </table-hover>
       </template>
 
       <template #[`item.groupToBeShownInTable`]="{ item }">

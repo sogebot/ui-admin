@@ -11,14 +11,13 @@
     <v-data-table
       v-model="selected"
       calculate-widths
-      :show-select="selectable"
+      show-select
       :search="search"
       :loading="state.loading !== ButtonStates.success"
       :headers="headers"
       :items-per-page="-1"
       :items="items"
       @current-items="saveCurrentItems"
-      @click:row="addToSelectedItem"
     >
       <template #top>
         <v-sheet
@@ -26,14 +25,7 @@
           color="dark"
           class="my-2 pb-2 mt-0"
         >
-          <v-row class="px-2" no-gutters>
-            <v-col cols="auto" align-self="center" class="pr-2">
-              <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
-                <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
-                </v-icon>
-              </v-btn>
-            </v-col>
+          <v-row class="px-2" dense>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
@@ -41,192 +33,166 @@
                 label="Search"
                 single-line
                 hide-details
-                class="pa-0 ma-2"
+                class="pa-0"
               />
             </v-col>
             <v-col cols="auto" align-self="center">
-              <template v-if="selected.length > 0">
-                <v-dialog
-                  v-model="deleteDialog"
-                  max-width="500px"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-btn
-                      color="error"
-                      class="mr-1"
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      Delete {{ selected.length }} Item(s)
-                    </v-btn>
-                  </template>
-
-                  <v-card>
-                    <v-card-title>
-                      <span class="headline">Delete {{ selected.length }} Item(s)?</span>
-                    </v-card-title>
-
-                    <v-card-text>
-                      <v-data-table
-                        dense
-                        :items="selected"
-                        :headers="headersDelete"
-                        :items-per-page="-1"
-                        hide-default-header
-                        hide-default-footer
-                      />
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer />
-                      <v-btn
-                        text
-                        @click="deleteDialog = false"
-                      >
-                        Cancel
-                      </v-btn>
-                      <v-btn
-                        color="error"
-                        text
-                        @click="deleteSelected"
-                      >
-                        Delete
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </template>
-
-              <v-dialog
-                v-model="newDialog"
-                max-width="500px"
-              >
-                <template #activator="{ on, attrs }">
-                  <v-btn
-                    color="primary"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    New Item
-                  </v-btn>
-                </template>
-
-                <v-card>
-                  <v-card-title>
-                    <span class="headline">New item</span>
-                  </v-card-title>
-
-                  <v-card-text :key="timestamp">
-                    <new-item
-                      :rules="rules"
-                      @close="newDialog = false"
-                      @save="saveSuccess"
-                    />
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
+              <cooldowns-edit
+                :rules="rules"
+                @save="refresh()"
+              />
             </v-col>
           </v-row>
+
+          <v-expand-transition>
+            <v-sheet v-show="selected.length > 0" color="blue-grey darken-4" class="pa-2 mt-2">
+              <v-row class="px-2" dense>
+                <v-col cols="auto" align-self="center">
+                  {{ selected.length }} items selected
+                </v-col>
+                <v-col cols="auto" align-self="center">
+                  <v-row dense>
+                    <v-col>
+                      <cooldowns-batch
+                        :length="selected.length"
+                        :rules="rules"
+                        @save="batchUpdate($event)"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-dialog
+                        v-model="deleteDialog"
+                        max-width="500px"
+                      >
+                        <template #activator="{ on, attrs }">
+                          <v-btn
+                            small
+                            color="red"
+                            v-bind="attrs"
+                            v-on="on"
+                          >
+                            <v-icon left>mdi-delete</v-icon>
+                            Delete
+                          </v-btn>
+                        </template>
+
+                        <v-card>
+                          <v-card-title>
+                            <span class="headline">Delete {{ selected.length }} Item(s)?</span>
+                          </v-card-title>
+
+                          <v-card-text>
+                            <v-data-table
+                              dense
+                              :items="selected"
+                              :headers="headersDelete"
+                              :items-per-page="-1"
+                              hide-default-header
+                              hide-default-footer
+                            />
+                          </v-card-text>
+                          <v-card-actions>
+                            <v-spacer />
+                            <v-btn
+                              text
+                              @click="deleteDialog = false"
+                            >
+                              Cancel
+                            </v-btn>
+                            <v-btn
+                              color="error"
+                              text
+                              @click="deleteSelected"
+                            >
+                              Delete
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-sheet>
+          </v-expand-transition>
         </v-sheet>
       </template>
 
       <template #[`item.name`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.name"
-          @save="update(item, false, 'name')"
-        >
-          {{ item.name }}
-          <template #input>
-            <v-text-field
-              v-model="item.name"
-              :rules="rules.name"
-              single-line
-              counter
-            />
+        <table-hover>
+          <template #hide>
+            {{ item.name }}
           </template>
-        </v-edit-dialog>
+
+          <template #show>
+            <v-row dense>
+              <v-col cols="auto">
+                <cooldowns-edit
+                  :rules="rules"
+                  :value="item"
+                  @save="refresh()"
+                />
+              </v-col>
+              <v-col cols="auto">
+                <v-btn color="red" small @click="selected = [item]; deleteDialog = true;">
+                  <v-icon left>
+                    mdi-delete
+                  </v-icon>
+                  Delete
+                </v-btn>
+              </v-col>
+            </v-row>
+          </template>
+        </table-hover>
       </template>
 
       <template #[`item.count`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.count"
-          @save="update(item, false, 'count')"
-        >
-          {{ item.count }}s
-          <template #input>
-            <v-text-field
-              v-model.number="item.count"
-              type="number"
-              :rules="rules.count"
-              single-line
-            >
-              <template #append>
-                s
-              </template>
-            </v-text-field>
-          </template>
-        </v-edit-dialog>
+        {{ item.count }}s
       </template>
 
       <template #[`item.type`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.type"
-          @save="update(item, true, 'type')"
-        >
-          {{ translate(item.type) }}
-          <template #input>
-            <v-select
-              v-model="item.type"
-              :items="typeItems"
-            />
-          </template>
-        </v-edit-dialog>
+        {{ translate(item.type) }}
       </template>
 
       <template #[`item.isEnabled`]="{ item }">
         <v-simple-checkbox
           v-model="item.isEnabled"
-          @click="update(item, true, 'isEnabled')"
+          disabled
         />
       </template>
 
       <template #[`item.isErrorMsgQuiet`]="{ item }">
         <v-simple-checkbox
           v-model="item.isErrorMsgQuiet"
-          @click="update(item, true, 'isErrorMsgQuiet')"
+          disabled
         />
       </template>
 
       <template #[`item.isOwnerAffected`]="{ item }">
         <v-simple-checkbox
           v-model="item.isOwnerAffected"
-          @click="update(item, true, 'isOwnerAffected')"
+          disabled
         />
       </template>
 
       <template #[`item.isModeratorAffected`]="{ item }">
         <v-simple-checkbox
           v-model="item.isModeratorAffected"
-          @click="update(item, true, 'isModeratorAffected')"
+          disabled
         />
       </template>
 
       <template #[`item.isSubscriberAffected`]="{ item }">
         <v-simple-checkbox
           v-model="item.isSubscriberAffected"
-          @click="update(item, true, 'isSubscriberAffected')"
+          disabled
         />
       </template>
 
       <template #[`item.isFollowerAffected`]="{ item }">
         <v-simple-checkbox
           v-model="item.isFollowerAffected"
-          @click="update(item, true, 'isFollowerAffected')"
+          disabled
         />
       </template>
     </v-data-table>
@@ -245,16 +211,18 @@ import { capitalize } from 'lodash';
 
 import type { CooldownInterface } from '.bot/src/database/entity/cooldown';
 import { error } from '~/functions//error';
-import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
 import {
   minLength, minValue, required,
 } from '~/functions/validators';
 
-type CooldownInterfaceUI = CooldownInterface & { count: number };
+export type CooldownInterfaceUI = CooldownInterface & { count: number; __typename: string };
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/cooldowns-newItem.vue') }) },
+  components: {
+    'cooldowns-edit':  defineAsyncComponent({ loader: () => import('~/components/manage/cooldowns/cooldownsEdit.vue') }),
+    'cooldowns-batch': defineAsyncComponent({ loader: () => import('~/components/manage/cooldowns/cooldownsBatch.vue') }),
+  },
   setup () {
     const rules = { name: [required, minLength(2)], count: [required, minValue(30)] };
 
@@ -278,7 +246,6 @@ export default defineComponent({
       currentItems.value = value;
     };
     const deleteDialog = ref(false);
-    const newDialog = ref(false);
     const selectable = ref(false);
     watch(selectable, (val) => {
       if (!val) {
@@ -288,39 +255,31 @@ export default defineComponent({
 
     const timestamp = ref(Date.now());
 
-    watch(newDialog, () => {
-      timestamp.value = Date.now();
-    });
-
     const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
     const headers = [
       { value: 'name', text: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group') },
+      { value: 'count', text: translate('cooldown') },
+      { value: 'type', text: translate('cooldown') },
       {
-        value: 'count', text: translate('cooldown'), width: '7rem',
+        value: 'isEnabled', text: capitalize(translate('enabled')), align: 'center',
       },
       {
-        value: 'type', text: translate('cooldown'), width: '7rem',
+        value: 'isErrorMsgQuiet', text: capitalize(translate('quiet')), align: 'center',
       },
       {
-        value: 'isEnabled', text: capitalize(translate('enabled')), width: '6rem', align: 'center',
+        value: 'isOwnerAffected', text: capitalize(translate('core.permissions.casters')), align: 'center',
       },
       {
-        value: 'isErrorMsgQuiet', text: capitalize(translate('quiet')), width: '6rem', align: 'center',
+        value: 'isModeratorAffected', text: capitalize(translate('core.permissions.moderators')), align: 'center',
       },
       {
-        value: 'isOwnerAffected', text: capitalize(translate('core.permissions.casters')), width: '6rem', align: 'center',
+        value: 'isSubscriberAffected', text: capitalize(translate('core.permissions.subscribers')), align: 'center',
       },
       {
-        value: 'isModeratorAffected', text: capitalize(translate('core.permissions.moderators')), width: '8rem', align: 'center',
-      },
-      {
-        value: 'isSubscriberAffected', text: capitalize(translate('core.permissions.subscribers')), width: '8rem', align: 'center',
-      },
-      {
-        value: 'isFollowerAffected', text: capitalize(translate('core.permissions.followers')), width: '7rem', align: 'center',
+        value: 'isFollowerAffected', text: capitalize(translate('core.permissions.followers')), align: 'center',
       },
     ];
 
@@ -352,50 +311,39 @@ export default defineComponent({
         state.value.loading = ButtonStates.success;
       });
     };
-
-    const saveSuccess = () => {
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
-      newDialog.value = false;
-    };
-    const update = async (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
+    const batchUpdate = (value: Record<string, any>) => {
       // check validity
-      for (const key of Object.keys(rules)) {
-        for (const rule of (rules as any)[key]) {
-          const ruleStatus = rule((item as any)[key]);
-          if (ruleStatus === true) {
-            continue;
-          } else {
-            EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-            refresh();
-            return;
+      for (const toUpdate of selected.value) {
+        const item = items.value.find(o => o.id === toUpdate.id);
+        if (!item) {
+          continue;
+        }
+
+        for (const key of Object.keys(rules)) {
+          for (const rule of (rules as any)[key]) {
+            const ruleStatus = rule((toUpdate as any)[key]);
+            if (ruleStatus === true) {
+              continue;
+            } else {
+              EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
+              return;
+            }
           }
         }
-      }
 
-      // update all instantly
-      for (const i of [item, ...(multi ? selected.value : [])]) {
-        (i as any)[attr] = item[attr];
-      }
+        for (const key of Object.keys(value)) {
+          if (typeof value[key] !== 'undefined') {
+            (item as any)[key] = value[key];
+          }
+        }
 
-      await Promise.all(
-        [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
-          return new Promise((resolve) => {
-            if (attr === 'count') {
-              itemToUpdate.miliseconds = item.count * 1000;
-            }
-            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-            getSocket('/systems/cooldown').emit('cooldown::save', {
-              ...itemToUpdate,
-              [attr]: item[attr], // save new value for all selected items
-            }, () => {
-              resolve(true);
-            });
-          });
-        }),
-      );
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
+        console.log('Updating', { item });
+
+        getSocket('/systems/cooldown').emit('cooldown::save', item, () => {
+          EventBus.$emit('snack', 'success', 'Data updated.');
+          refresh();
+        });
+      }
     };
 
     const deleteSelected = async () => {
@@ -419,7 +367,6 @@ export default defineComponent({
     };
 
     return {
-      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       saveCurrentItems,
       items,
       search,
@@ -428,18 +375,17 @@ export default defineComponent({
       headersDelete,
       selected,
       deleteSelected,
-      update,
+      batchUpdate,
       selectable,
-      newDialog,
       deleteDialog,
       translate,
-      saveSuccess,
       timestamp,
       rules,
       typeItems,
       mdiMagnify,
       mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
+      refresh,
     };
   },
 });

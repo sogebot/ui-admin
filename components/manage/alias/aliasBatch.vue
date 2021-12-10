@@ -9,11 +9,11 @@
       offset-overflow
     >
       <template #activator="{ on, attrs }">
-        <v-btn v-bind="attrs" v-on="on">
-          Update {{ length }} Item(s)
+        <v-btn v-bind="attrs" small v-on="on">
+          Batch update
         </v-btn>
       </template>
-      <v-card>
+      <v-card outlined>
         <v-card-text>
           <v-form v-model="valid" lazy-validation>
             <v-row no-gutters>
