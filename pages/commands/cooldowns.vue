@@ -224,7 +224,7 @@ export default defineComponent({
     'cooldowns-batch': defineAsyncComponent({ loader: () => import('~/components/manage/cooldowns/cooldownsBatch.vue') }),
   },
   setup () {
-    const rules = { name: [required, minLength(2)], count: [required, minValue(30)] };
+    const rules = { name: [required, minLength(2)], count: [required, minValue(1)] };
 
     const items = ref([] as CooldownInterfaceUI[]);
     const typeItems = [
