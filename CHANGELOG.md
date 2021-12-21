@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [31.3.0](https://github.com/sogebot/ui-admin/compare/v31.2.0...v31.3.0) (2021-12-21)
+
+
+### Features
+
+* **cooldowns:** reduce min cooldown number ([#173](https://github.com/sogebot/ui-admin/issues/173)) ([fcb18fb](https://github.com/sogebot/ui-admin/commit/fcb18fb179f0a829b152d9eb7dfed1c96b4e9436))
+
+
+### Bug Fixes
+
+* **services:** set correct twitch emotes nsp ([cd12c13](https://github.com/sogebot/ui-admin/commit/cd12c135bf9f9b62dfc3575f083f28f862a84f81))
+
 ## [31.2.0](https://github.com/sogebot/ui-admin/compare/v31.1.0...v31.2.0) (2021-12-10)
 
 
