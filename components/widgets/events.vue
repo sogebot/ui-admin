@@ -359,7 +359,7 @@ export default defineComponent({
     const { mutate: saveMutation } = useMutation(SET_CFG);
 
     const isLoading = ref(true);
-    const events = ref([] as EventListInterface[]);
+    const events = ref([] as (EventListInterface & { sortAmount: number })[]);
     const selected = ref([] as number[]);
     const menu = ref(false);
     const isPopout = computed(() => location.href.includes('popout'));
@@ -506,12 +506,20 @@ export default defineComponent({
     }
 
     function removeSelected () {
+      // filter events
+      const filteredEvents: typeof events.value = [];
+      events.value.forEach((item) => {
+        if (filter(item)) {
+          filteredEvents.push(item);
+        }
+      });
       for (const idx of selected.value) {
-        const event = events.value[idx];
-        getSocket('/widgets/eventlist').emit('eventlist::removeById', event.id, () => {
+        const id = filteredEvents[idx].id;
+        getSocket('/widgets/eventlist').emit('eventlist::removeById', id, () => {
           return true;
         });
-        events.value.splice(idx, 1);
+
+        events.value.splice(events.value.findIndex(o => o.id === id), 1);
       }
       selected.value = [];
     }
