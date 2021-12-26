@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [31.3.2](https://github.com/sogebot/ui-admin/compare/v31.3.1...v31.3.2) (2021-12-26)
+
+
+### Bug Fixes
+
+* **events:** remove correct events on selected delete ([5a487aa](https://github.com/sogebot/ui-admin/commit/5a487aaeaa11136c5fd3d4b5cd4da732e9a717b6))
+* **viewers:** move reset buttom to top datatable sheet ([806944b](https://github.com/sogebot/ui-admin/commit/806944bf9dcbe2f61a981076d624bcd6248b569a))
+
 ### [31.3.1](https://github.com/sogebot/ui-admin/compare/v31.3.0...v31.3.1) (2021-12-21)
 
 
