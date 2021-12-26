@@ -1,71 +1,12 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-speed-dial
-      v-model="fab"
-      class="actionFab"
-      bottom
-      right
-      fixed
-    >
-      <template #activator>
-        <v-btn
-          v-model="fab"
-          color="dark"
-          fab
-        >
-          <v-icon v-if="fab">
-            {{ mdiClose }}
-          </v-icon>
-          <v-icon v-else>
-            {{ mdiDotsVertical }}
-          </v-icon>
-        </v-btn>
-      </template>
-
-      <v-btn @click="resetPoints">
-        {{ translate('commons.reset') }} {{ translate('points') }}
-      </v-btn>
-      <v-btn @click="resetWatchedTime">
-        {{ translate('commons.reset') }} {{ translate('watched-time') }}
-      </v-btn>
-      <v-btn @click="resetMessages">
-        {{ translate('commons.reset') }} {{ translate('messages') }}
-      </v-btn>
-      <v-btn @click="resetBits">
-        {{ translate('commons.reset') }} {{ translate('bits') }}
-      </v-btn>
-      <v-btn @click="resetTips">
-        {{ translate('commons.reset') }} {{ translate('tips') }}
-      </v-btn>
-      <v-btn @click="resetSubgifts">
-        {{ translate('commons.reset') }} {{ translate('subgifts') }}
-      </v-btn>
-    </v-speed-dial>
-
-    <v-data-table
-      v-model="selected"
-      :expanded.sync="expanded"
-      :show-select="selectable"
-      :loading="state.loading !== ButtonStates.success"
-      :headers="headers"
-      :items-per-page.sync="perPage"
-      :sort-by.sync="sortBy"
-      :sort-desc.sync="sortDesc"
-      :items="fItems"
-      item-key="userId"
-      :page.sync="currentPage"
-      :server-items-length.sync="count"
-      show-expand
-      :single-expand="true"
-      @current-items="saveCurrentItems"
-      @click:row="addToSelectedItem"
-    >
+    <v-data-table v-model="selected" :expanded.sync="expanded" :show-select="selectable"
+      :loading="state.loading !== ButtonStates.success" :headers="headers" :items-per-page.sync="perPage"
+      :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="fItems" item-key="userId" :page.sync="currentPage"
+      :server-items-length.sync="count" show-expand :single-expand="true" @current-items="saveCurrentItems"
+      @click:row="addToSelectedItem">
       <template #top>
-        <v-sheet
-          flat
-          color="dark"
-          class="my-2 pb-2 mt-0"
-        >
+        <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" no-gutters>
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
@@ -73,55 +14,59 @@
                   {{ mdiCheckboxMultipleMarkedOutline }}
                 </v-icon>
               </v-btn>
+
+              <v-menu absolute offset-y style="max-width: 600px">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn color="dark" v-bind="attrs" v-on="on">
+                    {{ translate('commons.reset') }}
+                  </v-btn>
+                </template>
+
+                <v-list>
+                  <v-list-item @click="resetPoints">
+                    <v-list-item-title>{{ translate('points') }}</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="resetWatchedTime">
+                    <v-list-item-title>{{ translate('watched-time') }}</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="resetMessages">
+                    <v-list-item-title>{{ translate('messages') }}</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="resetBits">
+                    <v-list-item-title>{{ translate('bits') }}</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="resetTips">
+                    <v-list-item-title>{{ translate('tips') }}</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="resetSubgifts">
+                    <v-list-item-title>{{ translate('subgifts') }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+
+              </v-menu>
             </v-col>
             <v-col align-self="center">
-              <v-text-field
-                v-model="search"
-                :append-icon="mdiMagnify"
-                label="Search"
-                single-line
-                hide-details
-                class="pa-0 ma-2"
-              />
+              <v-text-field v-model="search" :append-icon="mdiMagnify" label="Search" single-line hide-details
+                class="pa-0 ma-2" />
             </v-col>
             <v-col cols="auto" align-self="center">
-              <filter-button
-                :value="filter.followers"
-                @save="value=>filter.followers=value"
-              >
+              <filter-button :value="filter.followers" @save="value=>filter.followers=value">
                 followers
               </filter-button>
-              <filter-button
-                :value="filter.subscribers"
-                @save="value=>filter.subscribers=value"
-              >
+              <filter-button :value="filter.subscribers" @save="value=>filter.subscribers=value">
                 subscribers
               </filter-button>
-              <filter-button
-                :value="filter.vips"
-                @save="value=>filter.vips=value"
-              >
+              <filter-button :value="filter.vips" @save="value=>filter.vips=value">
                 vips
               </filter-button>
-              <filter-button
-                :value="filter.active"
-                @save="value=>filter.active=value"
-              >
+              <filter-button :value="filter.active" @save="value=>filter.active=value">
                 active
               </filter-button>
 
               <template v-if="selected.length > 0">
-                <v-dialog
-                  v-model="deleteDialog"
-                  max-width="500px"
-                >
+                <v-dialog v-model="deleteDialog" max-width="500px">
                   <template #activator="{ on, attrs }">
-                    <v-btn
-                      color="error"
-                      class="mr-1"
-                      v-bind="attrs"
-                      v-on="on"
-                    >
+                    <v-btn color="error" class="mr-1" v-bind="attrs" v-on="on">
                       Delete {{ selected.length }} Item(s)
                     </v-btn>
                   </template>
@@ -132,28 +77,15 @@
                     </v-card-title>
 
                     <v-card-text>
-                      <v-data-table
-                        dense
-                        :items="selected"
-                        :headers="headersDelete"
-                        :items-per-page="-1"
-                        hide-default-header
-                        hide-default-footer
-                      />
+                      <v-data-table dense :items="selected" :headers="headersDelete" :items-per-page="-1"
+                        hide-default-header hide-default-footer />
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
-                      <v-btn
-                        text
-                        @click="deleteDialog = false"
-                      >
+                      <v-btn text @click="deleteDialog = false">
                         Cancel
                       </v-btn>
-                      <v-btn
-                        color="error"
-                        text
-                        @click="deleteSelected"
-                      >
+                      <v-btn color="error" text @click="deleteSelected">
                         Delete
                       </v-btn>
                     </v-card-actions>
@@ -168,213 +100,115 @@
       <template #[`item.userName`]="{ item }">
         {{ item.userName }}<small class="grey--text pl-2">{{ item.userId }}</small>
         <div>
-          <v-chip
-            x-small
-            :color="item.isOnline ? 'success' : 'error'"
-          >
+          <v-chip x-small :color="item.isOnline ? 'success' : 'error'">
             Active
           </v-chip>
-          <v-chip
-            x-small
-            :color="item.isVIP ? 'success' : 'error'"
-          >
+          <v-chip x-small :color="item.isVIP ? 'success' : 'error'">
             VIP
           </v-chip>
           <div class="d-inline-flex">
-            <followers-chip
-              :key="item.userId + 'follow' + timestamp"
-              :item="item"
+            <followers-chip :key="item.userId + 'follow' + timestamp" :item="item"
               @save="item.isFollower = $event.isFollower; item.haveFollowerLock = $event.haveFollowerLock; update(item, true, 'isFollower')"
-              @close="timestamp = Date.now()"
-            />
+              @close="timestamp = Date.now()" />
           </div>
           <div class="d-inline-flex">
-            <subscribers-chip
-              :key="item.userId + 'sub' + timestamp"
-              :item="item"
+            <subscribers-chip :key="item.userId + 'sub' + timestamp" :item="item"
               @save="item.isSubscriber = $event.isSubscriber; item.haveSubscriberLock = $event.haveSubscriberLock; update(item, true, 'isSubscriber')"
-              @close="timestamp = Date.now()"
-            />
+              @close="timestamp = Date.now()" />
           </div>
         </div>
       </template>
 
       <template #[`item.messages`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.messages"
-          @save="update(item, true, 'messages')"
-        >
+        <v-edit-dialog persistent large :return-value.sync="item.messages" @save="update(item, true, 'messages')">
           {{ item.messages }}
           <template #input>
-            <v-text-field
-              v-model.number="item.messages"
-              type="number"
-              min="0"
-              :rules="rules.messages"
-              single-line
-            />
+            <v-text-field v-model.number="item.messages" type="number" min="0" :rules="rules.messages" single-line />
           </template>
         </v-edit-dialog>
       </template>
 
       <template #[`item.points`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.points"
-          @save="update(item, true, 'points')"
-        >
+        <v-edit-dialog persistent large :return-value.sync="item.points" @save="update(item, true, 'points')">
           {{ item.points }}
           <template #input>
-            <v-text-field
-              v-model.number="item.points"
-              type="number"
-              min="0"
-              :rules="rules.points"
-              single-line
-            />
+            <v-text-field v-model.number="item.points" type="number" min="0" :rules="rules.points" single-line />
           </template>
         </v-edit-dialog>
       </template>
 
       <template #[`item.sumTips`]="{ item }">
-        <tips
-          :sum="item.sumTips"
-          :user-id="item.userId"
-          @save="value=>{ item.tips = value; update(item, false, 'tips'); }"
-        />
+        <tips :sum="item.sumTips" :user-id="item.userId"
+          @save="value=>{ item.tips = value; update(item, false, 'tips'); }" />
       </template>
 
       <template #[`item.sumBits`]="{ item }">
-        <bits
-          :sum="item.sumBits"
-          :user-id="item.userId"
-          @save="value=>{ item.bits = value; update(item, false, 'bits'); }"
-        />
+        <bits :sum="item.sumBits" :user-id="item.userId"
+          @save="value=>{ item.bits = value; update(item, false, 'bits'); }" />
       </template>
 
       <template #[`item.subscribeCumulativeMonths`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.subscribeCumulativeMonths"
-          @save="update(item, true, 'subscribeCumulativeMonths')"
-        >
+        <v-edit-dialog persistent large :return-value.sync="item.subscribeCumulativeMonths"
+          @save="update(item, true, 'subscribeCumulativeMonths')">
           {{ item.subscribeCumulativeMonths }}
           <template #input>
-            <v-text-field
-              v-model="item.subscribeCumulativeMonths"
-              type="number"
-              min="0"
-              :rules="rules.subscribeCumulativeMonths"
-              single-line
-            />
+            <v-text-field v-model="item.subscribeCumulativeMonths" type="number" min="0"
+              :rules="rules.subscribeCumulativeMonths" single-line />
           </template>
         </v-edit-dialog>
       </template>
 
       <template #[`item.subscribeStreak`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.subscribeStreak"
-          @save="update(item, true, 'subscribeStreak')"
-        >
+        <v-edit-dialog persistent large :return-value.sync="item.subscribeStreak"
+          @save="update(item, true, 'subscribeStreak')">
           {{ item.subscribeStreak }}
           <template #input>
-            <v-text-field
-              v-model="item.subscribeStreak"
-              type="number"
-              min="0"
-              :rules="rules.subscribeStreak"
-              single-line
-            />
+            <v-text-field v-model="item.subscribeStreak" type="number" min="0" :rules="rules.subscribeStreak"
+              single-line />
           </template>
         </v-edit-dialog>
       </template>
 
       <template #[`item.giftedSubscribes`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.giftedSubscribes"
-          @save="update(item, true, 'giftedSubscribes')"
-        >
+        <v-edit-dialog persistent large :return-value.sync="item.giftedSubscribes"
+          @save="update(item, true, 'giftedSubscribes')">
           {{ item.giftedSubscribes }}
           <template #input>
-            <v-text-field
-              v-model="item.giftedSubscribes"
-              type="number"
-              min="0"
-              :rules="rules.giftedSubscribes"
-              single-line
-            />
+            <v-text-field v-model="item.giftedSubscribes" type="number" min="0" :rules="rules.giftedSubscribes"
+              single-line />
           </template>
         </v-edit-dialog>
       </template>
 
       <template #[`item.watchedTime`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.watchedTime"
-          @save="update(item, true, 'watchedTime')"
-        >
-          {{ Intl.NumberFormat($store.state.configuration.lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(item.watchedTime / 1000 / 60 / 60) }} h
+        <v-edit-dialog persistent large :return-value.sync="item.watchedTime" @save="update(item, true, 'watchedTime')">
+          {{ Intl.NumberFormat($store.state.configuration.lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(item.watchedTime / 1000 / 60 / 60) }}h
           <template #input>
-            <v-text-field
-              :value="watchedTimeFormat(item.watchedTime)"
-              type="number"
-              min="0"
-              step="0.5"
-              :rules="rules.watchedTime"
-              single-line
-              suffix="h"
-              @blur="setWatchedTime(item, $event.target._value)"
-            />
+            <v-text-field :value="watchedTimeFormat(item.watchedTime)" type="number" min="0" step="0.5"
+              :rules="rules.watchedTime" single-line suffix="h" @blur="setWatchedTime(item, $event.target._value)" />
           </template>
         </v-edit-dialog>
       </template>
 
       <template #[`item.seenAt`]="{ item }">
         <div class="dividerEdit">
-          <v-edit-dialog
-            persistent
-            large
-            :return-value.sync="item.seenAt"
-            @save="update(item, true, 'seenAt')"
-          >
+          <v-edit-dialog persistent large :return-value.sync="item.seenAt" @save="update(item, true, 'seenAt')">
             <template v-if="item.seenAt > 0">
               {{ dayjs(item.seenAt).format('LL') }} {{ dayjs(item.seenAt).format('LTS') }}
             </template>
-            <v-divider
-              v-else
-              class="px-4"
-            />
+            <v-divider v-else class="px-4" />
 
             <template #input>
-              <v-time-picker
-                :key="item.userId + 'seenAtTime' + timestamp"
-                class="timePicker"
+              <v-time-picker :key="item.userId + 'seenAtTime' + timestamp" class="timePicker"
                 :value="(item.seenAt > 0 ? item.seenAt : Date.now()) | timeToTime"
-                @input="value => setAttr(item, 'seenAtTime', value)"
-              />
+                @input="value => setAttr(item, 'seenAtTime', value)" />
 
-              <v-date-picker
-                :key="item.userId + 'seenAtDate' + timestamp"
-                :max="new Date().toISOString()"
+              <v-date-picker :key="item.userId + 'seenAtDate' + timestamp" :max="new Date().toISOString()"
                 :value="(item.seenAt > 0 ? item.seenAt : Date.now()) | timeToDate"
-                @input="value => setAttr(item, 'seenAtDate', value)"
-              />
+                @input="value => setAttr(item, 'seenAtDate', value)" />
 
-              <v-btn
-                block
-                :disabled="item.seenAt === 0"
-                :color="item.seenAt === 0 ? 'info' : 'error'"
-                @click="item.seenAt = 0; timestamp = Date.now()"
-              >
+              <v-btn block :disabled="item.seenAt === 0" :color="item.seenAt === 0 ? 'info' : 'error'"
+                @click="item.seenAt = 0; timestamp = Date.now()">
                 {{ item.seenAt === 0 ? 'Not set' : 'Clear' }}
               </v-btn>
             </template>
@@ -384,72 +218,41 @@
 
       <template #[`item.followedAt`]="{ item }">
         <div class="dividerEdit">
-          <v-edit-dialog
-            persistent
-            large
-            :return-value.sync="item.followedAt"
-            @open="lockBackup = item.haveFollowedAtLock"
-            @close="item.haveFollowedAtLock = lockBackup"
-            @save="update(item, true, 'followedAt')"
-          >
+          <v-edit-dialog persistent large :return-value.sync="item.followedAt"
+            @open="lockBackup = item.haveFollowedAtLock" @close="item.haveFollowedAtLock = lockBackup"
+            @save="update(item, true, 'followedAt')">
             <template v-if="item.followedAt > 0">
-              <v-icon
-                v-if="item.haveFollowedAtLock"
-                x-small
-              >
+              <v-icon v-if="item.haveFollowedAtLock" x-small>
                 {{ mdiLock }}
               </v-icon>
               {{ dayjs(item.followedAt).format('LL') }} {{ dayjs(item.followedAt).format('LTS') }}
             </template>
-            <v-divider
-              v-else
-              class="px-4"
-            />
+            <v-divider v-else class="px-4" />
 
             <template #input>
-              <v-time-picker
-                :key="item.userId + 'followedAtTime' + timestamp"
-                class="timePicker"
+              <v-time-picker :key="item.userId + 'followedAtTime' + timestamp" class="timePicker"
                 :value="(item.followedAt > 0 ? item.followedAt : Date.now()) | timeToTime"
-                @input="value => setAttr(item, 'followedAtTime', value)"
-              />
+                @input="value => setAttr(item, 'followedAtTime', value)" />
 
-              <v-date-picker
-                :key="item.userId + 'followedAtDate' + timestamp"
-                :max="new Date().toISOString()"
+              <v-date-picker :key="item.userId + 'followedAtDate' + timestamp" :max="new Date().toISOString()"
                 :value="(item.followedAt > 0 ? item.followedAt : Date.now()) | timeToDate"
-                @input="value => setAttr(item, 'followedAtDate', value)"
-              />
+                @input="value => setAttr(item, 'followedAtDate', value)" />
 
-              <v-btn
-                style="position: absolute; left: 45px; top: 10px;"
-                icon
-                :disabled="state.forceCheckFollowedAt !== ButtonStates.idle"
-                @click="forceCheckFollowedAt(item)"
-              >
-                <v-progress-circular
-                  v-if="state.forceCheckFollowedAt !== ButtonStates.idle"
-                  indeterminate
-                />
+              <v-btn style="position: absolute; left: 45px; top: 10px;" icon
+                :disabled="state.forceCheckFollowedAt !== ButtonStates.idle" @click="forceCheckFollowedAt(item)">
+                <v-progress-circular v-if="state.forceCheckFollowedAt !== ButtonStates.idle" indeterminate />
                 <v-icon v-else>
                   {{ mdiRefresh }}
                 </v-icon>
               </v-btn>
 
-              <v-btn
-                style="position: absolute; left: 10px; top: 10px;"
-                :color="item.haveFollowedAtLock ? 'success' : 'error'"
-                icon
-                @click="item.haveFollowedAtLock = !item.haveFollowedAtLock"
-              >
+              <v-btn style="position: absolute; left: 10px; top: 10px;"
+                :color="item.haveFollowedAtLock ? 'success' : 'error'" icon
+                @click="item.haveFollowedAtLock = !item.haveFollowedAtLock">
                 <v-icon>{{ item.haveFollowedAtLock ? mdiLock : mdiLockOff }}</v-icon>
               </v-btn>
-              <v-btn
-                block
-                :disabled="item.followedAt === 0"
-                :color="item.followedAt === 0 ? 'info' : 'error'"
-                @click="item.followedAt = 0; timestamp = Date.now()"
-              >
+              <v-btn block :disabled="item.followedAt === 0" :color="item.followedAt === 0 ? 'info' : 'error'"
+                @click="item.followedAt = 0; timestamp = Date.now()">
                 {{ item.followedAt === 0 ? 'Not set' : 'Clear' }}
               </v-btn>
             </template>
@@ -459,58 +262,34 @@
 
       <template #[`item.subscribedAt`]="{ item }">
         <div class="dividerEdit">
-          <v-edit-dialog
-            persistent
-            large
-            :return-value.sync="item.subscribedAt"
-            @open="lockBackup = item.haveSubscribedAtLock"
-            @close="item.haveSubscribedAtLock = lockBackup"
-            @save="update(item, true, 'subscribedAt')"
-          >
+          <v-edit-dialog persistent large :return-value.sync="item.subscribedAt"
+            @open="lockBackup = item.haveSubscribedAtLock" @close="item.haveSubscribedAtLock = lockBackup"
+            @save="update(item, true, 'subscribedAt')">
             <template v-if="item.subscribedAt > 0">
-              <v-icon
-                v-if="item.haveSubscribedAtLock"
-                x-small
-              >
+              <v-icon v-if="item.haveSubscribedAtLock" x-small>
                 {{ mdiLock }}
               </v-icon>
               {{ dayjs(item.subscribedAt).format('LL') }} {{ dayjs(item.subscribedAt).format('LTS') }}
             </template>
-            <v-divider
-              v-else
-              class="px-4"
-            />
+            <v-divider v-else class="px-4" />
 
             <template #input>
-              <v-time-picker
-                :key="item.userId + 'suscribedAtTime' + timestamp"
-                class="timePicker"
+              <v-time-picker :key="item.userId + 'suscribedAtTime' + timestamp" class="timePicker"
                 :value="(item.subscribedAt > 0 ? item.subscribedAt : Date.now()) | timeToTime"
-                @input="value => setAttr(item, 'subscribedAtTime', value)"
-              />
+                @input="value => setAttr(item, 'subscribedAtTime', value)" />
 
-              <v-date-picker
-                :key="item.userId + 'suscribedAtDate' + timestamp"
-                :max="new Date().toISOString()"
+              <v-date-picker :key="item.userId + 'suscribedAtDate' + timestamp" :max="new Date().toISOString()"
                 :value="(item.subscribedAt > 0 ? item.subscribedAt : Date.now()) | timeToDate"
-                @input="value => setAttr(item, 'subscribedAtDate', value)"
-              />
+                @input="value => setAttr(item, 'subscribedAtDate', value)" />
 
-              <v-btn
-                style="position: absolute; left: 10px; top: 10px;"
-                :color="item.haveSubscribedAtLock ? 'success' : 'error'"
-                icon
-                @click="item.haveSubscribedAtLock = !item.haveSubscribedAtLock"
-              >
+              <v-btn style="position: absolute; left: 10px; top: 10px;"
+                :color="item.haveSubscribedAtLock ? 'success' : 'error'" icon
+                @click="item.haveSubscribedAtLock = !item.haveSubscribedAtLock">
                 <v-icon>{{ item.haveSubscribedAtLock ? mdiLock : mdiLockOff }}</v-icon>
               </v-btn>
 
-              <v-btn
-                block
-                :disabled="item.subscribedAt === 0"
-                :color="item.subscribedAt === 0 ? 'info' : 'error'"
-                @click="item.subscribedAt = 0; timestamp = Date.now()"
-              >
+              <v-btn block :disabled="item.subscribedAt === 0" :color="item.subscribedAt === 0 ? 'info' : 'error'"
+                @click="item.subscribedAt = 0; timestamp = Date.now()">
                 {{ item.subscribedAt === 0 ? 'Not set' : 'Clear' }}
               </v-btn>
             </template>
@@ -519,21 +298,10 @@
       </template>
 
       <template #expanded-item="{ headers, item: parentItem }">
-        <td
-          :colspan="headers.length"
-          class="pa-2"
-        >
+        <td :colspan="headers.length" class="pa-2">
           <v-container>
-            <v-data-table
-              dense
-              :items="history"
-              :loading="state.history !== ButtonStates.success"
-              hide-default-header
-              :headers="headersHistory"
-              :sort-desc="true"
-              sort-by="timestamp"
-              :items-per-page="10"
-            >
+            <v-data-table dense :items="history" :loading="state.history !== ButtonStates.success" hide-default-header
+              :headers="headersHistory" :sort-desc="true" sort-by="timestamp" :items-per-page="10">
               <template #top>
                 <h3>History</h3>
               </template>
@@ -548,14 +316,10 @@
                   <strong>{{ item.event }} - {{ JSON.parse(item.values_json).count }}</strong>
                 </template>
                 <template v-else-if="item.event === 'subgift'">
-                  <div
-                    v-if="item.userName === parentItem.userName"
-                    v-html="translate('managers.viewers.receivedSubscribeFrom').replace('$value', JSON.parse(item.values_json).fromId)"
-                  />
-                  <div
-                    v-else
-                    v-html="translate('managers.viewers.giftedSubscribeTo').replace('$value', item.userName)"
-                  />
+                  <div v-if="item.userName === parentItem.userName"
+                    v-html="translate('managers.viewers.receivedSubscribeFrom').replace('$value', JSON.parse(item.values_json).fromId)" />
+                  <div v-else
+                    v-html="translate('managers.viewers.giftedSubscribeTo').replace('$value', item.userName)" />
                 </template>
               </template>
             </v-data-table>
@@ -652,7 +416,6 @@ export default defineComponent({
     const perPage = ref(15);
     const sortBy = ref('userName');
     const sortDesc = ref(false);
-    const fab = ref(false);
 
     watch(expanded, (expandedItems) => {
       if (expandedItems.length > 0) {
@@ -933,7 +696,6 @@ export default defineComponent({
       perPage,
       headersDelete,
       sortDesc,
-      fab,
       count,
       state,
       selected,
@@ -982,15 +744,5 @@ export default defineComponent({
 .dividerEdit .v-small-dialog__activator__content {
   width: 100%;
   transform: translateY(-4px);
-}
-
-.actionFab .v-speed-dial__list {
-  width: fit-content !important;
-  align-items: flex-end;
-  transform: translateX(-150px);
-}
-
-.actionFab {
-  transform: translateY(-25px);
 }
 </style>
