@@ -1,45 +1,56 @@
 <template>
-  <v-list
-    nav
-    dense
-  >
-    <v-list-item
-      v-for="item of menu.filter(o => o.category === 'main')"
-      :key="item.name"
-      :to="'/' + item.id.replace(/\./g, '/')"
-      nuxt
-    >
+  <v-list nav dense>
+    <v-list-item v-for="item of menu.filter(o => o.category === 'main')" :key="item.name"
+      :to="'/' + item.id.replace(/\./g, '/')" nuxt>
       <v-list-item-icon>
         <v-icon>{{ icons.get(item.name) }}</v-icon>
       </v-list-item-icon>
       <v-list-item-title>{{ translate(item.name) }}</v-list-item-title>
     </v-list-item>
-    <v-list-group
-      v-for="category of categories"
-      :key="category"
-      :value="false"
-      :prepend-icon="icons.get(category)"
-    >
-      <template #activator>
-        <v-list-item-title>{{ translate('menu.' + category) }}</v-list-item-title>
-      </template>
 
-      <v-list-item
-        v-for="item of menu.filter(o => o.category === category)"
-        :key="item.name"
-        :to="'/' + item.id.replace(/\./g, '/')"
-        nuxt
-      >
-        <v-list-item-title
-          :class="{
+    <template v-if="$store.state.navbarMiniVariant && !$vuetify.breakpoint.mobile">
+      <v-menu offset-x v-for="category of categories" :key="category + '2'" nudge-right="10" :rounded="false">
+        <template v-slot:activator="{ on, attrs }">
+          <v-tooltip right >
+            <template v-slot:activator="{ on: on2, attrs: attrs2 }">
+              <div v-bind="attrs2" v-on="on2" style="position: relative">
+                <v-icon class="miniIcon" v-bind="attrs" v-on="on">{{ icons.get(category) }}</v-icon>
+                <v-icon size="12" class="caretIcon">mdi-menu-down</v-icon>
+              </div>
+            </template>
+            <span>{{ translate('menu.' + category) }}</span>
+          </v-tooltip>
+        </template>
+        <v-list color="#363636" class="pa-0" :rounded="false" flat>
+          <v-list-item v-for="item of menu.filter(o => o.category === category)" dense :key="item.name"
+            :to="'/' + item.id.replace(/\./g, '/')" nuxt>
+            <v-list-item-title :class="{
             'grey--text': !item.enabled,
             'darken-3': !item.enabled,
-          }"
-        >
-          {{ translate('menu.' + item.name) }}
-        </v-list-item-title>
-      </v-list-item>
-    </v-list-group>
+          }">
+              {{ translate('menu.' + item.name) }}
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </template>
+    <template v-else>
+      <v-list-group v-for="category of categories" :key="category" :value="false" :prepend-icon="icons.get(category)">
+        <template #activator>
+          <v-list-item-title>{{ translate('menu.' + category) }}</v-list-item-title>
+        </template>
+
+        <v-list-item v-for="item of menu.filter(o => o.category === category)" :key="item.name"
+          :to="'/' + item.id.replace(/\./g, '/')" nuxt>
+          <v-list-item-title :class="{
+            'grey--text': !item.enabled,
+            'darken-3': !item.enabled,
+          }">
+            {{ translate('menu.' + item.name) }}
+          </v-list-item-title>
+        </v-list-item>
+      </v-list-group>
+    </template>
   </v-list>
 </template>
 
@@ -86,3 +97,20 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.miniIcon {
+  width: 40px;
+  height: 40px;
+}
+
+.miniIcon::after {
+  border-radius: 4px;
+  transform: scale(1)
+}
+
+.caretIcon {
+  position: absolute;
+  right: 0; bottom: 0;
+}
+</style>

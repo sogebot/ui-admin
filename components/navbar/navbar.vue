@@ -33,7 +33,7 @@
     <v-navigation-drawer
       v-model="drawer"
       app
-      :mini-variant.sync="miniVariant"
+      :mini-variant="miniVariant"
       bottom
     >
       <v-toolbar dense class="text-button" color="primary">
@@ -71,7 +71,7 @@
 <script lang="ts">
 import { mdiArrowCollapseLeft, mdiArrowLeft } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, useContext, useMeta, useRoute,
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext, useMeta, useRoute, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -90,7 +90,14 @@ export default defineComponent({
     const name = ref('');
     const channelName = ref('');
     const drawer = ref(!useContext().$vuetify.breakpoint.mobile);
-    const miniVariant = ref(false);
+    const miniVariant = ref(localStorage.miniVariant && !useContext().$vuetify.breakpoint.mobile ? JSON.parse(localStorage.miniVariant) : false);
+
+    const store = useStore<any>();
+
+    watch(miniVariant, (value) => {
+      store.commit('setNavbarMiniVariant', value);
+      localStorage.miniVariant = JSON.stringify(value);
+    }, { immediate: true });
 
     useMeta(() => ({ title: `${name.value} @ ${channelName.value}` }));
 

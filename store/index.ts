@@ -1,17 +1,18 @@
 export const state = () => ({
-  loggedUser:       null,
-  configuration:    null,
-  currentGame:      '',
-  currentTitle:     '',
-  currentTags:      [],
-  loadingMsg:       '',
-  isUILoaded:       false,
-  areUIStatsHidden: localStorage.getItem('$store.areUIStatsHidden') === 'true',
-  isMobile:         false,
-  $core:            [],
-  $services:        [],
-  $systems:         [],
-  $integrations:    [],
+  loggedUser:        null,
+  configuration:     null,
+  currentGame:       '',
+  currentTitle:      '',
+  currentTags:       [],
+  loadingMsg:        '',
+  isUILoaded:        false,
+  areUIStatsHidden:  localStorage.getItem('$store.areUIStatsHidden') === 'true',
+  isMobile:          false,
+  $core:             [],
+  $services:         [],
+  $systems:          [],
+  $integrations:     [],
+  navbarMiniVariant: false,
 });
 
 export const mutations = {
@@ -54,5 +55,8 @@ export const mutations = {
   },
   $integrations (storeState: { $integrations: any[] }, value: any) {
     storeState.$integrations = value;
+  },
+  setNavbarMiniVariant (storeState: { navbarMiniVariant: boolean }, value: boolean) {
+    storeState.navbarMiniVariant = value;
   },
 };
