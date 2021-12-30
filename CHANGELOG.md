@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [31.3.3](https://github.com/sogebot/ui-admin/compare/v31.3.2...v31.3.3) (2021-12-30)
+
+
+### Bug Fixes
+
+* **navbar:** use v-menu on mini variant of navbar ([392f1fd](https://github.com/sogebot/ui-admin/commit/392f1fdee571fe7211f91a8a27d1b71f72defd3d))
+
 ### [31.3.2](https://github.com/sogebot/ui-admin/compare/v31.3.1...v31.3.2) (2021-12-26)
 
 
