@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [31.4.2](https://github.com/sogebot/ui-admin/compare/v31.4.1...v31.4.2) (2022-01-04)
+
+
+### Bug Fixes
+
+* **botcommands:** update table style ([44ab140](https://github.com/sogebot/ui-admin/commit/44ab1400267473b3ecbb0202e9a8bd5e9de4dbb6))
+
 ### [31.4.1](https://github.com/sogebot/ui-admin/compare/v31.4.0...v31.4.1) (2022-01-04)
 
 
