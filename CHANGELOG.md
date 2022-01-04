@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [31.4.1](https://github.com/sogebot/ui-admin/compare/v31.4.0...v31.4.1) (2022-01-04)
+
+
+### Bug Fixes
+
+* **events:** remove transition on event widget ([7a3682b](https://github.com/sogebot/ui-admin/commit/7a3682b74a48a721e859b952d96ebe49844d07da))
+
 ## [31.4.0](https://github.com/sogebot/ui-admin/compare/v31.3.3...v31.4.0) (2022-01-04)
 
 
