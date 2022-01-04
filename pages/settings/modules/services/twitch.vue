@@ -3,8 +3,8 @@
   <v-form v-else v-model="valid" lazy-validation>
     <v-tabs v-model="tab">
       <v-tab>{{translate('categories.oauth')}}</v-tab>
-      <v-tab>{{translate('categories.tmi')}}</v-tab>
       <v-tab>{{translate('categories.eventsub')}}</v-tab>
+      <v-tab>{{translate('categories.general')}}</v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="tab">
@@ -12,10 +12,10 @@
         <oauth :settings="settings" @update="settings = $event"/>
       </v-tab-item>
       <v-tab-item eager>
-        <tmi :settings="settings" @update="settings = $event"/>
+        <eventsub :settings="settings" @update="settings = $event"/>
       </v-tab-item>
       <v-tab-item eager>
-        <eventsub :settings="settings" @update="settings = $event"/>
+        <general :settings="settings" @update="settings = $event"/>
       </v-tab-item>
     </v-tabs-items>
   </v-form>
@@ -36,9 +36,9 @@ import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
   components: {
-    tmi:      defineAsyncComponent(() => import('./twitch/tmi.vue')),
     oauth:    defineAsyncComponent(() => import('./twitch/oauth.vue')),
     eventsub: defineAsyncComponent(() => import('./twitch/eventsub.vue')),
+    general:  defineAsyncComponent(() => import('./twitch/general.vue')),
   },
   setup () {
     const settings = ref(null as Record<string, any> | null);
