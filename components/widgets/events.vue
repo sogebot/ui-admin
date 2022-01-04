@@ -202,105 +202,102 @@
         multiple
       >
         <template v-for="(item, index) in events">
-          <v-fade-transition :key="item.timestamp + item.username + item.type">
-            <v-hover v-if="filter(item)" v-slot="{ hover }">
-              <v-list-item>
-                <v-list-item-content>
-                  <v-overlay :value="hover" absolute>
-                    <v-btn
-                      @click.stop="resendAlert(item.id)"
-                    >
-                      <v-icon left>
-                        {{ mdiRefresh }}
-                      </v-icon> Resend Alert
-                    </v-btn>
-                  </v-overlay>
-                  <v-row no-gutters>
-                    <v-col>
-                      <v-list-item-title>
-                        <span class="font-condensed font-weight-bold" style="font-size: 1.2rem;">{{ item.username.toUpperCase() }}</span> <span v-html="prepareMessage(item)" />
-                      </v-list-item-title>
+          <v-hover v-if="filter(item)" v-slot="{ hover }" :key="item.id + 'hover'">
+            <v-list-item>
+              <v-list-item-content>
+                <v-overlay :value="hover" absolute>
+                  <v-btn
+                    @click.stop="resendAlert(item.id)"
+                  >
+                    <v-icon left>
+                      {{ mdiRefresh }}
+                    </v-icon> Resend Alert
+                  </v-btn>
+                </v-overlay>
+                <v-row no-gutters>
+                  <v-col>
+                    <v-list-item-title>
+                      <span class="font-condensed font-weight-bold" style="font-size: 1.2rem;">{{ item.username.toUpperCase() }}</span> <span v-html="prepareMessage(item)" />
+                    </v-list-item-title>
 
-                      <v-row v-if="blockquote(item)" no-gutters class="pt-2">
-                        <v-col cols="auto">
-                          <v-icon color="accent" x-small style="transform: translateY(5px);">
-                            {{ mdiFormatQuoteOpen }}
-                          </v-icon>
-                          <span v-html="blockquote(item)" />
-                          <v-icon color="accent" x-small style="transform: translateY(-5px);">
-                            {{ mdiFormatQuoteClose }}
-                          </v-icon>
-                        </v-col>
-                      </v-row>
-                    </v-col>
+                    <v-row v-if="blockquote(item)" no-gutters class="pt-2">
+                      <v-col cols="auto">
+                        <v-icon color="accent" x-small style="transform: translateY(5px);">
+                          {{ mdiFormatQuoteOpen }}
+                        </v-icon>
+                        <span v-html="blockquote(item)" />
+                        <v-icon color="accent" x-small style="transform: translateY(-5px);">
+                          {{ mdiFormatQuoteClose }}
+                        </v-icon>
+                      </v-col>
+                    </v-row>
+                  </v-col>
 
-                    <v-col cols="auto" align-self="center">
-                      <v-list-item-subtitle v-text="dayjs(item.timestamp).fromNow()" />
-                    </v-col>
-                  </v-row>
-                </v-list-item-content>
+                  <v-col cols="auto" align-self="center">
+                    <v-list-item-subtitle v-text="dayjs(item.timestamp).fromNow()" />
+                  </v-col>
+                </v-row>
+              </v-list-item-content>
 
-                <v-list-item-action>
-                  <div v-if="item.event === 'follow'" class="red--text text--lighten-1 font-condensed" style="font-size:1.2rem;">
-                    follow
-                  </div>
-                  <div v-else-if="item.event === 'host'" class="orange--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
-                    <v-icon size="15" color="orange">
-                      {{ mdiAccountGroup }}
-                    </v-icon>
-                    {{ JSON.parse(item.values_json).viewers }}
-                  </div>
-                  <div v-else-if="item.event === 'raid'" class="lime--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
-                    <v-icon size="15" color="lime">
-                      {{ mdiAccountGroup }}
-                    </v-icon>
-                    {{ JSON.parse(item.values_json).viewers }}
-                  </div>
-                  <div v-else-if="item.event === 'sub'" class="indigo--text text--lighten-1 font-condensed" style="font-size: 1.2rem;">
-                    {{ JSON.parse(item.values_json).tier !== 'Prime' ? 'Tier ' + JSON.parse(item.values_json).tier : JSON.parse(item.values_json).tier }}
-                  </div>
-                  <div v-else-if="item.event === 'subgift'" class="pink--text text--lighten-1 font-condensed" style="font-size: 1.2rem;">
-                    <v-icon size="15" color="pink">
-                      {{ mdiGiftOpen }}
-                    </v-icon>
-                    {{ JSON.parse(item.values_json).fromId }}
-                  </div>
-                  <div v-else-if="item.event === 'subcommunitygift'" class="orange--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
-                    <v-icon size="15" color="orange">
-                      {{ mdiGift }}
-                    </v-icon>
-                    {{ JSON.parse(item.values_json).count }}
-                  </div>
-                  <div v-else-if="item.event === 'resub'" class="deep-purple--text text--lighten-3 font-condensed" style="font-size: 1.5rem;">
-                    <span v-if="JSON.parse(item.values_json).subStreakShareEnabled" class="orange--text">
-                      <v-icon size="15" color="orange">{{ mdiFire }}</v-icon>{{ JSON.parse(item.values_json).subStreak }}&nbsp;
-                    </span>
+              <v-list-item-action>
+                <div v-if="item.event === 'follow'" class="red--text text--lighten-1 font-condensed" style="font-size:1.2rem;">
+                  follow
+                </div>
+                <div v-else-if="item.event === 'host'" class="orange--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
+                  <v-icon size="15" color="orange">
+                    {{ mdiAccountGroup }}
+                  </v-icon>
+                  {{ JSON.parse(item.values_json).viewers }}
+                </div>
+                <div v-else-if="item.event === 'raid'" class="lime--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
+                  <v-icon size="15" color="lime">
+                    {{ mdiAccountGroup }}
+                  </v-icon>
+                  {{ JSON.parse(item.values_json).viewers }}
+                </div>
+                <div v-else-if="item.event === 'sub'" class="indigo--text text--lighten-1 font-condensed" style="font-size: 1.2rem;">
+                  {{ JSON.parse(item.values_json).tier !== 'Prime' ? 'Tier ' + JSON.parse(item.values_json).tier : JSON.parse(item.values_json).tier }}
+                </div>
+                <div v-else-if="item.event === 'subgift'" class="pink--text text--lighten-1 font-condensed" style="font-size: 1.2rem;">
+                  <v-icon size="15" color="pink">
+                    {{ mdiGiftOpen }}
+                  </v-icon>
+                  {{ JSON.parse(item.values_json).fromId }}
+                </div>
+                <div v-else-if="item.event === 'subcommunitygift'" class="orange--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
+                  <v-icon size="15" color="orange">
+                    {{ mdiGift }}
+                  </v-icon>
+                  {{ JSON.parse(item.values_json).count }}
+                </div>
+                <div v-else-if="item.event === 'resub'" class="deep-purple--text text--lighten-3 font-condensed" style="font-size: 1.5rem;">
+                  <span v-if="JSON.parse(item.values_json).subStreakShareEnabled" class="orange--text">
+                    <v-icon size="15" color="orange">{{ mdiFire }}</v-icon>{{ JSON.parse(item.values_json).subStreak }}&nbsp;
+                  </span>
 
-                    <span style="font-size:1.2rem;">{{ JSON.parse(item.values_json).tier !== 'Prime' ? 'Tier ' + JSON.parse(item.values_json).tier : JSON.parse(item.values_json).tier }}</span>
-                    <span style="font-size:1.2rem;">x</span>{{ JSON.parse(item.values_json).subCumulativeMonths }}
-                  </div>
-                  <div v-else-if="item.event === 'cheer'" class="yellow--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
-                    {{ JSON.parse(item.values_json).bits }}
-                    <v-icon size="15" color="yellow">
-                      {{ mdiDiamond }}
-                    </v-icon>
-                  </div>
-                  <div v-else-if="item.event === 'tip'" class="light-green--text text--lighten-1 font-condensed" style="font-size:1.5rem;">
-                    {{ Intl.NumberFormat($store.state.configuration.lang, { style: 'currency', currency: get(JSON.parse(item.values_json), 'currency', 'USD') }).format(get(JSON.parse(item.values_json), 'amount', '0')) }}
-                  </div>
-                  <div v-else-if="item.event === 'rewardredeem'" class="blue--text text--lighten-1 font-condensed" style="font-size:1.2rem;">
-                    {{ JSON.parse(item.values_json).titleOfReward }}
-                  </div>
-                </v-list-item-action>
-              </v-list-item>
-            </v-hover>
-          </v-fade-transition>
+                  <span style="font-size:1.2rem;">{{ JSON.parse(item.values_json).tier !== 'Prime' ? 'Tier ' + JSON.parse(item.values_json).tier : JSON.parse(item.values_json).tier }}</span>
+                  <span style="font-size:1.2rem;">x</span>{{ JSON.parse(item.values_json).subCumulativeMonths }}
+                </div>
+                <div v-else-if="item.event === 'cheer'" class="yellow--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
+                  {{ JSON.parse(item.values_json).bits }}
+                  <v-icon size="15" color="yellow">
+                    {{ mdiDiamond }}
+                  </v-icon>
+                </div>
+                <div v-else-if="item.event === 'tip'" class="light-green--text text--lighten-1 font-condensed" style="font-size:1.5rem;">
+                  {{ Intl.NumberFormat($store.state.configuration.lang, { style: 'currency', currency: get(JSON.parse(item.values_json), 'currency', 'USD') }).format(get(JSON.parse(item.values_json), 'amount', '0')) }}
+                </div>
+                <div v-else-if="item.event === 'rewardredeem'" class="blue--text text--lighten-1 font-condensed" style="font-size:1.2rem;">
+                  {{ JSON.parse(item.values_json).titleOfReward }}
+                </div>
+              </v-list-item-action>
+            </v-list-item>
+          </v-hover>
 
-          <v-fade-transition :key="item.timestamp + item.username + item.type + '2'">
-            <v-divider
-              v-if="index < events.length - 1 && filter(item)"
-            />
-          </v-fade-transition>
+          <v-divider
+            :key="item.id + 'divider'"
+            v-if="index < events.length - 1 && filter(item)"
+          />
         </template>
       </v-list-item-group>
     </v-list>
