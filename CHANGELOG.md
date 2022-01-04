@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [31.4.0](https://github.com/sogebot/ui-admin/compare/v31.3.3...v31.4.0) (2022-01-04)
+
+
+### Features
+
+* **twitch:** add create marker on event switch ([7dfd6cb](https://github.com/sogebot/ui-admin/commit/7dfd6cbd8f28a3f4ffd355ee9e3079704800f555))
+
 ### [31.3.3](https://github.com/sogebot/ui-admin/compare/v31.3.2...v31.3.3) (2021-12-30)
 
 
