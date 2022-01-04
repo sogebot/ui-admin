@@ -13,16 +13,20 @@
         <v-sheet
           flat
           color="dark"
-          class="pb-2 mt-0"
+          class="my-2 pb-2 mt-0"
         >
-          <v-text-field
-            v-model="search"
-            :append-icon="mdiMagnify"
-            label="Search"
-            single-line
-            hide-details
-            class="pa-2 ma-0"
-          />
+          <v-row class="px-2" dense>
+            <v-col align-self="center">
+              <v-text-field
+                v-model="search"
+                :append-icon="mdiMagnify"
+                label="Search"
+                single-line
+                hide-details
+                class="pa-0 ma-2"
+              />
+            </v-col>
+          </v-row>
         </v-sheet>
       </template>
 
@@ -39,42 +43,30 @@
       </template>
 
       <template #[`item.command`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.command"
-          @save="update(item, false, 'command')"
-        >
-          <span :class="{ 'text-decoration-line-through': item.command !== item.defaultValue }">{{ item.defaultValue }}</span>
-          <span v-if="item.command !== item.defaultValue"><v-icon class="d-inline-block">{{ mdiArrowRightBold }}</v-icon> {{ item.command }}</span>
-          <template #input>
-            <v-text-field
-              v-model="item.command"
-              :rules="rules.command"
-              single-line
-              counter
-            />
+        <table-hover>
+          <template #hide>
+            <span :class="{ 'text-decoration-line-through': item.command !== item.defaultValue }">{{ item.defaultValue }}</span>
+            <span v-if="item.command !== item.defaultValue"><v-icon class="d-inline-block">{{ mdiArrowRightBold }}</v-icon> {{ item.command }}</span>
           </template>
-        </v-edit-dialog>
+          <template #show>
+            <v-row dense>
+              <v-col cols="auto">
+                <botcommands-edit
+                  :rules="rules"
+                  :value="item"
+                  :permission-items="permissionItems"
+                  @save="refresh()"
+                />
+              </v-col>
+            </v-row>
+          </template>
+        </table-hover>
       </template>
 
       <template #[`item.permission`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.permission"
-          @save="update(item, true, 'permission')"
-        >
-          <span :class="{ 'text--lighten-1': item.permission === null, 'red--text': item.permission === null }">
-            {{ getPermissionName(item.permission, permissions) }}
-          </span>
-          <template #input>
-            <v-select
-              v-model="item.permission"
-              :items="permissionItems"
-            />
-          </template>
-        </v-edit-dialog>
+        <span :class="{ 'text--lighten-1':item.permission === null, 'red--text': item.permission === null }">
+          {{ item.permission === null ? '-- unset --' : getPermissionName(item.permission, permissions) }}
+        </span>
       </template>
     </v-data-table>
   </v-container>
@@ -85,8 +77,7 @@ import {
   mdiArrowRightBold, mdiMagnify, mdiMinus, mdiPlus,
 } from '@mdi/js';
 import {
-  computed,
-  defineComponent, onMounted, ref,
+  computed, defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -97,7 +88,6 @@ import { capitalize, orderBy } from 'lodash';
 
 import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
 import { error } from '~/functions/error';
-import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
 import {
   minLength, required, startsWith,
@@ -113,6 +103,9 @@ type CommandsInterface = {
 };
 
 export default defineComponent({
+  components: {
+    'botcommands-edit': defineAsyncComponent(() => import('~/components/manage/botcommands/edit.vue')),
+  },
   setup () {
     const { result, loading } = useQuery(gql`
       query {
@@ -120,14 +113,18 @@ export default defineComponent({
       }
     `);
     const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
-    const rules = { command: [startsWith(['!']), required, minLength(2)] };
+    const rules = {
+      command: [startsWith(['!']), required, minLength(2)],
+    };
 
     const search = ref('');
     const items = ref([] as CommandsInterface[]);
 
     const selected = ref([] as CommandsInterface[]);
 
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
@@ -145,7 +142,9 @@ export default defineComponent({
     });
 
     const headers = [
-      { value: 'command', text: translate('command') },
+      {
+        value: 'command', text: translate('command'),
+      },
       {
         value: 'type', text: capitalize(translate('type')), width: '12rem',
       },
@@ -162,10 +161,14 @@ export default defineComponent({
         if (err) {
           return error(err);
         }
-        console.debug({ commands });
+        console.debug({
+          commands,
+        });
         items.value.length = 0;
         for (const command of commands) {
-          items.value.push({ ...command });
+          items.value.push({
+            ...command,
+          });
         }
         // we also need to reset selection values
         if (selected.value.length > 0) {
@@ -182,49 +185,10 @@ export default defineComponent({
       refresh();
     });
 
-    const saveSuccess = () => {
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
-    };
-    const update = async (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
-      // check validity
-      for (const key of Object.keys(rules)) {
-        for (const rule of (rules as any)[key]) {
-          const ruleStatus = rule((item as any)[key]);
-          if (ruleStatus === true) {
-            continue;
-          } else {
-            EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-            refresh();
-            return;
-          }
-        }
-      }
-
-      // update all instantly
-      for (const i of [item, ...(multi ? selected.value : [])]) {
-        (i as any)[attr] = item[attr];
-      }
-
-      await Promise.all(
-        [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
-          return new Promise((resolve) => {
-            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-            getSocket('/core/general').emit('generic::setCoreCommand', {
-              ...itemToUpdate,
-              [attr]: item[attr], // save new value for all selected items
-            }, () => {
-              resolve(true);
-            });
-          });
-        }),
-      );
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
-    };
-
     const permissionItems = computed(() => {
-      return [...permissions.value, { name: 'Disabled', id: null }].map(item => ({
+      return [...permissions.value, {
+        name: 'Disabled', id: null,
+      }].map(item => ({
         text:     item.name,
         value:    item.id,
         disabled: false,
@@ -244,8 +208,6 @@ export default defineComponent({
       selected,
       translate,
       rules,
-      saveSuccess,
-      update,
       refresh,
       capitalize,
       fItems,
