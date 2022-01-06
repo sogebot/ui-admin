@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [31.4.3](https://github.com/sogebot/ui-admin/compare/v31.4.2...v31.4.3) (2022-01-06)
+
+
+### Bug Fixes
+
+* **alias:** add missing group setting ([3dfc292](https://github.com/sogebot/ui-admin/commit/3dfc29241b58910d305d9fa4376646f707a2885e))
+* **customcommands:** update manage visuals ([2d6b525](https://github.com/sogebot/ui-admin/commit/2d6b52561541640f34a63967663c1e27fe0b6824))
+* **keyword:** update manage visuals ([92a405b](https://github.com/sogebot/ui-admin/commit/92a405b1001f9e84d43c3f0855f14637c01ba4ab))
+
 ### [31.4.2](https://github.com/sogebot/ui-admin/compare/v31.4.1...v31.4.2) (2022-01-04)
 
 
