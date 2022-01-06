@@ -8,6 +8,57 @@
       {{ translate('this-system-is-disabled') }}
     </v-alert>
 
+    <v-expand-transition>
+      <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>
+        <v-row class="px-2" dense justify="end">
+          <v-col cols="auto" align-self="center">
+            {{ selected.length }} items selected
+          </v-col>
+
+          <v-col cols="auto" align-self="center">
+            <v-row dense>
+              <v-col v-if="selected.length > 0" cols="auto" class="pr-1">
+                <alias-batch :length="selected.length" :permission-items="permissionItems" :group-items="groupItems"
+                  @save="batchUpdate($event)" />
+              </v-col>
+              <v-col v-if="selected.length > 0" cols="auto">
+                <v-dialog v-model="deleteDialog" max-width="500px">
+                  <template #activator="{ on, attrs }">
+                    <v-btn small color="red" v-bind="attrs" v-on="on">
+                      <v-icon left>
+                        mdi-delete
+                      </v-icon>
+                      Delete
+                    </v-btn>
+                  </template>
+
+                  <v-card>
+                    <v-card-title>
+                      <span class="headline">Delete {{ selected.length }} Item(s)?</span>
+                    </v-card-title>
+
+                    <v-card-text>
+                      <v-data-table dense :items="selected" :headers="headersDelete" :items-per-page="-1"
+                        hide-default-header hide-default-footer />
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn text @click="deleteDialog = false">
+                        Cancel
+                      </v-btn>
+                      <v-btn color="error" text @click="deleteSelected">
+                        Delete
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-app-bar>
+    </v-expand-transition>
+
     <v-data-table
       v-model="selected"
       show-select
@@ -46,80 +97,6 @@
               />
             </v-col>
           </v-row>
-
-          <v-expand-transition>
-            <v-sheet v-show="selected.length > 0" color="blue-grey darken-4" class="pa-2 mt-2">
-              <v-row class="px-2" dense>
-                <v-col cols="auto" align-self="center">
-                  {{ selected.length }} items selected
-                </v-col>
-
-                <v-col cols="auto" align-self="center">
-                  <v-row dense>
-                    <v-col v-if="selected.length > 0" cols="auto" class="pr-1">
-                      <alias-batch
-                        :length="selected.length"
-                        :permission-items="permissionItems"
-                        :group-items="groupItems"
-                        @save="batchUpdate($event)"
-                      />
-                    </v-col>
-                    <v-col v-if="selected.length > 0" cols="auto">
-                      <v-dialog
-                        v-model="deleteDialog"
-                        max-width="500px"
-                      >
-                        <template #activator="{ on, attrs }">
-                          <v-btn
-                            small
-                            color="red"
-                            v-bind="attrs"
-                            v-on="on"
-                          >
-                            <v-icon left>mdi-delete</v-icon>
-                            Delete
-                          </v-btn>
-                        </template>
-
-                        <v-card>
-                          <v-card-title>
-                            <span class="headline">Delete {{ selected.length }} Item(s)?</span>
-                          </v-card-title>
-
-                          <v-card-text>
-                            <v-data-table
-                              dense
-                              :items="selected"
-                              :headers="headersDelete"
-                              :items-per-page="-1"
-                              hide-default-header
-                              hide-default-footer
-                            />
-                          </v-card-text>
-                          <v-card-actions>
-                            <v-spacer />
-                            <v-btn
-                              text
-                              @click="deleteDialog = false"
-                            >
-                              Cancel
-                            </v-btn>
-                            <v-btn
-                              color="error"
-                              text
-                              @click="deleteSelected"
-                            >
-                              Delete
-                            </v-btn>
-                          </v-card-actions>
-                        </v-card>
-                      </v-dialog>
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-sheet>
-          </v-expand-transition>
         </v-sheet>
       </template>
 
@@ -416,8 +393,12 @@ export default defineComponent({
     ];
 
     const headersDelete = [
-      { value: 'alias', text: translate('alias') },
-      { value: 'command', text: translate('command') },
+      {
+        value: 'alias', text: translate('alias'),
+      },
+      {
+        value: 'command', text: translate('command'),
+      },
     ];
     const batchUpdate = (value: Record<string, any>) => {
       // check validity
@@ -445,15 +426,21 @@ export default defineComponent({
           }
         }
         const { __typename, id, groupToBeShownInTable, ...data } = item;
-        console.log('Updating', { data });
-        updateMutation({ id, data });
+        console.log('Updating', {
+          data,
+        });
+        updateMutation({
+          id, data,
+        });
       }
     };
 
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        removeMutation({ id: item.id });
+        removeMutation({
+          id: item.id,
+        });
       });
       selected.value = [];
     };
@@ -461,7 +448,8 @@ export default defineComponent({
     const getGroup = computed<{ [name: string]: AliasGroupInterface }>({
       get () {
         // set empty groups from aliases
-        const returnGroups: { [name: string]: AliasGroupInterface } = {};
+        const returnGroups: { [name: string]: AliasGroupInterface } = {
+        };
         for (const item of items.value) {
           if (item.group && !returnGroups[item.group]) {
             const group = groups.value.find(o => o.name === item.group);
@@ -483,7 +471,11 @@ export default defineComponent({
             updateGroupMutation({
               name: groupName,
               data: JSON.stringify(value[groupName].options),
-            }, { refetchQueries: [{ query: GET_ALL }] });
+            }, {
+              refetchQueries: [{
+                query: GET_ALL,
+              }],
+            });
           }
         }
         return true;

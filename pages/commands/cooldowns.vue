@@ -8,6 +8,60 @@
       {{ translate('this-system-is-disabled') }}
     </v-alert>
 
+    <v-expand-transition>
+      <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>
+        <v-row class="px-2" dense justify="end">
+          <v-col cols="auto" align-self="center">
+            {{ selected.length }} items selected
+          </v-col>
+
+          <v-col cols="auto" align-self="center">
+            <v-row dense>
+              <v-col v-if="selected.length > 0" cols="auto" class="pr-1">
+                <cooldowns-batch
+                  :length="selected.length"
+                  :rules="rules"
+                  @save="batchUpdate($event)"
+                />
+              </v-col>
+              <v-col v-if="selected.length > 0" cols="auto">
+                <v-dialog v-model="deleteDialog" max-width="500px">
+                  <template #activator="{ on, attrs }">
+                    <v-btn small color="red" v-bind="attrs" v-on="on">
+                      <v-icon left>
+                        mdi-delete
+                      </v-icon>
+                      Delete
+                    </v-btn>
+                  </template>
+
+                  <v-card>
+                    <v-card-title>
+                      <span class="headline">Delete {{ selected.length }} Item(s)?</span>
+                    </v-card-title>
+
+                    <v-card-text>
+                      <v-data-table dense :items="selected" :headers="headersDelete" :items-per-page="-1"
+                        hide-default-header hide-default-footer />
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn text @click="deleteDialog = false">
+                        Cancel
+                      </v-btn>
+                      <v-btn color="error" text @click="deleteSelected">
+                        Delete
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-app-bar>
+    </v-expand-transition>
+
     <v-data-table
       v-model="selected"
       calculate-widths
@@ -43,78 +97,6 @@
               />
             </v-col>
           </v-row>
-
-          <v-expand-transition>
-            <v-sheet v-show="selected.length > 0" color="blue-grey darken-4" class="pa-2 mt-2">
-              <v-row class="px-2" dense>
-                <v-col cols="auto" align-self="center">
-                  {{ selected.length }} items selected
-                </v-col>
-                <v-col cols="auto" align-self="center">
-                  <v-row dense>
-                    <v-col>
-                      <cooldowns-batch
-                        :length="selected.length"
-                        :rules="rules"
-                        @save="batchUpdate($event)"
-                      />
-                    </v-col>
-                    <v-col>
-                      <v-dialog
-                        v-model="deleteDialog"
-                        max-width="500px"
-                      >
-                        <template #activator="{ on, attrs }">
-                          <v-btn
-                            small
-                            color="red"
-                            v-bind="attrs"
-                            v-on="on"
-                          >
-                            <v-icon left>mdi-delete</v-icon>
-                            Delete
-                          </v-btn>
-                        </template>
-
-                        <v-card>
-                          <v-card-title>
-                            <span class="headline">Delete {{ selected.length }} Item(s)?</span>
-                          </v-card-title>
-
-                          <v-card-text>
-                            <v-data-table
-                              dense
-                              :items="selected"
-                              :headers="headersDelete"
-                              :items-per-page="-1"
-                              hide-default-header
-                              hide-default-footer
-                            />
-                          </v-card-text>
-                          <v-card-actions>
-                            <v-spacer />
-                            <v-btn
-                              text
-                              @click="deleteDialog = false"
-                            >
-                              Cancel
-                            </v-btn>
-                            <v-btn
-                              color="error"
-                              text
-                              @click="deleteSelected"
-                            >
-                              Delete
-                            </v-btn>
-                          </v-card-actions>
-                        </v-card>
-                      </v-dialog>
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-sheet>
-          </v-expand-transition>
         </v-sheet>
       </template>
 
@@ -220,11 +202,17 @@ export type CooldownInterfaceUI = CooldownInterface & { count: number; __typenam
 
 export default defineComponent({
   components: {
-    'cooldowns-edit':  defineAsyncComponent({ loader: () => import('~/components/manage/cooldowns/cooldownsEdit.vue') }),
-    'cooldowns-batch': defineAsyncComponent({ loader: () => import('~/components/manage/cooldowns/cooldownsBatch.vue') }),
+    'cooldowns-edit': defineAsyncComponent({
+      loader: () => import('~/components/manage/cooldowns/cooldownsEdit.vue'),
+    }),
+    'cooldowns-batch': defineAsyncComponent({
+      loader: () => import('~/components/manage/cooldowns/cooldownsBatch.vue'),
+    }),
   },
   setup () {
-    const rules = { name: [required, minLength(2)], count: [required, minValue(1)] };
+    const rules = {
+      name: [required, minLength(2)], count: [required, minValue(1)],
+    };
 
     const items = ref([] as CooldownInterfaceUI[]);
     const typeItems = [
@@ -255,14 +243,22 @@ export default defineComponent({
 
     const timestamp = ref(Date.now());
 
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
     const headers = [
-      { value: 'name', text: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group') },
-      { value: 'count', text: translate('cooldown') },
-      { value: 'type', text: translate('cooldown') },
+      {
+        value: 'name', text: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group'),
+      },
+      {
+        value: 'count', text: translate('cooldown'),
+      },
+      {
+        value: 'type', text: translate('cooldown'),
+      },
       {
         value: 'isEnabled', text: capitalize(translate('enabled')), align: 'center',
       },
@@ -284,7 +280,9 @@ export default defineComponent({
     ];
 
     const headersDelete = [
-      { value: 'name', text: '' },
+      {
+        value: 'name', text: '',
+      },
     ];
 
     onMounted(() => {
@@ -337,7 +335,9 @@ export default defineComponent({
           }
         }
 
-        console.log('Updating', { item });
+        console.log('Updating', {
+          item,
+        });
 
         getSocket('/systems/cooldown').emit('cooldown::save', item, () => {
           EventBus.$emit('snack', 'success', 'Data updated.');

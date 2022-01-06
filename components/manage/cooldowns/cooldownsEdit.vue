@@ -1,12 +1,11 @@
 <template>
   <div>
-    <v-menu
+    <v-dialog
       v-model="menu"
-      offset-y
-      :close-on-click="false"
-      min-width="600"
-      :close-on-content-click="false"
-      offset-overflow
+      persistent
+      max-width="800"
+      scrollable
+      :fullscreen="$vuetify.breakpoint.mobile"
     >
       <template #activator="{ on, attrs }">
         <v-btn v-if="item.id !== undefined" v-bind="attrs" small v-on="on">
@@ -19,7 +18,7 @@
           New item
         </v-btn>
       </template>
-      <v-card outlined>
+      <v-card outlined class="pt-3">
         <v-card-text>
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-textarea
@@ -134,7 +133,7 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-menu>
+    </v-dialog>
   </div>
 </template>
 
@@ -223,7 +222,9 @@ export default defineComponent({
           }
         }
         const { __typename, id, count, ...data } = item.value;
-        console.log('Updating', { data });
+        console.log('Updating', {
+          data,
+        });
 
         saving.value = true;
         getSocket('/systems/cooldown').emit('cooldown::save', {
