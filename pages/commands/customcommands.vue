@@ -175,8 +175,13 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { useQuery, useResult } from '@vue/apollo-composable';
-import { capitalize, orderBy } from 'lodash';
+import {
+  useMutation, useQuery, useResult,
+} from '@vue/apollo-composable';
+import gql from 'graphql-tag';
+import {
+  capitalize, isEqual, orderBy,
+} from 'lodash';
 
 import type { CommandsGroupInterface, CommandsInterface } from '.bot/src/database/entity/commands';
 import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
@@ -207,6 +212,15 @@ export default defineComponent({
     const { result, loading } = useQuery(GET_ALL);
     const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
     const groups = useResult<{customCommandsGroup: CommandsGroupInterface[] }, CommandsGroupInterface[], CommandsGroupInterface[]>(result, [], data => data.customCommandsGroup);
+
+    const { mutate: updateGroupMutation, onDone: onDoneUpdateGroup, onError: onErrorUpdateGroup } = useMutation(gql`
+      mutation setCustomCommandsGroup($name: String!, $data: String!) {
+        setCustomCommandsGroup(name: $name, data: $data) {
+          name
+        }
+      }`);
+    onDoneUpdateGroup(() => { EventBus.$emit('snack', 'success', 'Data updated.'); });
+    onErrorUpdateGroup(error);
 
     const rules = {
       command: [startsWith(['!']), required, minLength(2)],
@@ -361,25 +375,6 @@ export default defineComponent({
       }
     };
 
-    const getGroup = computed<{ [name: string]: CommandsGroupInterface }>(() => {
-      // set empty groups from aliases
-      const returnGroups: { [name: string]: CommandsGroupInterface } = {
-      };
-      for (const item of items.value) {
-        if (item.group && !returnGroups[item.group]) {
-          const group = groups.value.find(o => o.name === item.group);
-          returnGroups[item.group] = {
-            name:    item.group,
-            options: group?.options ?? {
-              filter:     null,
-              permission: null,
-            },
-          };
-        }
-      }
-      return returnGroups;
-    });
-
     function selectItem (item: typeof items.value[number]) {
       selectedItem.value = item;
     }
@@ -423,6 +418,51 @@ export default defineComponent({
         });
       }
     };
+    const getGroup = computed<{ [name: string]: CommandsGroupInterface }>({
+      get () {
+        // set empty groups from aliases
+        const returnGroups: { [name: string]: CommandsGroupInterface } = {
+        };
+        for (const item of items.value) {
+          if (item.group && !returnGroups[item.group]) {
+            const group = groups.value.find(o => o.name === item.group);
+            returnGroups[item.group] = {
+              name:    item.group,
+              options: group?.options ?? {
+                filter:     null,
+                permission: null,
+              },
+            };
+          }
+        }
+        return returnGroups;
+      },
+      set (value: { [name: string]: CommandsGroupInterface }) {
+        // go through groups and save only changed
+        for (const groupName of Object.keys(getGroup.value)) {
+          if (!isEqual(getGroup.value[groupName], value[groupName])) {
+            updateGroupMutation({
+              name: groupName,
+              data: JSON.stringify(value[groupName].options),
+            }, {
+              refetchQueries: [{
+                query: GET_ALL,
+              }],
+            });
+          }
+        }
+        return true;
+      },
+    });
+    function updateGroup (groupName: string, options: { permission: null | string, filter: null | string }) {
+      getGroup.value = {
+        ...getGroup.value,
+        [groupName]: {
+          name: groupName,
+          options,
+        },
+      };
+    }
 
     return {
       selectItem,
@@ -458,6 +498,7 @@ export default defineComponent({
       toggleGroupSelection,
       mdiMinus,
       mdiPlus,
+      updateGroup,
     };
   },
 });

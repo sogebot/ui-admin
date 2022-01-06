@@ -53,26 +53,8 @@
                   persistent-hint
                   hide-details="auto"
                   :hint="(enabled
-                    ? 'Custom command is enabled'
-                    : 'Custom command is disabled')"
-                />
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="auto" align-self="center">
-                <v-simple-checkbox v-model="visibleToggle" />
-              </v-col>
-              <v-col>
-                <v-switch
-                  v-model="visible"
-                  :disabled="!visibleToggle"
-                  :label="capitalize(translate('visible'))"
-                  persistent-hint
-                  hide-details="auto"
-                  :hint="(visible
-                    ? 'Custom command will be visible in lists'
-                    : 'Custom command won\'t be visible in lists')"
+                    ? 'Keyword is enabled'
+                    : 'Keyword is disabled')"
                 />
               </v-col>
             </v-row>
@@ -120,9 +102,6 @@ export default defineComponent({
     const enabled = ref(true);
     const enabledToggle = ref(false);
 
-    const visible = ref(true);
-    const visibleToggle = ref(false);
-
     const save = () => {
       ctx.emit('save', {
         group: groupToggle.value
@@ -130,9 +109,6 @@ export default defineComponent({
           : undefined,
         enabled: enabledToggle.value
           ? enabled.value
-          : undefined,
-        visible: visibleToggle.value
-          ? visible.value
           : undefined,
       });
       menu.value = false;
@@ -144,8 +120,6 @@ export default defineComponent({
       groupSearch,
       enabled,
       enabledToggle,
-      visible,
-      visibleToggle,
 
       menu,
       save,
