@@ -37,14 +37,22 @@
                 <v-simple-checkbox v-model="groupToggle" />
               </v-col>
               <v-col>
-                <v-select
+                <v-combobox
                   v-model="group"
-                  :disabled="!groupToggle"
                   :label="translate('group')"
+                  :disabled="!groupToggle"
                   clearable
-                  :items="groupItems"
+                  :search-input.sync="groupSearch"
                   hide-details="auto"
-                />
+                  :return-object="false"
+                  :items="groupItems.filter(o => o.value !== null)"
+                >
+                  <template #no-data>
+                    <v-list-item>
+                      Create&nbsp;<strong>{{ groupSearch }}</strong>
+                    </v-list-item>
+                  </template>
+                </v-combobox>
               </v-col>
             </v-row>
 
@@ -125,6 +133,7 @@ export default defineComponent({
 
     const group = ref(null);
     const groupToggle = ref(false);
+    const groupSearch = ref('');
 
     const enabled = ref(true);
     const enabledToggle = ref(false);
@@ -155,6 +164,7 @@ export default defineComponent({
       permissionToggle,
       group,
       groupToggle,
+      groupSearch,
       enabled,
       enabledToggle,
       visible,

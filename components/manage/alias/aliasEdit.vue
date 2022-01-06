@@ -45,15 +45,36 @@
               @keydown.enter.prevent
             />
 
-            <v-select
-              v-model="item.permission"
-              :label="translate('permissions')"
-              clearable
-              :items="permissionItems"
-              hide-details="auto"
-            />
+            <v-row dense>
+              <v-col>
+                <v-select
+                  v-model="item.permission"
+                  :label="translate('permissions')"
+                  clearable
+                  :items="permissionItems"
+                  hide-details="auto"
+                />
+              </v-col>
+              <v-col>
+                <v-combobox
+                  v-model="item.group"
+                  :label="translate('group')"
+                  hide-details="auto"
+                  clearable
+                  :search-input.sync="item.groupToBeShownInTable"
+                  :return-object="false"
+                  :items="groupItems.filter(o => o.value !== null)"
+                >
+                  <template #no-data>
+                    <v-list-item>
+                      Create&nbsp;<strong>{{ item.groupToBeShownInTable }}</strong>
+                    </v-list-item>
+                  </template>
+                </v-combobox>
+              </v-col>
+            </v-row>
 
-            <v-row no-gutters>
+            <v-row dense>
               <v-col>
                 <v-switch
                   v-model="item.enabled"
@@ -192,9 +213,13 @@ export default defineComponent({
           }
         }
         const { __typename, id, groupToBeShownInTable, ...data } = item.value;
-        console.log('Updating', { data });
+        console.log('Updating', {
+          data,
+        });
 
-        await updateMutation({ id: id || v4(), data });
+        await updateMutation({
+          id: id || v4(), data,
+        });
         menu.value = false;
         ctx.emit('save');
       }
