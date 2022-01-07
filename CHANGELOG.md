@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [31.4.4](https://github.com/sogebot/ui-admin/compare/v31.4.3...v31.4.4) (2022-01-07)
+
+
+### Bug Fixes
+
+* **alerts:** add ttsTemplate support ([3147219](https://github.com/sogebot/ui-admin/commit/3147219b812d4ace6292acf575a51dcb17e75f0e))
+
 ### [31.4.3](https://github.com/sogebot/ui-admin/compare/v31.4.2...v31.4.3) (2022-01-06)
 
 
