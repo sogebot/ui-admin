@@ -27,6 +27,15 @@
       persistent-hint
     />
 
+    <v-text-field
+      v-if="model.ttsTemplate"
+      v-model="model.ttsTemplate"
+      :placeholder="translate('registry.alerts.ttsTemplate.placeholder')"
+      :label="translate('registry.alerts.ttsTemplate.name')"
+      :hint="translate('registry.alerts.ttsTemplate.help')"
+      persistent-hint
+    />
+
     <v-slider
       v-model.number="model.alertDurationInMs"
       class="pt-4"
@@ -314,9 +323,13 @@ export default defineComponent({
     animationIn:   defineAsyncComponent(() => import('~/components/registry/alerts/inputs/animation-in.vue')),
     animationOut:  defineAsyncComponent(() => import('~/components/registry/alerts/inputs/animation-out.vue')),
     layoutPicker:  defineAsyncComponent(() => import('~/components/registry/alerts/inputs/layout-picker.vue')),
-    tts:           defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
-    media:         defineAsyncComponent(() => import('~/components/registry/alerts/inputs/media.vue')),
-    rewards:       defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }),
+    tts:           defineAsyncComponent({
+      loader: () => import('~/components/form/expansion/tts.vue'),
+    }),
+    media:   defineAsyncComponent(() => import('~/components/registry/alerts/inputs/media.vue')),
+    rewards: defineAsyncComponent({
+      loader: () => import('~/components/rewards.vue'),
+    }),
   },
   props: {
     value: Object, parent: Object, event: String,
@@ -355,7 +368,9 @@ export default defineComponent({
 
     watch(model, (val) => {
       ctx.emit('input', val);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     onMounted(() => {
       EventBus.$on('alert::validate', (cb: any) => cb((form1.value as unknown as HTMLFormElement).validate()));

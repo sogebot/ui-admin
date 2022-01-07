@@ -229,7 +229,7 @@ import { v4 } from 'uuid';
 
 import { getBase64FromUrl } from '../../../functions/getBase64FromURL';
 
-import { AlertInterface, CommonSettingsInterface } from '~/.bot/src/database/entity/alert';
+import { AlertInterface } from '~/.bot/src/database/entity/alert';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
@@ -305,9 +305,15 @@ const supportedEvents = ['follows', 'cheers', 'subs', 'resubs', 'subcommunitygif
 
 export default defineComponent({
   components: {
-    formEdit: defineAsyncComponent({ loader: () => import('~/components/registry/alerts/form.vue') }),
-    font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
-    tts:      defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
+    formEdit: defineAsyncComponent({
+      loader: () => import('~/components/registry/alerts/form.vue'),
+    }),
+    font: defineAsyncComponent({
+      loader: () => import('~/components/form/expansion/font.vue'),
+    }),
+    tts: defineAsyncComponent({
+      loader: () => import('~/components/form/expansion/tts.vue'),
+    }),
   },
   setup () {
     const store = useStore();
@@ -316,7 +322,9 @@ export default defineComponent({
 
     const item = ref(cloneDeep(emptyItem) as AlertInterface);
 
-    const { result, loading } = useQuery(GET_ONE, { id: route.value.params.id });
+    const { result, loading } = useQuery(GET_ONE, {
+      id: route.value.params.id,
+    });
     if (route.value.params.id !== 'new') {
       const cache = useResult<{ alerts: AlertInterface[] }, null, AlertInterface[]>(result, null, data => data.alerts);
       watch(cache, (value) => {
@@ -326,39 +334,59 @@ export default defineComponent({
 
         if (value.length === 0) {
           EventBus.$emit('snack', 'error', 'Data not found.');
-          router.push({ path: '/registry/alert' });
+          router.push({
+            path: '/registry/alert',
+          });
         } else {
           item.value = cloneDeep(value[0]);
           console.groupCollapsed(`alert::${route.value.params.id}`);
           console.log(value[0]);
           console.groupEnd();
         }
-      }, { immediate: true, deep: true });
+      }, {
+        immediate: true, deep: true,
+      });
     }
     const { mutate: uploadMutation, onError: onErrorUpload } = useMutation(UPLOAD);
     onErrorUpload(error);
 
     const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(SAVE);
     onDoneSave((res) => {
-      router.push({ params: { id: res.data.alertSave.id } });
+      router.push({
+        params: {
+          id: res.data.alertSave.id,
+        },
+      });
       EventBus.$emit('snack', 'success', 'Data saved.');
     });
     onErrorSave(error);
 
     const tabs = ref(null);
     const variantTabs = ref(
-      supportedEvents.map(ev => ({ [ev]: 0 })),
+      supportedEvents.map(ev => ({
+        [ev]: 0,
+      })),
     );
 
     const form1 = ref(null);
     const valid1 = ref(true);
 
     const profanityFilterTypeOptions: { value: string; text: string }[] = [
-      { value: 'disabled', text: translate('registry.alerts.profanityFilterType.disabled') },
-      { value: 'replace-with-asterisk', text: translate('registry.alerts.profanityFilterType.replace-with-asterisk') },
-      { value: 'replace-with-happy-words', text: translate('registry.alerts.profanityFilterType.replace-with-happy-words') },
-      { value: 'hide-messages', text: translate('registry.alerts.profanityFilterType.hide-messages') },
-      { value: 'disable-alerts', text: translate('registry.alerts.profanityFilterType.disable-alerts') },
+      {
+        value: 'disabled', text: translate('registry.alerts.profanityFilterType.disabled'),
+      },
+      {
+        value: 'replace-with-asterisk', text: translate('registry.alerts.profanityFilterType.replace-with-asterisk'),
+      },
+      {
+        value: 'replace-with-happy-words', text: translate('registry.alerts.profanityFilterType.replace-with-happy-words'),
+      },
+      {
+        value: 'hide-messages', text: translate('registry.alerts.profanityFilterType.hide-messages'),
+      },
+      {
+        value: 'disable-alerts', text: translate('registry.alerts.profanityFilterType.disable-alerts'),
+      },
     ];
 
     onMounted(() => {
@@ -380,7 +408,11 @@ export default defineComponent({
       if (
         (form1.value as unknown as HTMLFormElement).validate() && isValid
       ) {
-        saveMutation({ data_json: JSON.stringify({ ...item.value, id: item.value.id ?? v4() }) });
+        saveMutation({
+          data_json: JSON.stringify({
+            ...item.value, id: item.value.id ?? v4(),
+          }),
+        });
       }
     };
 
@@ -391,14 +423,18 @@ export default defineComponent({
       const [defaultAudioId, defaultImageId, defaultJs, defaultHtml] = await Promise.all([
         new Promise<string>((resolve) => {
           getBase64FromUrl('/_static/' + defaultAudio).then((data) => {
-            uploadMutation({ data }).then((res) => {
+            uploadMutation({
+              data,
+            }).then((res) => {
               resolve(res?.data.alertMediaUpload);
             });
           });
         }),
         new Promise<string>((resolve) => {
           getBase64FromUrl('/_static/' + defaultImage).then((data) => {
-            uploadMutation({ data }).then((res) => {
+            uploadMutation({
+              data,
+            }).then((res) => {
               resolve(res?.data.alertMediaUpload);
             });
           });
@@ -414,7 +450,7 @@ export default defineComponent({
             .then(data => resolve(data));
         }),
       ]);
-      const _default: CommonSettingsInterface = {
+      const _default: any = {
         messageTemplate: '',
 
         id:                   v4(),
@@ -469,6 +505,7 @@ export default defineComponent({
           item.value.cheers.push({
             ..._default,
             messageTemplate: '{name} cheered! x{amount}',
+            ttsTemplate:     '{message}',
             message:         {
               minAmountToShow: 0,
               allowEmotes:     {
@@ -501,6 +538,7 @@ export default defineComponent({
               font: null,
             },
             messageTemplate: '{name} was redeemed by {recipient}!',
+            ttsTemplate:     '{message}',
             rewardId:        null,
           });
           break;
@@ -520,6 +558,7 @@ export default defineComponent({
         case 'resubs':
           item.value.resubs.push({
             ..._default,
+            ttsTemplate:     '{message}',
             messageTemplate: '{name} just resubscribed! {amount} {monthsName}',
             message:         {
               allowEmotes: {
@@ -579,7 +618,9 @@ export default defineComponent({
       for (const mediaId of mediaMap.keys()) {
         await new Promise<void>((resolve) => {
           getBase64FromUrl(`/api/v2/registry/alerts/media/${mediaId}`).then((data) => {
-            uploadMutation({ id: mediaMap.get(mediaId), data }).then(() => resolve());
+            uploadMutation({
+              id: mediaMap.get(mediaId), data,
+            }).then(() => resolve());
           });
         });
       }
