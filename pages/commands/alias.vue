@@ -1,10 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-alert
-      v-if="!$store.state.$systems.find(o => o.name === 'alias').enabled"
-      color="error"
-      class="mb-0"
-    >
+    <v-alert v-if="!$store.state.$systems.find(o => o.name === 'alias').enabled" color="error" class="mb-0">
       {{ translate('this-system-is-disabled') }}
     </v-alert>
 
@@ -59,42 +55,18 @@
       </v-app-bar>
     </v-expand-transition>
 
-    <v-data-table
-      v-model="selected"
-      show-select
-      calculate-widths
-      group-by="group"
-      :search="search"
-      :loading="loading"
-      :headers="headers"
-      :items-per-page="-1"
-      :items="items"
-      @current-items="saveCurrentItems"
-    >
+    <v-data-table v-model="selected" show-select calculate-widths group-by="group" :search="search" :loading="loading"
+      :headers="headers" :items-per-page="-1" :items="items">
       <template #top>
-        <v-sheet
-          flat
-          color="dark"
-          class="my-2 pb-2 mt-0"
-        >
+        <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" dense>
             <v-col align-self="center">
-              <v-text-field
-                v-model="search"
-                :append-icon="mdiMagnify"
-                label="Search"
-                single-line
-                hide-details
-                class="pa-0 ma-2"
-              />
+              <v-text-field v-model="search" :append-icon="mdiMagnify" label="Search" single-line hide-details
+                class="pa-0 ma-2" />
             </v-col>
             <v-col cols="auto" align-self="center">
-              <alias-edit
-                :rules="rules"
-                :permission-items="permissionItems"
-                :group-items="groupItems"
-                @save="refetch()"
-              />
+              <alias-edit :rules="rules" :permission-items="permissionItems" :group-items="groupItems"
+                @save="refetch()" />
             </v-col>
           </v-row>
         </v-sheet>
@@ -102,24 +74,14 @@
 
       <template #[`group.header`]="{ items, isOpen, toggle }">
         <th colspan="5">
-          <v-icon
-            @click="toggle"
-          >
+          <v-icon @click="toggle">
             {{ isOpen ? mdiMinus : mdiPlus }}
           </v-icon>
 
-          <v-simple-checkbox
-            class="d-inline-block px-4"
-            style="transform: translateY(5px);"
-            inline
-            :value="isGroupSelected(items[0].group)"
-            @click="toggleGroupSelection(items[0].group)"
-          />
+          <v-simple-checkbox class="d-inline-block px-4" style="transform: translateY(5px);" inline
+            :value="isGroupSelected(items[0].group)" @click="toggleGroupSelection(items[0].group)" />
 
-          <span
-            v-if="items[0].group === null"
-            class="red--text text--lighten-1"
-          >Ungrouped</span>
+          <span v-if="items[0].group === null" class="red--text text--lighten-1">Ungrouped</span>
           <span v-else>
             {{ items[0].group }}
 
@@ -146,14 +108,9 @@
           </span>
         </th>
         <th colspan="1" style="text-align-last: right;">
-          <group-config
-            v-if="items[0].group"
-            :key="items[0].group"
-            :permission-items="permissionItems"
-            :permission="getGroup[items[0].group].options.permission"
-            :filter="getGroup[items[0].group].options.filter"
-            @save="updateGroup(items[0].group, $event)"
-          />
+          <group-config v-if="items[0].group" :key="items[0].group" :permission-items="permissionItems"
+            :permission="getGroup[items[0].group].options.permission" :filter="getGroup[items[0].group].options.filter"
+            @save="updateGroup(items[0].group, $event)" />
         </th>
       </template>
 
@@ -168,13 +125,8 @@
           <template #show>
             <v-row dense>
               <v-col cols="auto">
-                <alias-edit
-                  :rules="rules"
-                  :value="item"
-                  :permission-items="permissionItems"
-                  :group-items="groupItems"
-                  @save="refetch()"
-                />
+                <alias-edit :rules="rules" :value="item" :permission-items="permissionItems" :group-items="groupItems"
+                  @save="refetch()" />
               </v-col>
               <v-col cols="auto">
                 <v-btn color="red" small @click="selected = [item]; deleteDialog = true;">
@@ -190,7 +142,8 @@
       </template>
 
       <template #[`item.groupToBeShownInTable`]="{ item }">
-        <span :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }">
+        <span
+          :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }">
           {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
         </span>
       </template>
@@ -202,19 +155,11 @@
       </template>
 
       <template #[`item.enabled`]="{ item }">
-        <v-simple-checkbox
-          :key="item.id + item.enabled"
-          :value="item.enabled"
-          disabled
-        />
+        <v-simple-checkbox :key="item.id + item.enabled" :value="item.enabled" disabled />
       </template>
 
       <template #[`item.visible`]="{ item }">
-        <v-simple-checkbox
-          :key="item.id + item.visible"
-          :value="item.visible"
-          disabled
-        />
+        <v-simple-checkbox :key="item.id + item.visible" :value="item.visible" disabled />
       </template>
     </v-data-table>
   </v-container>
@@ -305,13 +250,7 @@ export default defineComponent({
     onDoneRemove(saveSuccess);
     onErrorRemove(errorLog);
 
-    const timestamp = ref(Date.now());
-
     const selected = ref([] as AliasInterfaceUI[]);
-    const currentItems = ref([] as AliasInterfaceUI[]);
-    const saveCurrentItems = (value: AliasInterfaceUI[]) => {
-      currentItems.value = value;
-    };
     const deleteDialog = ref(false);
 
     const rules = {
@@ -408,6 +347,7 @@ export default defineComponent({
           continue;
         }
 
+        let isValid = true;
         for (const key of Object.keys(rules)) {
           for (const rule of (rules as any)[key]) {
             const ruleStatus = rule((toUpdate as any)[key]);
@@ -415,23 +355,25 @@ export default defineComponent({
               continue;
             } else {
               EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-              return;
+              isValid = false;
             }
           }
         }
 
-        for (const key of Object.keys(value)) {
-          if (typeof value[key] !== 'undefined') {
-            (item as any)[key] = value[key];
+        if (isValid) {
+          for (const key of Object.keys(value)) {
+            if (typeof value[key] !== 'undefined') {
+              (item as any)[key] = value[key];
+            }
           }
+          const { __typename, id, groupToBeShownInTable, ...data } = item;
+          console.log('Updating', {
+            data,
+          });
+          updateMutation({
+            id, data,
+          });
         }
-        const { __typename, id, groupToBeShownInTable, ...data } = item;
-        console.log('Updating', {
-          data,
-        });
-        updateMutation({
-          id, data,
-        });
       }
     };
 
@@ -494,7 +436,6 @@ export default defineComponent({
 
     return {
       result,
-      saveCurrentItems,
       items,
       permissions,
       search,
@@ -521,7 +462,6 @@ export default defineComponent({
       isGroupSelected,
       toggleGroupSelection,
 
-      timestamp,
       saveSuccess,
 
       mdiPlus,

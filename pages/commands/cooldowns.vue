@@ -1,10 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-alert
-      v-if="!$store.state.$systems.find(o => o.name === 'cooldown').enabled"
-      color="error"
-      class="mb-0"
-    >
+    <v-alert v-if="!$store.state.$systems.find(o => o.name === 'cooldown').enabled" color="error" class="mb-0">
       {{ translate('this-system-is-disabled') }}
     </v-alert>
 
@@ -18,11 +14,7 @@
           <v-col cols="auto" align-self="center">
             <v-row dense>
               <v-col v-if="selected.length > 0" cols="auto" class="pr-1">
-                <cooldowns-batch
-                  :length="selected.length"
-                  :rules="rules"
-                  @save="batchUpdate($event)"
-                />
+                <cooldowns-batch :length="selected.length" :rules="rules" @save="batchUpdate($event)" />
               </v-col>
               <v-col v-if="selected.length > 0" cols="auto">
                 <v-dialog v-model="deleteDialog" max-width="500px">
@@ -62,39 +54,17 @@
       </v-app-bar>
     </v-expand-transition>
 
-    <v-data-table
-      v-model="selected"
-      calculate-widths
-      show-select
-      :search="search"
-      :loading="state.loading !== ButtonStates.success"
-      :headers="headers"
-      :items-per-page="-1"
-      :items="items"
-      @current-items="saveCurrentItems"
-    >
+    <v-data-table v-model="selected" calculate-widths show-select :search="search"
+      :loading="state.loading !== ButtonStates.success" :headers="headers" :items-per-page="-1" :items="items" @current-items="saveCurrentItems" >
       <template #top>
-        <v-sheet
-          flat
-          color="dark"
-          class="my-2 pb-2 mt-0"
-        >
+        <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" dense>
             <v-col align-self="center">
-              <v-text-field
-                v-model="search"
-                :append-icon="mdiMagnify"
-                label="Search"
-                single-line
-                hide-details
-                class="pa-0"
-              />
+              <v-text-field v-model="search" :append-icon="mdiMagnify" label="Search" single-line hide-details
+                class="pa-0" />
             </v-col>
             <v-col cols="auto" align-self="center">
-              <cooldowns-edit
-                :rules="rules"
-                @save="refresh()"
-              />
+              <cooldowns-edit :rules="rules" @save="refresh()" />
             </v-col>
           </v-row>
         </v-sheet>
@@ -109,11 +79,7 @@
           <template #show>
             <v-row dense>
               <v-col cols="auto">
-                <cooldowns-edit
-                  :rules="rules"
-                  :value="item"
-                  @save="refresh()"
-                />
+                <cooldowns-edit :rules="rules" :value="item" @save="refresh()" />
               </v-col>
               <v-col cols="auto">
                 <v-btn color="red" small @click="selected = [item]; deleteDialog = true;">
@@ -137,45 +103,27 @@
       </template>
 
       <template #[`item.isEnabled`]="{ item }">
-        <v-simple-checkbox
-          v-model="item.isEnabled"
-          disabled
-        />
+        <v-simple-checkbox v-model="item.isEnabled" disabled />
       </template>
 
       <template #[`item.isErrorMsgQuiet`]="{ item }">
-        <v-simple-checkbox
-          v-model="item.isErrorMsgQuiet"
-          disabled
-        />
+        <v-simple-checkbox v-model="item.isErrorMsgQuiet" disabled />
       </template>
 
       <template #[`item.isOwnerAffected`]="{ item }">
-        <v-simple-checkbox
-          v-model="item.isOwnerAffected"
-          disabled
-        />
+        <v-simple-checkbox v-model="item.isOwnerAffected" disabled />
       </template>
 
       <template #[`item.isModeratorAffected`]="{ item }">
-        <v-simple-checkbox
-          v-model="item.isModeratorAffected"
-          disabled
-        />
+        <v-simple-checkbox v-model="item.isModeratorAffected" disabled />
       </template>
 
       <template #[`item.isSubscriberAffected`]="{ item }">
-        <v-simple-checkbox
-          v-model="item.isSubscriberAffected"
-          disabled
-        />
+        <v-simple-checkbox v-model="item.isSubscriberAffected" disabled />
       </template>
 
       <template #[`item.isFollowerAffected`]="{ item }">
-        <v-simple-checkbox
-          v-model="item.isFollowerAffected"
-          disabled
-        />
+        <v-simple-checkbox v-model="item.isFollowerAffected" disabled />
       </template>
     </v-data-table>
   </v-container>
@@ -184,7 +132,7 @@
 <script lang="ts">
 import { mdiCheckboxMultipleMarkedOutline, mdiMagnify } from '@mdi/js';
 import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -193,6 +141,7 @@ import { capitalize } from 'lodash';
 
 import type { CooldownInterface } from '.bot/src/database/entity/cooldown';
 import { error } from '~/functions//error';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
 import {
   minLength, minValue, required,
@@ -229,19 +178,12 @@ export default defineComponent({
     const search = ref('');
 
     const selected = ref([] as CooldownInterfaceUI[]);
+    const deleteDialog = ref(false);
+
     const currentItems = ref([] as CooldownInterfaceUI[]);
     const saveCurrentItems = (value: CooldownInterfaceUI[]) => {
       currentItems.value = value;
     };
-    const deleteDialog = ref(false);
-    const selectable = ref(false);
-    watch(selectable, (val) => {
-      if (!val) {
-        selected.value = [];
-      }
-    });
-
-    const timestamp = ref(Date.now());
 
     const state = ref({
       loading: ButtonStates.progress,
@@ -317,6 +259,7 @@ export default defineComponent({
           continue;
         }
 
+        let isValid = true;
         for (const key of Object.keys(rules)) {
           for (const rule of (rules as any)[key]) {
             const ruleStatus = rule((toUpdate as any)[key]);
@@ -324,25 +267,26 @@ export default defineComponent({
               continue;
             } else {
               EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-              return;
+              isValid = false;
             }
           }
         }
 
-        for (const key of Object.keys(value)) {
-          if (typeof value[key] !== 'undefined') {
-            (item as any)[key] = value[key];
+        if (isValid) {
+          for (const key of Object.keys(value)) {
+            if (typeof value[key] !== 'undefined') {
+              (item as any)[key] = value[key];
+            }
           }
+          console.log('Updating', {
+            item,
+          });
+
+          getSocket('/systems/cooldown').emit('cooldown::save', item, () => {
+            EventBus.$emit('snack', 'success', 'Data updated.');
+            refresh();
+          });
         }
-
-        console.log('Updating', {
-          item,
-        });
-
-        getSocket('/systems/cooldown').emit('cooldown::save', item, () => {
-          EventBus.$emit('snack', 'success', 'Data updated.');
-          refresh();
-        });
       }
     };
 
@@ -366,8 +310,19 @@ export default defineComponent({
       selected.value = [];
     };
 
+    const toggleItemSelection = (item: typeof items.value[number]) => {
+      if (selected.value.find(o => o.id === item.id)) {
+        // deselect
+        selected.value = selected.value.filter(o => o.id !== item.id);
+      } else {
+        selected.value.push(item);
+      }
+    };
+
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       saveCurrentItems,
+      toggleItemSelection,
       items,
       search,
       state,
@@ -376,10 +331,8 @@ export default defineComponent({
       selected,
       deleteSelected,
       batchUpdate,
-      selectable,
       deleteDialog,
       translate,
-      timestamp,
       rules,
       typeItems,
       mdiMagnify,

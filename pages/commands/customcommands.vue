@@ -57,7 +57,7 @@
 
     <v-data-table v-model="selected" show-select group-by="group" calculate-widths :search="search"
       :loading="state.loading !== ButtonStates.success || loading" :headers="headers" :items-per-page="-1"
-      :items="items" @current-items="saveCurrentItems">
+      :items="items" @current-items="saveCurrentItems" >
       <template #top>
         <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" dense>
@@ -116,10 +116,10 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <tr :class="{ 'v-data-table__selected': !!selected.find(o => o.id === item.id) }" @mouseover="selectItem(item)"
+        <tr :class="{ 'v-data-table__selected': selected.some(o => o.id === item.id) }" @mouseover="selectItem(item)"
           @mouseleave="unSelectItem()">
           <td>
-            <v-simple-checkbox :value="selected.find(o => o.id === item.id)" @click="toggleItemSelection(item)" />
+            <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
           </td>
           <td class="my-1">
             <strong>{{ item.command }}</strong>
@@ -185,6 +185,7 @@ import {
 
 import type { CommandsGroupInterface, CommandsInterface } from '.bot/src/database/entity/commands';
 import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
@@ -232,11 +233,12 @@ export default defineComponent({
     const selectedItem = ref(null as Required<CommandsInterfaceUI> | null);
 
     const selected = ref([] as CommandsInterfaceUI[]);
+    const deleteDialog = ref(false);
+
     const currentItems = ref([] as CommandsInterfaceUI[]);
     const saveCurrentItems = (value: CommandsInterfaceUI[]) => {
       currentItems.value = value;
     };
-    const deleteDialog = ref(false);
 
     const state = ref({
       loadingPrm: ButtonStates.progress,
@@ -389,6 +391,7 @@ export default defineComponent({
           continue;
         }
 
+        let isValid = true;
         for (const key of Object.keys(rules)) {
           for (const rule of (rules as any)[key]) {
             const ruleStatus = rule((toUpdate as any)[key]);
@@ -396,26 +399,27 @@ export default defineComponent({
               continue;
             } else {
               EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-              return;
+              isValid = false;
             }
           }
         }
 
-        for (const key of Object.keys(value)) {
-          if (typeof value[key] !== 'undefined') {
-            (item as any)[key] = value[key];
+        if (isValid) {
+          for (const key of Object.keys(value)) {
+            if (typeof value[key] !== 'undefined') {
+              (item as any)[key] = value[key];
+            }
           }
+          console.log('Updating', {
+            item,
+          });
+          getSocket('/systems/customcommands').emit('generic::setById', {
+            id: item.id,
+            item,
+          }, () => {
+            EventBus.$emit('snack', 'success', 'Data updated.');
+          });
         }
-
-        console.log('Updating', {
-          item,
-        });
-        getSocket('/systems/customcommands').emit('generic::setById', {
-          id: item.id,
-          item,
-        }, () => {
-          EventBus.$emit('snack', 'success', 'Data updated.');
-        });
       }
     };
     const getGroup = computed<{ [name: string]: CommandsGroupInterface }>({
@@ -465,10 +469,11 @@ export default defineComponent({
     }
 
     return {
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
+      saveCurrentItems,
       selectItem,
       selectedItem,
       unSelectItem,
-      saveCurrentItems,
       orderBy,
       toggleItemSelection,
       headers,

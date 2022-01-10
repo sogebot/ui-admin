@@ -1,30 +1,13 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-data-table
-      v-model="selected"
-      :loading="state.loading !== ButtonStates.success || loading"
-      :headers="headers"
-      :items-per-page="-1"
-      :items="fItems"
-      sort-by="name"
-      group-by="type"
-    >
+    <v-data-table v-model="selected" :loading="state.loading !== ButtonStates.success || loading" :headers="headers"
+      :items-per-page="-1" :items="fItems" sort-by="name" group-by="type">
       <template #top>
-        <v-sheet
-          flat
-          color="dark"
-          class="my-2 pb-2 mt-0"
-        >
+        <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" dense>
             <v-col align-self="center">
-              <v-text-field
-                v-model="search"
-                :append-icon="mdiMagnify"
-                label="Search"
-                single-line
-                hide-details
-                class="pa-0 ma-2"
-              />
+              <v-text-field v-model="search" :append-icon="mdiMagnify" label="Search" single-line hide-details
+                class="pa-0 ma-2" />
             </v-col>
           </v-row>
         </v-sheet>
@@ -32,9 +15,7 @@
 
       <template #[`group.header`]="{ items, isOpen, toggle }">
         <th colspan="7">
-          <v-icon
-            @click="toggle"
-          >
+          <v-icon @click="toggle">
             {{ isOpen ? mdiMinus : mdiPlus }}
           </v-icon>
 
@@ -45,18 +26,16 @@
       <template #[`item.command`]="{ item }">
         <table-hover>
           <template #hide>
-            <span :class="{ 'text-decoration-line-through': item.command !== item.defaultValue }">{{ item.defaultValue }}</span>
-            <span v-if="item.command !== item.defaultValue"><v-icon class="d-inline-block">{{ mdiArrowRightBold }}</v-icon> {{ item.command }}</span>
+            <span
+              :class="{ 'text-decoration-line-through': item.command !== item.defaultValue }">{{ item.defaultValue }}</span>
+            <span v-if="item.command !== item.defaultValue">
+              <v-icon class="d-inline-block">{{ mdiArrowRightBold }}</v-icon> {{ item.command }}
+            </span>
           </template>
           <template #show>
             <v-row dense>
               <v-col cols="auto">
-                <botcommands-edit
-                  :rules="rules"
-                  :value="item"
-                  :permission-items="permissionItems"
-                  @save="refresh()"
-                />
+                <botcommands-edit :rules="rules" :value="item" :permission-items="permissionItems" @save="refresh()" />
               </v-col>
             </v-row>
           </template>
