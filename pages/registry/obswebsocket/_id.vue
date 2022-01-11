@@ -69,7 +69,8 @@
                           v-model="task.args.sceneName"
                           :label="translate('integrations.obswebsocket.SetCurrentScene.name')"
                           :items="availableScenes"
-                          hide-details
+                          :rules="rules.scene"
+                          hide-details="auto"
                         >
                           <template #append-outer>
                             <v-btn
@@ -91,7 +92,8 @@
                         <v-text-field
                           v-model="task.args.logMessage"
                           :label="translate('integrations.obswebsocket.Log.name')"
-                          hide-details
+                          :rules="rules.scene"
+                          hide-details="auto"
                         >
                           <template #append-outer>
                             <v-btn
@@ -114,8 +116,9 @@
                           v-model="task.args.miliseconds"
                           :label="translate('integrations.obswebsocket.WaitMs.name')"
                           type="number"
+                          :rules="rules.miliseconds"
                           min="0"
-                          hide-details
+                          hide-details="auto"
                         >
                           <template #append-outer>
                             <v-btn
@@ -158,9 +161,10 @@
                       <v-col>
                         <v-select
                           v-model="task.args.source"
+                          :rules="rules.scene"
                           :label="translate('integrations.obswebsocket.SetMute.name')"
                           :items="availableAudioSources"
-                          hide-details
+                          hide-details="auto"
                         >
                           <template #append-outer>
                             <v-btn
@@ -192,7 +196,8 @@
                           v-model="task.args.source"
                           :label="translate('integrations.obswebsocket.SetVolume.name')"
                           :items="availableAudioSources"
-                          hide-details
+                          :rules="rules.scene"
+                          hide-details="auto"
                         />
                       </v-col>
                       <v-col>
@@ -204,7 +209,8 @@
                           step="0.1"
                           class="mr-2"
                           small
-                          hide-details
+                          :rules="rules.volume"
+                          hide-details="auto"
                         >
                           <template #append>
                             dB
@@ -294,7 +300,9 @@ import type { Source, Type } from '~/.bot/src/helpers/obswebsocket/sources';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { highlighterJS, PrismEditor } from '~/functions/prismjs';
-import { required } from '~/functions/validators';
+import {
+  maxValue, minValue, required,
+} from '~/functions/validators';
 import GET_ONE from '~/queries/obsWebsocket/getOne.gql';
 import SCENES_AND_SOURCES from '~/queries/obsWebsocket/scenes.gql';
 
@@ -307,7 +315,9 @@ const emptyItem: OBSWebsocketInterface = {
 };
 
 export default defineComponent({
-  components: { PrismEditor },
+  components: {
+    PrismEditor,
+  },
   setup (_, ctx) {
     const router = useRouter();
     const route = useRoute();
@@ -316,7 +326,9 @@ export default defineComponent({
     const item = ref(cloneDeep(emptyItem) as OBSWebsocketInterface);
 
     if (route.value.params.id !== 'new') {
-      const query = useQuery(GET_ONE, { id: route.value.params.id });
+      const query = useQuery(GET_ONE, {
+        id: route.value.params.id,
+      });
       query.onError(error);
       loading = query.loading;
       const cache = useResult<{ OBSWebsocket: OBSWebsocketInterface[] }, null>(query.result, null);
@@ -327,17 +339,25 @@ export default defineComponent({
 
         if (value.length === 0) {
           EventBus.$emit('snack', 'error', 'Data not found.');
-          router.push({ path: '/registry/obswebsocket' });
+          router.push({
+            path: '/registry/obswebsocket',
+          });
         } else {
           item.value = cloneDeep(value[0]);
         }
-      }, { immediate: true, deep: true });
+      }, {
+        immediate: true, deep: true,
+      });
     }
-    const { result: sceneResult } = useQuery(SCENES_AND_SOURCES, null, { pollInterval: 1000 });
+    const { result: sceneResult } = useQuery(SCENES_AND_SOURCES, null, {
+      pollInterval: 1000,
+    });
     watch(sceneResult, (value) => {
       if (value) {
         availableScenes.value = [
-          { value: '', text: translate('integrations.obswebsocket.noSceneSelected') },
+          {
+            value: '', text: translate('integrations.obswebsocket.noSceneSelected'),
+          },
           ...value.OBSWebsocketGetScenes.map((scene: { name: string }) => ({
             value: scene.name,
             text:  scene.name,
@@ -346,7 +366,9 @@ export default defineComponent({
         availableSources.value = value.OBSWebsocketGetSources;
         sourceTypes.value = value.OBSWebsocketGetSourceTypes;
       }
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     const { mutate: trigger, loading: testing, onDone: onDone1, onError: onError1 } = useMutation(gql`
       mutation OBSWebsocketTrigger($tasks: String!) {
@@ -359,7 +381,11 @@ export default defineComponent({
         OBSWebsocketSave(data: $data) { id }
       }`);
     onDoneSave((result) => {
-      router.push({ params: { id: result.data.OBSWebsocketSave.id } });
+      router.push({
+        params: {
+          id: result.data.OBSWebsocketSave.id,
+        },
+      });
       EventBus.$emit('snack', 'success', 'Data saved.');
     });
     onErrorSave(error);
@@ -369,7 +395,12 @@ export default defineComponent({
     const form1 = ref(null);
     const valid1 = ref(true);
 
-    const rules = { name: [required] };
+    const rules = {
+      name:        [required],
+      scene:       [required],
+      volume:      [required, maxValue(0), minValue(-100)],
+      miliseconds: [required, minValue(10)],
+    };
 
     const availableScenes = ref([] as { value: string; text: string }[]);
     const availableSources = ref([] as Source[]);
@@ -377,10 +408,14 @@ export default defineComponent({
     const availableAudioSources = computed(() => {
       const audioTypeId = sourceTypes.value.filter(type => type.caps.hasAudio).map(type => type.typeId);
       return [
-        { value: '', text: translate('integrations.obswebsocket.noSourceSelected') },
+        {
+          value: '', text: translate('integrations.obswebsocket.noSourceSelected'),
+        },
         ...availableSources.value
           .filter(source => audioTypeId.includes(source.typeId))
-          .map(source => ({ value: source.name, text: source.name }))];
+          .map(source => ({
+            value: source.name, text: source.name,
+          }))];
     });
     const actionToAdd = ref(Object.keys(availableActions)[0]);
 
@@ -446,8 +481,11 @@ export default defineComponent({
             value = true;
             break;
         }
-        return { [cur]: value, ...prev };
-      }, {});
+        return {
+          [cur]: value, ...prev,
+        };
+      }, {
+      });
       item.value.simpleModeTasks.push({
         id:    shortid.generate(),
         event: actionKey,
