@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [31.4.6](https://github.com/sogebot/ui-admin/compare/v31.4.5...v31.4.6) (2022-01-11)
+
+
+### Bug Fixes
+
+* **obswebsocket:** add validation rules ([b4ffd37](https://github.com/sogebot/ui-admin/commit/b4ffd379ef5af8631f60bafff6ec5b4df098b8d2))
+
 ### [31.4.5](https://github.com/sogebot/ui-admin/compare/v31.4.4...v31.4.5) (2022-01-10)
 
 
