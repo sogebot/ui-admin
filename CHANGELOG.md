@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [32.0.0](https://github.com/sogebot/ui-admin/compare/v31.4.6...v32.0.0) (2022-01-12)
+
+
+### Features
+
+* **alerts:** add loop support ([4825052](https://github.com/sogebot/ui-admin/commit/4825052161679ed34bdae8cb3f52ba31ac964158))
+
 ### [31.4.6](https://github.com/sogebot/ui-admin/compare/v31.4.5...v31.4.6) (2022-01-11)
 
 
