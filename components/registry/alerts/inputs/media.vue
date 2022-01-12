@@ -18,7 +18,7 @@
       <v-col>
         <v-card>
           <v-card-text v-if="model">
-            <v-img class="ma-auto text-center" :src="`/api/v2/registry/alerts/media/${value}`" :height="sizeOfMedia[1]" :width="sizeOfMedia[0]" />
+            <v-img class="ma-auto text-center" :src="src" :height="sizeOfMedia[1]" :width="sizeOfMedia[0]" />
           </v-card-text>
           <v-card-actions>
             <div class="ma-auto text-center">
@@ -47,17 +47,25 @@
             <div class="ma-auto text-center">
               <video
                 ref="video"
+                :loop="_loop"
+                :key="createdAt"
                 :style="{
                   width: sizeOfMedia[0] + 'px',
                   height: sizeOfMedia[1] + 'px',
                 }"
               >
                 <source
-                  :src="`/api/v2/registry/alerts/media/${value}`"
+                  :src="src"
                   type="video/webm"
                 >
                 Your browser does not support the video tag.
               </video>
+
+              <v-switch
+                v-model="_loop"
+                hide-details="auto"
+                :label="translate('registry.alerts.loop.name')"
+              />
             </div>
           </v-card-text>
           <v-card-actions>
@@ -148,7 +156,7 @@ import UPLOAD from '~/queries/alert/upload.gql';
 Vue.use(AudioVisual);
 
 interface Props {
-  value: string; default?: string; type: 'image' | 'audio'; volume: number;
+  value: string; default?: string; type: 'image' | 'audio'; volume: number; loop: boolean;
 }
 
 export default defineComponent({
@@ -157,6 +165,7 @@ export default defineComponent({
     default: String,
     type:    String,
     volume:  Number,
+    loop:    Boolean,
   },
   setup (props: Props, ctx) {
     const { mutate: uploadMutation, onError: onErrorUpload, loading } = useMutation(UPLOAD);
@@ -171,6 +180,13 @@ export default defineComponent({
     const rowRef = ref(null as null | HTMLElement);
     const model = ref(props.value as string | null);
     const audioAvailable = ref(false);
+
+    const src = ref(null as null | string);
+
+    const _loop = ref(props.loop);
+    watch(_loop, (val) => {
+      ctx.emit('update:loop', val);
+    });
 
     watch(model, (val) => {
       createdAt.value = Date.now();
@@ -214,11 +230,13 @@ export default defineComponent({
         fetch(`/api/v2/registry/alerts/media/${model.value}`)
           .then(async (response) => {
             if (!response.ok) {
+              src.value = null;
               throw new Error('Network response was not ok');
             }
             const myBlob = await response.blob();
             console.log(`${myBlob.type.startsWith('video') ? 'Video' : 'Image'} ${model.value} was found on server.`);
             mediaType.value = myBlob.type.startsWith('video') ? 'video' : 'image';
+            src.value = URL.createObjectURL(myBlob);
 
             if (mediaType.value === 'video') {
               const vid = document.createElement('video');
@@ -363,7 +381,9 @@ export default defineComponent({
       for (let i = 0, l = filesUpload.length; i < l; i++) {
         console.debug(`upload::${filesUpload[i].name}`);
         const data = await getBase64FromUrl(URL.createObjectURL(filesUpload[i]));
-        const res = await uploadMutation({ data });
+        const res = await uploadMutation({
+          data,
+        });
         model.value = res?.data.alertMediaUpload;
       }
       refresh();
@@ -388,6 +408,8 @@ export default defineComponent({
       rowRef,
       model,
       loading,
+      _loop,
+      src,
 
       // icons
       mdiDelete,

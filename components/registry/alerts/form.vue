@@ -178,8 +178,10 @@
             v-model="model.imageId"
             type="image"
             :volume="model.soundVolume"
+            :loop.sync="model.imageOptions.loop"
             class="pb-2"
           />
+
           <v-slider
             v-model.number="model.imageOptions.scale"
             :label="translate('registry.alerts.scale.name')"

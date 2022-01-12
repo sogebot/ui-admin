@@ -408,6 +408,7 @@ export default defineComponent({
       if (
         (form1.value as unknown as HTMLFormElement).validate() && isValid
       ) {
+        console.log('Saving', item.value);
         saveMutation({
           data_json: JSON.stringify({
             ...item.value, id: item.value.id ?? v4(),
@@ -474,6 +475,7 @@ export default defineComponent({
           translateX: 0,
           translateY: 0,
           scale:      100,
+          loop:       false,
         },
         soundId:            defaultAudioId,
         soundVolume:        20,
