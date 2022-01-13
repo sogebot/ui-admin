@@ -8,11 +8,10 @@
       :fullscreen="$vuetify.breakpoint.mobile"
     >
       <template #activator="{ on, attrs }">
-        <v-btn v-if="item.id !== undefined" v-bind="attrs" small v-on="on">
-          <v-icon left>
+        <v-btn v-if="item.id !== undefined" v-bind="attrs" small v-on="on" icon>
+          <v-icon>
             mdi-pencil
           </v-icon>
-          Edit
         </v-btn>
         <v-btn v-else v-bind="attrs" color="primary" v-on="on">
           New item

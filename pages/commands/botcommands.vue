@@ -23,23 +23,20 @@
         </th>
       </template>
 
+      <template #[`item.actions`]="{ item }">
+        <v-row dense justify="end" align="center">
+          <v-col cols="auto">
+            <botcommands-edit :rules="rules" :value="item" :permission-items="permissionItems" @save="refresh()" />
+          </v-col>
+        </v-row>
+      </template>
+
       <template #[`item.command`]="{ item }">
-        <table-hover>
-          <template #hide>
-            <span
-              :class="{ 'text-decoration-line-through': item.command !== item.defaultValue }">{{ item.defaultValue }}</span>
-            <span v-if="item.command !== item.defaultValue">
-              <v-icon class="d-inline-block">{{ mdiArrowRightBold }}</v-icon> {{ item.command }}
-            </span>
-          </template>
-          <template #show>
-            <v-row dense>
-              <v-col cols="auto">
-                <botcommands-edit :rules="rules" :value="item" :permission-items="permissionItems" @save="refresh()" />
-              </v-col>
-            </v-row>
-          </template>
-        </table-hover>
+        <span
+          :class="{ 'text-decoration-line-through': item.command !== item.defaultValue }">{{ item.defaultValue }}</span>
+        <span v-if="item.command !== item.defaultValue">
+          <v-icon class="d-inline-block">{{ mdiArrowRightBold }}</v-icon> {{ item.command }}
+        </span>
       </template>
 
       <template #[`item.permission`]="{ item }">
@@ -122,16 +119,19 @@ export default defineComponent({
 
     const headers = [
       {
+        value: 'actions', width: '3rem', sortable: false,
+      },
+      {
         value: 'command', text: translate('command'),
       },
       {
-        value: 'type', text: capitalize(translate('type')), width: '12rem',
+        value: 'type', text: capitalize(translate('type')),
       },
       {
-        value: 'name', text: capitalize(translate('name')), width: '12rem',
+        value: 'name', text: capitalize(translate('name')),
       },
       {
-        value: 'permission', text: translate('permission'), width: '7rem',
+        value: 'permission', text: translate('permission'),
       },
     ];
 

@@ -57,7 +57,7 @@
 
     <v-data-table v-model="selected" show-select group-by="group" calculate-widths :search="search"
       :loading="state.loading !== ButtonStates.success || loading" :headers="headers" :items-per-page="-1"
-      :items="items" @current-items="saveCurrentItems" >
+      :items="items" @current-items="saveCurrentItems">
       <template #top>
         <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" dense>
@@ -74,88 +74,120 @@
       </template>
 
       <template #[`group.header`]="{ items, isOpen, toggle }">
-        <th colspan="5">
-          <v-icon @click="toggle">
-            {{ isOpen ? mdiMinus : mdiPlus }}
-          </v-icon>
-
-          <v-simple-checkbox class="d-inline-block px-4" style="transform: translateY(5px);" inline
-            :value="isGroupSelected(items[0].group)" @click="toggleGroupSelection(items[0].group)" />
-
-          <span v-if="items[0].group === null" class="red--text text--lighten-1">Ungrouped</span>
-          <span v-else>
-            {{ items[0].group }}
-
-            <span class="px-4" :class="!getGroup[items[0].group].options.permission ? 'red--text' : ''">
-              {{
-                getGroup[items[0].group].options.permission
-                  ? getPermissionName(getGroup[items[0].group].options.permission, permissions)
-                  : '-- unset --'
-              }}
-            </span>
-
-            <span class="px-4">
-              <template v-if="getGroup[items[0].group].options.filter">
-                <v-icon>mdi-filter</v-icon>
-                <code>
-                  {{ getGroup[items[0].group].options.filter }}
-                </code>
-              </template>
-              <template v-else>
-                <v-icon>mdi-filter-off</v-icon>
-                <span class="grey--text text--darken-2">No filters set</span>
-              </template>
-            </span>
-          </span>
-        </th>
-        <th colspan="1" style="text-align-last: right;">
-          <group-config v-if="items[0].group" :key="items[0].group" :permission-items="permissionItems"
-            :permission="getGroup[items[0].group].options.permission" :filter="getGroup[items[0].group].options.filter"
-            @save="updateGroup(items[0].group, $event)" />
-        </th>
+        <group-header :isOpen="isOpen" :toggle="toggle" :getGroup="getGroup" :isGroupSelected="isGroupSelected"
+          :toggleGroupSelection="toggleGroupSelection" :items="items">
+          <template #config>
+            <group-config v-if="items[0].group" :key="items[0].group" :permission-items="permissionItems"
+              :permission="getGroup[items[0].group].options.permission"
+              :filter="getGroup[items[0].group].options.filter" @save="updateGroup(items[0].group, $event)" />
+          </template>
+        </group-header>
       </template>
 
       <template #[`item`]="{ item }">
-        <tr :class="{ 'v-data-table__selected': selected.some(o => o.id === item.id) }" @mouseover="selectItem(item)"
-          @mouseleave="unSelectItem()">
-          <td>
-            <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-          </td>
-          <td class="my-1">
-            <strong>{{ item.command }}</strong>
-            <responses :permissions="permissions" :responses="item.responses" :name="item.command" />
-          </td>
+        <tr :class="{
+          'v-data-table__selected': selected.some(o => o.id === item.id),
+          'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
+          }">
 
-          <td v-show="selectedItem && selectedItem.id == item.id" colspan="4">
-            <v-row dense justify="end" align="center">
-              <v-col cols="auto">
-                <command-edit :rules="rules" :value="item" :permission-items="permissionItems"
-                  :permissions="permissions" :group-items="groupItems" @save="refresh()" />
-              </v-col>
-              <v-col cols="auto">
-                <v-btn color="red" small @click="selected = [item]; deleteDialog = true;">
-                  <v-icon left>
-                    mdi-delete
-                  </v-icon>
-                  Delete
-                </v-btn>
-              </v-col>
-            </v-row>
-          </td>
-          <template v-if="!(selectedItem && selectedItem.id == item.id)">
+          <template v-if="$vuetify.breakpoint.mobile">
+            <td class="v-data-table__mobile-row">
+              <div>
+                <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+                <v-row dense justify="end" align="center">
+                  <v-col cols="auto">
+                    <command-edit :rules="rules" :value="item" :permission-items="permissionItems"
+                      :permissions="permissions" :group-items="groupItems" @save="refresh()" />
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn color="red" icon small @click="selected = [item]; deleteDialog = true;">
+                      <v-icon>
+                        mdi-delete
+                      </v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div>
+                <div class="v-data-table__mobile-row__header">{{translate('command')}}</div>
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+                <strong>{{ item.command }}</strong>
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{translate('response')}}</div>
+
+              <div class="v-data-table__mobile-row__cell">
+                <responses :permissions="permissions" :responses="item.responses" :name="item.command" />
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{translate('group')}}</div>
+              <div class="v-data-table__mobile-row__cell"
+                :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }">
+                {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{translate('enabled')}}</div>
+              <div class="v-data-table__mobile-row__cell">
+                <v-simple-checkbox v-model="item.enabled" disabled />
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{capitalize(translate('visible'))}}</div>
+              <div class="v-data-table__mobile-row__cell">
+                <v-simple-checkbox v-model="item.visible" disabled />
+              </div>
+            </td>
+          </template>
+          <template v-else>
+            <td>
+              <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
+            </td>
+
+            <td>
+
+              <v-row dense justify="end" align="center">
+                <v-col cols="auto">
+                  <command-edit :rules="rules" :value="item" :permission-items="permissionItems"
+                    :permissions="permissions" :group-items="groupItems" @save="refresh()" />
+                </v-col>
+                <v-col cols="auto">
+                  <v-btn color="red" icon small @click="selected = [item]; deleteDialog = true;">
+                    <v-icon>
+                      mdi-delete
+                    </v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </td>
+
+            <td class="my-1">
+              <strong>{{ item.command }}</strong>
+              <responses :permissions="permissions" :responses="item.responses" :name="item.command" />
+            </td>
+
             <td>
               <span
                 :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }">
                 {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
               </span>
             </td>
-            <td>
+            <td class="text-center">
               <v-simple-checkbox v-model="item.enabled" disabled />
             </td>
-            <td>
+            <td class="text-center">
               <v-simple-checkbox v-model="item.visible" disabled />
             </td>
-            <td>{{ item.count }} </td>
+            <td class="text-center">{{ item.count }} </td>
           </template>
         </tr>
       </template>
@@ -164,10 +196,7 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiMagnify,
-  mdiMinus, mdiPlus,
-} from '@mdi/js';
+import { mdiMagnify } from '@mdi/js';
 import {
   computed,
   defineAsyncComponent, defineComponent, onMounted, ref,
@@ -208,6 +237,7 @@ export default defineComponent({
       loader: () => import('~/components/responses.vue'),
     }),
     'group-config': defineAsyncComponent(() => import('~/components/manage/alias/groupConfig.vue')),
+    'group-header': defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
   },
   setup () {
     const { result, loading } = useQuery(GET_ALL);
@@ -230,7 +260,6 @@ export default defineComponent({
 
     const search = ref('');
     const items = ref([] as Required<CommandsInterfaceUI>[]);
-    const selectedItem = ref(null as Required<CommandsInterfaceUI> | null);
 
     const selected = ref([] as CommandsInterfaceUI[]);
     const deleteDialog = ref(false);
@@ -250,19 +279,22 @@ export default defineComponent({
 
     const headers = [
       {
+        value: 'actions', width: '6rem', sortable: false,
+      },
+      {
         value: 'command', text: translate('command'), width: '15rem',
       },
       {
-        value: 'groupToBeShownInTable', text: translate('group'), width: '8rem',
+        value: 'groupToBeShownInTable', text: translate('group'),
       },
       {
-        value: 'enabled', text: translate('enabled'), width: '6rem', align: 'center',
+        value: 'enabled', text: translate('enabled'), align: 'center',
       },
       {
-        value: 'visible', text: capitalize(translate('visible')), width: '6rem', align: 'center',
+        value: 'visible', text: capitalize(translate('visible')), align: 'center',
       },
       {
-        value: 'count', text: capitalize(translate('count')), width: '6rem',
+        value: 'count', text: capitalize(translate('count')), align: 'center',
       },
     ];
 
@@ -376,13 +408,6 @@ export default defineComponent({
         }
       }
     };
-
-    function selectItem (item: typeof items.value[number]) {
-      selectedItem.value = item;
-    }
-    function unSelectItem () {
-      selectedItem.value = null;
-    }
     const batchUpdate = (value: Record<string, any>) => {
       // check validity
       for (const toUpdate of selected.value) {
@@ -471,9 +496,6 @@ export default defineComponent({
     return {
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       saveCurrentItems,
-      selectItem,
-      selectedItem,
-      unSelectItem,
       orderBy,
       toggleItemSelection,
       headers,
@@ -501,8 +523,6 @@ export default defineComponent({
       getGroup,
       isGroupSelected,
       toggleGroupSelection,
-      mdiMinus,
-      mdiPlus,
       updateGroup,
     };
   },

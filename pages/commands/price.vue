@@ -72,35 +72,85 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <tr :class="{ 'v-data-table__selected': selected.some(o => o.id === item.id) }" @mouseover="selectItem(item)"
-          @mouseleave="unSelectItem()">
-          <td>
-            <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-          </td>
-          <td class="my-1">
-            <strong>{{ item.command }}</strong>
-          </td>
+        <tr :class="{
+          'v-data-table__selected': selected.some(o => o.id === item.id),
+          'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
+          }">
 
-          <td v-show="selectedItem && selectedItem.id == item.id" colspan="3">
-            <v-row dense justify="end" align="center">
-              <v-col cols="auto">
-                <edit :rules="rules" :value="item" @save="refresh()" />
-              </v-col>
-              <v-col cols="auto">
-                <v-btn color="red" small @click="selected = [item]; deleteDialog = true;">
-                  <v-icon left>
-                    mdi-delete
-                  </v-icon>
-                  Delete
-                </v-btn>
-              </v-col>
-            </v-row>
-          </td>
-          <template v-if="!(selectedItem && selectedItem.id == item.id)">
+          <template v-if="$vuetify.breakpoint.mobile">
+            <td class="v-data-table__mobile-row">
+              <div>
+                <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+                <v-row dense justify="end" align="center">
+                  <v-col cols="auto">
+                    <edit :rules="rules" :value="item" @save="refresh()" />
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn color="red" icon small @click="selected = [item]; deleteDialog = true;">
+                      <v-icon>
+                        mdi-delete
+                      </v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </div>
+            </td>
+
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{translate('command')}}</div>
+              <div class="v-data-table__mobile-row__cell">
+                <strong>{{ item.command }}</strong>
+              </div>
+            </td>
+
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{translate('enabled')}}</div>
+              <div class="v-data-table__mobile-row__cell">
+                <v-simple-checkbox v-model="item.enabled" disabled />
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{capitalize(translate('systems.price.price.name'))}}</div>
+              <div class="v-data-table__mobile-row__cell">
+                {{ priceFormatter(item) }}
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{translate('systems.price.emitRedeemEvent')}}</div>
+              <div class="v-data-table__mobile-row__cell">
+                <v-simple-checkbox v-model="item.emitRedeemEvent" disabled />
+              </div>
+            </td>
+          </template>
+          <template v-else>
             <td>
-              <v-simple-checkbox v-model="item.enabled" disabled />
+              <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
             </td>
             <td>
+              <v-row dense justify="end" align="center">
+                <v-col cols="auto">
+                  <edit :rules="rules" :value="item" @save="refresh()" />
+                </v-col>
+                <v-col cols="auto">
+                  <v-btn color="red" icon small @click="selected = [item]; deleteDialog = true;">
+                    <v-icon>
+                      mdi-delete
+                    </v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </td>
+            <td class="my-1">
+              <strong>{{ item.command }}</strong>
+            </td>
+            <td class="text-center">
+              <v-simple-checkbox v-model="item.enabled" disabled />
+            </td>
+            <td class="text-center">
               <v-simple-checkbox v-model="item.emitRedeemEvent" disabled />
             </td>
             <td>
@@ -166,13 +216,16 @@ export default defineComponent({
 
     const headers = [
       {
+        value: 'actions', width: '6rem', sortable: false,
+      },
+      {
         value: 'command', text: translate('command'),
       },
       {
-        value: 'enabled', text: translate('enabled'), width: '6rem', align: 'center',
+        value: 'enabled', text: translate('enabled'), align: 'center',
       },
       {
-        value: 'emitRedeemEvent', text: translate('systems.price.emitRedeemEvent'), width: '15rem', align: 'center',
+        value: 'emitRedeemEvent', text: translate('systems.price.emitRedeemEvent'), align: 'center',
       },
       {
         value: 'price', text: capitalize(translate('systems.price.price.name')),
@@ -313,6 +366,7 @@ export default defineComponent({
       priceFormatter,
       refresh,
       batchUpdate,
+      capitalize,
 
       selected,
       deleteDialog,

@@ -8,11 +8,10 @@
       :fullscreen="$vuetify.breakpoint.mobile"
     >
       <template #activator="{ on, attrs }">
-        <v-btn v-bind="attrs" small v-on="on">
-          <v-icon left>
+        <v-btn v-bind="attrs" small v-on="on" icon>
+          <v-icon>
             mdi-pencil
           </v-icon>
-          Edit
         </v-btn>
       </template>
       <v-card outlined class="pt-3">

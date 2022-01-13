@@ -55,7 +55,8 @@
     </v-expand-transition>
 
     <v-data-table v-model="selected" calculate-widths show-select :search="search"
-      :loading="state.loading !== ButtonStates.success" :headers="headers" :items-per-page="-1" :items="items" @current-items="saveCurrentItems" >
+      :loading="state.loading !== ButtonStates.success" :headers="headers" :items-per-page="-1" :items="items"
+      @current-items="saveCurrentItems">
       <template #top>
         <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" dense>
@@ -70,28 +71,137 @@
         </v-sheet>
       </template>
 
-      <template #[`item.name`]="{ item }">
-        <table-hover>
-          <template #hide>
-            {{ item.name }}
-          </template>
+      <template #[`item`]="{ item }">
+        <tr :class="{
+          'v-data-table__selected': selected.some(o => o.id === item.id),
+          'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
+          }">
 
-          <template #show>
-            <v-row dense>
-              <v-col cols="auto">
-                <cooldowns-edit :rules="rules" :value="item" @save="refresh()" />
-              </v-col>
-              <v-col cols="auto">
-                <v-btn color="red" small @click="selected = [item]; deleteDialog = true;">
-                  <v-icon left>
-                    mdi-delete
-                  </v-icon>
-                  Delete
-                </v-btn>
-              </v-col>
-            </v-row>
+          <template v-if="$vuetify.breakpoint.mobile">
+            <td class="v-data-table__mobile-row">
+              <div>
+                <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+        <v-row dense justify="end" align="center">
+          <v-col cols="auto">
+            <cooldowns-edit :rules="rules" :value="item" @save="refresh()" />
+          </v-col>
+          <v-col cols="auto">
+            <v-btn color="red" icon small @click="selected = [item]; deleteDialog = true;">
+              <v-icon>
+                mdi-delete
+              </v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div>
+                <div class="v-data-table__mobile-row__header">{{'!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group')}}</div>
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+                <strong>{{ item.name }}</strong>
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{translate('cooldown')}}</div>
+              <div class="v-data-table__mobile-row__cell">{{ item.count}}</div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{translate('cooldown')}}</div>
+              <div class="v-data-table__mobile-row__cell">{{ translate(item.type) }}</div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{translate('enabled')}}</div>
+              <div class="v-data-table__mobile-row__cell">
+                <v-simple-checkbox v-model="item.isEnabled" disabled />
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{capitalize(translate('quiet'))}}</div>
+              <div class="v-data-table__mobile-row__cell">
+                <v-simple-checkbox v-model="item.isErrorMsgQuiet" disabled />
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.casters'))}}</div>
+              <div class="v-data-table__mobile-row__cell">
+                <v-simple-checkbox v-model="item.isOwnerAffected" disabled />
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.moderators'))}}</div>
+              <div class="v-data-table__mobile-row__cell">
+                <v-simple-checkbox v-model="item.isModeratorAffected" disabled />
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.subscribers'))}}</div>
+              <div class="v-data-table__mobile-row__cell">
+                <v-simple-checkbox v-model="item.isSubscriberAffected" disabled />
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.followers'))}}</div>
+              <div class="v-data-table__mobile-row__cell">
+                <v-simple-checkbox v-model="item.isFollowerAffected" disabled />
+              </div>
+            </td>
           </template>
-        </table-hover>
+          <template v-else>
+            <td>
+              <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
+            </td>
+
+            <td>
+        <v-row dense justify="end" align="center">
+          <v-col cols="auto">
+            <cooldowns-edit :rules="rules" :value="item" @save="refresh()" />
+          </v-col>
+          <v-col cols="auto">
+            <v-btn color="red" icon small @click="selected = [item]; deleteDialog = true;">
+              <v-icon>
+                mdi-delete
+              </v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+            </td>
+
+            <td class="my-1">
+              <strong>{{ item.name }}</strong>
+            </td>
+
+            <td>{{ item.count }}s</td>
+            <td>{{ translate(item.type) }}</td>
+            <td class="text-center">
+              <v-simple-checkbox v-model="item.isEnabled" disabled />
+            </td>
+            <td class="text-center">
+              <v-simple-checkbox v-model="item.isErrorMsgQuiet" disabled />
+            </td>
+            <td class="text-center">
+              <v-simple-checkbox v-model="item.isOwnerAffected" disabled />
+            </td>
+            <td class="text-center">
+              <v-simple-checkbox v-model="item.isModeratorAffected" disabled />
+            </td>
+            <td class="text-center">
+              <v-simple-checkbox v-model="item.isSubscriberAffected" disabled />
+            </td>
+            <td class="text-center">
+              <v-simple-checkbox v-model="item.isFollowerAffected" disabled />
+            </td>
+          </template>
+        </tr>
+      </template>
+
+      <template #[`item.name`]="{ item }">
+        {{ item.name }}
       </template>
 
       <template #[`item.count`]="{ item }">
@@ -192,6 +302,9 @@ export default defineComponent({
     });
 
     const headers = [
+      {
+        value: 'actions', width: '6rem', sortable: false,
+      },
       {
         value: 'name', text: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group'),
       },
@@ -339,6 +452,7 @@ export default defineComponent({
       mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
       refresh,
+      capitalize,
     };
   },
 });

@@ -28,6 +28,10 @@ tr > td:first-child {
   border-left: 2px solid transparent;
 }
 
+tr.v-data-table__selected.v-data-table__mobile-table-row > td {
+  border-left: 2px solid var(--v-primary-base);
+}
+
 tr.v-data-table__selected > td:first-child {
   border-left: 2px solid var(--v-primary-base);
 }
