@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [33.0.0](https://github.com/sogebot/ui-admin/compare/v32.0.0...v33.0.0) (2022-01-13)
+
+
+### Features
+
+* **inputVariables:** add uptime to globals ([d76ce99](https://github.com/sogebot/ui-admin/commit/d76ce9933cae283eb4af89743071b3805bc24d02))
+* **textoverlay:** add presets support ([60b71c0](https://github.com/sogebot/ui-admin/commit/60b71c019a04b1320446923a8c2ad8c020cac74e))
+
 ## [32.0.0](https://github.com/sogebot/ui-admin/compare/v31.4.6...v32.0.0) (2022-01-12)
 
 
