@@ -35,7 +35,9 @@ import {
 import translate from '@sogebot/ui-helpers/translate';
 
 export default defineComponent({
-  props: { filters: Array },
+  props: {
+    filters: Array,
+  },
   setup (props, ctx) {
     const filterToAdd = ref('');
     const menu = ref(false);
@@ -48,7 +50,7 @@ export default defineComponent({
       'toptip.overall.username', 'toptip.overall.amount', 'toptip.overall.currency',
       'toptip.overall.message', 'toptip.stream.username', 'toptip.stream.amount',
       'toptip.stream.currency', 'toptip.stream.message', 'latestCheerAmount', 'latestCheerMessage',
-      'latestCheer', 'isBotSubscriber', 'isStreamOnline',
+      'latestCheer', 'isBotSubscriber', 'isStreamOnline', 'uptime',
     ];
 
     const filterItems = computed(() => {
