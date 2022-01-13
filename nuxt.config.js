@@ -12,10 +12,16 @@ export default {
   head: {
     titleTemplate: '%s',
     title:         'sogeBot - admin page',
-    htmlAttrs:     { lang: 'en' },
-    meta:          [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+    htmlAttrs:     {
+      lang: 'en',
+    },
+    meta: [
+      {
+        charset: 'utf-8',
+      },
+      {
+        name: 'viewport', content: 'width=device-width, initial-scale=1',
+      },
       {
         hid: 'description', name: 'description', content: '',
       },
@@ -42,8 +48,12 @@ export default {
     '@/plugins/remove-shift-selection',
     '@/plugins/before-each.ts',
     '@/plugins/apollo-hook.ts',
-    { src: '@/plugins/log-version.js', ssr: false },
-    { src: '@/plugins/check-token-validity.ts', ssr: false },
+    {
+      src: '@/plugins/log-version.js', ssr: false,
+    },
+    {
+      src: '@/plugins/check-token-validity.ts', ssr: false,
+    },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -56,18 +66,30 @@ export default {
     // https://go.nuxtjs.dev/stylelint
     '@nuxtjs/stylelint-module',
     // https://go.nuxtjs.dev/vuetify
-    ['@nuxtjs/vuetify', { treeShake: true }],
+    ['@nuxtjs/vuetify', {
+      treeShake: true,
+    }],
     // https://composition-api.nuxtjs.org/
     '@nuxtjs/composition-api/module',
   ],
 
   vuetify: {
-    icons:      { iconfont: 'mdiSvg' },
-    breakpoint: { mobileBreakpoint: 'sm' },
-    theme:      {
-      options: { customProperties: true },
-      dark:    true,
-      themes:  { dark: { primary: '#FF9800' } },
+    icons: {
+      iconfont: 'mdiSvg',
+    },
+    breakpoint: {
+      mobileBreakpoint: 'sm',
+    },
+    theme: {
+      options: {
+        customProperties: true,
+      },
+      dark:   true,
+      themes: {
+        dark: {
+          primary: '#FF9800',
+        },
+      },
     },
   },
 
@@ -81,11 +103,19 @@ export default {
 
   apollo: {
     includeNodeModules: true,
-    clientConfigs:      { default: '~/plugins/apollo-config.js' },
+    clientConfigs:      {
+      default: '~/plugins/apollo-config.js',
+    },
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: { hotMiddleware: { client: { overlay: false } } },
+  build: {
+    hotMiddleware: {
+      client: {
+        overlay: false,
+      },
+    },
+  },
 
   router: {
     mode: 'hash',
@@ -93,16 +123,24 @@ export default {
     extendRoutes (routes, resolve) {
       routes.push({
         path:       '/manage/viewers/:id',
-        components: { default: resolve(__dirname, 'pages/manage/viewers') },
+        components: {
+          default: resolve(__dirname, 'pages/manage/viewers'),
+        },
       });
     },
   },
 
-  axios: { proxy: true },
+  axios: {
+    proxy: true,
+  },
 
   // enable api proxy
   ...process.env.NODE_ENV === 'development' && {
     proxy: {
+      '/assets': {
+        changeOrigin: true,
+        target:       'http://localhost:20000',
+      },
       '/graphql': {
         changeOrigin: true,
         target:       'http://localhost:20000',

@@ -2,8 +2,8 @@
   <v-card :loading="isLoading">
     <portal to="navbar">
       <v-btn
-        small
         v-if="e1 < 5"
+        small
         text
         class="ma-2"
         @click="validateForm"
@@ -15,10 +15,12 @@
         :text="!$vuetify.breakpoint.xs"
         :icon="$vuetify.breakpoint.xs"
         :loading="isSaving"
-        @click="save"
         :disabled="!valid1"
+        @click="save"
       >
-        <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+        <v-icon class="d-flex d-sm-none">
+          {{ mdiFloppy }}
+        </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
     </portal>
@@ -116,6 +118,20 @@
             </v-stepper-content>
 
             <v-stepper-content :step="3">
+              <v-autocomplete
+                v-model="presetSelector"
+                title="Preset"
+                placeholder="Select preset to fill html/css/js"
+                :items="presets"
+                hide-details="auto"
+              >
+                <template #append-outer>
+                  <v-btn @click="applyPreset" :loading="presetLoading">
+                    Apply
+                  </v-btn>
+                </template>
+              </v-autocomplete>
+
               <prism-editor
                 v-model="item.text"
                 style="border: 1px solid gray;"
@@ -169,16 +185,24 @@ import {
 import { required } from '~/functions/validators';
 
 export default defineComponent({
-  components: { PrismEditor },
+  components: {
+    PrismEditor,
+  },
   setup () {
     const e1 = ref(1);
     const store = useStore();
     const route = useRoute();
     const router = useRouter();
 
+    const presets = ref([] as string[]);
+    const presetSelector = ref(null as null | string);
+    const presetLoading = ref(false);
+
     const isSaving = ref(false);
     const isLoading = ref(true);
-    const rules = { name: [required] };
+    const rules = {
+      name: [required],
+    };
 
     const item = ref({
       id:       v4(),
@@ -207,17 +231,31 @@ export default defineComponent({
           return error(err);
         }
         isSaving.value = false;
-        router.push({ params: { id: item.value.id ?? '' } });
+        router.push({
+          params: {
+            id: item.value.id ?? '',
+          },
+        });
         EventBus.$emit('snack', 'success', 'Data saved.');
       });
     };
 
     onMounted(() => {
       store.commit('panel/back', '/registry/textoverlay');
+
+      getSocket('/registries/text').emit('text::presets', [], (err: string | null, presetList: string[]) => {
+        if (err) {
+          return error(err);
+        }
+        presets.value = presetList;
+      });
+
       if (route.value.params.id && route.value.params.id !== 'new') {
         // load initial item
         isLoading.value = true;
-        getSocket('/registries/text').emit('generic::getOne', { id: route.value.params.id, parseText: false }, (err: string | null, data: TextInterface) => {
+        getSocket('/registries/text').emit('generic::getOne', {
+          id: route.value.params.id, parseText: false,
+        }, (err: string | null, data: TextInterface) => {
           if (err) {
             return error(err);
           }
@@ -228,6 +266,32 @@ export default defineComponent({
         isLoading.value = false;
       }
     });
+
+    const applyPreset = async () => {
+      if (presetSelector.value) {
+        presetLoading.value = true;
+        console.log('Applying preset', presetSelector.value);
+        const html = await fetch(`assets/presets/textOverlay/${presetSelector.value}/html.txt`);
+        const css = await fetch(`assets/presets/textOverlay/${presetSelector.value}/css.txt`);
+        const js = await fetch(`assets/presets/textOverlay/${presetSelector.value}/js.txt`);
+
+        for (const response of [html, css, js]) {
+          if (response.ok) {
+            const data = await response.text();
+            if (response.url.endsWith('html.txt')) {
+              item.value.text = data;
+            }
+            if (response.url.endsWith('js.txt')) {
+              item.value.js = data;
+            }
+            if (response.url.endsWith('css.txt')) {
+              item.value.css = data;
+            }
+          }
+        }
+        presetLoading.value = false;
+      }
+    };
 
     return {
       e1,
@@ -244,6 +308,11 @@ export default defineComponent({
       highlighterCSS,
       highlighterHTML,
       mdiFloppy,
+
+      applyPreset,
+      presets,
+      presetSelector,
+      presetLoading,
     };
   },
 });
