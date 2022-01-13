@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [33.0.1](https://github.com/sogebot/ui-admin/compare/v33.0.0...v33.0.1) (2022-01-13)
+
+
+### Bug Fixes
+
+* update commands tables to be more mobile friendly ([29a8a72](https://github.com/sogebot/ui-admin/commit/29a8a72f99144361977dc9c52449ea16fa6fb955))
+
 ## [33.0.0](https://github.com/sogebot/ui-admin/compare/v32.0.0...v33.0.0) (2022-01-13)
 
 
