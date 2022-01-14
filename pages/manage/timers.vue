@@ -34,14 +34,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -221,7 +221,6 @@
 </template>
 
 <script lang="ts">
-import { mdiCheckboxMultipleMarkedOutline, mdiMagnify } from '@mdi/js';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -240,8 +239,12 @@ import {
 
 export default defineComponent({
   components: {
-    'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/timers-newItem.vue') }),
-    responses:  defineAsyncComponent({ loader: () => import('~/components/timers-responses.vue') }),
+    'new-item': defineAsyncComponent({
+      loader: () => import('~/components/new-item/timers-newItem.vue'),
+    }),
+    responses: defineAsyncComponent({
+      loader: () => import('~/components/timers-responses.vue'),
+    }),
   },
   setup () {
     const rules = {
@@ -267,7 +270,9 @@ export default defineComponent({
       }
     });
 
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
@@ -276,7 +281,9 @@ export default defineComponent({
     });
 
     const headers = [
-      { value: 'name', text: translate('timers.dialog.name') },
+      {
+        value: 'name', text: translate('timers.dialog.name'),
+      },
       {
         value: 'tickOffline', text: translate('timers.dialog.tickOffline'), align: 'center',
       },
@@ -284,13 +291,21 @@ export default defineComponent({
         value: 'isEnabled', text: translate('enabled'), align: 'center',
       },
       // virtual attributes
-      { value: 'triggerEveryMessage', text: translate('messages') },
-      { value: 'triggerEverySecond', text: capitalize(translate('seconds')) },
-      { value: 'messages', text: translate('timers.dialog.responses') },
+      {
+        value: 'triggerEveryMessage', text: translate('messages'),
+      },
+      {
+        value: 'triggerEverySecond', text: capitalize(translate('seconds')),
+      },
+      {
+        value: 'messages', text: translate('timers.dialog.responses'),
+      },
     ];
 
     const headersDelete = [
-      { value: 'name', text: translate('timers.dialog.name') },
+      {
+        value: 'name', text: translate('timers.dialog.name'),
+      },
     ];
 
     const refresh = () => {
@@ -375,7 +390,11 @@ export default defineComponent({
                 item[attr][i].timestamp = i;
               }
             }
-            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+            console.log('Updating', {
+              itemToUpdate,
+            }, {
+              attr, value: item[attr],
+            });
             getSocket('/systems/timers').emit('generic::setById', {
               id:   itemToUpdate.id,
               item: {
@@ -412,8 +431,6 @@ export default defineComponent({
       update,
       refresh,
       capitalize,
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
       saveCurrentItems,
     };

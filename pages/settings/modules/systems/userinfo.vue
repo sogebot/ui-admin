@@ -29,9 +29,9 @@
                 <tbody>
                   <tr v-for="(item , idx) of settings.me.order[0]" :key="item">
                     <td>
-                      <v-icon v-if="idx !== 0" @click.stop="swapOrder(idx, idx - 1)">{{ mdiChevronUp }}</v-icon>
+                      <v-icon v-if="idx !== 0" @click.stop="swapOrder(idx, idx - 1)">mdi-chevron-up</v-icon>
                       <v-icon v-if="idx !== settings.me.order[0].length - 1" @click.stop="swapOrder(idx, idx + 1)">
-                        {{ mdiChevronDown }}</v-icon>
+                        mdi-chevron-down</v-icon>
                     </td>
                     <td>{{item}}</td>
                     <td>
@@ -51,9 +51,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiChevronDown, mdiChevronUp, mdiEye, mdiEyeOff,
-} from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -70,7 +67,9 @@ import {
 } from '~/functions/validators';
 
 export default defineComponent({
-  components: { revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')) },
+  components: {
+    revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')),
+  },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);
@@ -80,7 +79,9 @@ export default defineComponent({
 
     watch(settings, () => {
       store.commit('settings/pending', true);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -90,7 +91,9 @@ export default defineComponent({
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     onMounted(() => {
       getSocket(`/systems/userinfo`)
@@ -100,7 +103,9 @@ export default defineComponent({
             return;
           }
           ui.value = _ui;
-          console.log({ _settings });
+          console.log({
+            _settings,
+          });
           settings.value = _settings;
           nextTick(() => { store.commit('settings/pending', false); });
         });
@@ -139,12 +144,6 @@ export default defineComponent({
       // functions
       swapOrder,
       toggleVisibility,
-
-      // icons
-      mdiChevronUp,
-      mdiChevronDown,
-      mdiEye,
-      mdiEyeOff,
     };
   },
 });

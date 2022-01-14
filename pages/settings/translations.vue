@@ -17,7 +17,7 @@
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -57,7 +57,6 @@
 </template>
 
 <script lang="ts">
-import { mdiMagnify } from '@mdi/js';
 import {
   defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
@@ -72,7 +71,9 @@ export default defineComponent({
     const items = ref([] as { name: string; current: string; default: string; }[]);
 
     const search = ref('');
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
@@ -81,8 +82,12 @@ export default defineComponent({
     });
 
     const headers = [
-      { value: 'name', text: 'Key' },
-      { value: 'current', text: 'Value' },
+      {
+        value: 'name', text: 'Key',
+      },
+      {
+        value: 'current', text: 'Value',
+      },
     ];
 
     const refresh = () => {
@@ -122,11 +127,15 @@ export default defineComponent({
 
     const update = (name: string, value: string, defaultValue: string) => {
       if (value === defaultValue) {
-        getSocket('/').emit('responses.revert', { name }, () => {
+        getSocket('/').emit('responses.revert', {
+          name,
+        }, () => {
           EventBus.$emit('snack', 'success', 'Translation updated.');
         });
       } else {
-        getSocket('/').emit('responses.set', { name, value });
+        getSocket('/').emit('responses.set', {
+          name, value,
+        });
         EventBus.$emit('snack', 'success', 'Translation updated.');
       }
     };
@@ -140,7 +149,6 @@ export default defineComponent({
       update,
 
       ButtonStates,
-      mdiMagnify,
     };
   },
 });

@@ -10,7 +10,7 @@
         width="36"
         @click="removeSelected"
       >
-        <v-icon>{{ mdiDelete }}</v-icon> {{ selected.length }}
+        <v-icon>mdi-delete-forever</v-icon> {{ selected.length }}
       </v-btn>
 
       <v-tooltip bottom>
@@ -30,7 +30,7 @@
                 v-bind="attrs"
                 v-on="{...on, ...onTooltip}"
               >
-                <v-icon>{{ mdiFilterMenu }}</v-icon>
+                <v-icon>mdi-filter-menu</v-icon>
               </v-btn>
             </template>
 
@@ -123,7 +123,7 @@
             @click="emitSkipAlertEvent()"
             v-on="on"
           >
-            <v-icon>{{ mdiSkipNext }}</v-icon>
+            <v-icon>mdi-skip-next</v-icon>
           </v-btn>
         </template>
         <span>Skip alert</span>
@@ -141,10 +141,10 @@
             @click="isTTSMuted = !isTTSMuted"
           >
             <v-icon v-if="isTTSMuted">
-              {{ mdiTextToSpeechOff }}
+              mdi-text-to-speech-off
             </v-icon>
             <v-icon v-else>
-              {{ mdiTextToSpeech }}
+              mdi-text-to-speech
             </v-icon>
           </v-btn>
         </template>
@@ -163,10 +163,10 @@
             @click="isSoundMuted = !isSoundMuted"
           >
             <v-icon v-if="isSoundMuted">
-              {{ mdiVolumeMute }}
+              mdi-volume-mute
             </v-icon>
             <v-icon v-else>
-              {{ mdiVolumeHigh }}
+              mdi-volume-high
             </v-icon>
           </v-btn>
         </template>
@@ -185,10 +185,10 @@
             @click="areAlertsMuted = !areAlertsMuted"
           >
             <v-icon v-if="areAlertsMuted">
-              {{ mdiBellCancel }}
+              mdi-bell-cancel
             </v-icon>
             <v-icon v-else>
-              {{ mdiBellRing }}
+              mdi-bell-ring
             </v-icon>
           </v-btn>
         </template>
@@ -210,7 +210,7 @@
                     @click.stop="resendAlert(item.id)"
                   >
                     <v-icon left>
-                      {{ mdiRefresh }}
+                      mdi-refresh
                     </v-icon> Resend Alert
                   </v-btn>
                 </v-overlay>
@@ -223,11 +223,11 @@
                     <v-row v-if="blockquote(item)" no-gutters class="pt-2">
                       <v-col cols="auto">
                         <v-icon color="accent" x-small style="transform: translateY(5px);">
-                          {{ mdiFormatQuoteOpen }}
+                          mdi-format-quote-open
                         </v-icon>
                         <span v-html="blockquote(item)" />
                         <v-icon color="accent" x-small style="transform: translateY(-5px);">
-                          {{ mdiFormatQuoteClose }}
+                          mdi-format-quote-close
                         </v-icon>
                       </v-col>
                     </v-row>
@@ -245,13 +245,13 @@
                 </div>
                 <div v-else-if="item.event === 'host'" class="orange--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
                   <v-icon size="15" color="orange">
-                    {{ mdiAccountGroup }}
+                    mdi-account-group
                   </v-icon>
                   {{ JSON.parse(item.values_json).viewers }}
                 </div>
                 <div v-else-if="item.event === 'raid'" class="lime--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
                   <v-icon size="15" color="lime">
-                    {{ mdiAccountGroup }}
+                    mdi-account-group
                   </v-icon>
                   {{ JSON.parse(item.values_json).viewers }}
                 </div>
@@ -260,19 +260,19 @@
                 </div>
                 <div v-else-if="item.event === 'subgift'" class="pink--text text--lighten-1 font-condensed" style="font-size: 1.2rem;">
                   <v-icon size="15" color="pink">
-                    {{ mdiGiftOpen }}
+                    mdi-gift-open
                   </v-icon>
                   {{ JSON.parse(item.values_json).fromId }}
                 </div>
                 <div v-else-if="item.event === 'subcommunitygift'" class="orange--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
                   <v-icon size="15" color="orange">
-                    {{ mdiGift }}
+                    mdi-gift
                   </v-icon>
                   {{ JSON.parse(item.values_json).count }}
                 </div>
                 <div v-else-if="item.event === 'resub'" class="deep-purple--text text--lighten-3 font-condensed" style="font-size: 1.5rem;">
                   <span v-if="JSON.parse(item.values_json).subStreakShareEnabled" class="orange--text">
-                    <v-icon size="15" color="orange">{{ mdiFire }}</v-icon>{{ JSON.parse(item.values_json).subStreak }}&nbsp;
+                    <v-icon size="15" color="orange">mdi-fire</v-icon>{{ JSON.parse(item.values_json).subStreak }}&nbsp;
                   </span>
 
                   <span style="font-size:1.2rem;">{{ JSON.parse(item.values_json).tier !== 'Prime' ? 'Tier ' + JSON.parse(item.values_json).tier : JSON.parse(item.values_json).tier }}</span>
@@ -281,7 +281,7 @@
                 <div v-else-if="item.event === 'cheer'" class="yellow--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
                   {{ JSON.parse(item.values_json).bits }}
                   <v-icon size="15" color="yellow">
-                    {{ mdiDiamond }}
+                    mdi-diamond
                   </v-icon>
                 </div>
                 <div v-else-if="item.event === 'tip'" class="light-green--text text--lighten-1 font-condensed" style="font-size:1.5rem;">
@@ -306,14 +306,6 @@
 
 <script lang="ts">
 import {
-  mdiAccountGroup, mdiBellCancel, mdiBellRing, mdiCash,
-  mdiDelete, mdiDiamond, mdiFilterMenu, mdiFire,
-  mdiFormatQuoteClose, mdiFormatQuoteOpen, mdiGift,
-  mdiGiftOpen, mdiRefresh, mdiSkipNext,
-  mdiTextToSpeech, mdiTextToSpeechOff, mdiVolumeHigh,
-  mdiVolumeMute,
-} from '@mdi/js';
-import {
   computed,
   defineComponent, onMounted, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
@@ -330,7 +322,9 @@ import GET_CFG from '~/queries/alert/getCfg.gql';
 import SET_CFG from '~/queries/alert/setCfg.gql';
 
 export default defineComponent({
-  props: { height: Number },
+  props: {
+    height: Number,
+  },
   setup () {
     const store = useStore<any>();
 
@@ -352,7 +346,9 @@ export default defineComponent({
       areAlertsMuted.value = value.areAlertsMuted;
       isTTSMuted.value = value.isTTSMuted;
       isSoundMuted.value = value.isSoundMuted;
-    }, { immediate: true, deep: true });
+    }, {
+      immediate: true, deep: true,
+    });
     const { mutate: saveMutation } = useMutation(SET_CFG);
 
     const isLoading = ref(true);
@@ -454,9 +450,15 @@ export default defineComponent({
     }
 
     watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
-      saveMutation({ name: 'areAlertsMuted', value: val[0] });
-      saveMutation({ name: 'isTTSMuted', value: val[1] });
-      saveMutation({ name: 'isSoundMuted', value: val[2] });
+      saveMutation({
+        name: 'areAlertsMuted', value: val[0],
+      });
+      saveMutation({
+        name: 'isTTSMuted', value: val[1],
+      });
+      saveMutation({
+        name: 'isSoundMuted', value: val[2],
+      });
     });
 
     function resendAlert (id: string) {
@@ -473,7 +475,9 @@ export default defineComponent({
       let t = translate(`eventlist-events.${event.event}`);
 
       const values = JSON.parse(event.values_json);
-      const formattedAmount = Intl.NumberFormat(store.state.configuration.lang, { style: 'currency', currency: get(values, 'currency', 'USD') }).format(get(values, 'amount', '0'));
+      const formattedAmount = Intl.NumberFormat(store.state.configuration.lang, {
+        style: 'currency', currency: get(values, 'currency', 'USD'),
+      }).format(get(values, 'amount', '0'));
       t = t.replace('$formatted_amount', '<strong style="font-size: 1rem">' + formattedAmount + '</strong>');
       t = t.replace('$viewers', '<strong style="font-size: 1rem">' + get(values, 'viewers', '0') + '</strong>');
       t = t.replace('$tier', `${translate('tier')} <strong style="font-size: 1rem">${get(values, 'tier', 'n/a')}</strong>`);
@@ -578,26 +582,6 @@ export default defineComponent({
       showRedeems,
       showSubCommunityGifts,
       showSubGifts,
-
-      /* icons */
-      mdiSkipNext,
-      mdiTextToSpeech,
-      mdiTextToSpeechOff,
-      mdiVolumeHigh,
-      mdiVolumeMute,
-      mdiBellRing,
-      mdiBellCancel,
-      mdiFormatQuoteOpen,
-      mdiFormatQuoteClose,
-      mdiGift,
-      mdiGiftOpen,
-      mdiDiamond,
-      mdiCash,
-      mdiFilterMenu,
-      mdiDelete,
-      mdiRefresh,
-      mdiAccountGroup,
-      mdiFire,
     };
   },
 });

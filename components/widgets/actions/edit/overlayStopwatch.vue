@@ -12,14 +12,14 @@
         <template #selection="data">
           <template v-if="data.item.groupId">
             <span>{{ data.item.groupId }}</span>
-            <v-icon class="px-1">{{mdiChevronRight}}</v-icon>
+            <v-icon class="px-1">mdi-chevron-right</v-icon>
           </template>
           <strong>{{ data.item.id }}</strong>
         </template>
         <template #item="data">
           <template v-if="data.item.groupId">
             <span>{{ data.item.groupId }}</span>
-            <v-icon class="px-1">{{mdiChevronRight}}</v-icon>
+            <v-icon class="px-1">mdi-chevron-right</v-icon>
           </template>
           <strong>{{ data.item.id }}</strong>
         </template>
@@ -29,7 +29,6 @@
 </template>
 
 <script lang="ts">
-import { mdiChevronRight } from '@mdi/js';
 import {
   computed,
   defineComponent, onMounted, onUnmounted, ref, watch,
@@ -48,7 +47,9 @@ type Props = {
   item: OverlayMappers
 };
 export default defineComponent({
-  props: { item: Object },
+  props: {
+    item: Object,
+  },
   setup (props: Props, ctx) {
     const clonedItem = ref(cloneDeep(props.item));
     const valid = ref(true);
@@ -83,18 +84,22 @@ export default defineComponent({
       EventBus.$off(`quickaction::${props.item.id}::valid`);
     });
 
-    const rules = { stopwatchId: [required] };
+    const rules = {
+      stopwatchId: [required],
+    };
 
     watch(clonedItem, (val) => {
       ctx.emit('update:item', pick(val, ['id', 'userId', 'order', 'type', 'options.label', 'options.color', 'options.stopwatchId']));
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch(valid, (val) => {
       ctx.emit('update:valid', val);
     });
 
     return {
-      clonedItem, rules, valid, form, loading, overlaysStopwatch, mdiChevronRight,
+      clonedItem, rules, valid, form, loading, overlaysStopwatch,
     };
   },
 });

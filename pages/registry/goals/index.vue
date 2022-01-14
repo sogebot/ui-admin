@@ -22,14 +22,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -110,19 +110,19 @@
         <div style="width: max-content;">
           <v-hover v-slot="{ hover }">
             <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" nuxt :to="'/registry/goals/' + item.id" @click.stop>
-              <v-icon>{{ mdiPencil }}</v-icon>
+              <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </v-hover>
 
           <v-hover v-slot="{ hover }">
             <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" @click.stop="clone(item)">
-              <v-icon>{{ mdiContentCopy }}</v-icon>
+              <v-icon>mdi-content-copy</v-icon>
             </v-btn>
           </v-hover>
 
           <v-hover v-slot="{ hover }">
             <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" :href="'/overlays/goals/' + item.id" @click.stop>
-              <v-icon>{{ mdiLink }}</v-icon>
+              <v-icon>mdi-link</v-icon>
             </v-btn>
           </v-hover>
         </div>
@@ -174,7 +174,7 @@
                     </td>
                     <td>
                       <v-icon v-if="goal.endAfterIgnore">
-                        {{ mdiInfinity }}
+                        mdi-infinity
                       </v-icon>
                       <template v-else>
                         {{ dayjs(goal.endAfter).format('LL') }} {{ dayjs(goal.endAfter).format('LTS') }}
@@ -193,9 +193,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCheckboxMultipleMarkedOutline, mdiContentCopy, mdiInfinity, mdiLink, mdiMagnify, mdiPencil,
-} from '@mdi/js';
 import {
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -234,11 +231,15 @@ export default defineComponent({
       refetch();
     });
 
-    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, { refetchQueries: ['GoalsGetAll'] });
+    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, {
+      refetchQueries: ['GoalsGetAll'],
+    });
     onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
     onErrorRemove(error);
 
-    const { mutate: saveMutation, onError: onErrorSave, onDone: onDoneSave } = useMutation(SAVE, { refetchQueries: ['GoalsGetAll'] });
+    const { mutate: saveMutation, onError: onErrorSave, onDone: onDoneSave } = useMutation(SAVE, {
+      refetchQueries: ['GoalsGetAll'],
+    });
     onDoneSave(() => EventBus.$emit('snack', 'success', 'Data saved.'));
     onErrorSave(error);
 
@@ -259,26 +260,40 @@ export default defineComponent({
     });
 
     const headers = [
-      { value: 'name', text: translate('timers.dialog.name') },
-      { value: 'display.type', text: translate('registry.goals.input.displayAs.title') },
+      {
+        value: 'name', text: translate('timers.dialog.name'),
+      },
+      {
+        value: 'display.type', text: translate('registry.goals.input.displayAs.title'),
+      },
       {
         value: 'items', text: 'Items', sortable: false,
       },
       {
         value: 'actions', text: '', sortable: false,
       },
-      { text: '', value: 'data-table-expand' },
+      {
+        text: '', value: 'data-table-expand',
+      },
     ];
 
     const headersDelete = [
-      { value: 'name', text: translate('timers.dialog.name') },
-      { value: 'display.type', text: translate('registry.goals.input.displayAs.title') },
-      { value: 'items', text: 'Items' },
+      {
+        value: 'name', text: translate('timers.dialog.name'),
+      },
+      {
+        value: 'display.type', text: translate('registry.goals.input.displayAs.title'),
+      },
+      {
+        value: 'items', text: 'Items',
+      },
     ];
 
     const deleteSelected = () => {
       deleteDialog.value = false;
-      selected.value.forEach(item => removeMutation({ id: item.id }));
+      selected.value.forEach(item => removeMutation({
+        id: item.id,
+      }));
       selected.value = [];
     };
 
@@ -293,7 +308,9 @@ export default defineComponent({
         })),
       };
 
-      saveMutation({ data_json: JSON.stringify(clonedGroup) });
+      saveMutation({
+        data_json: JSON.stringify(clonedGroup),
+      });
     };
 
     return {
@@ -315,15 +332,6 @@ export default defineComponent({
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       clone,
       saveCurrentItems,
-
-      // icons
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
-      mdiContentCopy,
-      mdiPencil,
-      mdiInfinity,
-      mdiLink,
-
       // others
       dayjs,
       ButtonStates,

@@ -10,7 +10,7 @@
         @click="save"
       >
         <v-icon class="d-flex d-sm-none">
-          {{ mdiFloppy }}
+          mdi-floppy
         </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
@@ -107,7 +107,7 @@
                 <v-tabs v-else ref="tabs" v-model="selectedTab" show-arrows center-active>
                   <v-tab v-for="goal of item.goals" :key="goal.id">
                     <span :class="{'red--text': hasError(goal.id)}">
-                      <v-icon v-if="hasError(goal.id)" color="red">{{ mdiExclamationThick }}</v-icon>
+                      <v-icon v-if="hasError(goal.id)" color="red">mdi-exclamation-thick</v-icon>
                       <span v-if="goal.name.trim().length === 0">
                         &lt;untitled&gt;
                       </span>
@@ -121,7 +121,7 @@
             </v-col>
             <v-col cols="1" class="text-center" align-self="center">
               <v-btn icon @click="addItem">
-                <v-icon>{{ mdiPlus }}</v-icon>
+                <v-icon>mdi-plus-thick</v-icon>
               </v-btn>
             </v-col>
           </v-row>
@@ -322,9 +322,6 @@
 
 <script lang="ts">
 import {
-  mdiClose, mdiExclamationThick, mdiFloppy, mdiPlus,
-} from '@mdi/js';
-import {
   defineAsyncComponent, defineComponent, onMounted,
 
   ref, useRoute, useRouter, useStore, watch,
@@ -361,9 +358,15 @@ const emptyItem: GoalGroupInterface = {
 export default defineComponent({
   components: {
     PrismEditor,
-    datetime: defineAsyncComponent({ loader: () => import('~/components/form/datetime.vue') }),
-    color:    defineAsyncComponent({ loader: () => import('~/components/form/color.vue') }),
-    font:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
+    datetime: defineAsyncComponent({
+      loader: () => import('~/components/form/datetime.vue'),
+    }),
+    color: defineAsyncComponent({
+      loader: () => import('~/components/form/color.vue'),
+    }),
+    font: defineAsyncComponent({
+      loader: () => import('~/components/form/expansion/font.vue'),
+    }),
   },
   setup () {
     const route = useRoute();
@@ -374,7 +377,9 @@ export default defineComponent({
     let loading = ref(true);
     const item = ref(cloneDeep(emptyItem) as GoalGroupInterface);
     if (route.value.params.id !== 'new') {
-      const query = useQuery(GET_ONE, { id: route.value.params.id });
+      const query = useQuery(GET_ONE, {
+        id: route.value.params.id,
+      });
       query.onError(error);
       loading = query.loading;
       const cache = useResult<{ goals: GoalGroupInterface[] }, null>(query.result, null);
@@ -385,11 +390,15 @@ export default defineComponent({
 
         if (value.length === 0) {
           EventBus.$emit('snack', 'error', 'Data not found.');
-          router.push({ path: '/registry/goals' });
+          router.push({
+            path: '/registry/goals',
+          });
         } else {
           item.value = cloneDeep(value[0]);
         }
-      }, { immediate: true, deep: true });
+      }, {
+        immediate: true, deep: true,
+      });
     } else {
       loading.value = false;
     }
@@ -398,7 +407,11 @@ export default defineComponent({
         goalsSave(data: $data_json) { id }
       }`);
     onDoneSave((result) => {
-      router.push({ params: { id: result.data.goalsSave.id } });
+      router.push({
+        params: {
+          id: result.data.goalsSave.id,
+        },
+      });
       EventBus.$emit('snack', 'success', 'Data saved.');
     });
     onErrorSave(error);
@@ -574,7 +587,9 @@ export default defineComponent({
     };
 
     const goBack = () => {
-      router.push({ path: '/registry/goals' });
+      router.push({
+        path: '/registry/goals',
+      });
     };
 
     return {
@@ -609,12 +624,6 @@ export default defineComponent({
       highlighterJS,
       highlighterCSS,
       highlighterHTML,
-
-      // icons
-      mdiClose,
-      mdiPlus,
-      mdiExclamationThick,
-      mdiFloppy,
     };
   },
 });

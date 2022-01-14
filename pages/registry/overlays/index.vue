@@ -26,7 +26,7 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
@@ -63,7 +63,7 @@
                             :items="selected"
                           >
                             <template #[`item.arrow`]="{ }">
-                              <v-icon>{{ mdiChevronRight }}</v-icon>
+                              <v-icon>mdi-chevron-right</v-icon>
                             </template>
                             <template #[`item.overlay`]="{ item }">
                               {{ item.value }}
@@ -110,7 +110,7 @@
       </template>
 
       <template #[`item.arrow`]="{ }">
-        <v-icon>{{ mdiChevronRight }}</v-icon>
+        <v-icon>mdi-chevron-right</v-icon>
       </template>
 
       <template #[`item.actions`]="{ item }">
@@ -123,7 +123,7 @@
               :to="`/registry/overlays/${item.id}`"
             >
               <v-icon>
-                {{ mdiPencil }}
+                mdi-pencil
               </v-icon>
             </v-btn>
           </v-hover>
@@ -134,7 +134,7 @@
               :href="'/overlays/' + item.id"
               @click.stop
             >
-              <v-icon>{{ mdiLink }}</v-icon>
+              <v-icon>mdi-link</v-icon>
             </v-btn>
           </v-hover>
           <v-hover v-slot="{ hover }">
@@ -145,10 +145,10 @@
               @click.stop="copied=item.id"
             >
               <v-icon v-if="copied !== item.id">
-                {{ mdiClipboard }}
+                mdi-clipboard
               </v-icon>
               <v-icon v-else>
-                {{ mdiClipboardCheck }}
+                mdi-clipboard-check
               </v-icon>
             </v-btn>
           </v-hover>
@@ -159,9 +159,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCheckboxMultipleMarkedOutline, mdiChevronRight, mdiClipboard, mdiClipboardCheck, mdiLink, mdiPencil,
-} from '@mdi/js';
 import {
   defineComponent, onMounted, ref, useRouter, watch,
 } from '@nuxtjs/composition-api';
@@ -202,7 +199,11 @@ export default defineComponent({
       return outputData;
     });
 
-    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, { refetchQueries: [{ query: GET }] });
+    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, {
+      refetchQueries: [{
+        query: GET,
+      }],
+    });
     onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
     onErrorRemove(error);
 
@@ -233,7 +234,9 @@ export default defineComponent({
       }
     });
 
-    const state = ref({ saving: false } as {
+    const state = ref({
+      saving: false,
+    } as {
       saving: boolean;
     });
 
@@ -259,7 +262,9 @@ export default defineComponent({
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        removeMutation({ id: item.id });
+        removeMutation({
+          id: item.id,
+        });
       });
 
       EventBus.$emit('snack', 'success', 'Data removed.');
@@ -286,14 +291,6 @@ export default defineComponent({
       // functions
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       addItem,
-
-      // icons
-      mdiCheckboxMultipleMarkedOutline,
-      mdiChevronRight,
-      mdiLink,
-      mdiClipboard,
-      mdiClipboardCheck,
-      mdiPencil,
 
       // external functions
       saveCurrentItems,

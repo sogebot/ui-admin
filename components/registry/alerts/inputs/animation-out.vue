@@ -7,7 +7,7 @@
           <v-select v-model="animType" :items="options" :label="translate('type')">
             <template #append-outer>
               <v-btn icon @click="test = true">
-                <v-icon>{{ mdiPlay }}</v-icon>
+                <v-icon>mdi-play</v-icon>
               </v-btn>
             </template>
           </v-select>
@@ -30,7 +30,6 @@
 </template>
 
 <script lang="ts">
-import { mdiPlay } from '@mdi/js';
 import {
   computed,
   defineComponent, ref, watch,
@@ -46,7 +45,8 @@ export default defineComponent({
   },
   setup (props, ctx) {
     const animType = ref(props.animation);
-    const animDuration = ref(props.animationDuration ?? {});
+    const animDuration = ref(props.animationDuration ?? {
+    });
 
     const test = ref(false);
 
@@ -63,53 +63,135 @@ export default defineComponent({
     });
 
     const options: { value: string, text: string }[] = [
-      { value: 'none', text: 'none' },
-      { value: 'fadeOut', text: 'fadeOut' },
-      { value: 'fadeOutDown', text: 'fadeOutDown' },
-      { value: 'fadeOutLeft', text: 'fadeOutLeft' },
-      { value: 'fadeOutRight', text: 'fadeOutRight' },
-      { value: 'fadeOutUp', text: 'fadeOutUp' },
-      { value: 'fadeOutDownBig', text: 'fadeOutDownBig' },
-      { value: 'fadeOutLeftBig', text: 'fadeOutLeftBig' },
-      { value: 'fadeOutRightBig', text: 'fadeOutRightBig' },
-      { value: 'fadeOutUpBig', text: 'fadeOutUpBig' },
-      { value: 'flipOutX', text: 'flipOutX' },
-      { value: 'flipOutY', text: 'flipOutY' },
-      { value: 'backOutDown', text: 'backOutDown' },
-      { value: 'backOutLeft', text: 'backOutLeft' },
-      { value: 'backOutRight', text: 'backOutRight' },
-      { value: 'backOutUp', text: 'backOutUp' },
-      { value: 'bounceOut', text: 'bounceOut' },
-      { value: 'bounceOutDown', text: 'bounceOutDown' },
-      { value: 'bounceOutLeft', text: 'bounceOutLeft' },
-      { value: 'bounceOutRight', text: 'bounceOutRight' },
-      { value: 'bounceOutUp', text: 'bounceOutUp' },
-      { value: 'flipOutX', text: 'flipOutX' },
-      { value: 'flipOutY', text: 'flipOutY' },
-      { value: 'lightSpeedOut', text: 'lightSpeedOut' },
-      { value: 'rotateOut', text: 'rotateOut' },
-      { value: 'rotateOutDownLeft', text: 'rotateOutDownLeft' },
-      { value: 'rotateOutDownRight', text: 'rotateOutDownRight' },
-      { value: 'rotateOutUpLeft', text: 'rotateOutUpLeft' },
-      { value: 'rotateOutUpRight', text: 'rotateOutUpRight' },
-      { value: 'slideOutDown', text: 'slideOutDown' },
-      { value: 'slideOutLeft', text: 'slideOutLeft' },
-      { value: 'slideOutRight', text: 'slideOutRight' },
-      { value: 'slideOutUp', text: 'slideOutUp' },
-      { value: 'zoomOut', text: 'zoomOut' },
-      { value: 'zoomOutDown', text: 'zoomOutDown' },
-      { value: 'zoomOutLeft', text: 'zoomOutLeft' },
-      { value: 'zoomOutRight', text: 'zoomOutRight' },
-      { value: 'zoomOutUp', text: 'zoomOutUp' },
-      { value: 'rollOut', text: 'rollOut' },
+      {
+        value: 'none', text: 'none',
+      },
+      {
+        value: 'fadeOut', text: 'fadeOut',
+      },
+      {
+        value: 'fadeOutDown', text: 'fadeOutDown',
+      },
+      {
+        value: 'fadeOutLeft', text: 'fadeOutLeft',
+      },
+      {
+        value: 'fadeOutRight', text: 'fadeOutRight',
+      },
+      {
+        value: 'fadeOutUp', text: 'fadeOutUp',
+      },
+      {
+        value: 'fadeOutDownBig', text: 'fadeOutDownBig',
+      },
+      {
+        value: 'fadeOutLeftBig', text: 'fadeOutLeftBig',
+      },
+      {
+        value: 'fadeOutRightBig', text: 'fadeOutRightBig',
+      },
+      {
+        value: 'fadeOutUpBig', text: 'fadeOutUpBig',
+      },
+      {
+        value: 'flipOutX', text: 'flipOutX',
+      },
+      {
+        value: 'flipOutY', text: 'flipOutY',
+      },
+      {
+        value: 'backOutDown', text: 'backOutDown',
+      },
+      {
+        value: 'backOutLeft', text: 'backOutLeft',
+      },
+      {
+        value: 'backOutRight', text: 'backOutRight',
+      },
+      {
+        value: 'backOutUp', text: 'backOutUp',
+      },
+      {
+        value: 'bounceOut', text: 'bounceOut',
+      },
+      {
+        value: 'bounceOutDown', text: 'bounceOutDown',
+      },
+      {
+        value: 'bounceOutLeft', text: 'bounceOutLeft',
+      },
+      {
+        value: 'bounceOutRight', text: 'bounceOutRight',
+      },
+      {
+        value: 'bounceOutUp', text: 'bounceOutUp',
+      },
+      {
+        value: 'flipOutX', text: 'flipOutX',
+      },
+      {
+        value: 'flipOutY', text: 'flipOutY',
+      },
+      {
+        value: 'lightSpeedOut', text: 'lightSpeedOut',
+      },
+      {
+        value: 'rotateOut', text: 'rotateOut',
+      },
+      {
+        value: 'rotateOutDownLeft', text: 'rotateOutDownLeft',
+      },
+      {
+        value: 'rotateOutDownRight', text: 'rotateOutDownRight',
+      },
+      {
+        value: 'rotateOutUpLeft', text: 'rotateOutUpLeft',
+      },
+      {
+        value: 'rotateOutUpRight', text: 'rotateOutUpRight',
+      },
+      {
+        value: 'slideOutDown', text: 'slideOutDown',
+      },
+      {
+        value: 'slideOutLeft', text: 'slideOutLeft',
+      },
+      {
+        value: 'slideOutRight', text: 'slideOutRight',
+      },
+      {
+        value: 'slideOutUp', text: 'slideOutUp',
+      },
+      {
+        value: 'zoomOut', text: 'zoomOut',
+      },
+      {
+        value: 'zoomOutDown', text: 'zoomOutDown',
+      },
+      {
+        value: 'zoomOutLeft', text: 'zoomOutLeft',
+      },
+      {
+        value: 'zoomOutRight', text: 'zoomOutRight',
+      },
+      {
+        value: 'zoomOutUp', text: 'zoomOutUp',
+      },
+      {
+        value: 'rollOut', text: 'rollOut',
+      },
     ];
 
     watch(animType, (val) => {
       ctx.emit('update:animation', val);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
     watch(animDuration, (val) => {
       ctx.emit('update:animationDuration', val);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     return {
       animType,
@@ -117,7 +199,6 @@ export default defineComponent({
       test,
       options,
       computedClass,
-      mdiPlay,
       translate,
     };
   },

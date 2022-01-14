@@ -12,10 +12,10 @@
             v-on="on"
           >
             <v-icon v-if="!autoplay">
-              {{ mdiPlay }}
+              mdi-play
             </v-icon>
             <v-icon v-else>
-              {{ mdiStop }}
+              mdi-stop
             </v-icon>
           </v-btn>
         </template>
@@ -30,7 +30,7 @@
             @click="next"
             v-on="on"
           >
-            <v-icon>{{ mdiSkipForward }}</v-icon>
+            <v-icon>mdi-skip-forward</v-icon>
           </v-btn>
         </template>
         <span>Skip to next</span>
@@ -45,7 +45,7 @@
             @click="nextAndRemoveFromPlaylist"
             v-on="on"
           >
-            <v-icon>{{ mdiDelete }}</v-icon>
+            <v-icon>mdi-delete-forever</v-icon>
           </v-btn>
         </template>
         <span>Skip and remove from playlist</span>
@@ -102,7 +102,7 @@
                 class="text-right"
               >
                 <v-btn color="red" icon @click="removeSongRequest(String(request.id))">
-                  <v-icon>{{ mdiDelete }}</v-icon>
+                  <v-icon>mdi-delete-forever</v-icon>
                 </v-btn>
               </td>
             </tr>
@@ -114,9 +114,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiDelete, mdiPlay, mdiSkipForward, mdiStop,
-} from '@mdi/js';
 import {
   computed,
   defineComponent, nextTick, onMounted, onUnmounted, ref, watch,
@@ -133,14 +130,19 @@ import Vue from 'vue';
 import type { currentSongType, SongRequestInterface } from '.bot/src/database/entity/song';
 import { error } from '~/functions/error';
 
-Vue.use(VuePlyr, { plyr: {} });
+Vue.use(VuePlyr, {
+  plyr: {
+  },
+});
 
 const emptyCurrentSong = {
   videoId: null, title: '', type: '', username: '', volume: 0, loudness: 0, forceVolume: false, startTime: 0, endTime: Number.MAX_SAFE_INTEGER,
 };
 
 export default defineComponent({
-  props: { height: Number },
+  props: {
+    height: Number,
+  },
   setup () {
     const isPopout = computed(() => location.href.includes('popout'));
 
@@ -158,7 +160,9 @@ export default defineComponent({
 
     watch(currentSong, () => {
       playThisSong(0);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
     watch(currentTag, val => getSocket('/systems/songs').emit('set.playlist.tag', val));
     watch(autoplay, async (val) => {
       await waitForPlayerReady();
@@ -341,7 +345,8 @@ export default defineComponent({
             }
           });
         }
-        getSocket('/systems/songs').emit('songs::getAllRequests', {}, (err: any, items: SongRequestInterface[]) => {
+        getSocket('/systems/songs').emit('songs::getAllRequests', {
+        }, (err: any, items: SongRequestInterface[]) => {
           if (err) {
             error(err);
           }
@@ -383,12 +388,6 @@ export default defineComponent({
       formatTime,
 
       translate,
-
-      // icons
-      mdiPlay,
-      mdiStop,
-      mdiSkipForward,
-      mdiDelete,
     };
   },
   head () {

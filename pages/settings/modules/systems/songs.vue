@@ -37,7 +37,6 @@
 </template>
 
 <script lang="ts">
-import { mdiLock, mdiLockOpenVariant } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -56,7 +55,9 @@ import {
 } from '~/functions/validators';
 
 export default defineComponent({
-  components: { revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')) },
+  components: {
+    revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')),
+  },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);
@@ -66,7 +67,9 @@ export default defineComponent({
 
     watch(settings, () => {
       store.commit('settings/pending', true);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -76,7 +79,9 @@ export default defineComponent({
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     onMounted(() => {
       getSocket(`/systems/songs`)
@@ -86,7 +91,9 @@ export default defineComponent({
             return;
           }
           ui.value = _ui;
-          console.log({ _settings });
+          console.log({
+            _settings,
+          });
           settings.value = _settings;
           nextTick(() => { store.commit('settings/pending', false); });
         });
@@ -108,10 +115,6 @@ export default defineComponent({
       required,
       minValue,
       maxValue,
-
-      // icons
-      mdiLock,
-      mdiLockOpenVariant,
     };
   },
 });

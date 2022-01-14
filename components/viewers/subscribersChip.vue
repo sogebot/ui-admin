@@ -14,7 +14,7 @@
         v-if="item.haveSubscriberLock"
         x-small
       >
-        {{ mdiLock }}
+        mdi-lock
       </v-icon>
       Subscriber
     </v-chip>
@@ -33,7 +33,7 @@
             :color="itemUpdated.haveSubscriberLock ? 'success' : 'error'"
             small
           >
-            <v-icon>{{ mdiLock }}</v-icon>
+            <v-icon>mdi-lock</v-icon>
           </v-btn>
           <v-btn
             :color="itemUpdated.isSubscriber ? 'success' : 'error'"
@@ -47,7 +47,6 @@
   </v-edit-dialog>
 </template>
 <script lang="ts">
-import { mdiLock } from '@mdi/js';
 import {
   computed, defineComponent, ref,
 } from '@nuxtjs/composition-api';
@@ -56,7 +55,9 @@ import { cloneDeep } from 'lodash';
 import type { UserInterface } from '.bot/src/database/entity/user';
 
 export default defineComponent({
-  props: { item: Object },
+  props: {
+    item: Object,
+  },
   setup (props: {
     item: UserInterface,
   }, ctx) {
@@ -97,7 +98,6 @@ export default defineComponent({
       itemUpdated,
       close,
       save,
-      mdiLock,
       open,
       data,
     };

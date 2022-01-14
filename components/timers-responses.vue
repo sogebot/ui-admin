@@ -56,7 +56,7 @@
                     >
                       <template #prepend>
                         <v-icon class="handle">
-                          {{ mdiDrag }}
+                          mdi-drag
                         </v-icon>
                       </template>
                       <template #append>
@@ -71,17 +71,17 @@
                           @click="responsesUpdated[i].isEnabled = !responsesUpdated[i].isEnabled"
                         >
                           <v-icon v-if="responsesUpdated[i].isEnabled">
-                            {{ mdiCheckboxMarkedCircle }}
+                            mdi-checkbox-marked-circle
                           </v-icon>
                           <v-icon v-else>
-                            {{ mdiCheckboxBlankCircleOutline }}
+                            mdi-checkbox-blank-circle-outline
                           </v-icon>
                         </v-btn>
                         <v-btn
                           icon
                           @click="remove(i)"
                         >
-                          <v-icon>{{ mdiTrashCan }}</v-icon>
+                          <v-icon>mdi-delete-forever</v-icon>
                         </v-btn>
                       </template>
                     </v-textarea>
@@ -119,9 +119,6 @@
 
 <script lang="ts">
 import {
-  mdiCheckboxBlankCircleOutline, mdiCheckboxMarkedCircle, mdiDrag, mdiTrashCan,
-} from '@mdi/js';
-import {
   defineAsyncComponent, defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
@@ -133,9 +130,13 @@ import type { TimerResponseInterface } from '.bot/src/database/entity/timer';
 export default defineComponent({
   components: {
     draggable,
-    'input-variables': defineAsyncComponent({ loader: () => import('~/components/inputVariables.vue') }),
+    'input-variables': defineAsyncComponent({
+      loader: () => import('~/components/inputVariables.vue'),
+    }),
   },
-  props: { responses: Array, name: String },
+  props: {
+    responses: Array, name: String,
+  },
   setup (props, ctx) {
     let responsesBackup: any[] = [];
     const responsesUpdated = ref((props.responses ?? []) as TimerResponseInterface[]);
@@ -171,10 +172,6 @@ export default defineComponent({
       save,
       remove,
       responsesUpdated,
-      mdiDrag,
-      mdiTrashCan,
-      mdiCheckboxMarkedCircle,
-      mdiCheckboxBlankCircleOutline,
     };
   },
 });

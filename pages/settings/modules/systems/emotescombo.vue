@@ -53,7 +53,7 @@
                   </v-col>
                   <v-col cols="auto">
                     <v-btn icon @click="removeMessage(idx)">
-                      <v-icon>{{ mdiDelete }}</v-icon>
+                      <v-icon>mdi-delete-forever</v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -90,7 +90,7 @@
                   </v-col>
                   <v-col cols="auto">
                     <v-btn icon @click="removeMessage(idx)">
-                      <v-icon>{{ mdiDelete }}</v-icon>
+                      <v-icon>mdi-delete-forever</v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -108,7 +108,6 @@
 </template>
 
 <script lang="ts">
-import { mdiDelete } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -122,7 +121,9 @@ import { saveSettings } from '~/functions/settings';
 import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
-  components: { revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')) },
+  components: {
+    revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')),
+  },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);
@@ -132,7 +133,9 @@ export default defineComponent({
 
     watch(settings, () => {
       store.commit('settings/pending', true);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -142,7 +145,9 @@ export default defineComponent({
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     onMounted(() => {
       getSocket(`/systems/emotescombo`)
@@ -194,9 +199,6 @@ export default defineComponent({
       // validators
       required,
       minValue,
-
-      // icons
-      mdiDelete,
     };
   },
 });

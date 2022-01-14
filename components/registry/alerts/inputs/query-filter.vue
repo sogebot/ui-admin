@@ -7,7 +7,7 @@
       <v-col cols="auto">
         <v-btn-toggle v-model="editationMode">
           <v-btn icon value="true">
-            <v-icon>{{ mdiCog }}</v-icon>
+            <v-icon>mdi-cog</v-icon>
           </v-btn>
         </v-btn-toggle>
       </v-col>
@@ -59,7 +59,7 @@
                 @click="deleteGroup"
               >
                 <v-icon color="red">
-                  {{ mdiDelete }}
+                  mdi-delete-forever
                 </v-icon>
               </v-btn>
             </v-col>
@@ -133,7 +133,7 @@
                           @click="deleteItem(index)"
                         >
                           <v-icon color="red">
-                            {{ mdiDelete }}
+                            mdi-delete-forever
                           </v-icon>
                         </v-btn>
                       </v-col>
@@ -162,7 +162,6 @@
 </template>
 
 <script lang="ts">
-import { mdiCog, mdiDelete } from '@mdi/js';
 import {
   computed, defineAsyncComponent, defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -177,8 +176,10 @@ type Props = {
   rules: [[string, string]]
 };
 export default defineComponent({
-  components: { queryFilter: defineAsyncComponent(() => import('~/components/registry/alerts/inputs/query-filter.vue')) },
-  props:      {
+  components: {
+    queryFilter: defineAsyncComponent(() => import('~/components/registry/alerts/inputs/query-filter.vue')),
+  },
+  props: {
     value:     String,
     rules:     Array,
     noInput:   Boolean,
@@ -277,30 +278,52 @@ export default defineComponent({
       const items = [];
 
       if (getRuleType(type) === 'number') {
-        items.push({ value: 'is-even', text: translate('registry.alerts.filter.isEven') });
-        items.push({ value: 'is-odd', text: translate('registry.alerts.filter.isOdd') });
+        items.push({
+          value: 'is-even', text: translate('registry.alerts.filter.isEven'),
+        });
+        items.push({
+          value: 'is-odd', text: translate('registry.alerts.filter.isOdd'),
+        });
       }
 
       if (getRuleType(type) !== 'string') {
-        items.push({ value: 'lt', text: translate('registry.alerts.filter.lessThan') });
-        items.push({ value: 'lt-eq', text: translate('registry.alerts.filter.lessThanOrEqual') });
+        items.push({
+          value: 'lt', text: translate('registry.alerts.filter.lessThan'),
+        });
+        items.push({
+          value: 'lt-eq', text: translate('registry.alerts.filter.lessThanOrEqual'),
+        });
       }
 
       if (getRuleType(type) === 'string') {
-        items.push({ value: 'co', text: translate('registry.alerts.filter.contain') });
+        items.push({
+          value: 'co', text: translate('registry.alerts.filter.contain'),
+        });
       }
 
-      items.push({ value: 'eq', text: translate('registry.alerts.filter.equal') });
-      items.push({ value: 'neq', text: translate('registry.alerts.filter.notEqual') });
-      items.push({ value: 'pr', text: translate('registry.alerts.filter.present') });
+      items.push({
+        value: 'eq', text: translate('registry.alerts.filter.equal'),
+      });
+      items.push({
+        value: 'neq', text: translate('registry.alerts.filter.notEqual'),
+      });
+      items.push({
+        value: 'pr', text: translate('registry.alerts.filter.present'),
+      });
 
       if (getRuleType(type) === 'string') {
-        items.push({ value: 'includes', text: translate('registry.alerts.filter.includes') });
+        items.push({
+          value: 'includes', text: translate('registry.alerts.filter.includes'),
+        });
       }
 
       if (getRuleType(type) !== 'string') {
-        items.push({ value: 'gt', text: translate('registry.alerts.filter.greaterThan') });
-        items.push({ value: 'gt-eq', text: translate('registry.alerts.filter.greaterThanOrEqual') });
+        items.push({
+          value: 'gt', text: translate('registry.alerts.filter.greaterThan'),
+        });
+        items.push({
+          value: 'gt-eq', text: translate('registry.alerts.filter.greaterThanOrEqual'),
+        });
       }
 
       return items;
@@ -308,7 +331,9 @@ export default defineComponent({
 
     watch(_filter, (val) => {
       ctx.emit('input', JSON.stringify(val));
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     return {
       _filter,
@@ -321,8 +346,6 @@ export default defineComponent({
       deleteItem,
       deleteGroup,
       translate,
-      mdiCog,
-      mdiDelete,
     };
   },
 });

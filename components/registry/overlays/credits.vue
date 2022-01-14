@@ -117,7 +117,7 @@
           <v-col cols="auto" align-self="center">
             <v-btn icon @click="options.customTexts.splice(index, 1); timestampUpdate()">
               <v-icon color="red">
-                {{ mdiDelete }}
+                mdi-delete-forever
               </v-icon>
             </v-btn>
           </v-col>
@@ -249,7 +249,7 @@
           <v-col cols="auto" align-self="center">
             <v-btn icon @click="options.social.splice(index, 1); timestampUpdate()">
               <v-icon color="red">
-                {{ mdiDelete }}
+                mdi-delete-forever
               </v-icon>
             </v-btn>
           </v-col>
@@ -263,7 +263,6 @@
 </template>
 
 <script lang="ts">
-import { mdiDelete } from '@mdi/js';
 import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -271,35 +270,83 @@ import translate from '@sogebot/ui-helpers/translate';
 import { defaultsDeep, isEqual } from 'lodash';
 
 export default defineComponent({
-  props: { value: [Object, Array] },
+  props: {
+    value: [Object, Array],
+  },
   setup (props: any, ctx) {
     const timestamp = ref(Date.now());
     const customTextTypes: { value: string, text: string }[] = [
-      { value: 'bigHeader', text: 'Big Header' },
-      { value: 'header', text: 'Header' },
-      { value: 'text', text: 'Text' },
-      { value: 'smallText', text: 'Small Text' },
-      { value: 'separator', text: 'Separator' },
+      {
+        value: 'bigHeader', text: 'Big Header',
+      },
+      {
+        value: 'header', text: 'Header',
+      },
+      {
+        value: 'text', text: 'Text',
+      },
+      {
+        value: 'smallText', text: 'Small Text',
+      },
+      {
+        value: 'separator', text: 'Separator',
+      },
     ];
     const socialTypes: { value: string, text: string }[] = [
-      { value: 'mdiDeviantart', text: 'DeviantArt' },
-      { value: 'mdiDiscord', text: 'Discord' },
-      { value: 'mdiFacebook', text: 'Facebook' },
-      { value: 'mdiGithub', text: 'GitHub' },
-      { value: 'mdiGoogle', text: 'Google' },
-      { value: 'mdiInstagram', text: 'Instagram' },
-      { value: 'mdiLinkedin', text: 'LinkedIn' },
-      { value: 'mdiSonyPlaystation', text: 'Playstation' },
-      { value: 'mdiPinterest', text: 'Pinterest' },
-      { value: 'mdiReddit', text: 'Reddit' },
-      { value: 'mdiSkype', text: 'Skype' },
-      { value: 'mdiSnapchat', text: 'Snapchat' },
-      { value: 'mdiSpotify', text: 'Spotify' },
-      { value: 'mdiSteam', text: 'Steam' },
-      { value: 'mdiTwitter', text: 'Twitter' },
-      { value: 'mdiMicrosoftWindows', text: 'Windows' },
-      { value: 'mdiMicrosoftXbox', text: 'XBox' },
-      { value: 'mdiYoutube', text: 'YouTube' },
+      {
+        value: 'mdiDeviantart', text: 'DeviantArt',
+      },
+      {
+        value: 'mdiDiscord', text: 'Discord',
+      },
+      {
+        value: 'mdiFacebook', text: 'Facebook',
+      },
+      {
+        value: 'mdiGithub', text: 'GitHub',
+      },
+      {
+        value: 'mdiGoogle', text: 'Google',
+      },
+      {
+        value: 'mdiInstagram', text: 'Instagram',
+      },
+      {
+        value: 'mdiLinkedin', text: 'LinkedIn',
+      },
+      {
+        value: 'mdiSonyPlaystation', text: 'Playstation',
+      },
+      {
+        value: 'mdiPinterest', text: 'Pinterest',
+      },
+      {
+        value: 'mdiReddit', text: 'Reddit',
+      },
+      {
+        value: 'mdiSkype', text: 'Skype',
+      },
+      {
+        value: 'mdiSnapchat', text: 'Snapchat',
+      },
+      {
+        value: 'mdiSpotify', text: 'Spotify',
+      },
+      {
+        value: 'mdiSteam', text: 'Steam',
+      },
+      {
+        value: 'mdiTwitter', text: 'Twitter',
+      },
+      {
+        value: 'mdiMicrosoftWindows', text: 'Windows',
+      },
+      {
+        value: 'mdiMicrosoftXbox', text: 'XBox',
+      },
+      {
+        value: 'mdiYoutube', text: 'YouTube',
+      },
     ];
 
     const options = ref(
@@ -346,7 +393,9 @@ export default defineComponent({
       if (!isEqual(props.value, options.value)) {
         ctx.emit('input', options.value);
       }
-    }, { deep: true, immediate: true });
+    }, {
+      deep: true, immediate: true,
+    });
 
     const timestampUpdate = () => {
       setTimeout(() => {
@@ -360,7 +409,6 @@ export default defineComponent({
       socialTypes,
       translate,
       timestamp,
-      mdiDelete,
       timestampUpdate,
     };
   },

@@ -54,7 +54,7 @@
       </template>
       <template #append>
         <v-btn v-if="randomizer" icon @click="model = getRandomColor()">
-          <v-icon>{{ mdiDiceMultiple }}</v-icon>
+          <v-icon>mdi-dice-multiple</v-icon>
         </v-btn>
       </template>
     </v-text-field>
@@ -62,7 +62,6 @@
 </template>
 
 <script lang="ts">
-import { mdiDiceMultiple } from '@mdi/js';
 import {
   defineComponent,
   onMounted,
@@ -90,7 +89,9 @@ export default defineComponent({
     const menu = ref(false);
     const uuid = ref(v4());
 
-    const rules = { color: [required, isHexColor] };
+    const rules = {
+      color: [required, isHexColor],
+    };
 
     onMounted(() => {
       uuid.value = v4();
@@ -107,7 +108,6 @@ export default defineComponent({
       picker,
       rules,
       uuid,
-      mdiDiceMultiple,
       getRandomColor,
     };
   },

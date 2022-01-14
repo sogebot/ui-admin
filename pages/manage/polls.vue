@@ -30,14 +30,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -187,7 +187,7 @@
           icon
           @click="stop(item)"
         >
-          <v-icon>{{ mdiStop }}</v-icon>
+          <v-icon>mdi-stop</v-icon>
         </v-btn>
         <v-btn
           v-else
@@ -195,7 +195,7 @@
           icon
           @click="copy(item)"
         >
-          <v-icon>{{ mdiContentCopy }}</v-icon>
+          <v-icon>mdi-content-copy</v-icon>
         </v-btn>
       </template>
     </v-data-table>
@@ -203,9 +203,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCheckboxMultipleMarkedOutline, mdiContentCopy, mdiMagnify,
-} from '@mdi/js';
 import {
   computed,
   defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch,
@@ -226,9 +223,15 @@ import { expectedValuesCount, required } from '~/functions/validators';
 let interval: number;
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/polls-newItem.vue') }) },
+  components: {
+    'new-item': defineAsyncComponent({
+      loader: () => import('~/components/new-item/polls-newItem.vue'),
+    }),
+  },
   setup () {
-    const rules = { title: [required], options: [expectedValuesCount(2)] };
+    const rules = {
+      title: [required], options: [expectedValuesCount(2)],
+    };
 
     const items = ref([] as PollInterface[]);
     const isRunning = computed(() => {
@@ -267,28 +270,40 @@ export default defineComponent({
       window.clearInterval(interval);
     });
 
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
     const headers = [
-      { value: 'title', text: translate('systems.polls.title') },
-      { value: 'type', text: translate('systems.polls.votingBy') },
+      {
+        value: 'title', text: translate('systems.polls.title'),
+      },
+      {
+        value: 'type', text: translate('systems.polls.votingBy'),
+      },
       {
         value: 'votes', text: '', width: '20rem', sortable: false,
       },
       {
         value: 'totalVotes', text: translate('systems.polls.totalVotes'), align: 'align-center',
       },
-      { value: 'closedAt', text: '' },
+      {
+        value: 'closedAt', text: '',
+      },
       {
         value: 'buttons', text: '', sortable: false,
       },
     ];
 
     const headersDelete = [
-      { value: 'title', text: '' },
-      { value: 'closedAt', text: '' },
+      {
+        value: 'title', text: '',
+      },
+      {
+        value: 'closedAt', text: '',
+      },
     ];
 
     onMounted(() => {
@@ -341,7 +356,11 @@ export default defineComponent({
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
-            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+            console.log('Updating', {
+              itemToUpdate,
+            }, {
+              attr, value: item[attr],
+            });
             getSocket('/systems/polls').emit('polls::save', {
               ...itemToUpdate,
               [attr]: item[attr], // save new value for all selected items
@@ -444,9 +463,6 @@ export default defineComponent({
       copy,
       isRunning,
       ButtonStates,
-      mdiContentCopy,
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
     };
   },
 });

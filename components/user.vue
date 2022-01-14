@@ -115,7 +115,7 @@
               @click="logout"
             >
               <v-icon class="red--text">
-                {{ mdiLogout }}
+                mdi-logout
               </v-icon>
               {{ translate('logout') }}
             </v-btn>
@@ -129,7 +129,7 @@
         class="mt-3"
       >
         <v-list-item-icon>
-          <v-icon>{{ mdiEarth }}</v-icon>
+          <v-icon>mdi-earth</v-icon>
         </v-list-item-icon>
         <v-list-item-title>{{ translate('go-to-public') }}</v-list-item-title>
       </v-list-item>
@@ -139,7 +139,7 @@
         class="mt-3"
       >
         <v-list-item-icon>
-          <v-icon>{{ mdiShield }}</v-icon>
+          <v-icon>mdi-shield</v-icon>
         </v-list-item-icon>
         <v-list-item-title>{{ translate('go-to-admin') }}</v-list-item-title>
       </v-list-item>
@@ -147,7 +147,7 @@
     <template v-else>
       <v-list-item @click="login">
         <v-list-item-icon>
-          <v-icon>{{ mdiLogin }}</v-icon>
+          <v-icon>mdi-login</v-icon>
         </v-list-item-icon>
         <v-list-item-title>{{ translate('not-logged-in') }}</v-list-item-title>
       </v-list-item>
@@ -156,9 +156,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiEarth, mdiLogin, mdiLogout, mdiShield,
-} from '@mdi/js';
 import {
   computed, defineComponent, onMounted, onUnmounted, ref,
 } from '@nuxtjs/composition-api';
@@ -249,11 +246,6 @@ export default defineComponent({
       translate,
       joinBot,
       leaveBot,
-
-      mdiLogout,
-      mdiShield,
-      mdiLogin,
-      mdiEarth,
 
     };
   },

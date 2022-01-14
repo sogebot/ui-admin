@@ -117,7 +117,7 @@
                     icon
                     @click="remove(i)"
                   >
-                    <v-icon>{{ mdiTrashCan }}</v-icon>
+                    <v-icon>mdi-delete-forever</v-icon>
                   </v-btn>
                 </v-col>
               </v-row>
@@ -156,7 +156,6 @@
 </template>
 
 <script lang="ts">
-import { mdiTrashCan } from '@mdi/js';
 import {
   computed,
   defineAsyncComponent,
@@ -176,13 +175,19 @@ import { error } from '~/functions/error';
 import GET_ALL from '~/queries/obsWebsocket/getAll.gql';
 
 export default defineComponent({
-  components: { tester: defineAsyncComponent({ loader: () => import('~/components/manage/events/test-dialog.vue') }) },
-  props:      {
+  components: {
+    tester: defineAsyncComponent({
+      loader: () => import('~/components/manage/events/test-dialog.vue'),
+    }),
+  },
+  props: {
     operations: Array, item: Object, rules: Object, filters: Array, variables: Object, events: Array,
   },
   setup (props, ctx) {
     let operationsBackup: any[] = [];
-    const { result } = useQuery(GET_ALL, null, { pollInterval: 5000 });
+    const { result } = useQuery(GET_ALL, null, {
+      pollInterval: 5000,
+    });
     const obsWebsocketsTaskIds = useResult<{ OBSWebsocket: OBSWebsocketInterface[] }, OBSWebsocketInterface[], OBSWebsocketInterface[]>(result, [], data => data.OBSWebsocket);
 
     const valid = ref(true);
@@ -255,7 +260,8 @@ export default defineComponent({
 
     const getEmptyDefinitionOf = (name: string) => {
       const defaultOperation = supportedOperations.value.find(o => o.id === name);
-      const emptyDefinitions = {} as Record<string, any>;
+      const emptyDefinitions = {
+      } as Record<string, any>;
       if (defaultOperation) {
         if (Object.keys(defaultOperation.definitions).length > 0) {
           for (const [key, value] of Object.entries(defaultOperation.definitions)) {
@@ -287,7 +293,6 @@ export default defineComponent({
       operationItems,
       getEmptyDefinitionOf,
       operationUpdated,
-      mdiTrashCan,
       valid,
       form,
       obsWebsocketsTaskIds,

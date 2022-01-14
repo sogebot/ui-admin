@@ -24,7 +24,7 @@
             <div class="ma-auto text-center">
               <v-btn v-if="model" color="error" @click="model = null">
                 <v-icon left>
-                  {{ mdiDelete }}
+                  mdi-delete-forever
                 </v-icon> {{ translate('delete') }}
               </v-btn>
               <v-btn
@@ -32,7 +32,7 @@
                 @click="$refs.uploadImage.click()"
               >
                 <v-icon left>
-                  {{ mdiUpload }}
+                  mdi-upload
                 </v-icon> {{ translate('dialog.buttons.upload.idle') }}
               </v-btn>
             </div>
@@ -72,7 +72,7 @@
             <div class="ma-auto text-center">
               <v-btn color="error" @click="removeMedia()">
                 <v-icon left>
-                  {{ mdiDelete }}
+                  mdi-delete-forever
                 </v-icon> {{ translate('delete') }}
               </v-btn>
               <v-btn @click="isPlaying ? stop() : play()">
@@ -86,7 +86,7 @@
                 @click="$refs.uploadImage.click()"
               >
                 <v-icon left>
-                  {{ mdiUpload }}
+                  mdi-upload
                 </v-icon> {{ translate('dialog.buttons.upload.idle') }}
               </v-btn>
             </div>
@@ -111,7 +111,7 @@
             <div class="ma-auto text-center">
               <v-btn v-if="model" color="error" @click="model = null">
                 <v-icon left>
-                  {{ mdiDelete }}
+                  mdi-delete-forever
                 </v-icon> {{ translate('delete') }}
               </v-btn>
               <v-btn v-if="audioAvailable" @click="isPlaying ? stop() : play()">
@@ -125,7 +125,7 @@
                 @click="$refs.uploadAudio.click()"
               >
                 <v-icon left>
-                  {{ mdiUpload }}
+                  mdi-upload
                 </v-icon> {{ translate('dialog.buttons.upload.idle') }}
               </v-btn>
             </div>
@@ -137,9 +137,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiDelete, mdiPlay, mdiStop, mdiUpload,
-} from '@mdi/js';
 import {
   defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -410,12 +407,6 @@ export default defineComponent({
       loading,
       _loop,
       src,
-
-      // icons
-      mdiDelete,
-      mdiStop,
-      mdiPlay,
-      mdiUpload,
     };
   },
 });

@@ -103,7 +103,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.xp.interval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.interval[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.xp.interval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.xp.interval[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -122,7 +122,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.xp.perInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.perInterval[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.xp.perInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.xp.perInterval[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -141,7 +141,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.xp.offlineInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.offlineInterval[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.xp.offlineInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.xp.offlineInterval[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -160,7 +160,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.xp.perOfflineInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.perOfflineInterval[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.xp.perOfflineInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.xp.perOfflineInterval[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -179,7 +179,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.xp.messageInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.messageInterval[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.xp.messageInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.xp.messageInterval[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -198,7 +198,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.xp.perMessageInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.perMessageInterval[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.xp.perMessageInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.xp.perMessageInterval[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -217,7 +217,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.xp.messageOfflineInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.messageOfflineInterval[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.xp.messageOfflineInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.xp.messageOfflineInterval[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -236,7 +236,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.xp.perMessageOfflineInterval[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.xp.perMessageOfflineInterval[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.xp.perMessageOfflineInterval[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.xp.perMessageOfflineInterval[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -251,7 +251,6 @@
 </template>
 
 <script lang="ts">
-import { mdiLock, mdiLockOpenVariant } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -292,7 +291,9 @@ export default defineComponent({
 
     watch(settings, () => {
       store.commit('settings/pending', true);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -303,7 +304,9 @@ export default defineComponent({
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     onMounted(() => {
       getSocket(`/systems/levels`)
@@ -313,7 +316,9 @@ export default defineComponent({
             return;
           }
           ui.value = _ui;
-          console.log({ _settings });
+          console.log({
+            _settings,
+          });
           settings.value = _settings;
           showcaseRecalc();
           nextTick(() => { store.commit('settings/pending', false); });
@@ -336,10 +341,6 @@ export default defineComponent({
       // validators
       required,
       minValue,
-
-      // icons
-      mdiLock,
-      mdiLockOpenVariant,
     };
   },
 });

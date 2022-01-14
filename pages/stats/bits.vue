@@ -18,7 +18,7 @@
               <v-col>
                 <v-text-field
                   v-model="search"
-                  :append-icon="mdiMagnify"
+                  append-icon="mdi-magnify"
                   label="Search"
                   hide-details
                 />
@@ -54,7 +54,6 @@
 </template>
 
 <script lang="ts">
-import { mdiMagnify } from '@mdi/js';
 import {
   computed,
   defineComponent, onMounted, ref,
@@ -91,17 +90,25 @@ export default defineComponent({
       }
     });
 
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
     const headers = [
-      { value: 'cheeredAt', text: capitalize(translate('date')) },
-      { value: 'amount', text: capitalize(translate('responses.variable.amount')) },
+      {
+        value: 'cheeredAt', text: capitalize(translate('date')),
+      },
+      {
+        value: 'amount', text: capitalize(translate('responses.variable.amount')),
+      },
       {
         value: 'message', text: capitalize(translate('message')), sortable: false,
       },
-      { value: 'user', text: capitalize(translate('user')) },
+      {
+        value: 'user', text: capitalize(translate('user')),
+      },
     ];
 
     const refresh = () => {
@@ -122,7 +129,9 @@ export default defineComponent({
       return Object.keys(bitsByYear.value);
     });
     const bitsByYear = computed(() => {
-      const d: { [year: number]: Required<UserBitInterface>[] } = { [new Date().getFullYear()]: [] };
+      const d: { [year: number]: Required<UserBitInterface>[] } = {
+        [new Date().getFullYear()]: [],
+      };
       for (const bit of items.value) {
         const year = new Date(bit.cheeredAt).getFullYear();
         if (d[year]) {
@@ -192,7 +201,6 @@ export default defineComponent({
       translate,
       refresh,
       capitalize,
-      mdiMagnify,
       dayjs,
       fItems,
       generateChartData,

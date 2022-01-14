@@ -11,7 +11,7 @@
           v-on="on"
           @click="filterToAdd = ''"
         >
-          <v-icon>{{ mdiVariable }}</v-icon>
+          <v-icon>mdi-variable</v-icon>
         </v-btn>
       </template>
 
@@ -28,7 +28,6 @@
   </div>
 </template>
 <script lang="ts">
-import { mdiVariable } from '@mdi/js';
 import {
   computed, defineComponent, ref,
 } from '@nuxtjs/composition-api';
@@ -77,8 +76,6 @@ export default defineComponent({
       filterToAdd,
       addVariable,
       menu,
-
-      mdiVariable,
     };
   },
 });

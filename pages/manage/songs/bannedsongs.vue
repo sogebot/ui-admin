@@ -31,14 +31,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search or add by link/id"
                 single-line
                 hide-details
@@ -125,7 +125,7 @@
             target="_blank"
           >
             <v-icon>
-              {{ mdiLink }}
+              mdi-link
             </v-icon>
           </v-btn>
         </v-hover>
@@ -135,9 +135,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCheckboxMultipleMarkedOutline, mdiLink, mdiMagnify,
-} from '@mdi/js';
 import {
   computed, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -181,16 +178,24 @@ export default defineComponent({
       {
         value: 'thumbnail', text: '', align: 'left',
       },
-      { value: 'videoId', text: '' },
-      { value: 'title', text: '' },
+      {
+        value: 'videoId', text: '',
+      },
+      {
+        value: 'title', text: '',
+      },
       {
         text: 'Actions', value: 'actions', sortable: false, align: 'end',
       },
     ];
 
     const headersDelete = [
-      { value: 'videoId', text: '' },
-      { value: 'title', text: '' },
+      {
+        value: 'videoId', text: '',
+      },
+      {
+        value: 'title', text: '',
+      },
     ];
 
     const fItems = computed(() => {
@@ -209,7 +214,8 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/songs').emit('songs::getAllBanned', {}, (err: string | null, getAllBanned: SongBanInterface[]) => {
+      getSocket('/systems/songs').emit('songs::getAllBanned', {
+      }, (err: string | null, getAllBanned: SongBanInterface[]) => {
         if (err) {
           error(err);
           return;
@@ -284,9 +290,6 @@ export default defineComponent({
       deleteDialog,
       deleteSelected,
       selected,
-      mdiLink,
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
     };
   },
 });

@@ -126,10 +126,10 @@
                 @click="toggleEligibility(participant)"
               >
                 <v-icon v-if="participant.isEligible" class="pr-2" color="success">
-                  {{ mdiCheckCircleOutline }}
+                  mdi-check-circle-outline
                 </v-icon>
                 <v-icon v-else class="pr-2" color="error">
-                  {{ mdiCheckboxBlankCircleOutline }}
+                  mdi-checkbox-blank-circle-outline
                 </v-icon>
                 {{ participant.username }}
               </v-list-item>
@@ -137,7 +137,7 @@
             <v-fade-transition>
               <v-list-item v-if="Math.abs(fParticipants.length - participants.length) > 0">
                 <v-icon class="pr-2">
-                  {{ mdiEyeOff }}
+                  mdi-eye-off
                 </v-icon>
                 <span class="grey--text">{{ Math.abs(fParticipants.length - participants.length) }} {{ translate('hidden') }}</span>
               </v-list-item>
@@ -170,18 +170,18 @@
             <v-card-actions class="px-0">
               <v-btn v-if="countEligibleParticipants > 0" block @click="pickWinner">
                 <v-icon class="pr-2">
-                  {{ mdiSync }}
+                  mdi-sync
                 </v-icon> {{ translate('roll-again') }}
               </v-btn>
               <v-btn v-else block disabled>
                 <v-icon class="pr-2">
-                  {{ mdiSyncOff }}
+                  mdi-sync-off
                 </v-icon> {{ translate('no-eligible-participants') }}
               </v-btn>
             </v-card-actions>
 
             <div class="text-button">
-              <v-icon>{{ mdiCommentMultiple }}</v-icon> {{ translate('messages') }}
+              <v-icon>mdi-comment-multiple</v-icon> {{ translate('messages') }}
             </div>
             <v-simple-table v-if="winnerMessages.length > 0">
               <template #default>
@@ -191,7 +191,7 @@
                     :key="item.timestamp"
                   >
                     <td>{{ message.text }}</td>
-                    <td>{{ dayjs(messge.timestamp).format('LL') }} {{ dayjs(messge.timestamp).format('LTS') }}</td>
+                    <td>{{ dayjs(message.timestamp).format('LL') }} {{ dayjs(message.timestamp).format('LTS') }}</td>
                   </tr>
                 </tbody>
               </template>
@@ -211,9 +211,6 @@
 
 <script lang="ts">
 import {
-  mdiCheckboxBlankCircleOutline, mdiCheckCircleOutline, mdiCommentMultiple, mdiEyeOff, mdiSync, mdiSyncOff,
-} from '@mdi/js';
-import {
   computed,
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -229,7 +226,9 @@ import {
 } from '~/functions/validators';
 
 export default defineComponent({
-  props: { height: Number },
+  props: {
+    height: Number,
+  },
   setup () {
     const isPopout = computed(() => location.href.includes('popout'));
     const tab = ref(0);
@@ -262,13 +261,23 @@ export default defineComponent({
     });
 
     const eligibleItems = [
-      { text: translate('everyone'), value: 'all' },
-      { text: translate('followers'), value: 'followers' },
-      { text: translate('subscribers'), value: 'subscribers' },
+      {
+        text: translate('everyone'), value: 'all',
+      },
+      {
+        text: translate('followers'), value: 'followers',
+      },
+      {
+        text: translate('subscribers'), value: 'subscribers',
+      },
     ];
     const typeItems = [
-      { text: translate('raffle-type-keywords'), value: true },
-      { text: translate('raffle-type-tickets'), value: false },
+      {
+        text: translate('raffle-type-keywords'), value: true,
+      },
+      {
+        text: translate('raffle-type-tickets'), value: false,
+      },
     ];
     const fParticipants = computed(() => {
       if (search.value.trim().length === 0) {
@@ -324,7 +333,9 @@ export default defineComponent({
     function refresh () {
       getSocket('/systems/raffles').emit('raffle:getLatest', (err: string | null, raffle: RaffleInterface) => {
         console.groupCollapsed('raffle:getLatest');
-        console.log({ err, raffle });
+        console.log({
+          err, raffle,
+        });
         console.groupEnd();
         isLoading.value = false;
         if (err) {
@@ -370,7 +381,9 @@ export default defineComponent({
 
     function toggleEligibility (participant: typeof participants.value[number]) {
       participant.isEligible = !participant.isEligible;
-      getSocket('/systems/raffles').emit('raffle::setEligibility', { id: participant.id, isEligible: participant.isEligible }, (err: string | null) => {
+      getSocket('/systems/raffles').emit('raffle::setEligibility', {
+        id: participant.id, isEligible: participant.isEligible,
+      }, (err: string | null) => {
         if (err) {
           return error(err);
         }
@@ -432,14 +445,6 @@ export default defineComponent({
       // helpers
       translate,
       dayjs,
-
-      // icons,
-      mdiCheckCircleOutline,
-      mdiCheckboxBlankCircleOutline,
-      mdiEyeOff,
-      mdiSync,
-      mdiSyncOff,
-      mdiCommentMultiple,
     };
   },
 });

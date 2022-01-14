@@ -30,7 +30,7 @@
         <v-row v-if="event !== 'rewardredeems'" class="py-1">
           <v-col cols="auto" align-self="center">
             <v-btn icon :color="isUsernameRandomized ? 'success' : 'error'" @click="isUsernameRandomized = !isUsernameRandomized">
-              <v-icon>{{ mdiDiceMultiple }}</v-icon>
+              <v-icon>mdi-dice-multiple</v-icon>
             </v-btn>
           </v-col>
           <v-col>
@@ -55,7 +55,7 @@
         <v-row v-if="haveRecipient" class="py-1">
           <v-col cols="auto" align-self="center">
             <v-btn icon :color="isRecipientRandomized ? 'success' : 'error'" @click="isRecipientRandomized = !isRecipientRandomized">
-              <v-icon>{{ mdiDiceMultiple }}</v-icon>
+              <v-icon>mdi-dice-multiple</v-icon>
             </v-btn>
           </v-col>
           <v-col>
@@ -71,7 +71,7 @@
         <v-row v-if="haveAmount" class="py-1">
           <v-col cols="auto" align-self="center">
             <v-btn icon :color="isAmountRandomized ? 'success' : 'error'" @click="isAmountRandomized = !isAmountRandomized">
-              <v-icon>{{ mdiDiceMultiple }}</v-icon>
+              <v-icon>mdi-dice-multiple</v-icon>
             </v-btn>
           </v-col>
           <v-col>
@@ -97,7 +97,7 @@
         <v-row v-if="haveMessage" class="py-1">
           <v-col cols="auto" align-self="center">
             <v-btn icon :color="isMessageRandomized ? 'success' : 'error'" @click="isMessageRandomized = !isMessageRandomized">
-              <v-icon>{{ mdiDiceMultiple }}</v-icon>
+              <v-icon>mdi-dice-multiple</v-icon>
             </v-btn>
           </v-col>
           <v-col>
@@ -114,7 +114,7 @@
         <v-row v-if="haveTier" class="py-1">
           <v-col cols="auto" align-self="center">
             <v-btn icon :color="isTierRandomized ? 'success' : 'error'" @click="isTierRandomized = !isTierRandomized">
-              <v-icon>{{ mdiDiceMultiple }}</v-icon>
+              <v-icon>mdi-dice-multiple</v-icon>
             </v-btn>
           </v-col>
           <v-col>
@@ -151,7 +151,6 @@
 </template>
 
 <script lang="ts">
-import { mdiDiceMultiple } from '@mdi/js';
 import {
   computed, defineAsyncComponent, defineComponent, ref, useStore,
 } from '@nuxtjs/composition-api';
@@ -163,7 +162,11 @@ import translate from '@sogebot/ui-helpers/translate';
 import type { EmitData } from '.bot/src/database/entity/alert';
 
 export default defineComponent({
-  components: { rewards: defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }) },
+  components: {
+    rewards: defineAsyncComponent({
+      loader: () => import('~/components/rewards.vue'),
+    }),
+  },
   setup () {
     const store = useStore<any>();
     const events = ['follows', 'cheers', 'tips', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'hosts', 'raids', 'cmdredeems', 'rewardredeems'] as const;
@@ -247,7 +250,9 @@ export default defineComponent({
     };
 
     const eventItems = computed(() => {
-      return events.map(o => ({ value: o, text: translate('registry.alerts.event.' + o) }));
+      return events.map(o => ({
+        value: o, text: translate('registry.alerts.event.' + o),
+      }));
     });
 
     return {
@@ -282,7 +287,6 @@ export default defineComponent({
       onSubmit,
 
       translate,
-      mdiDiceMultiple,
     };
   },
 });

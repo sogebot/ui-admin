@@ -31,14 +31,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -135,7 +135,7 @@
           <v-icon
             @click="toggle"
           >
-            {{ isOpen ? mdiMinus : mdiPlus }}
+            {{ isOpen ? 'mdi-minus-thick' : 'mdi-plus-thick' }}
           </v-icon>
 
           <v-simple-checkbox
@@ -226,9 +226,6 @@
 
 <script lang="ts">
 import {
-  mdiCheckboxMultipleMarkedOutline, mdiMagnify, mdiMinus, mdiPlus,
-} from '@mdi/js';
-import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
@@ -245,9 +242,15 @@ import { minValue, required } from '~/functions/validators';
 type RankInterfaceUI = RankInterface & { typeToBeShownInTable: string };
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/ranks-newItem.vue') }) },
+  components: {
+    'new-item': defineAsyncComponent({
+      loader: () => import('~/components/new-item/ranks-newItem.vue'),
+    }),
+  },
   setup () {
-    const rules = { value: [required, minValue(0)], rank: [required] };
+    const rules = {
+      value: [required, minValue(0)], rank: [required],
+    };
 
     const items = ref([] as RankInterfaceUI[]);
     const typeItems = [
@@ -289,19 +292,31 @@ export default defineComponent({
       timestamp.value = Date.now();
     });
 
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
     const headers = [
-      { value: 'value', text: capitalize(translate('responses.variable.value')) },
-      { value: 'rank', text: translate('rank') },
-      { value: 'type', text: translate('type') },
+      {
+        value: 'value', text: capitalize(translate('responses.variable.value')),
+      },
+      {
+        value: 'rank', text: translate('rank'),
+      },
+      {
+        value: 'type', text: translate('type'),
+      },
     ];
 
     const headersDelete = [
-      { value: 'rank', text: '' },
-      { value: 'type', text: '' },
+      {
+        value: 'rank', text: '',
+      },
+      {
+        value: 'type', text: '',
+      },
     ];
 
     onMounted(() => {
@@ -370,7 +385,11 @@ export default defineComponent({
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             if (itemToUpdate.type !== null) {
-              console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+              console.log('Updating', {
+                itemToUpdate,
+              }, {
+                attr, value: item[attr],
+              });
               getSocket('/systems/ranks').emit('ranks::save', {
                 ...itemToUpdate,
                 [attr]: item[attr], // save new value for all selected items
@@ -383,7 +402,11 @@ export default defineComponent({
               });
             } else {
               // resave pending
-              console.log('Updating pending', { itemToUpdate }, { attr, value: item[attr] });
+              console.log('Updating pending', {
+                itemToUpdate,
+              }, {
+                attr, value: item[attr],
+              });
               sessionStorage.setItem('ranks-pending', JSON.stringify(
                 [
                   ...JSON.parse(sessionStorage.getItem('ranks-pending') ?? '[]').filter((o: RankInterface) => o.id !== itemToUpdate.id),
@@ -464,10 +487,6 @@ export default defineComponent({
       timestamp,
       rules,
       typeItems,
-      mdiMagnify,
-      mdiMinus,
-      mdiPlus,
-      mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
       saveCurrentItems,
     };

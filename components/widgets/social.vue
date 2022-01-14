@@ -13,7 +13,7 @@
           <v-list-item v-for="item of items" :key="item.id" two-line>
             <v-list-item-action>
               <v-icon x-large color="#08a0e9">
-                {{ mdiTwitter }}
+                mdi-twitter
               </v-icon>
             </v-list-item-action>
             <v-list-item-content>
@@ -22,7 +22,7 @@
             </v-list-item-content>
             <v-list-item-action>
               <v-btn :href="item.url" icon target="_blank">
-                <v-icon>{{ mdiLink }}</v-icon>
+                <v-icon>mdi-link</v-icon>
               </v-btn>
             </v-list-item-action>
           </v-list-item>
@@ -33,7 +33,6 @@
 </template>
 
 <script lang="ts">
-import { mdiLink, mdiTwitter } from '@mdi/js';
 import {
   computed,
   defineComponent,
@@ -48,11 +47,15 @@ import { error } from '../../functions/error';
 import type { WidgetSocialInterface } from '.bot/src/database/entity/widget';
 
 export default defineComponent({
-  props: { height: Number },
+  props: {
+    height: Number,
+  },
   setup () {
     const { result, loading, onError } = useQuery(gql`
       query { widgeSocialGet { id type hashtag text username displayname url timestamp }
-    `, null, { pollInterval: 10000 });
+    `, null, {
+      pollInterval: 10000,
+    });
     onError(error);
     const items = useResult<{ widgeSocialGet: WidgetSocialInterface[] }, WidgetSocialInterface[], WidgetSocialInterface[]>(result, [], data => data.widgeSocialGet);
 
@@ -69,10 +72,6 @@ export default defineComponent({
       // helpers
       translate,
       dayjs,
-
-      // icons,
-      mdiTwitter,
-      mdiLink,
     };
   },
 });

@@ -74,9 +74,6 @@ export default {
   ],
 
   vuetify: {
-    icons: {
-      iconfont: 'mdiSvg',
-    },
     breakpoint: {
       mobileBreakpoint: 'sm',
     },

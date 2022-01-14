@@ -18,7 +18,7 @@
             @click="dialog = true"
             v-on="on"
           >
-            <v-icon>{{ mdiPencil }}</v-icon>
+            <v-icon>mdi-pencil</v-icon>
           </v-btn>
         </template>
         <span>Edit URLs</span>
@@ -52,7 +52,6 @@
 </template>
 
 <script lang="ts">
-import { mdiPencil } from '@mdi/js';
 import {
   computed,
   defineAsyncComponent,
@@ -67,8 +66,14 @@ import { error } from '../../functions/error';
 import type { WidgetCustomInterface } from '.bot/src/database/entity/widget';
 
 export default defineComponent({
-  props:      { height: Number },
-  components: { edit: defineAsyncComponent({ loader: () => import('~/components/widgets/custom/edit.vue') }) },
+  props: {
+    height: Number,
+  },
+  components: {
+    edit: defineAsyncComponent({
+      loader: () => import('~/components/widgets/custom/edit.vue'),
+    }),
+  },
   setup () {
     const { result, loading, refetch, onError } = useQuery(gql`
       query { widgetCustomGet { id url name } }
@@ -108,9 +113,6 @@ export default defineComponent({
 
       // helpers
       translate,
-
-      // icons,
-      mdiPencil,
     };
   },
 });

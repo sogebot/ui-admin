@@ -28,7 +28,6 @@
 </template>
 
 <script lang="ts">
-import { mdiPencil } from '@mdi/js';
 import {
   computed,
   defineComponent, onMounted, ref, watch,
@@ -40,7 +39,9 @@ import { v4 } from 'uuid';
 import type { ChecklistInterface } from '.bot/src/database/entity/checklist';
 
 export default defineComponent({
-  props: { height: Number },
+  props: {
+    height: Number,
+  },
   setup () {
     const id = v4();
 
@@ -99,9 +100,6 @@ export default defineComponent({
 
       // helpers
       translate,
-
-      // icons,
-      mdiPencil,
     };
   },
 });

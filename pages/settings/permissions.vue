@@ -16,7 +16,7 @@
             </v-toolbar-title>
             <v-spacer />
             <v-btn icon :loading="state.saving" @click="addNewPermissionGroup">
-              <v-icon>{{ mdiPlus }}</v-icon>
+              <v-icon>mdi-plus-thick</v-icon>
             </v-btn>
           </v-toolbar>
           <v-card-text class="pa-0">
@@ -33,14 +33,14 @@
                 <template v-if="permission.id !== defaultPermissions.VIEWERS && permission.id !== defaultPermissions.CASTERS">
                   <template v-if="$vuetify.breakpoint.mobile">
                     <v-icon v-if="permission.order > 1" @click.stop="swapOrder(permission.order, permission.order - 1)">
-                      {{ mdiChevronUp }}
+                      mdi-chevron-up
                     </v-icon>
                     <v-icon v-if="permission.order !== permissions.length - 2" @click.stop="swapOrder(permission.order, permission.order + 1)">
-                      {{ mdiChevronDown }}
+                      mdi-chevron-down
                     </v-icon>
                   </template>
                   <v-icon v-else :disabled="state.dragging || state.saving" @mousedown.prevent="handleDragStart($event, permission.id)">
-                    {{ mdiDrag }}
+                    mdi-drag
                   </v-icon>
                 </template>
                 <v-icon left small>
@@ -50,7 +50,7 @@
                 <template v-if="permission.automation">
                   <v-spacer />
                   <v-icon left small>
-                    {{ mdiCog }}
+                    mdi-cog
                   </v-icon>
                   <small class="text-caption">{{ translate('core.permissions.' + permission.automation) }}</small>
                 </template>
@@ -70,10 +70,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiChevronDown, mdiChevronUp, mdiCog, mdiDrag,
-  mdiEqual, mdiGreaterThanOrEqual, mdiPlus,
-} from '@mdi/js';
 import {
   defineComponent, onMounted, ref, useRoute, useRouter, watch,
 } from '@nuxtjs/composition-api';
@@ -214,7 +210,9 @@ export default defineComponent({
     const permissions = ref([] as PermissionsInterface[]);
     const tabsRef = ref(null as any);
 
-    const state = ref({ dragging: false, saving: false } as {
+    const state = ref({
+      dragging: false, saving: false,
+    } as {
       dragging: boolean;
       saving: boolean;
     });
@@ -273,7 +271,9 @@ export default defineComponent({
 
       permissions.value.forEach((permission) => {
         const { id, ...data } = permission;
-        updateMutation({ id, data });
+        updateMutation({
+          id, data,
+        });
       });
     };
 
@@ -320,15 +320,6 @@ export default defineComponent({
       // others
       translate,
       defaultPermissions,
-
-      // icons
-      mdiGreaterThanOrEqual,
-      mdiEqual,
-      mdiCog,
-      mdiPlus,
-      mdiDrag,
-      mdiChevronUp,
-      mdiChevronDown,
     };
   },
 });

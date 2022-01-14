@@ -31,14 +31,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search or add by spotifyURI"
                 single-line
                 hide-details
@@ -113,7 +113,6 @@
 </template>
 
 <script lang="ts">
-import { mdiCheckboxMultipleMarkedOutline, mdiMagnify } from '@mdi/js';
 import {
   computed, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -153,8 +152,12 @@ export default defineComponent({
     });
 
     const headers = [
-      { value: 'title', text: '' },
-      { value: 'artists', text: '' },
+      {
+        value: 'title', text: '',
+      },
+      {
+        value: 'artists', text: '',
+      },
     ];
 
     const fItems = computed(() => {
@@ -174,7 +177,8 @@ export default defineComponent({
 
     const refresh = () => {
       state.value.loading = ButtonStates.progress;
-      getSocket('/integrations/spotify').emit('spotify::getAllBanned', {}, (_err: string | null, _items: SpotifySongBanInterface[]) => {
+      getSocket('/integrations/spotify').emit('spotify::getAllBanned', {
+      }, (_err: string | null, _items: SpotifySongBanInterface[]) => {
         items.value = _items;
         state.value.loading = ButtonStates.success;
       });
@@ -208,7 +212,9 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve) => {
-            getSocket('/integrations/spotify').emit('spotify::deleteBan', { spotifyUri: item.spotifyUri }, () => {
+            getSocket('/integrations/spotify').emit('spotify::deleteBan', {
+              spotifyUri: item.spotifyUri,
+            }, () => {
               resolve(true);
             });
           });
@@ -238,8 +244,6 @@ export default defineComponent({
       deleteDialog,
       deleteSelected,
       selected,
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
     };
   },
 });

@@ -13,7 +13,7 @@
         >
           <v-text-field
             v-model="search"
-            :append-icon="mdiMagnify"
+            append-icon="mdi-magnify"
             label="Search"
             hide-details
           />
@@ -38,7 +38,7 @@
           :class="[!showChartCommands.includes(item.command) ? 'green--text' : 'red--text']"
           @click="toggleCommandChart(item.command)"
         >
-          {{ !showChartCommands.includes(item.command) ? mdiPlusThick : mdiMinusThick }}
+          {{ !showChartCommands.includes(item.command) ? 'mdi-plus-thick' : 'mdi-minus-thick' }}
         </v-icon>
       </template>
     </v-data-table>
@@ -46,9 +46,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiMagnify, mdiMinusThick, mdiPlusThick,
-} from '@mdi/js';
 import {
   computed, defineComponent,
   onMounted, ref, watch,
@@ -106,18 +103,34 @@ export default defineComponent({
     });
     const commandsUsage = ref([] as { command: string, timestamp: number, _id: string }[]);
 
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
     const headers = [
-      { value: 'command', text: capitalize(translate('command')) },
-      { value: 'hour', text: capitalize(translate('stats.commandcount.hour')) },
-      { value: 'day', text: capitalize(translate('stats.commandcount.day')) },
-      { value: 'week', text: capitalize(translate('stats.commandcount.week')) },
-      { value: 'month', text: capitalize(translate('stats.commandcount.month')) },
-      { value: 'year', text: capitalize(translate('stats.commandcount.year')) },
-      { value: 'total', text: capitalize(translate('stats.commandcount.total')) },
+      {
+        value: 'command', text: capitalize(translate('command')),
+      },
+      {
+        value: 'hour', text: capitalize(translate('stats.commandcount.hour')),
+      },
+      {
+        value: 'day', text: capitalize(translate('stats.commandcount.day')),
+      },
+      {
+        value: 'week', text: capitalize(translate('stats.commandcount.week')),
+      },
+      {
+        value: 'month', text: capitalize(translate('stats.commandcount.month')),
+      },
+      {
+        value: 'year', text: capitalize(translate('stats.commandcount.year')),
+      },
+      {
+        value: 'total', text: capitalize(translate('stats.commandcount.total')),
+      },
       {
         value: 'button', text: '', sortable: false,
       },
@@ -276,7 +289,8 @@ export default defineComponent({
             countByTimestamps[t] = 0;
           }
         }
-        const countByTimestampsOrdered: any = {};
+        const countByTimestampsOrdered: any = {
+        };
         for (const k of Object.keys(countByTimestamps).sort()) {
           countByTimestampsOrdered[new Date(Number(k)).toLocaleString()] = countByTimestamps[k];
         }
@@ -301,9 +315,6 @@ export default defineComponent({
       toggleCommandChart,
       generateChartData,
       showChartCommands,
-      mdiMagnify,
-      mdiPlusThick,
-      mdiMinusThick,
       timeRange,
       ticksLabels,
       ButtonStates,

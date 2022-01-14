@@ -30,7 +30,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.default.defaultCooldownOfCommandsInSeconds[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -49,7 +49,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.default.defaultCooldownOfKeywordsInSeconds[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -64,7 +64,6 @@
 </template>
 
 <script lang="ts">
-import { mdiLock, mdiLockOpenVariant } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -81,7 +80,9 @@ import { togglePermissionLock } from '~/functions/togglePermissionLock';
 import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
-  components: { permissionTabs: defineAsyncComponent(() => import('~/components/settings/modules/permissionTabs.vue')) },
+  components: {
+    permissionTabs: defineAsyncComponent(() => import('~/components/settings/modules/permissionTabs.vue')),
+  },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);
@@ -91,7 +92,9 @@ export default defineComponent({
 
     watch(settings, () => {
       store.commit('settings/pending', true);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -101,7 +104,9 @@ export default defineComponent({
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     onMounted(() => {
       getSocket(`/systems/cooldown`)
@@ -131,10 +136,6 @@ export default defineComponent({
       // validators
       required,
       minValue,
-
-      // icons
-      mdiLock,
-      mdiLockOpenVariant,
     };
   },
 });

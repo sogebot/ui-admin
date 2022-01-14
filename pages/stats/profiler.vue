@@ -30,7 +30,7 @@
           :class="[!showChartFunctions.includes(item.function) ? 'green--text' : 'red--text']"
           @click="toggleFunctionChart(item.function)"
         >
-          {{ !showChartFunctions.includes(item.function) ? mdiPlusThick : mdiMinusThick }}
+          {{ !showChartFunctions.includes(item.function) ? 'mdi-plus-thick' : 'mdi-minus-thick' }}
         </v-icon>
       </template>
     </v-data-table>
@@ -38,7 +38,6 @@
 </template>
 
 <script lang="ts">
-import { mdiMinusThick, mdiPlusThick } from '@mdi/js';
 import {
   defineComponent,
   onMounted, ref, watch,
@@ -66,16 +65,28 @@ export default defineComponent({
     const items = ref([] as {
       function: string, min: number, max: number, avg: number, samples: number, times: number[],
     }[]);
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
     const headers = [
-      { value: 'function', text: capitalize('function') },
-      { value: 'samples', text: capitalize('samples') },
-      { value: 'min', text: capitalize('min time') },
-      { value: 'max', text: capitalize('max time') },
-      { value: 'avg', text: capitalize('average time') },
+      {
+        value: 'function', text: capitalize('function'),
+      },
+      {
+        value: 'samples', text: capitalize('samples'),
+      },
+      {
+        value: 'min', text: capitalize('min time'),
+      },
+      {
+        value: 'max', text: capitalize('max time'),
+      },
+      {
+        value: 'avg', text: capitalize('average time'),
+      },
       {
         value: 'button', text: '', sortable: false,
       },
@@ -131,7 +142,12 @@ export default defineComponent({
 
       for (const item of items.value) {
         if (showChartFunctions.value.includes(item.function)) {
-          generatedData.push({ name: item.function, data: { ...item.times } });
+          generatedData.push({
+            name: item.function,
+            data: {
+              ...item.times,
+            },
+          });
         }
       }
       return generatedData;
@@ -152,8 +168,6 @@ export default defineComponent({
       max,
       min,
       generateChartData,
-      mdiPlusThick,
-      mdiMinusThick,
       ButtonStates,
     };
   },

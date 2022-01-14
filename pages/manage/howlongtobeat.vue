@@ -33,7 +33,7 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
@@ -42,7 +42,7 @@
                 v-model="gameToAdd"
                 :search-input.sync="search"
                 label="Search or add game"
-                :append-outside-icon="mdiMagnify"
+                append-outside-icon="mdi-magnify"
                 :items="searchForGameOpts"
                 :return-object="false"
                 class="pr-2 pt-5"
@@ -215,7 +215,7 @@
                     <v-btn
                       @click="item.offset = 0; timestamp = Date.now()"
                     >
-                      <v-icon>{{ mdiRefresh }}</v-icon>
+                      <v-icon>mdi-refresh</v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -229,9 +229,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCheckboxMultipleMarkedOutline, mdiMagnify, mdiRefresh,
-} from '@mdi/js';
 import {
   computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -249,7 +246,11 @@ import { EventBus } from '~/functions/event-bus';
 import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
-  components: { timeInput: defineAsyncComponent({ loader: () => import('~/components/time.vue') }) },
+  components: {
+    timeInput: defineAsyncComponent({
+      loader: () => import('~/components/time.vue'),
+    }),
+  },
   setup () {
     const timestamp = ref(Date.now());
     const items = ref([] as HowLongToBeatGameInterface[]);
@@ -281,7 +282,9 @@ export default defineComponent({
     });
     const search = ref('');
 
-    const rules = { offset: [required, minValue(0)] };
+    const rules = {
+      offset: [required, minValue(0)],
+    };
 
     const getStreamsOffset = (hltbId: string, type: 'extra' | 'main' | 'completionist') => {
       return streams.value
@@ -306,7 +309,9 @@ export default defineComponent({
     });
 
     const headers = [
-      { value: 'thumbnail', text: '' },
+      {
+        value: 'thumbnail', text: '',
+      },
       {
         value: 'game', text: translate('systems.howlongtobeat.game'), sortable: true,
       },
@@ -362,7 +367,9 @@ export default defineComponent({
         items.value = cloneDeep(_games);
         streams.value = cloneDeep(_streams);
         oldStreams.value = cloneDeep(_streams);
-        console.debug('Loaded', { _games, _streams });
+        console.debug('Loaded', {
+          _games, _streams,
+        });
         state.value.loading = ButtonStates.success;
       });
     };
@@ -410,7 +417,11 @@ export default defineComponent({
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
-            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+            console.log('Updating', {
+              itemToUpdate,
+            }, {
+              attr, value: item[attr],
+            });
             getSocket('/systems/howlongtobeat').emit('hltb::save', itemToUpdate, () => {
               resolve(true);
             });
@@ -439,7 +450,9 @@ export default defineComponent({
         }
       }
       oldStreams.value = cloneDeep(streams.value);
-    }, 1000), { deep: true });
+    }, 1000), {
+      deep: true,
+    });
 
     watch(search, debounce((value: string | null) => {
       if (value && value.trim().length !== 0) {
@@ -530,9 +543,6 @@ export default defineComponent({
       timestamp,
       dayjs,
 
-      mdiMagnify,
-      mdiRefresh,
-      mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
     };
   },

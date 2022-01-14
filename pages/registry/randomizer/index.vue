@@ -18,14 +18,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -93,20 +93,20 @@
         <div style="width: max-content;">
           <v-hover v-slot="{ hover }">
             <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" nuxt :to="'/registry/randomizer/' + item.id" @click.stop>
-              <v-icon>{{ mdiPencil }}</v-icon>
+              <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </v-hover>
 
           <v-hover v-slot="{ hover }">
             <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" @click.stop="toggleVisibility(item)">
-              <v-icon>{{ item.isShown ? mdiEye : mdiEyeOff }}</v-icon>
+              <v-icon>{{ item.isShown ? 'mdi-eye' : 'mdi-eye-off' }}</v-icon>
             </v-btn>
           </v-hover>
 
           <v-hover v-slot="{ hover }">
             <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" :disabled="spin" @click.stop="startSpin">
               <v-icon v-if="!spin">
-                {{ mdiPlay }}
+                mdi-play
               </v-icon>
               <v-progress-circular v-else indeterminate size="20" />
             </v-btn>
@@ -114,7 +114,7 @@
 
           <v-hover v-slot="{ hover }">
             <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" @click.stop="clone(item)">
-              <v-icon>{{ mdiContentCopy }}</v-icon>
+              <v-icon>mdi-content-copy</v-icon>
             </v-btn>
           </v-hover>
         </div>
@@ -124,9 +124,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCheckboxMultipleMarkedOutline, mdiContentCopy, mdiEye, mdiEyeOff, mdiMagnify, mdiPencil, mdiPlay,
-} from '@mdi/js';
 import {
   defineComponent, onMounted, ref,
   watch,
@@ -164,15 +161,21 @@ export default defineComponent({
       return data.randomizers;
     });
 
-    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, { refetchQueries: ['randomizerGetAll'] });
+    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, {
+      refetchQueries: ['randomizerGetAll'],
+    });
     onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
     onErrorRemove(error);
 
-    const { mutate: saveMutation, onError: onErrorSave, onDone: onDoneSave } = useMutation(SAVE, { refetchQueries: ['randomizerGetAll'] });
+    const { mutate: saveMutation, onError: onErrorSave, onDone: onDoneSave } = useMutation(SAVE, {
+      refetchQueries: ['randomizerGetAll'],
+    });
     onDoneSave(() => EventBus.$emit('snack', 'success', 'Data saved.'));
     onErrorSave(error);
 
-    const { mutate: hideMutation, onError: onErrorHide, onDone: onDoneHide } = useMutation(gql`mutation randomizerSetVisibility($id: String!, $value: Boolean!) { randomizerSetVisibility(id: $id, value: $value) }`, { refetchQueries: ['randomizerGetAll'] });
+    const { mutate: hideMutation, onError: onErrorHide, onDone: onDoneHide } = useMutation(gql`mutation randomizerSetVisibility($id: String!, $value: Boolean!) { randomizerSetVisibility(id: $id, value: $value) }`, {
+      refetchQueries: ['randomizerGetAll'],
+    });
     onDoneHide(() => EventBus.$emit('snack', 'success', 'Visibility changed.'));
     onErrorHide(error);
 
@@ -193,22 +196,36 @@ export default defineComponent({
     });
 
     const headers = [
-      { value: 'name', text: translate('timers.dialog.name') },
-      { value: 'command', text: translate('registry.randomizer.form.command') },
-      { value: 'permissionId', text: translate('registry.randomizer.form.permission') },
+      {
+        value: 'name', text: translate('timers.dialog.name'),
+      },
+      {
+        value: 'command', text: translate('registry.randomizer.form.command'),
+      },
+      {
+        value: 'permissionId', text: translate('registry.randomizer.form.permission'),
+      },
       {
         value: 'items', text: translate('registry.randomizer.form.options'), sortable: false,
       },
       {
         value: 'actions', text: '', sortable: false,
       },
-      { text: '', value: 'data-table-expand' },
+      {
+        text: '', value: 'data-table-expand',
+      },
     ];
 
     const headersDelete = [
-      { value: 'name', text: translate('timers.dialog.name') },
-      { value: 'command', text: translate('registry.randomizer.form.command') },
-      { value: 'items', text: 'Items' },
+      {
+        value: 'name', text: translate('timers.dialog.name'),
+      },
+      {
+        value: 'command', text: translate('registry.randomizer.form.command'),
+      },
+      {
+        value: 'items', text: 'Items',
+      },
     ];
 
     onMounted(() => {
@@ -216,7 +233,9 @@ export default defineComponent({
     });
 
     const deleteSelected = () => {
-      selected.value.forEach(item => removeMutation({ id: item.id }));
+      selected.value.forEach(item => removeMutation({
+        id: item.id,
+      }));
       deleteDialog.value = false;
       selected.value = [];
     };
@@ -228,7 +247,9 @@ export default defineComponent({
       // remap items ids
       const clonedItems = item.items.map((o) => {
         clonedItemsRemapId.set(o.id, v4());
-        return { ...o, id: clonedItemsRemapId.get(o.id) };
+        return {
+          ...o, id: clonedItemsRemapId.get(o.id),
+        };
       });
 
       const clonedItem = {
@@ -238,10 +259,14 @@ export default defineComponent({
         name:    item.name + ' (clone)',
         command: `!${Math.random().toString(36).substr(2, 5)}`,
         // we need to do another .map as we need to find groupId
-        items:   clonedItems.map(o => ({ ...o, groupId: o.groupId === null ? o.groupId : clonedItemsRemapId.get(o.groupId) })),
+        items:   clonedItems.map(o => ({
+          ...o, groupId: o.groupId === null ? o.groupId : clonedItemsRemapId.get(o.groupId),
+        })),
       };
 
-      saveMutation({ data_json: JSON.stringify(clonedItem) });
+      saveMutation({
+        data_json: JSON.stringify(clonedItem),
+      });
     };
 
     const toggleVisibility = (item: Required<RandomizerInterface>) => {
@@ -285,15 +310,6 @@ export default defineComponent({
       getPermissionName,
       toggleVisibility,
       startSpin,
-
-      // icons
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
-      mdiContentCopy,
-      mdiPencil,
-      mdiEye,
-      mdiEyeOff,
-      mdiPlay,
 
       // others
       orderBy,

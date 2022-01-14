@@ -13,7 +13,7 @@
         @click="save"
       >
         <v-icon class="d-flex d-sm-none">
-          {{ mdiFloppy }}
+          mdi-floppy
         </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
@@ -261,7 +261,7 @@
                     >
                       <template #append-outer>
                         <v-btn icon @click="addAction(actionToAdd)">
-                          <v-icon>{{ mdiPlus }}</v-icon>
+                          <v-icon>mdi-plus-thick</v-icon>
                         </v-btn>
                       </template>
                     </v-autocomplete>
@@ -277,9 +277,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiClose, mdiExclamationThick, mdiFloppy, mdiPlus,
-} from '@mdi/js';
 import {
   computed,
   defineComponent, onMounted, ref, useRoute, useRouter, useStore, watch,
@@ -534,12 +531,6 @@ export default defineComponent({
 
       // others
       translate,
-
-      // icons
-      mdiClose,
-      mdiPlus,
-      mdiExclamationThick,
-      mdiFloppy,
     };
   },
 });

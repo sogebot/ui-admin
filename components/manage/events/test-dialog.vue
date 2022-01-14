@@ -11,7 +11,7 @@
               <v-row  no-gutters v-if="!variable.includes('Name') && !['currency', 'currencyInBot'].includes(variable)">
                 <v-col cols="auto" align-self="center">
                   <v-btn icon :color="randomized.includes(variable) ? 'success' : 'error'" @click="randomized = xor(randomized, [variable])">
-                    <v-icon>{{ mdiDiceMultiple }}</v-icon>
+                    <v-icon>mdi-dice-multiple</v-icon>
                   </v-btn>
                 </v-col>
                 <v-col align-self="center">
@@ -107,7 +107,6 @@
 </template>
 
 <script lang="ts">
-import { mdiDiceMultiple } from '@mdi/js';
 import {
   computed, defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -147,7 +146,9 @@ export default defineComponent({
         randomized.value = val.variables ?? [];
         values.value = (val.variables ?? []).map(() => '');
       }
-    }, { deep: true, immediate: true });
+    }, {
+      deep: true, immediate: true,
+    });
 
     const onSubmit = () => {
       console.log({
@@ -170,7 +171,6 @@ export default defineComponent({
 
       translate,
       xor,
-      mdiDiceMultiple,
     };
   },
 });

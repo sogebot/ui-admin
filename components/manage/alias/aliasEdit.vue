@@ -8,7 +8,7 @@
       :fullscreen="$vuetify.breakpoint.mobile"
     >
       <template #activator="{ on, attrs }">
-        <v-btn v-if="item.id !== undefined" v-bind="attrs" small v-on="on" icon>
+        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" v-on="on" class="primary-hover">
           <v-icon>
             mdi-pencil
           </v-icon>
@@ -27,7 +27,6 @@
               hide-details="auto"
               :clearable="true"
               required
-              counter
             />
 
             <v-textarea
@@ -36,7 +35,6 @@
               :label="translate('command')"
               :rows="1"
               :rules="rules.command"
-              counter
               :clearable="true"
               auto-grow
               required

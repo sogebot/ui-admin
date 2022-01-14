@@ -73,7 +73,7 @@
                   }"
                   x-small
                   :color="isTrending(currentAnimated.value, averageAnimated.value) ? 'green' : 'red'"
-                >{{ isTrending(currentAnimated.value, averageAnimated.value) ? mdiTrendingUp : mdiTrendingDown }}</v-icon>
+                >{{ isTrending(currentAnimated.value, averageAnimated.value) ? 'mdi-trending-up' : 'mdi-trending-down' }}</v-icon>
 
                 <span
                   class="text-truncate"
@@ -83,7 +83,7 @@
                   }"
                 >
                   <span v-if="$store.state.configuration.core.ui.percentage && averageAnimated.value === 0">
-                    <v-icon x-small :color="isTrending(currentAnimated.value, averageAnimated.value) ? 'green' : 'red'">{{ mdiInfinity }}</v-icon>%
+                    <v-icon x-small :color="isTrending(currentAnimated.value, averageAnimated.value) ? 'green' : 'red'">mdi-infinity</v-icon>%
                   </span>
                   <span
                     v-else-if="type === 'bigNumber'"
@@ -167,9 +167,6 @@
 
 <script lang="ts">
 import {
-  mdiInfinity, mdiTrendingDown, mdiTrendingUp,
-} from '@mdi/js';
-import {
   defineComponent, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
@@ -190,8 +187,12 @@ export default defineComponent({
     type:           String,
   },
   setup (props) {
-    const currentAnimated = ref({ value: 0 });
-    const averageAnimated = ref({ value: 0 });
+    const currentAnimated = ref({
+      value: 0,
+    });
+    const averageAnimated = ref({
+      value: 0,
+    });
     const store = useStore<any>();
 
     const numberReducer = (out: string, item: any) => {
@@ -208,21 +209,25 @@ export default defineComponent({
       gsap.to(currentAnimated.value, {
         duration: 0.5, value: val, roundProps: 'value',
       });
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     watch(() => props.average, (val) => {
       val = val ?? 0;
       gsap.to(averageAnimated.value, {
         duration: 0.5, value: val, roundProps: 'value',
       });
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     const toggleDisplay = () => {
       store.commit('setUIStatsHidden', !store.state.areUIStatsHidden);
     };
 
     return {
-      toggleDisplay, currentAnimated, numberReducer, translate, isTrending, mdiTrendingDown, mdiTrendingUp, mdiInfinity, averageAnimated,
+      toggleDisplay, currentAnimated, numberReducer, translate, isTrending, averageAnimated,
     };
   },
 });

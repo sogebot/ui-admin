@@ -19,7 +19,7 @@
               <v-col>
                 <v-text-field
                   v-model="search"
-                  :append-icon="mdiMagnify"
+                  append-icon="mdi-magnify"
                   label="Search"
                   hide-details
                 />
@@ -69,7 +69,6 @@
 </template>
 
 <script lang="ts">
-import { mdiMagnify } from '@mdi/js';
 import {
   computed, defineComponent,
   onMounted, ref,
@@ -92,9 +91,15 @@ export default defineComponent({
     const selected = ref('helix');
     const apiItems = computed(() => {
       return [
-        { value: 'helix', text: `helix (${items.value.filter(o => o.api === 'helix').length})` },
-        { value: 'unofficial', text: `unofficial (${items.value.filter(o => o.api === 'unofficial').length})` },
-        { value: 'other', text: `other (${items.value.filter(o => o.api === 'other').length})` },
+        {
+          value: 'helix', text: `helix (${items.value.filter(o => o.api === 'helix').length})`,
+        },
+        {
+          value: 'unofficial', text: `unofficial (${items.value.filter(o => o.api === 'unofficial').length})`,
+        },
+        {
+          value: 'other', text: `other (${items.value.filter(o => o.api === 'other').length})`,
+        },
       ];
     });
 
@@ -106,7 +111,8 @@ export default defineComponent({
       const success = items.value.filter(o => o.api === selected.value && String(o.code).startsWith('2'));
       const errors = items.value.filter(o => o.api === selected.value && !String(o.code).startsWith('2'));
 
-      const successPerMinute: any = {};
+      const successPerMinute: any = {
+      };
       const _successPerMinute = groupBy(success, (o) => {
         return (new Date(o.timestamp)).getHours() + ':' + (new Date(o.timestamp)).getMinutes();
       });
@@ -115,7 +121,8 @@ export default defineComponent({
         successPerMinute[timestamp] = _successPerMinute[minute].length;
       }
 
-      const errorsPerMinute: any = {};
+      const errorsPerMinute: any = {
+      };
       const _errorsPerMinute = groupBy(errors, (o) => {
         return (new Date(o.timestamp)).getMinutes();
       });
@@ -132,8 +139,12 @@ export default defineComponent({
       }
 
       return [
-        { name: 'Success', data: successPerMinute },
-        { name: 'Errors', data: errorsPerMinute },
+        {
+          name: 'Success', data: successPerMinute,
+        },
+        {
+          name: 'Errors', data: errorsPerMinute,
+        },
       ];
     });
 
@@ -142,10 +153,18 @@ export default defineComponent({
     const items = ref([] as any[]);
 
     const headers = [
-      { value: 'time', text: capitalize(translate('date')) },
-      { value: 'call', text: capitalize('name') },
-      { value: 'endpoint', text: capitalize('endpoint') },
-      { value: 'remaining', text: capitalize('remaining API calls') },
+      {
+        value: 'time', text: capitalize(translate('date')),
+      },
+      {
+        value: 'call', text: capitalize('name'),
+      },
+      {
+        value: 'endpoint', text: capitalize('endpoint'),
+      },
+      {
+        value: 'remaining', text: capitalize('remaining API calls'),
+      },
       {
         value: 'data', text: capitalize('data'), sortable: false,
       },
@@ -180,7 +199,6 @@ export default defineComponent({
       translate,
       refresh,
       capitalize,
-      mdiMagnify,
       selected,
       parseJSON,
       graphData,

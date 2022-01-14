@@ -10,7 +10,7 @@
         @click="save"
       >
         <v-icon class="d-flex d-sm-none">
-          {{ mdiFloppy }}
+          mdi-floppy
         </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
@@ -78,7 +78,7 @@
               {{ translate('registry.randomizer.form.options') }}
               <div style="text-align: right;">
                 <v-btn v-if="open" icon @click.stop="addOption">
-                  <v-icon>{{ mdiPlus }}</v-icon>
+                  <v-icon>mdi-plus-thick</v-icon>
                 </v-btn>
               </div>
             </v-expansion-panel-header>
@@ -130,9 +130,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiClose, mdiExclamationThick, mdiFloppy, mdiPlus,
-} from '@mdi/js';
 import {
   computed, defineAsyncComponent, defineComponent, onMounted,
 
@@ -198,10 +195,18 @@ const emptyItem: RandomizerInterface = {
 
 export default defineComponent({
   components: {
-    font:         defineAsyncComponent({ loader: () => import('~/components/form/expansion/font.vue') }),
-    position:     defineAsyncComponent({ loader: () => import('~/components/form/expansion/position.vue') }),
-    tts:          defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
-    optionsTable: defineAsyncComponent({ loader: () => import('~/components/randomizer/table.vue') }),
+    font: defineAsyncComponent({
+      loader: () => import('~/components/form/expansion/font.vue'),
+    }),
+    position: defineAsyncComponent({
+      loader: () => import('~/components/form/expansion/position.vue'),
+    }),
+    tts: defineAsyncComponent({
+      loader: () => import('~/components/form/expansion/tts.vue'),
+    }),
+    optionsTable: defineAsyncComponent({
+      loader: () => import('~/components/randomizer/table.vue'),
+    }),
   },
   setup () {
     const store = useStore();
@@ -210,7 +215,9 @@ export default defineComponent({
 
     const item = ref(cloneDeep(emptyItem) as RandomizerInterface);
 
-    const { result, loading } = useQuery(GET_ONE, { id: route.value.params.id });
+    const { result, loading } = useQuery(GET_ONE, {
+      id: route.value.params.id,
+    });
     const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
     if (route.value.params.id !== 'new') {
       const cache = useResult<{ randomizers: RandomizerInterface[] }, null, RandomizerInterface[]>(result, null, data => data.randomizers);
@@ -221,18 +228,26 @@ export default defineComponent({
 
         if (value.length === 0) {
           EventBus.$emit('snack', 'error', 'Data not found.');
-          router.push({ path: '/registry/randomizer' });
+          router.push({
+            path: '/registry/randomizer',
+          });
         } else {
           item.value = cloneDeep(value[0]);
         }
-      }, { immediate: true, deep: true });
+      }, {
+        immediate: true, deep: true,
+      });
     }
     const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(gql`
       mutation randomizersSave($data_json: String!) {
         randomizersSave(data: $data_json) { id }
       }`);
     onDoneSave((res) => {
-      router.push({ params: { id: res.data.randomizersSave.id } });
+      router.push({
+        params: {
+          id: res.data.randomizersSave.id,
+        },
+      });
       EventBus.$emit('snack', 'success', 'Data saved.');
     });
     onErrorSave(error);
@@ -243,9 +258,15 @@ export default defineComponent({
     const valid1 = ref(true);
 
     const typeItems = [
-      { text: translate('registry.randomizer.form.simple'), value: 'simple' },
-      { text: translate('registry.randomizer.form.wheelOfFortune'), value: 'wheelOfFortune' },
-      { text: translate('registry.randomizer.form.tape'), value: 'tape' },
+      {
+        text: translate('registry.randomizer.form.simple'), value: 'simple',
+      },
+      {
+        text: translate('registry.randomizer.form.wheelOfFortune'), value: 'wheelOfFortune',
+      },
+      {
+        text: translate('registry.randomizer.form.tape'), value: 'tape',
+      },
     ];
     const permissionItems = computed(() => {
       return permissions.value.map(o => ({
@@ -255,7 +276,9 @@ export default defineComponent({
       }));
     });
 
-    const rules = { name: [required], command: [required, startsWith(['!']), minLength(3)] };
+    const rules = {
+      name: [required], command: [required, startsWith(['!']), minLength(3)],
+    };
 
     onMounted(() => {
       store.commit('panel/back', '/registry/randomizer/');
@@ -265,7 +288,9 @@ export default defineComponent({
       if (
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
-        saveMutation({ data_json: JSON.stringify(item.value) });
+        saveMutation({
+          data_json: JSON.stringify(item.value),
+        });
       }
     };
 
@@ -347,12 +372,6 @@ export default defineComponent({
       // others
       translate,
       getContrastColor,
-
-      // icons
-      mdiClose,
-      mdiPlus,
-      mdiExclamationThick,
-      mdiFloppy,
     };
   },
 });

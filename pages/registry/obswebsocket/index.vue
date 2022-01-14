@@ -19,14 +19,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -90,7 +90,7 @@
         <div style="width: max-content;">
           <v-hover v-slot="{ hover }">
             <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" :to="'/registry/obswebsocket/' + item.id">
-              <v-icon>{{ mdiPencil }}</v-icon>
+              <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </v-hover>
           <v-hover v-slot="{ hover }">
@@ -101,10 +101,10 @@
               @click.stop="copied=item.id"
             >
               <v-icon v-if="copied !== item.id">
-                {{ mdiClipboard }}
+                mdi-clipboard
               </v-icon>
               <v-icon v-else>
-                {{ mdiClipboardCheck }}
+                mdi-clipboard-check
               </v-icon>
             </v-btn>
           </v-hover>
@@ -115,9 +115,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCheckboxMultipleMarkedOutline, mdiClipboard, mdiClipboardCheck, mdiMagnify, mdiPencil,
-} from '@mdi/js';
 import {
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -184,21 +181,29 @@ export default defineComponent({
     });
 
     const headers = [
-      { value: 'name', text: translate('timers.dialog.name') },
-      { value: 'command', text: translate('integrations.obswebsocket.command') },
+      {
+        value: 'name', text: translate('timers.dialog.name'),
+      },
+      {
+        value: 'command', text: translate('integrations.obswebsocket.command'),
+      },
       {
         value: 'actions', text: '', sortable: false,
       },
     ];
 
     const headersDelete = [
-      { value: 'name', text: 'Name' },
+      {
+        value: 'name', text: 'Name',
+      },
     ];
 
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        removeMutation({ id: item.id }, {
+        removeMutation({
+          id: item.id,
+        }, {
           refetchQueries: [
             'OBSWebsocketGetAll',
           ],
@@ -228,13 +233,6 @@ export default defineComponent({
       // functions
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       saveCurrentItems,
-
-      // icons
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
-      mdiPencil,
-      mdiClipboard,
-      mdiClipboardCheck,
 
       // others
       ButtonStates,

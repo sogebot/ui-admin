@@ -31,7 +31,6 @@
           hide-details="auto"
           :label="capitalize(translate('systems.customcommands.filter.name'))"
           :rows="1"
-          counter
           auto-grow
           clearable
           @keydown.enter.prevent
@@ -102,7 +101,9 @@ export default defineComponent({
     });
 
     function save () {
-      ctx.emit('save', { filter: filterModel.value.trim().length > 0 ? filterModel.value : null, permission: permissionModel.value });
+      ctx.emit('save', {
+        filter: filterModel.value.trim().length > 0 ? filterModel.value : null, permission: permissionModel.value,
+      });
     }
 
     return {

@@ -16,16 +16,16 @@
       <template #activator>
         <v-btn v-model="fab" color="blue-grey darken-2" dark fab x-small>
           <v-icon v-if="fab">
-            {{ mdiClose }}
+            mdi-close
           </v-icon>
           <v-icon v-else>
-            {{ mdiDotsVertical }}
+            mdi-dots-vertical
           </v-icon>
         </v-btn>
       </template>
 
       <v-btn fab x-small :color="editing ? 'primary' : 'secondary lighten-2'" @click="editing = !editing">
-        <v-icon>{{ mdiCircleEditOutline }}</v-icon>
+        <v-icon>mdi-circle-edit-outline</v-icon>
       </v-btn>
       <v-tooltip v-if="!isPopout" bottom>
         <template #activator="{ on, attrs }">
@@ -38,7 +38,7 @@
             target="_blank"
             v-on="on"
           >
-            <v-icon>{{ mdiOpenInNew }}</v-icon>
+            <v-icon>mdi-open-in-new</v-icon>
           </v-btn>
         </template>
         <span>Popout</span>
@@ -67,11 +67,11 @@
       <v-row v-if="editing">
         <v-col cols="12">
           <v-btn color="success" block @click="addItem">
-            <v-icon>{{ mdiPlusThick }}</v-icon>
+            <v-icon>mdi-plus-thick</v-icon>
           </v-btn>
           <v-fade-transition>
             <v-btn v-if="isAnySelected" color="error" block @click="deleteItems">
-              <v-icon>{{ mdiDelete }}</v-icon>
+              <v-icon>mdi-delete-forever</v-icon>
             </v-btn>
           </v-fade-transition>
         </v-col>
@@ -81,9 +81,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCircleEditOutline, mdiClose, mdiDelete, mdiDotsVertical, mdiOpenInNew, mdiPlusThick,
-} from '@mdi/js';
 import {
   computed,
   defineAsyncComponent,
@@ -98,7 +95,11 @@ import { error } from '~/functions/error';
 import { omitDeep } from '~/functions/omitDeep';
 
 export default defineComponent({
-  components: { actionButton: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/button.vue') }) },
+  components: {
+    actionButton: defineAsyncComponent({
+      loader: () => import('~/components/widgets/actions/button.vue'),
+    }),
+  },
   setup () {
     const { result, loading, refetch } = useQuery(gql`
       query quickAction {
@@ -171,7 +172,9 @@ export default defineComponent({
       const selected = items.value.filter(item => item.selected);
       for (const item of selected) {
         item.show = false;
-        removeMutation({ id: item.id });
+        removeMutation({
+          id: item.id,
+        });
       }
       setTimeout(() => {
         items.value = items.value.filter(item => !item.selected);
@@ -198,14 +201,6 @@ export default defineComponent({
       addItem,
       deleteItems,
       refetch,
-
-      /* icons */
-      mdiCircleEditOutline,
-      mdiPlusThick,
-      mdiDelete,
-      mdiOpenInNew,
-      mdiDotsVertical,
-      mdiClose,
     };
   },
 });

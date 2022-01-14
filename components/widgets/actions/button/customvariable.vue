@@ -25,7 +25,7 @@
         <template v-if="customVariable && customVariable.type === 'number'">
           <v-col v-if="!editing" cols="auto" class="d-flex">
             <v-icon class="minus" :color="color">
-              {{ mdiMinus }}
+              mdi-minus
             </v-icon>
           </v-col>
           <v-col class="text-truncate text" style="line-height: normal;">
@@ -39,7 +39,7 @@
 
           <v-col v-if="!editing" cols="auto" class="d-flex">
             <v-icon class="plus" :color="color">
-              {{ mdiPlus }}
+              mdi-plus-thick
             </v-icon>
           </v-col>
         </template>
@@ -54,7 +54,7 @@
           </v-col>
 
           <v-col v-if="!editing" cols="auto" class="d-flex" :color="color">
-            <v-icon>{{ mdiChevronDown }}</v-icon>
+            <v-icon>mdi-chevron-down</v-icon>
           </v-col>
         </template>
         <template v-if="customVariable && customVariable.type === 'text'">
@@ -68,7 +68,7 @@
           </v-col>
 
           <v-col v-if="!editing" cols="auto" class="d-flex" :color="color">
-            <v-icon>{{ mdiPencil }}</v-icon>
+            <v-icon>mdi-pencil</v-icon>
           </v-col>
         </template>
       </v-row>
@@ -103,9 +103,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiChevronDown, mdiMinus, mdiPencil, mdiPlus,
-} from '@mdi/js';
 import { useMutation, useQuery } from '@vue/apollo-composable';
 import {
   defineComponent, ref, watch,
@@ -129,7 +126,11 @@ export default defineComponent({
       query customVariable($name: String!) {
         customVariable(name: $name) { id currentValue type }
       }
-    `, { name: props.item.options.customvariable }, { pollInterval: 5000 });
+    `, {
+      name: props.item.options.customvariable,
+    }, {
+      pollInterval: 5000,
+    });
     watch(result, (value) => {
       if (value) {
         customVariable.value = value.customVariable[0];
@@ -160,7 +161,9 @@ export default defineComponent({
         } else {
           console.log(`quickaction::trigger::${props.item.id}`);
           customVariable.value.currentValue = value;
-          triggerMutation({ id: props.item.id, value: value.trim() });
+          triggerMutation({
+            id: props.item.id, value: value.trim(),
+          });
         }
       } else if (customVariable.value && customVariable.value.type === 'number') {
         // determinate which part of button is pushed
@@ -187,10 +190,14 @@ export default defineComponent({
           ? Number(customVariable.value.currentValue) - 1
           : Number(customVariable.value.currentValue) + 1);
         console.log(`quickaction::trigger::${props.item.id}`);
-        triggerMutation({ id: props.item.id, value: isDecrement ? '-1' : '+1' });
+        triggerMutation({
+          id: props.item.id, value: isDecrement ? '-1' : '+1',
+        });
       } else {
         console.log(`quickaction::trigger::${props.item.id}`);
-        triggerMutation({ id: props.item.id });
+        triggerMutation({
+          id: props.item.id,
+        });
       }
     };
 
@@ -204,12 +211,6 @@ export default defineComponent({
       trigger,
       debouncedTrigger,
       showDialog,
-
-      // icons
-      mdiPencil,
-      mdiChevronDown,
-      mdiPlus,
-      mdiMinus,
     };
   },
 });

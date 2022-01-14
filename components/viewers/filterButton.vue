@@ -5,13 +5,13 @@
   >
     <v-icon class="pr-2">
       <template v-if="_value === true">
-        {{ mdiCheck }}
+        mdi-check
       </template>
       <template v-else-if="_value === false">
-        {{ mdiExclamationThick }}
+        mdi-exclamation-thick
       </template>
       <template v-else>
-        {{ mdiHelp }}
+        mdi-help
       </template>
     </v-icon>
     <slot />
@@ -20,14 +20,13 @@
 
 <script lang="ts">
 import {
-  mdiCheck, mdiExclamationThick, mdiHelp,
-} from '@mdi/js';
-import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 
 export default defineComponent({
-  props: { value: [Boolean, Object] },
+  props: {
+    value: [Boolean, Object],
+  },
   setup (props, ctx) {
     const _value = ref(props.value);
 
@@ -59,9 +58,6 @@ export default defineComponent({
       toggleValue,
       _value,
       color,
-      mdiExclamationThick,
-      mdiCheck,
-      mdiHelp,
     };
   },
 });

@@ -3,7 +3,7 @@
     <template #activator="{ on, attrs }">
       <v-combobox
         v-model="date"
-        :prepend-icon="mdiCalendar"
+        prepend-icon="mdi-calendar"
         readonly
         v-bind="attrs"
         :label="label"
@@ -15,7 +15,6 @@
 </template>
 
 <script lang="ts">
-import { mdiCalendar } from '@mdi/js';
 import {
   defineComponent,
   onMounted,
@@ -56,7 +55,6 @@ export default defineComponent({
       menu,
       rules,
       uuid,
-      mdiCalendar,
     };
   },
 });

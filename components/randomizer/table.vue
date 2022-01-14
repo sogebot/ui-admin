@@ -68,13 +68,13 @@
     </template>
     <template #[`item.delBtn`]="{ item }">
       <v-btn class="pa-2" small color="error" icon @click="rmOption(item.id)">
-        <v-icon>{{ mdiDelete }}</v-icon>
+        <v-icon>mdi-delete-forever</v-icon>
       </v-btn>
     </template>
     <template #[`item.drag`]="{ item }">
       <div :id="`drag|${item.id}`">
         <v-icon v-if="item.groupId === null" :disabled="isDragging" @mousedown.prevent="handleDragStart($event, item.id, model)">
-          {{ mdiDrag }}
+          mdi-drag
         </v-icon>
       </div>
     </template>
@@ -87,7 +87,6 @@
 </template>
 
 <script lang="ts">
-import { mdiDelete, mdiDrag } from '@mdi/js';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -199,9 +198,13 @@ function handleDragStart (_e: DragEvent, id: string, items: Required<RandomizerI
     if (parent2) {
       try {
         const offsetId = parent2.children[0].children[0].id.replace('drag|', '');
-        EventBus.$emit(`randomizer::dragdrop`, { items: [parent, ...children], offsetId });
+        EventBus.$emit(`randomizer::dragdrop`, {
+          items: [parent, ...children], offsetId,
+        });
       } catch {
-        EventBus.$emit(`randomizer::dragdrop`, { items: [parent, ...children] });
+        EventBus.$emit(`randomizer::dragdrop`, {
+          items: [parent, ...children],
+        });
       }
     }
     for (const element of elements) {
@@ -216,8 +219,14 @@ function handleDragStart (_e: DragEvent, id: string, items: Required<RandomizerI
 }
 
 export default defineComponent({
-  props:      { value: Array },
-  components: { color: defineAsyncComponent({ loader: () => import('~/components/form/color.vue') }) },
+  props: {
+    value: Array,
+  },
+  components: {
+    color: defineAsyncComponent({
+      loader: () => import('~/components/form/color.vue'),
+    }),
+  },
   setup (props: { value: RandomizerItemInterface[] }, ctx) {
     const model = ref(props.value);
     const isDragging = ref(false);
@@ -230,13 +239,27 @@ export default defineComponent({
     };
 
     const headers = [
-      { value: 'drag', text: '' },
-      { value: 'name', text: translate('registry.randomizer.form.name') },
-      { value: 'color', text: translate('registry.randomizer.form.color') },
-      { value: 'numOfDuplicates', text: translate('registry.randomizer.form.numOfDuplicates') },
-      { value: 'minimalSpacing', text: translate('registry.randomizer.form.minimalSpacing') },
-      { value: 'groupBtn', text: '' },
-      { value: 'delBtn', text: '' },
+      {
+        value: 'drag', text: '',
+      },
+      {
+        value: 'name', text: translate('registry.randomizer.form.name'),
+      },
+      {
+        value: 'color', text: translate('registry.randomizer.form.color'),
+      },
+      {
+        value: 'numOfDuplicates', text: translate('registry.randomizer.form.numOfDuplicates'),
+      },
+      {
+        value: 'minimalSpacing', text: translate('registry.randomizer.form.minimalSpacing'),
+      },
+      {
+        value: 'groupBtn', text: '',
+      },
+      {
+        value: 'delBtn', text: '',
+      },
     ];
 
     const rmOption = (id: string) => {
@@ -290,7 +313,9 @@ export default defineComponent({
         } else {
           // save as last item
           for (const item of data.items) {
-            model.value.push({ ...item, order: model.value.length });
+            model.value.push({
+              ...item, order: model.value.length,
+            });
           }
         }
         // reorder
@@ -302,7 +327,9 @@ export default defineComponent({
 
     watch(model, (val) => {
       ctx.emit('input', val);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     return {
       // ref
@@ -317,10 +344,6 @@ export default defineComponent({
       // others
       translate,
       handleDragStart,
-
-      // icons
-      mdiDrag,
-      mdiDelete,
     };
   },
 });

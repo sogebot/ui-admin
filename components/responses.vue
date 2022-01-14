@@ -23,7 +23,7 @@
               cols="auto"
               class="caption"
             >
-              <v-icon>{{ mdiKey }}</v-icon>
+              <v-icon>mdi-key</v-icon>
               {{ getPermissionName(r.permission, permissions) }}
             </v-col>
             <v-col
@@ -31,10 +31,10 @@
               class="caption"
             >
               <v-icon v-if="r.stopIfExecuted">
-                {{ mdiPause }}
+                mdi-pause
               </v-icon>
               <v-icon v-else>
-                {{ mdiPlay }}
+                mdi-play
               </v-icon>
               {{ r.stopIfExecuted ? translate('commons.stop-if-executed') : translate('commons.continue-if-executed') }}
             </v-col>
@@ -43,7 +43,7 @@
               class="caption"
             >
               <v-icon>
-                {{ mdiFilter }}
+                mdi-filter
               </v-icon>
               <text-with-tags
                 class="d-inline-block"
@@ -62,9 +62,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiDrag, mdiFilter, mdiKey, mdiPause, mdiPlay, mdiTrashCan,
-} from '@mdi/js';
 import { defineAsyncComponent, defineComponent } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash';
@@ -86,13 +83,6 @@ export default defineComponent({
       translate,
       capitalize,
       getPermissionName,
-
-      mdiPause,
-      mdiPlay,
-      mdiFilter,
-      mdiDrag,
-      mdiKey,
-      mdiTrashCan,
     };
   },
 });

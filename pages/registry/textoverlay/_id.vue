@@ -19,7 +19,7 @@
         @click="save"
       >
         <v-icon class="d-flex d-sm-none">
-          {{ mdiFloppy }}
+          mdi-floppy
         </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
@@ -168,7 +168,6 @@
 </template>
 
 <script lang="ts">
-import { mdiFloppy } from '@mdi/js';
 import {
   defineComponent, onMounted, ref, useRoute, useRouter, useStore,
 } from '@nuxtjs/composition-api';
@@ -307,7 +306,6 @@ export default defineComponent({
       highlighterJS,
       highlighterCSS,
       highlighterHTML,
-      mdiFloppy,
 
       applyPreset,
       presets,

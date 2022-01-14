@@ -13,7 +13,7 @@
               v-model="settings.customization.itemsArray[0][idx]" dense :label="`Item ${idx+1}`">
               <template #append-outer>
                 <v-btn icon color="red" @click="remove(idx)">
-                  <v-icon>{{ mdiDelete }}</v-icon>
+                  <v-icon>mdi-delete-forever</v-icon>
                 </v-btn>
               </template>
             </v-text-field>
@@ -26,7 +26,6 @@
 </template>
 
 <script lang="ts">
-import { mdiDelete } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -48,7 +47,9 @@ export default defineComponent({
 
     watch(settings, () => {
       store.commit('settings/pending', true);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -58,7 +59,9 @@ export default defineComponent({
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     onMounted(() => {
       getSocket(`/systems/checklist`)
@@ -91,9 +94,6 @@ export default defineComponent({
       // validators
       required,
       minValue,
-
-      // icons
-      mdiDelete,
     };
   },
 });

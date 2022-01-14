@@ -103,7 +103,7 @@
         >
           <template #append>
             <v-btn icon @click="speak()">
-              <v-icon>{{ mdiPlay }}</v-icon>
+              <v-icon>mdi-play</v-icon>
             </v-btn>
           </template>
         </v-textarea>
@@ -118,7 +118,6 @@
 </template>
 
 <script lang="ts">
-import { mdiPlay } from '@mdi/js';
 import {
   defineComponent, onMounted, ref, useMeta, useStore, watch,
 } from '@nuxtjs/composition-api';
@@ -139,10 +138,14 @@ function isUndefined (val: any) {
 }
 
 export default defineComponent({
-  props: { value: Object, readonly: Boolean },
+  props: {
+    value: Object, readonly: Boolean,
+  },
   setup (props: { value: Partial<CommonSettingsInterface['tts']> | AlertInterface['tts']}, ctx) {
     const text = ref('This message should be said by TTS to test your settings.');
-    const state = ref({ loaded: ButtonStates.progress } as { loaded: number });
+    const state = ref({
+      loaded: ButtonStates.progress,
+    } as { loaded: number });
 
     const service = ref(0);
 
@@ -163,7 +166,9 @@ export default defineComponent({
       }
       window.responsiveVoice.init();
       voices.value = window.responsiveVoice.getVoices().map((o: { name: string }) => {
-        return { text: o.name, value: o.name };
+        return {
+          text: o.name, value: o.name,
+        };
       });
       state.value.loaded = ButtonStates.success;
     }
@@ -187,7 +192,9 @@ export default defineComponent({
 
     watch(model, (val) => {
       ctx.emit('input', val);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     async function speak () {
       for (const toSpeak of text.value.split('/ ')) {
@@ -247,10 +254,10 @@ export default defineComponent({
       service,
       translate,
       ButtonStates,
-      mdiPlay,
       speak,
     };
   },
-  head: {}, // enable useMeta
+  head: {
+  }, // enable useMeta
 });
 </script>

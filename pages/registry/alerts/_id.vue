@@ -10,7 +10,7 @@
         @click="save"
       >
         <v-icon class="d-flex d-sm-none">
-          {{ mdiFloppy }}
+          mdi-floppy
         </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
@@ -166,19 +166,19 @@
                         <v-spacer />
                         <v-btn icon class="ml-4" small @click="duplicateVariant(event, idx)">
                           <v-icon small color="white">
-                            {{ mdiContentCopy }}
+                            mdi-content-copy
                           </v-icon>
                         </v-btn>
                         <v-btn icon small @click="removeVariant(event, idx)">
                           <v-icon color="red">
-                            {{ mdiDelete }}
+                            mdi-delete-forever
                           </v-icon>
                         </v-btn>
                       </v-tab>
                     </template>
 
                     <v-btn color="success" class="my-1" @click="newAlert(event)">
-                      <v-icon>{{ mdiPlus }}</v-icon>
+                      <v-icon>mdi-plus-thick</v-icon>
                     </v-btn>
                   </v-tabs>
                 </v-col>
@@ -212,9 +212,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiClose, mdiContentCopy, mdiDelete, mdiExclamationThick, mdiFloppy, mdiPlus,
-} from '@mdi/js';
 import {
   defineAsyncComponent,
   defineComponent, onMounted, ref, useRoute, useRouter, useStore, watch,
@@ -654,14 +651,6 @@ export default defineComponent({
       // others
       translate,
       getContrastColor,
-
-      // icons
-      mdiClose,
-      mdiPlus,
-      mdiExclamationThick,
-      mdiContentCopy,
-      mdiDelete,
-      mdiFloppy,
     };
   },
 });

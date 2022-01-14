@@ -48,7 +48,7 @@
             </v-col>
             <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
               <v-btn icon @click="settings.__permission_based__.settings.minimalBet[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.settings.minimalBet[0])">
-                <v-icon>{{ settings.__permission_based__.settings.minimalBet[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon>
+                <v-icon>{{ settings.__permission_based__.settings.minimalBet[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}</v-icon>
               </v-btn>
             </v-col>
           </v-row>
@@ -69,7 +69,7 @@
             </v-col>
             <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
               <v-btn icon @click="settings.__permission_based__.settings.chanceToTriggerJackpot[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.settings.chanceToTriggerJackpot[0])">
-                <v-icon>{{ settings.__permission_based__.settings.chanceToTriggerJackpot[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon>
+                <v-icon>{{ settings.__permission_based__.settings.chanceToTriggerJackpot[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}</v-icon>
               </v-btn>
             </v-col>
           </v-row>
@@ -92,7 +92,7 @@
             </v-col>
             <v-col align-self="center" cols="auto" v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'">
               <v-btn icon @click="settings.__permission_based__.settings.chanceToWin[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.settings.chanceToWin[0])">
-                <v-icon>{{ settings.__permission_based__.settings.chanceToWin[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}</v-icon>
+                <v-icon>{{ settings.__permission_based__.settings.chanceToWin[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}</v-icon>
               </v-btn>
             </v-col>
           </v-row>
@@ -106,7 +106,6 @@
 </template>
 
 <script lang="ts">
-import { mdiLock, mdiLockOpenVariant } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -138,7 +137,9 @@ export default defineComponent({
 
     watch(settings, () => {
       store.commit('settings/pending', true);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -148,7 +149,9 @@ export default defineComponent({
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     onMounted(() => {
       getSocket(`/games/gamble`)
@@ -158,7 +161,9 @@ export default defineComponent({
             return;
           }
           ui.value = _ui;
-          console.log({ _settings });
+          console.log({
+            _settings,
+          });
           settings.value = _settings;
           nextTick(() => { store.commit('settings/pending', false); });
         });
@@ -180,10 +185,6 @@ export default defineComponent({
       required,
       minValue,
       maxValue,
-
-      // icons
-      mdiLock,
-      mdiLockOpenVariant,
     };
   },
 });

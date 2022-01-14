@@ -36,14 +36,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search or add by link/id"
                 single-line
                 hide-details
@@ -133,10 +133,10 @@
           {{ item.title }}
         </div>
         <div>
-          <v-icon>{{ mdiClockOutline }}</v-icon> {{ item.length | formatTime }}
-          <v-icon>{{ mdiVolumeHigh }}</v-icon> {{ Number(item.volume).toFixed(1) }}%
-          <v-icon>{{ mdiSkipPrevious }}</v-icon> {{ item.startTime | formatTime }} - {{ item.endTime | formatTime }} <v-icon>{{ mdiSkipNext }}</v-icon>
-          <v-icon>{{ mdiMusic }}</v-icon> {{ dayjs(item.lastPlayedAt).format('LL') }} {{ dayjs(item.lastPlayedAt).format('LTS') }}
+          <v-icon>mdi-clock-outside</v-icon> {{ item.length | formatTime }}
+          <v-icon>mdi-volume-high</v-icon> {{ Number(item.volume).toFixed(1) }}%
+          <v-icon>mdi-skip-previous</v-icon> {{ item.startTime | formatTime }} - {{ item.endTime | formatTime }} <v-icon>mdi-skip-next</v-icon>
+          <v-icon>mdi-music</v-icon> {{ dayjs(item.lastPlayedAt).format('LL') }} {{ dayjs(item.lastPlayedAt).format('LTS') }}
         </div>
       </template>
 
@@ -169,7 +169,7 @@
             target="_blank"
           >
             <v-icon>
-              {{ mdiLink }}
+              mdi-link
             </v-icon>
           </v-btn>
         </v-hover>
@@ -269,9 +269,6 @@
 
 <script lang="ts">
 import {
-  mdiCheckboxMultipleMarkedOutline, mdiClockOutline, mdiLink, mdiMagnify, mdiMusic, mdiSkipNext, mdiSkipPrevious, mdiVolumeHigh,
-} from '@mdi/js';
-import {
   computed, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
@@ -331,7 +328,9 @@ export default defineComponent({
     const currentTag = ref('general');
     const tags = ref([] as string[]);
     const tagsItems = computed(() => {
-      return [{ text: 'All playlists', value: null }, ...tags.value.map(item => ({
+      return [{
+        text: 'All playlists', value: null,
+      }, ...tags.value.map(item => ({
         text:     currentTag.value === item ? `${item} (current)` : item,
         value:    item,
         disabled: false,
@@ -351,18 +350,30 @@ export default defineComponent({
       {
         value: 'thumbnail', text: '', align: 'left',
       },
-      { value: 'videoId', text: '' },
-      { value: 'title', text: '' },
-      { value: 'tags', text: '' },
+      {
+        value: 'videoId', text: '',
+      },
+      {
+        value: 'title', text: '',
+      },
+      {
+        value: 'tags', text: '',
+      },
       {
         text: 'Actions', value: 'actions', sortable: false, align: 'end',
       },
-      { text: '', value: 'data-table-expand' },
+      {
+        text: '', value: 'data-table-expand',
+      },
     ];
 
     const headersDelete = [
-      { value: 'videoId', text: '' },
-      { value: 'title', text: '' },
+      {
+        value: 'videoId', text: '',
+      },
+      {
+        value: 'title', text: '',
+      },
     ];
 
     const currentPage = ref(1);
@@ -440,7 +451,9 @@ export default defineComponent({
       }
       if (state.value.import === 0) {
         state.value.import = 1;
-        getSocket('/systems/songs').emit(search.value.includes('playlist') ? 'import.playlist' : 'import.video', { playlist: search.value, forcedTag: showTag.value }, (err: string | null) => {
+        getSocket('/systems/songs').emit(search.value.includes('playlist') ? 'import.playlist' : 'import.video', {
+          playlist: search.value, forcedTag: showTag.value,
+        }, (err: string | null) => {
           if (err) {
             search.value = '';
             state.value.import = 0;
@@ -537,14 +550,6 @@ export default defineComponent({
       expanded,
       rules,
       ensureGeneralTag,
-      mdiMagnify,
-      mdiClockOutline,
-      mdiVolumeHigh,
-      mdiSkipPrevious,
-      mdiSkipNext,
-      mdiMusic,
-      mdiLink,
-      mdiCheckboxMultipleMarkedOutline,
     };
   },
 });

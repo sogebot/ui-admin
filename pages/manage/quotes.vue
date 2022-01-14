@@ -30,14 +30,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -192,7 +192,7 @@
                 class="pa-2"
                 @click="tagsSearch = ''"
               >
-                {{ mdiTagPlus }}
+                mdi-tag-plus
               </v-icon>
               <template #input>
                 <v-combobox
@@ -238,9 +238,6 @@
 
 <script lang="ts">
 import {
-  mdiCheckboxMultipleMarkedOutline, mdiMagnify, mdiTagPlus,
-} from '@mdi/js';
-import {
   computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
@@ -258,7 +255,11 @@ import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/quotes-newItem.vue') }) },
+  components: {
+    'new-item': defineAsyncComponent({
+      loader: () => import('~/components/new-item/quotes-newItem.vue'),
+    }),
+  },
   setup () {
     const timestamp = ref(Date.now());
 
@@ -282,7 +283,9 @@ export default defineComponent({
       newDialog.value = false;
     };
 
-    const rules = { quote: [required] };
+    const rules = {
+      quote: [required],
+    };
 
     const items = ref([] as QuotesInterface[]);
     const search = ref('');
@@ -316,7 +319,9 @@ export default defineComponent({
       },
     ];
 
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number,
     });
 
@@ -325,7 +330,8 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/quotes').emit('quotes:getAll', {}, (err: string | null, data: QuotesInterface[]) => {
+      getSocket('/systems/quotes').emit('quotes:getAll', {
+      }, (err: string | null, data: QuotesInterface[]) => {
         if (err) {
           error(err);
           return;
@@ -370,7 +376,9 @@ export default defineComponent({
       return orderBy(uniq(flatten(_tags)));
     });
     const tagsItems = computed(() => {
-      return [{ text: 'Not filtered', value: null }, ...tags.value.map(item => ({
+      return [{
+        text: 'Not filtered', value: null,
+      }, ...tags.value.map(item => ({
         text:     item,
         value:    item,
         disabled: false,
@@ -404,7 +412,11 @@ export default defineComponent({
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
-            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+            console.log('Updating', {
+              itemToUpdate,
+            }, {
+              attr, value: item[attr],
+            });
             getSocket('/systems/quotes').emit('generic::setById', {
               id:   itemToUpdate.id,
               item: {
@@ -469,9 +481,6 @@ export default defineComponent({
 
       dayjs,
       translate,
-      mdiMagnify,
-      mdiTagPlus,
-      mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
     };
   },

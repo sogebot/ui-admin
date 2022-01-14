@@ -8,7 +8,7 @@
       :fullscreen="$vuetify.breakpoint.mobile"
     >
       <template #activator="{ on, attrs }">
-        <v-btn v-bind="attrs" small v-on="on" icon>
+        <v-btn v-bind="attrs" class="primary-hover" v-on="on" icon>
           <v-icon>
             mdi-pencil
           </v-icon>
@@ -23,7 +23,6 @@
               :rules="rules.command"
               hide-details="auto"
               required
-              counter
             >
               <template #append>
                 <v-btn v-if="item.command !== item.defaultValue" small text @click="item.command = item.defaultValue">

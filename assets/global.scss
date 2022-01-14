@@ -131,3 +131,23 @@ td.text-center .v-simple-checkbox {
 .position-relative {
   position: relative !important;
 }
+
+.primary-hover {
+  color: var(--v-secondary-lighten4) !important;
+  caret-color: var(--v-secondary-lighten4) !important;
+}
+
+.primary-hover:hover {
+  color: white !important;
+  caret-color: white !important;
+}
+
+.danger-hover {
+  color: var(--v-error-darken1) !important;
+  caret-color: var(--v-error-darken1) !important;
+}
+
+.danger-hover:hover {
+  color: var(--v-error-base) !important;
+  caret-color: var(--v-error-base) !important;
+}

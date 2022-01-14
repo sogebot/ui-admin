@@ -17,10 +17,10 @@
         <v-col v-if="!editing" cols="auto" class="d-flex">
           <v-icon class="minus" :color="color">
             <template v-if="isStarted === null">
-              {{ mdiHelp }}
+              mdi-help
             </template>
             <template v-else>
-              {{ isStarted ? mdiPause : mdiPlay }}
+              {{ isStarted ? 'mdi-pause' : 'mdi-play' }}
             </template>
           </v-icon>
         </v-col>
@@ -30,7 +30,7 @@
 
         <v-col v-if="!editing" cols="auto" class="d-flex">
           <v-icon :color="color" class="plus">
-            {{ mdiAlarmPlus }}
+            mdi-alarm-plus
           </v-icon>
         </v-col>
       </v-row>
@@ -48,7 +48,7 @@
         >
           <template #append>
             <v-btn icon @click="updateTime">
-              <v-icon>{{ mdiCheck }}</v-icon>
+              <v-icon>mdi-check</v-icon>
             </v-btn>
           </template>
         </v-text-field>
@@ -58,9 +58,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiAlarmPlus, mdiCheck, mdiHelp, mdiPause, mdiPlay,
-} from '@mdi/js';
 import {
   DAY, HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
@@ -274,13 +271,6 @@ export default defineComponent({
       showDialog,
       updateTime,
       keydownHandler,
-
-      // icons
-      mdiPlay,
-      mdiPause,
-      mdiHelp,
-      mdiAlarmPlus,
-      mdiCheck,
     };
   },
 });

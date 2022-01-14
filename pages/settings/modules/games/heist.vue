@@ -66,7 +66,7 @@
                   </v-col>
                   <v-col cols="auto">
                     <v-btn icon @click="removeLevel(idx)">
-                      <v-icon>{{ mdiDelete }}</v-icon>
+                      <v-icon>mdi-delete-forever</v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -100,7 +100,7 @@
                   </v-col>
                   <v-col cols="auto">
                     <v-btn icon @click="removeResult(idx)">
-                      <v-icon>{{ mdiDelete }}</v-icon>
+                      <v-icon>mdi-delete-forever</v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -116,7 +116,6 @@
 </template>
 
 <script lang="ts">
-import { mdiDelete } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -132,7 +131,9 @@ import {
 } from '~/functions/validators';
 
 export default defineComponent({
-  components: { revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')) },
+  components: {
+    revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')),
+  },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);
@@ -142,7 +143,9 @@ export default defineComponent({
 
     watch(settings, () => {
       store.commit('settings/pending', true);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -152,7 +155,9 @@ export default defineComponent({
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     onMounted(() => {
       getSocket(`/games/heist`)
@@ -162,7 +167,9 @@ export default defineComponent({
             return;
           }
           ui.value = _ui;
-          console.log({ _settings });
+          console.log({
+            _settings,
+          });
           settings.value = _settings;
           nextTick(() => { store.commit('settings/pending', false); });
         });
@@ -233,9 +240,6 @@ export default defineComponent({
       removeLevel,
       addResult,
       removeResult,
-
-      // icons
-      mdiDelete,
     };
   },
 });

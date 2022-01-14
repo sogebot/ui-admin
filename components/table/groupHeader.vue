@@ -3,7 +3,7 @@
     <v-row no-gutters>
       <v-col>
       <v-icon @click="toggle">
-        {{ isOpen ? mdiMinus : mdiPlus }}
+        {{ isOpen ? 'mdi-minus-thick' : 'mdi-plus-thick' }}
       </v-icon>
 
       <v-simple-checkbox class="d-inline-block px-4" style="transform: translateY(5px);" inline
@@ -44,7 +44,7 @@
     <v-row no-gutters>
       <v-col>
       <v-icon @click="toggle">
-        {{ isOpen ? mdiMinus : mdiPlus }}
+        {{ isOpen ? 'mdi-minus-thick' : 'mdi-plus-thick' }}
       </v-icon>
 
       <v-simple-checkbox class="d-inline-block px-4" style="transform: translateY(5px);" inline
@@ -84,7 +84,6 @@
 </template>
 
 <script lang="ts">
-import { mdiMinus, mdiPlus } from '@mdi/js';
 import { defineComponent } from '@nuxtjs/composition-api';
 
 export default defineComponent({
@@ -95,12 +94,6 @@ export default defineComponent({
     toggleGroupSelection: Function,
     items:                Array,
     getGroup:             Object,
-  },
-  setup () {
-    return {
-      mdiMinus,
-      mdiPlus,
-    };
   },
 });
 </script>

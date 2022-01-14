@@ -41,7 +41,7 @@
                   @click="clear"
                   v-on="on"
                 >
-                  <v-icon>{{ mdiBackspace }}</v-icon>
+                  <v-icon>mdi-backspace</v-icon>
                 </v-btn>
               </template>
               <span>Clear list</span>
@@ -59,10 +59,10 @@
                   v-on="on"
                 >
                   <v-icon v-if="locked">
-                    {{ mdiLock }}
+                    mdi-lock
                   </v-icon>
                   <v-icon v-else>
-                    {{ mdiLockOpenVariant }}
+                    mdi-lock-open-variant
                   </v-icon>
                 </v-btn>
               </template>
@@ -159,9 +159,6 @@
 
 <script lang="ts">
 import {
-  mdiBackspace, mdiLock, mdiLockOpenVariant,
-} from '@mdi/js';
-import {
   computed,
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -174,7 +171,9 @@ import { QueueInterface } from '.bot/src/database/entity/queue';
 import { error } from '~/functions/error';
 
 export default defineComponent({
-  props: { height: Number },
+  props: {
+    height: Number,
+  },
   setup () {
     const isPopout = computed(() => location.href.includes('popout'));
 
@@ -253,7 +252,9 @@ export default defineComponent({
       getSocket('/systems/queue').emit('settings.update', data, () => {
         return true;
       });
-      getSocket('/systems/queue').emit('set.value', { variable: 'locked', value: locked.value }, () => {
+      getSocket('/systems/queue').emit('set.value', {
+        variable: 'locked', value: locked.value,
+      }, () => {
         return true;
       });
     }, 500));
@@ -296,7 +297,9 @@ export default defineComponent({
       });
     }
     function pickSelected () {
-      const data = { username: selectedUsers.value.map(idx => fUsers.value[idx].username) };
+      const data = {
+        username: selectedUsers.value.map(idx => fUsers.value[idx].username),
+      };
       getSocket('/systems/queue').emit('queue::pick', data, (err: string | null, users2: QueueInterface[]) => {
         if (err) {
           return error(err);
@@ -328,11 +331,6 @@ export default defineComponent({
       // helpers
       translate,
       dayjs,
-
-      // icons,
-      mdiBackspace,
-      mdiLock,
-      mdiLockOpenVariant,
     };
   },
 });

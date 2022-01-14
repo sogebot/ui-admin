@@ -57,7 +57,7 @@
                       color="transparent"
                     >
                       <v-icon color="black">
-                        {{ mdiCheck }}
+                        mdi-check
                       </v-icon>
                     </v-overlay>
                   </v-scroll-y-transition>
@@ -72,7 +72,6 @@
 </template>
 
 <script lang="ts">
-import { mdiCheck } from '@mdi/js';
 import {
   computed, defineAsyncComponent, defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -85,14 +84,28 @@ type Props = {
 };
 
 export default defineComponent({
-  props:      { item: Object },
+  props: {
+    item: Object,
+  },
   components: {
-    command:          defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/command.vue') }),
-    customvariable:   defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/customvariable.vue') }),
-    randomizer:       defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/randomizer.vue') }),
-    overlayCountdown: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/overlayCountdown.vue') }),
-    overlayStopwatch: defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/overlayStopwatch.vue') }),
-    overlayMarathon:  defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit/overlayMarathon.vue') }),
+    command: defineAsyncComponent({
+      loader: () => import('~/components/widgets/actions/edit/command.vue'),
+    }),
+    customvariable: defineAsyncComponent({
+      loader: () => import('~/components/widgets/actions/edit/customvariable.vue'),
+    }),
+    randomizer: defineAsyncComponent({
+      loader: () => import('~/components/widgets/actions/edit/randomizer.vue'),
+    }),
+    overlayCountdown: defineAsyncComponent({
+      loader: () => import('~/components/widgets/actions/edit/overlayCountdown.vue'),
+    }),
+    overlayStopwatch: defineAsyncComponent({
+      loader: () => import('~/components/widgets/actions/edit/overlayStopwatch.vue'),
+    }),
+    overlayMarathon: defineAsyncComponent({
+      loader: () => import('~/components/widgets/actions/edit/overlayMarathon.vue'),
+    }),
   },
   setup (props: Props, ctx) {
     const stepper = ref('1');
@@ -155,17 +168,31 @@ export default defineComponent({
     };
 
     const typeItems = [
-      { text: 'Run Command', value: 'command' },
-      { text: '+/-/= Custom Variable', value: 'customvariable' },
-      { text: 'Randomizer', value: 'randomizer' },
-      { text: 'Countdown overlay or countdown in group overlay', value: 'overlayCountdown' },
-      { text: 'Stopwatch overlay or stopwatch in group overlay', value: 'overlayStopwatch' },
-      { text: 'Marathon overlay or marathon in group overlay', value: 'overlayMarathon' },
+      {
+        text: 'Run Command', value: 'command',
+      },
+      {
+        text: '+/-/= Custom Variable', value: 'customvariable',
+      },
+      {
+        text: 'Randomizer', value: 'randomizer',
+      },
+      {
+        text: 'Countdown overlay or countdown in group overlay', value: 'overlayCountdown',
+      },
+      {
+        text: 'Stopwatch overlay or stopwatch in group overlay', value: 'overlayStopwatch',
+      },
+      {
+        text: 'Marathon overlay or marathon in group overlay', value: 'overlayMarathon',
+      },
     ];
 
     watch(clonedItem, (val) => {
       ctx.emit('update:item', val);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     return {
       // refs
@@ -178,9 +205,6 @@ export default defineComponent({
       colorIdx,
       isSetupValid,
       timestamp,
-
-      // icons
-      mdiCheck,
     };
   },
 });

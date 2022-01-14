@@ -252,7 +252,6 @@
 </template>
 
 <script lang="ts">
-import { mdiDelete, mdiMagnify } from '@mdi/js';
 import {
   computed,
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
@@ -271,8 +270,12 @@ import {
 
 export default defineComponent({
   components: {
-    'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/events-newItem.vue') }),
-    operations: defineAsyncComponent({ loader: () => import('~/components/manage/events/operations.vue') }),
+    'new-item': defineAsyncComponent({
+      loader: () => import('~/components/new-item/events-newItem.vue'),
+    }),
+    operations: defineAsyncComponent({
+      loader: () => import('~/components/manage/events/operations.vue'),
+    }),
   },
   setup () {
     const timestamp = ref(Date.now());
@@ -286,7 +289,8 @@ export default defineComponent({
 
     const items = ref([] as EventInterface[]);
 
-    const definitions = ref({} as any);
+    const definitions = ref({
+    } as any);
     const eventsItems = computed(() => {
       return availableEvents.value
         .filter((item) => {
@@ -341,7 +345,9 @@ export default defineComponent({
       taskId:               [required],
     };
 
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
@@ -381,7 +387,9 @@ export default defineComponent({
             }
             items.value = data;
             console.groupCollapsed('events::generic::getAll');
-            console.debug({ data });
+            console.debug({
+              data,
+            });
             console.groupEnd();
             resolve(true);
           });
@@ -441,7 +449,11 @@ export default defineComponent({
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
-            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+            console.log('Updating', {
+              itemToUpdate,
+            }, {
+              attr, value: item[attr],
+            });
             getSocket('/core/events').emit('events::save', {
               ...itemToUpdate,
               [attr]: item[attr], // save new value for all selected items
@@ -498,7 +510,9 @@ export default defineComponent({
     };
 
     const availableVariables = (name: string) => {
-      const variables = (availableEvents.value.find(o => o.id === name) || { variables: [] }).variables;
+      const variables = (availableEvents.value.find(o => o.id === name) || {
+        variables: [],
+      }).variables;
       return variables;
     };
 
@@ -525,8 +539,6 @@ export default defineComponent({
       saveSuccess,
 
       capitalize,
-      mdiMagnify,
-      mdiDelete,
 
       ButtonStates,
       isGroupSelected,

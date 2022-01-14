@@ -19,9 +19,9 @@
               <v-col v-if="selected.length > 0" cols="auto">
                 <v-dialog v-model="deleteDialog" max-width="500px">
                   <template #activator="{ on, attrs }">
-                    <v-btn small color="red" v-bind="attrs" v-on="on">
+                    <v-btn class="danger-hover" v-bind="attrs" v-on="on">
                       <v-icon left>
-                        mdi-delete
+                        mdi-delete-forever
                       </v-icon>
                       Delete
                     </v-btn>
@@ -61,11 +61,11 @@
         <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" dense>
             <v-col align-self="center">
-              <v-text-field v-model="search" :append-icon="mdiMagnify" label="Search" single-line hide-details
+              <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
                 class="pa-0" />
             </v-col>
             <v-col cols="auto" align-self="center">
-              <cooldowns-edit :rules="rules" @save="refresh()" />
+              <cooldowns-edit :rules="rules" @save="refresh()" :typeItems="typeItems" />
             </v-col>
           </v-row>
         </v-sheet>
@@ -84,23 +84,25 @@
               </div>
 
               <div class="v-data-table__mobile-row__cell">
-        <v-row dense justify="end" align="center">
-          <v-col cols="auto">
-            <cooldowns-edit :rules="rules" :value="item" @save="refresh()" />
-          </v-col>
-          <v-col cols="auto">
-            <v-btn color="red" icon small @click="selected = [item]; deleteDialog = true;">
-              <v-icon>
-                mdi-delete
-              </v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
+                <v-row dense justify="end" align="center">
+                  <v-col cols="auto">
+                    <cooldowns-edit :rules="rules" :value="item" @save="refresh()" :typeItems="typeItems" />
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+                      <v-icon>
+                        mdi-delete-forever
+                      </v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
               </div>
             </td>
             <td class="v-data-table__mobile-row">
               <div>
-                <div class="v-data-table__mobile-row__header">{{'!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group')}}</div>
+                <div class="v-data-table__mobile-row__header">
+                  {{'!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group')}}
+                </div>
               </div>
 
               <div class="v-data-table__mobile-row__cell">
@@ -112,7 +114,7 @@
               <div class="v-data-table__mobile-row__cell">{{ item.count}}</div>
             </td>
             <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">{{translate('cooldown')}}</div>
+              <div class="v-data-table__mobile-row__header">{{translate('type')}}</div>
               <div class="v-data-table__mobile-row__cell">{{ translate(item.type) }}</div>
             </td>
             <td class="v-data-table__mobile-row">
@@ -134,19 +136,22 @@
               </div>
             </td>
             <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.moderators'))}}</div>
+              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.moderators'))}}
+              </div>
               <div class="v-data-table__mobile-row__cell">
                 <v-simple-checkbox v-model="item.isModeratorAffected" disabled />
               </div>
             </td>
             <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.subscribers'))}}</div>
+              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.subscribers'))}}
+              </div>
               <div class="v-data-table__mobile-row__cell">
                 <v-simple-checkbox v-model="item.isSubscriberAffected" disabled />
               </div>
             </td>
             <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.followers'))}}</div>
+              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.followers'))}}
+              </div>
               <div class="v-data-table__mobile-row__cell">
                 <v-simple-checkbox v-model="item.isFollowerAffected" disabled />
               </div>
@@ -154,22 +159,15 @@
           </template>
           <template v-else>
             <td>
-              <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-            </td>
-
-            <td>
-        <v-row dense justify="end" align="center">
-          <v-col cols="auto">
-            <cooldowns-edit :rules="rules" :value="item" @save="refresh()" />
-          </v-col>
-          <v-col cols="auto">
-            <v-btn color="red" icon small @click="selected = [item]; deleteDialog = true;">
-              <v-icon>
-                mdi-delete
-              </v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
+              <div class="d-flex">
+                <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
+                <cooldowns-edit :rules="rules" :value="item" @save="refresh()" :typeItems="typeItems" />
+                <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+                  <v-icon>
+                    mdi-delete-forever
+                  </v-icon>
+                </v-btn>
+              </div>
             </td>
 
             <td class="my-1">
@@ -240,7 +238,6 @@
 </template>
 
 <script lang="ts">
-import { mdiCheckboxMultipleMarkedOutline, mdiMagnify } from '@mdi/js';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
@@ -303,16 +300,13 @@ export default defineComponent({
 
     const headers = [
       {
-        value: 'actions', width: '6rem', sortable: false,
-      },
-      {
         value: 'name', text: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group'),
       },
       {
         value: 'count', text: translate('cooldown'),
       },
       {
-        value: 'type', text: translate('cooldown'),
+        value: 'type', text: translate('type'),
       },
       {
         value: 'isEnabled', text: capitalize(translate('enabled')), align: 'center',
@@ -448,8 +442,6 @@ export default defineComponent({
       translate,
       rules,
       typeItems,
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
       refresh,
       capitalize,

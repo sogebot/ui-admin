@@ -7,7 +7,7 @@
           <v-select v-model="animType" :items="options" :label="translate('type')">
             <template #append-outer>
               <v-btn icon @click="test = true">
-                <v-icon>{{ mdiPlay }}</v-icon>
+                <v-icon>mdi-play</v-icon>
               </v-btn>
             </template>
           </v-select>
@@ -30,7 +30,6 @@
 </template>
 
 <script lang="ts">
-import { mdiPlay } from '@mdi/js';
 import {
   computed,
   defineComponent, ref, watch,
@@ -46,7 +45,8 @@ export default defineComponent({
   },
   setup (props, ctx) {
     const animType = ref(props.animation);
-    const animDuration = ref(props.animationDuration ?? {});
+    const animDuration = ref(props.animationDuration ?? {
+    });
 
     const test = ref(false);
 
@@ -63,54 +63,138 @@ export default defineComponent({
     });
 
     const options: { value: string, text: string }[] = [
-      { value: 'none', text: 'none' },
-      { value: 'fadeIn', text: 'fadeIn' },
-      { value: 'fadeInDown', text: 'fadeInDown' },
-      { value: 'fadeInLeft', text: 'fadeInLeft' },
-      { value: 'fadeInRight', text: 'fadeInRight' },
-      { value: 'fadeInUp', text: 'fadeInUp' },
-      { value: 'fadeInDownBig', text: 'fadeInDownBig' },
-      { value: 'fadeInLeftBig', text: 'fadeInLeftBig' },
-      { value: 'fadeInRightBig', text: 'fadeInRightBig' },
-      { value: 'fadeInUpBig', text: 'fadeInUpBig' },
-      { value: 'flipInX', text: 'flipInX' },
-      { value: 'flipInY', text: 'flipInY' },
-      { value: 'backInDown', text: 'backInDown' },
-      { value: 'backInLeft', text: 'backInLeft' },
-      { value: 'backInRight', text: 'backInRight' },
-      { value: 'backInUp', text: 'backInUp' },
-      { value: 'bounceIn', text: 'bounceIn' },
-      { value: 'bounceInDown', text: 'bounceInDown' },
-      { value: 'bounceInLeft', text: 'bounceInLeft' },
-      { value: 'bounceInRight', text: 'bounceInRight' },
-      { value: 'bounceInUp', text: 'bounceInUp' },
-      { value: 'flipInX', text: 'flipInX' },
-      { value: 'flipInY', text: 'flipInY' },
-      { value: 'lightSpeedIn', text: 'lightSpeedIn' },
-      { value: 'rotateIn', text: 'rotateIn' },
-      { value: 'rotateInDownLeft', text: 'rotateInDownLeft' },
-      { value: 'rotateInDownRight', text: 'rotateInDownRight' },
-      { value: 'rotateInUpLeft', text: 'rotateInUpLeft' },
-      { value: 'rotateInUpRight', text: 'rotateInUpRight' },
-      { value: 'slideInDown', text: 'slideInDown' },
-      { value: 'slideInLeft', text: 'slideInLeft' },
-      { value: 'slideInRight', text: 'slideInRight' },
-      { value: 'slideInUp', text: 'slideInUp' },
-      { value: 'zoomIn', text: 'zoomIn' },
-      { value: 'zoomInDown', text: 'zoomInDown' },
-      { value: 'zoomInLeft', text: 'zoomInLeft' },
-      { value: 'zoomInRight', text: 'zoomInRight' },
-      { value: 'zoomInUp', text: 'zoomInUp' },
-      { value: 'rollIn', text: 'rollIn' },
-      { value: 'jackInTheBox', text: 'jackInTheBox' },
+      {
+        value: 'none', text: 'none',
+      },
+      {
+        value: 'fadeIn', text: 'fadeIn',
+      },
+      {
+        value: 'fadeInDown', text: 'fadeInDown',
+      },
+      {
+        value: 'fadeInLeft', text: 'fadeInLeft',
+      },
+      {
+        value: 'fadeInRight', text: 'fadeInRight',
+      },
+      {
+        value: 'fadeInUp', text: 'fadeInUp',
+      },
+      {
+        value: 'fadeInDownBig', text: 'fadeInDownBig',
+      },
+      {
+        value: 'fadeInLeftBig', text: 'fadeInLeftBig',
+      },
+      {
+        value: 'fadeInRightBig', text: 'fadeInRightBig',
+      },
+      {
+        value: 'fadeInUpBig', text: 'fadeInUpBig',
+      },
+      {
+        value: 'flipInX', text: 'flipInX',
+      },
+      {
+        value: 'flipInY', text: 'flipInY',
+      },
+      {
+        value: 'backInDown', text: 'backInDown',
+      },
+      {
+        value: 'backInLeft', text: 'backInLeft',
+      },
+      {
+        value: 'backInRight', text: 'backInRight',
+      },
+      {
+        value: 'backInUp', text: 'backInUp',
+      },
+      {
+        value: 'bounceIn', text: 'bounceIn',
+      },
+      {
+        value: 'bounceInDown', text: 'bounceInDown',
+      },
+      {
+        value: 'bounceInLeft', text: 'bounceInLeft',
+      },
+      {
+        value: 'bounceInRight', text: 'bounceInRight',
+      },
+      {
+        value: 'bounceInUp', text: 'bounceInUp',
+      },
+      {
+        value: 'flipInX', text: 'flipInX',
+      },
+      {
+        value: 'flipInY', text: 'flipInY',
+      },
+      {
+        value: 'lightSpeedIn', text: 'lightSpeedIn',
+      },
+      {
+        value: 'rotateIn', text: 'rotateIn',
+      },
+      {
+        value: 'rotateInDownLeft', text: 'rotateInDownLeft',
+      },
+      {
+        value: 'rotateInDownRight', text: 'rotateInDownRight',
+      },
+      {
+        value: 'rotateInUpLeft', text: 'rotateInUpLeft',
+      },
+      {
+        value: 'rotateInUpRight', text: 'rotateInUpRight',
+      },
+      {
+        value: 'slideInDown', text: 'slideInDown',
+      },
+      {
+        value: 'slideInLeft', text: 'slideInLeft',
+      },
+      {
+        value: 'slideInRight', text: 'slideInRight',
+      },
+      {
+        value: 'slideInUp', text: 'slideInUp',
+      },
+      {
+        value: 'zoomIn', text: 'zoomIn',
+      },
+      {
+        value: 'zoomInDown', text: 'zoomInDown',
+      },
+      {
+        value: 'zoomInLeft', text: 'zoomInLeft',
+      },
+      {
+        value: 'zoomInRight', text: 'zoomInRight',
+      },
+      {
+        value: 'zoomInUp', text: 'zoomInUp',
+      },
+      {
+        value: 'rollIn', text: 'rollIn',
+      },
+      {
+        value: 'jackInTheBox', text: 'jackInTheBox',
+      },
     ];
 
     watch(animType, (val) => {
       ctx.emit('update:animation', val);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
     watch(animDuration, (val) => {
       ctx.emit('update:animationDuration', val);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     return {
       animType,
@@ -118,7 +202,6 @@ export default defineComponent({
       test,
       options,
       computedClass,
-      mdiPlay,
       translate,
     };
   },

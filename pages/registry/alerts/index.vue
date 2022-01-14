@@ -26,14 +26,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -141,7 +141,7 @@
       <template #[`item.actions`]="{ item }">
         <v-hover v-slot="{ hover }">
           <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" nuxt :to="'/registry/alerts/' + item.id" @click.stop>
-            <v-icon>{{ mdiPencil }}</v-icon>
+            <v-icon>mdi-pencil</v-icon>
           </v-btn>
         </v-hover>
         <v-hover v-slot="{ hover }">
@@ -150,7 +150,7 @@
             :color="hover ? 'primary' : 'secondary lighten-3'"
             @click.stop="clone(item.id)"
           >
-            <v-icon>{{ mdiContentCopy }}</v-icon>
+            <v-icon>mdi-content-copy</v-icon>
           </v-btn>
         </v-hover>
         <v-hover v-slot="{ hover }">
@@ -159,7 +159,7 @@
             :color="hover ? 'primary' : 'secondary lighten-3'"
             :href="`/overlays/alerts/${item.id}`"
           >
-            <v-icon>{{ mdiLink }}</v-icon>
+            <v-icon>mdi-link</v-icon>
           </v-btn>
         </v-hover>
       </template>
@@ -168,9 +168,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCheckboxMultipleMarkedOutline, mdiContentCopy, mdiLink, mdiMagnify, mdiPencil,
-} from '@mdi/js';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -190,7 +187,11 @@ import GET_ALL from '~/queries/alert/getAll.gql';
 import REMOVE from '~/queries/alert/remove.gql';
 
 export default defineComponent({
-  components: { 'test-dialog': defineAsyncComponent({ loader: () => import('~/components/registry/alerts/test-dialog.vue') }) },
+  components: {
+    'test-dialog': defineAsyncComponent({
+      loader: () => import('~/components/registry/alerts/test-dialog.vue'),
+    }),
+  },
   setup () {
     const { result, loading, refetch } = useQuery(GET_ALL);
     const items = useResult<{alerts: AlertInterface[] }, AlertInterface[], AlertInterface[]>(result, [], (data) => {
@@ -202,15 +203,21 @@ export default defineComponent({
       }
       return data.alerts;
     });
-    const { mutate: cloneMutation, onError: onErrorClone, onDone: onDoneClone, loading: cloning } = useMutation(CLONE, { refetchQueries: ['AlertGetAll'] });
+    const { mutate: cloneMutation, onError: onErrorClone, onDone: onDoneClone, loading: cloning } = useMutation(CLONE, {
+      refetchQueries: ['AlertGetAll'],
+    });
     onDoneClone(() => EventBus.$emit('snack', 'success', 'Data cloned.'));
     onErrorClone(error);
 
-    const { mutate: removeMutation, onError: onErroRemove, onDone: onDoneRemove } = useMutation(REMOVE, { refetchQueries: ['AlertGetAll'] });
+    const { mutate: removeMutation, onError: onErroRemove, onDone: onDoneRemove } = useMutation(REMOVE, {
+      refetchQueries: ['AlertGetAll'],
+    });
     onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
     onErroRemove(error);
 
-    const rules = { name: [required] };
+    const rules = {
+      name: [required],
+    };
 
     const search = ref('');
 
@@ -228,13 +235,21 @@ export default defineComponent({
     });
 
     const headers = [
-      { value: 'name', text: translate('registry.alerts.name.name') },
-      { value: 'additional', text: translate('registry.customvariables.additional-info') },
-      { value: 'actions', text: '' },
+      {
+        value: 'name', text: translate('registry.alerts.name.name'),
+      },
+      {
+        value: 'additional', text: translate('registry.customvariables.additional-info'),
+      },
+      {
+        value: 'actions', text: '',
+      },
     ];
 
     const headersDelete = [
-      { value: 'name', text: '' },
+      {
+        value: 'name', text: '',
+      },
     ];
 
     onMounted(() => {
@@ -247,12 +262,16 @@ export default defineComponent({
 
     const deleteSelected = () => {
       deleteDialog.value = false;
-      selected.value.forEach(item => removeMutation({ id: item.id }));
+      selected.value.forEach(item => removeMutation({
+        id: item.id,
+      }));
       selected.value = [];
     };
 
     const clone = (id: string) => {
-      cloneMutation({ id });
+      cloneMutation({
+        id,
+      });
     };
 
     return {
@@ -270,11 +289,6 @@ export default defineComponent({
       translate,
       saveSuccess,
       rules,
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
-      mdiContentCopy,
-      mdiPencil,
-      mdiLink,
       ButtonStates,
       clone,
       saveCurrentItems,

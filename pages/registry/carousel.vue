@@ -27,14 +27,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -125,14 +125,14 @@
       <template #[`item.drag`]="{ item }">
         <template v-if="$vuetify.breakpoint.mobile">
           <v-icon v-if="item.order !== 0" @click.stop="swapOrder(item.order, item.order - 1)">
-            {{ mdiChevronUp }}
+            mdi-chevron-up
           </v-icon>
           <v-icon v-if="item.order !== items.length - 1" @click.stop="swapOrder(item.order, item.order + 1)">
-            {{ mdiChevronDown }}
+            mdi-chevron-down
           </v-icon>
         </template>
         <v-icon v-else :disabled="state.dragging || saving" @mousedown.prevent="handleDragStart($event, item.id)">
-          {{ mdiDrag }}
+          mdi-drag
         </v-icon>
       </template>
 
@@ -333,9 +333,6 @@
 
 <script lang="ts">
 import {
-  mdiCheckboxMultipleMarkedOutline, mdiChevronDown, mdiChevronUp, mdiDrag, mdiMagnify,
-} from '@mdi/js';
-import {
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
@@ -415,9 +412,13 @@ function handleDragStart (e: DragEvent, id: string) {
     if (parent) {
       try {
         const offsetId = parent.children[1].children[0].id;
-        EventBus.$emit(`carousel::dragdrop`, { id, offsetId });
+        EventBus.$emit(`carousel::dragdrop`, {
+          id, offsetId,
+        });
       } catch {
-        EventBus.$emit(`carousel::dragdrop`, { id });
+        EventBus.$emit(`carousel::dragdrop`, {
+          id,
+        });
       }
     }
     element.style.position = 'inherit';
@@ -434,12 +435,16 @@ export default defineComponent({
     const { result, loading, refetch } = useQuery(GET_ALL);
     const cache = useResult<{ carousels: CarouselInterface[] }, null, CarouselInterface[]>(result, null, data => data.carousels);
     watch(cache, (value) => {
-      console.log({ value });
+      console.log({
+        value,
+      });
       if (!value) {
         return;
       }
       items.value = cloneDeep([...value]);
-    }, { immediate: true, deep: true });
+    }, {
+      immediate: true, deep: true,
+    });
 
     const { mutate: uploadMutation, onDone: onDoneUpload } = useMutation(UPLOAD);
     onDoneUpload((res) => {
@@ -448,12 +453,16 @@ export default defineComponent({
       refetch();
     });
 
-    const { mutate: saveMutation, onDone: onDoneSave, loading: saving } = useMutation(SAVE, { refetchQueries: ['CarouselGetAll'] });
+    const { mutate: saveMutation, onDone: onDoneSave, loading: saving } = useMutation(SAVE, {
+      refetchQueries: ['CarouselGetAll'],
+    });
     onDoneSave(() => {
       EventBus.$emit('snack', 'success', 'Data saved.');
     });
 
-    const { mutate: removeMutation, onError: onErrorRemove } = useMutation(REMOVE, { refetchQueries: ['CarouselGetAll'] });
+    const { mutate: removeMutation, onError: onErrorRemove } = useMutation(REMOVE, {
+      refetchQueries: ['CarouselGetAll'],
+    });
     onErrorRemove(error);
 
     const items = ref([] as CarouselInterface[]);
@@ -473,21 +482,45 @@ export default defineComponent({
     const timestamp = ref(Date.now());
 
     const animationInOptions = [
-      { value: 'fadeIn', text: 'fadeIn' },
-      { value: 'blurIn', text: 'blurIn' },
-      { value: 'slideUp', text: 'slideUp' },
-      { value: 'slideDown', text: 'slideDown' },
-      { value: 'slideLeft', text: 'slideLeft' },
-      { value: 'slideRight', text: 'slideRight' },
+      {
+        value: 'fadeIn', text: 'fadeIn',
+      },
+      {
+        value: 'blurIn', text: 'blurIn',
+      },
+      {
+        value: 'slideUp', text: 'slideUp',
+      },
+      {
+        value: 'slideDown', text: 'slideDown',
+      },
+      {
+        value: 'slideLeft', text: 'slideLeft',
+      },
+      {
+        value: 'slideRight', text: 'slideRight',
+      },
     ];
 
     const animationOutOptions = [
-      { value: 'fadeOut', text: 'fadeOut' },
-      { value: 'blurOut', text: 'blurOut' },
-      { value: 'slideUp', text: 'slideUp' },
-      { value: 'slideDown', text: 'slideDown' },
-      { value: 'slideLeft', text: 'slideLeft' },
-      { value: 'slideRight', text: 'slideRight' },
+      {
+        value: 'fadeOut', text: 'fadeOut',
+      },
+      {
+        value: 'blurOut', text: 'blurOut',
+      },
+      {
+        value: 'slideUp', text: 'slideUp',
+      },
+      {
+        value: 'slideDown', text: 'slideDown',
+      },
+      {
+        value: 'slideLeft', text: 'slideLeft',
+      },
+      {
+        value: 'slideRight', text: 'slideRight',
+      },
     ];
 
     const uploadedFiles = ref(0);
@@ -513,7 +546,9 @@ export default defineComponent({
       }
     });
 
-    const state = ref({ dragging: false, uploading: ButtonStates.idle } as {
+    const state = ref({
+      dragging: false, uploading: ButtonStates.idle,
+    } as {
       uploading: number;
       dragging: boolean;
     });
@@ -587,7 +622,9 @@ export default defineComponent({
             }
           } else {
             // save as last item
-            items.value.push({ ...draggedItem, order: items.value.length });
+            items.value.push({
+              ...draggedItem, order: items.value.length,
+            });
           }
           reorder();
         }
@@ -599,7 +636,11 @@ export default defineComponent({
       for (let i = 0; i < items.value.length; i++) {
         items.value[i].order = i;
       }
-      items.value.forEach(item => saveMutation({ data_json: JSON.stringify({ id: item.id, order: item.order }) }));
+      items.value.forEach(item => saveMutation({
+        data_json: JSON.stringify({
+          id: item.id, order: item.order,
+        }),
+      }));
     };
 
     const saveSuccess = () => {
@@ -610,7 +651,9 @@ export default defineComponent({
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        removeMutation({ id: item.id });
+        removeMutation({
+          id: item.id,
+        });
       });
 
       EventBus.$emit('snack', 'success', 'Data removed.');
@@ -638,7 +681,11 @@ export default defineComponent({
       }
 
       [item, ...(multi ? selected.value : [])].forEach((itemToUpdate) => {
-        console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+        console.log('Updating', {
+          itemToUpdate,
+        }, {
+          attr, value: item[attr],
+        });
         saveMutation({
           data_json: JSON.stringify({
             itemToUpdate,
@@ -659,7 +706,11 @@ export default defineComponent({
       for (const file of filesUpload) {
         const type = file.type;
         const base64 = (await getBase64FromUrl(URL.createObjectURL(file))).split(',')[1];
-        uploadMutation({ data_json: JSON.stringify({ type, base64 }) });
+        uploadMutation({
+          data_json: JSON.stringify({
+            type, base64,
+          }),
+        });
       }
     };
 
@@ -707,13 +758,6 @@ export default defineComponent({
       handleDragStart,
       closeOverlay,
       swapOrder,
-
-      // icons
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
-      mdiDrag,
-      mdiChevronUp,
-      mdiChevronDown,
 
       ButtonStates,
 

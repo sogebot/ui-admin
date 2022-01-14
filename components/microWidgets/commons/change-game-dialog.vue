@@ -11,7 +11,7 @@
           icon
           @click="dialogController = false"
         >
-          <v-icon>{{ mdiClose }}</v-icon>
+          <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-spacer />
         <v-btn
@@ -21,7 +21,7 @@
           :loading="isSaving"
           @click="save"
         >
-          <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+          <v-icon class="d-flex d-sm-none">mdi-floppy</v-icon>
           <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
         </v-btn>
       </v-toolbar>
@@ -73,7 +73,7 @@
                         absolute
                         color="primary"
                       >
-                        <v-icon>{{ mdiCheck }}</v-icon>
+                        <v-icon>mdi-check</v-icon>
                       </v-overlay>
                     </v-scroll-y-transition>
                   </v-card>
@@ -120,9 +120,6 @@
 
 <script lang="ts">
 import {
-  mdiCheck, mdiClose, mdiFloppy,
-} from '@mdi/js';
-import {
   computed,
   defineComponent, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
@@ -134,7 +131,9 @@ import type { CacheTitlesInterface } from '.bot/src/database/entity/cacheTitles'
 import { error } from '~/functions/error';
 
 export default defineComponent({
-  props: { dialog: Boolean },
+  props: {
+    dialog: Boolean,
+  },
   setup (props, ctx) {
     const cachedSearch = new Map<string, string[]>();
     const store = useStore<any>();
@@ -291,10 +290,6 @@ export default defineComponent({
       isLoading,
       isSaving,
       setGame,
-
-      mdiCheck,
-      mdiClose,
-      mdiFloppy,
 
       selectedGameIdx,
       selectedGame,

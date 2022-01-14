@@ -8,7 +8,7 @@
       :fullscreen="$vuetify.breakpoint.mobile"
     >
       <template #activator="{ on, attrs }">
-        <v-btn icon v-if="item.id !== undefined" v-bind="attrs" small v-on="on">
+        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" v-on="on" class="primary-hover">
           <v-icon>
             mdi-pencil
           </v-icon>

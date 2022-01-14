@@ -55,9 +55,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCog, mdiExclamationThick, mdiFormatListBulletedSquare, mdiInformationVariant, mdiViewDashboard, mdiWrench,
-} from '@mdi/js';
 import { defineComponent, ref } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 import { useQuery, useResult } from '@vue/apollo-composable';
@@ -67,12 +64,12 @@ type menuType = { category?: string; name: string; id: string; this: any | null 
 type menuWithEnabled = Omit<menuType[number], 'this'> & { enabled: boolean };
 
 const icons = new Map<string, string>([
-  ['dashboard', mdiViewDashboard],
-  ['commands', mdiExclamationThick],
-  ['settings', mdiCog],
-  ['manage', mdiWrench],
-  ['stats', mdiInformationVariant],
-  ['registry', mdiFormatListBulletedSquare],
+  ['dashboard', 'mdi-view-dashboard'],
+  ['commands', 'mdi-exclamation-thick'],
+  ['settings', 'mdi-cog'],
+  ['manage', 'mdi-wrench'],
+  ['stats', 'mdi-information-variant'],
+  ['registry', 'mdi-format-list-bulleted-square'],
 ]);
 
 export default defineComponent({
@@ -82,7 +79,9 @@ export default defineComponent({
     `);
     const menu = useResult<{ menuPrivate: menuWithEnabled[] }, menuWithEnabled[], menuWithEnabled[]>(result, [], (data) => {
       console.groupCollapsed('menu::menu');
-      console.log({ menu: data.menuPrivate });
+      console.log({
+        menu: data.menuPrivate,
+      });
       console.groupEnd();
       return data.menuPrivate.sort((a, b) => {
         return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));

@@ -34,7 +34,6 @@
     "url": "git+https://github.com/sogebot/ui-admin.git"
   },
   "devDependencies": {
-    "@mdi/js": "^6.5.95",
     "@nuxt/types": "^2.15.8",
     "@nuxt/typescript-build": "^2.1.0",
     "@nuxtjs/apollo": "^4.0.1-rc.5",
@@ -53,7 +52,7 @@
     "@types/shortid": "^0.0.29",
     "@types/uuid": "^8.3.4",
     "@types/vue-chartkick": "^0.5.1",
-    "@typescript-eslint/eslint-plugin": "^5.9.0",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@vue/apollo-composable": "^4.0.0-alpha.16",
     "animate.css": "^4.1.1",
     "babel-eslint": "^10.1.0",

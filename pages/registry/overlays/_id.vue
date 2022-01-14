@@ -10,7 +10,7 @@
         @click="save"
       >
         <v-icon class="d-flex d-sm-none">
-          {{ mdiFloppy }}
+          mdi-floppy
         </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
@@ -45,7 +45,6 @@
 </template>
 
 <script lang="ts">
-import { mdiFloppy } from '@mdi/js';
 import {
   defineComponent, onMounted, ref, useRoute, useStore, watch,
 } from '@nuxtjs/composition-api';
@@ -103,9 +102,13 @@ export default defineComponent({
     }) as OverlayMappers);
     watch(item, () => {
       store.commit('settings/pending', true);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
-    const { result, loading } = useQuery(GET, { id: route.value.params.id });
+    const { result, loading } = useQuery(GET, {
+      id: route.value.params.id,
+    });
     const cache = useResult<{ overlays: any[] }, OverlayMappers[]>(result, []);
     watch(cache, (value) => {
       for (const key of Object.keys(value)) {
@@ -118,7 +121,9 @@ export default defineComponent({
           break;
         }
       }
-    }, { immediate: true, deep: true });
+    }, {
+      immediate: true, deep: true,
+    });
 
     const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(SAVE);
     onDoneSave(() => {
@@ -130,29 +135,75 @@ export default defineComponent({
     const valid1 = ref(true);
 
     const overlayOptions = [
-      { value: null, text: 'Please select an option' },
-      { value: 'group', text: 'group of overlays' },
-      { value: 'media', text: 'media' },
-      { value: 'bets', text: 'bets' },
-      { value: 'carousel', text: 'carousel' },
-      { value: 'countdown', text: 'countdown' },
-      { value: 'clips', text: 'clips' },
-      { value: 'clipscarousel', text: 'clipscarousel' },
-      { value: 'credits', text: 'credits' },
-      { value: 'emotes', text: 'emotes' },
-      { value: 'emotescombo', text: 'emotescombo' },
-      { value: 'emotesfireworks', text: 'emotesfireworks' },
-      { value: 'emotesexplode', text: 'emotesexplode' },
-      { value: 'eventlist', text: 'eventlist' },
-      { value: 'marathon', text: 'marathon' },
-      { value: 'obswebsocket', text: 'obswebsocket' },
-      { value: 'polls', text: 'polls' },
-      { value: 'randomizer', text: 'randomizer' },
-      { value: 'stats', text: 'stats' },
-      { value: 'wordcloud', text: 'wordcloud' },
-      { value: 'stopwatch', text: 'stopwatch' },
-      { value: 'tts', text: 'tts' },
-      { value: 'hypetrain', text: 'hypetrain' },
+      {
+        value: null, text: 'Please select an option',
+      },
+      {
+        value: 'group', text: 'group of overlays',
+      },
+      {
+        value: 'media', text: 'media',
+      },
+      {
+        value: 'bets', text: 'bets',
+      },
+      {
+        value: 'carousel', text: 'carousel',
+      },
+      {
+        value: 'countdown', text: 'countdown',
+      },
+      {
+        value: 'clips', text: 'clips',
+      },
+      {
+        value: 'clipscarousel', text: 'clipscarousel',
+      },
+      {
+        value: 'credits', text: 'credits',
+      },
+      {
+        value: 'emotes', text: 'emotes',
+      },
+      {
+        value: 'emotescombo', text: 'emotescombo',
+      },
+      {
+        value: 'emotesfireworks', text: 'emotesfireworks',
+      },
+      {
+        value: 'emotesexplode', text: 'emotesexplode',
+      },
+      {
+        value: 'eventlist', text: 'eventlist',
+      },
+      {
+        value: 'marathon', text: 'marathon',
+      },
+      {
+        value: 'obswebsocket', text: 'obswebsocket',
+      },
+      {
+        value: 'polls', text: 'polls',
+      },
+      {
+        value: 'randomizer', text: 'randomizer',
+      },
+      {
+        value: 'stats', text: 'stats',
+      },
+      {
+        value: 'wordcloud', text: 'wordcloud',
+      },
+      {
+        value: 'stopwatch', text: 'stopwatch',
+      },
+      {
+        value: 'tts', text: 'tts',
+      },
+      {
+        value: 'hypetrain', text: 'hypetrain',
+      },
     ];
 
     onMounted(() => {
@@ -163,7 +214,9 @@ export default defineComponent({
       if (
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
-        saveMutation({ data_json: JSON.stringify(item.value) }).then(() => store.commit('settings/pending', false));
+        saveMutation({
+          data_json: JSON.stringify(item.value),
+        }).then(() => store.commit('settings/pending', false));
       }
     };
 
@@ -185,9 +238,6 @@ export default defineComponent({
 
       // others
       translate,
-
-      // icons
-      mdiFloppy,
     };
   },
 });

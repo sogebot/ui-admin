@@ -111,7 +111,7 @@
               </v-col>
               <v-col cols="1" class="text-center" align-self="center">
                 <v-btn icon @click="addShadow">
-                  <v-icon>{{ mdiPlus }}</v-icon>
+                  <v-icon>mdi-plus-thick</v-icon>
                 </v-btn>
               </v-col>
             </v-row>
@@ -217,7 +217,6 @@
 </template>
 
 <script lang="ts">
-import { mdiPlus } from '@mdi/js';
 import {
   defineAsyncComponent,
   defineComponent,
@@ -284,8 +283,12 @@ interface Props {
   } | null
 }
 export default defineComponent({
-  components: { color: defineAsyncComponent({ loader: () => import('~/components/form/color.vue') }) },
-  props:      {
+  components: {
+    color: defineAsyncComponent({
+      loader: () => import('~/components/form/color.vue'),
+    }),
+  },
+  props: {
     parent:  Object,
     value:   Object,
     isChild: Boolean,
@@ -301,7 +304,9 @@ export default defineComponent({
     } []);
     const isOverriden = ref(props.value !== null);
 
-    const rules = { family: [required] };
+    const rules = {
+      family: [required],
+    };
 
     const alignItems = [{
       value: 'left',
@@ -320,7 +325,9 @@ export default defineComponent({
     watch(model, (val) => {
       ctx.emit('update:value', val);
       ctx.emit('input', val);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     const addShadow = () => {
       if (model.value) {
@@ -353,11 +360,16 @@ export default defineComponent({
           if (!(this.status >= 200 && this.status < 400)) {
             console.error('Something went wrong getting font', this.status, this.response);
           }
-          resolve({ response: JSON.parse(this.response) });
+          resolve({
+            response: JSON.parse(this.response),
+          });
         };
         request.onerror = function () {
           console.error('Connection error to sogebot');
-          resolve({ response: {} });
+          resolve({
+            response: {
+            },
+          });
         };
 
         request.send();
@@ -431,7 +443,6 @@ export default defineComponent({
       model,
       isOverriden,
       selectedTab,
-      mdiPlus,
     };
   },
 });

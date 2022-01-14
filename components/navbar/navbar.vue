@@ -9,7 +9,7 @@
       <v-slide-x-transition>
         <v-btn icon v-if="$store.state.panel.back.length > 0" nuxt :to="$store.state.panel.back" color="primary">
           <v-icon>
-            {{ mdiArrowLeft }}
+            mdi-arrow-left
           </v-icon>
         </v-btn>
       </v-slide-x-transition>
@@ -48,7 +48,7 @@
               style="transition-property: all; transition-duration: 0.5s;"
               :style="{ 'transform': miniVariant ? 'rotate(180deg)' : 'inherit' }"
             >
-              {{ mdiArrowCollapseLeft }}
+              mdi-arrow-collapse-left
             </v-icon>
           </v-btn>
         </template>
@@ -69,7 +69,6 @@
 </template>
 
 <script lang="ts">
-import { mdiArrowCollapseLeft, mdiArrowLeft } from '@mdi/js';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, useContext, useMeta, useRoute, useStore, watch,
 } from '@nuxtjs/composition-api';
@@ -78,8 +77,12 @@ import translate from '@sogebot/ui-helpers/translate';
 
 import { error } from '~/functions/error';
 
-const navmenu = defineAsyncComponent({ loader: () => import('./menu.vue') });
-const user = defineAsyncComponent({ loader: () => import('../user.vue') });
+const navmenu = defineAsyncComponent({
+  loader: () => import('./menu.vue'),
+});
+const user = defineAsyncComponent({
+  loader: () => import('../user.vue'),
+});
 
 export default defineComponent({
   components: {
@@ -97,9 +100,13 @@ export default defineComponent({
     watch(miniVariant, (value) => {
       store.commit('setNavbarMiniVariant', value);
       localStorage.miniVariant = JSON.stringify(value);
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
-    useMeta(() => ({ title: `${name.value} @ ${channelName.value}` }));
+    useMeta(() => ({
+      title: `${name.value} @ ${channelName.value}`,
+    }));
 
     onMounted(() => {
       console.debug('#route | ' + useRoute().value.name);
@@ -120,9 +127,10 @@ export default defineComponent({
     };
 
     return {
-      name, channelName, drawer, translate, miniVariant, mdiArrowCollapseLeft, mdiArrowLeft, setDebug,
+      name, channelName, drawer, translate, miniVariant, setDebug,
     };
   },
-  head: {}, // enable useMeta
+  head: {
+  }, // enable useMeta
 });
 </script>

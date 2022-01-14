@@ -11,7 +11,7 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
 
@@ -46,7 +46,7 @@
               </v-menu>
             </v-col>
             <v-col align-self="center">
-              <v-text-field v-model="search" :append-icon="mdiMagnify" label="Search" single-line hide-details
+              <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
                 class="pa-0 ma-2" />
             </v-col>
             <v-col cols="auto" align-self="center">
@@ -223,7 +223,7 @@
             @save="update(item, true, 'followedAt')">
             <template v-if="item.followedAt > 0">
               <v-icon v-if="item.haveFollowedAtLock" x-small>
-                {{ mdiLock }}
+                mdi-lock
               </v-icon>
               {{ dayjs(item.followedAt).format('LL') }} {{ dayjs(item.followedAt).format('LTS') }}
             </template>
@@ -242,14 +242,14 @@
                 :disabled="state.forceCheckFollowedAt !== ButtonStates.idle" @click="forceCheckFollowedAt(item)">
                 <v-progress-circular v-if="state.forceCheckFollowedAt !== ButtonStates.idle" indeterminate />
                 <v-icon v-else>
-                  {{ mdiRefresh }}
+                  mdi-refresh
                 </v-icon>
               </v-btn>
 
               <v-btn style="position: absolute; left: 10px; top: 10px;"
                 :color="item.haveFollowedAtLock ? 'success' : 'error'" icon
                 @click="item.haveFollowedAtLock = !item.haveFollowedAtLock">
-                <v-icon>{{ item.haveFollowedAtLock ? mdiLock : mdiLockOff }}</v-icon>
+                <v-icon>{{ item.haveFollowedAtLock ? 'mdi-lock' : 'mdi-lock-off' }}</v-icon>
               </v-btn>
               <v-btn block :disabled="item.followedAt === 0" :color="item.followedAt === 0 ? 'info' : 'error'"
                 @click="item.followedAt = 0; timestamp = Date.now()">
@@ -267,7 +267,7 @@
             @save="update(item, true, 'subscribedAt')">
             <template v-if="item.subscribedAt > 0">
               <v-icon v-if="item.haveSubscribedAtLock" x-small>
-                {{ mdiLock }}
+                mdi-lock
               </v-icon>
               {{ dayjs(item.subscribedAt).format('LL') }} {{ dayjs(item.subscribedAt).format('LTS') }}
             </template>
@@ -285,7 +285,7 @@
               <v-btn style="position: absolute; left: 10px; top: 10px;"
                 :color="item.haveSubscribedAtLock ? 'success' : 'error'" icon
                 @click="item.haveSubscribedAtLock = !item.haveSubscribedAtLock">
-                <v-icon>{{ item.haveSubscribedAtLock ? mdiLock : mdiLockOff }}</v-icon>
+                <v-icon>{{ item.haveSubscribedAtLock ? 'mdi-lock' : 'mdi-lock-off' }}</v-icon>
               </v-btn>
 
               <v-btn block :disabled="item.subscribedAt === 0" :color="item.subscribedAt === 0 ? 'info' : 'error'"
@@ -332,9 +332,6 @@
 
 <script lang="ts">
 import {
-  mdiCheckboxMultipleMarkedOutline, mdiClose, mdiDotsVertical, mdiLock, mdiLockOff, mdiMagnify, mdiRefresh,
-} from '@mdi/js';
-import {
   computed,
   defineAsyncComponent,
   defineComponent, onMounted, ref, useRoute,
@@ -366,11 +363,21 @@ export default defineComponent({
     timeToTime,
   },
   components: {
-    followersChip:   defineAsyncComponent({ loader: () => import('~/components/viewers/followersChip.vue') }),
-    subscribersChip: defineAsyncComponent({ loader: () => import('~/components/viewers/subscribersChip.vue') }),
-    tips:            defineAsyncComponent({ loader: () => import('~/components/viewers/tips.vue') }),
-    bits:            defineAsyncComponent({ loader: () => import('~/components/viewers/bits.vue') }),
-    FilterButton:    defineAsyncComponent({ loader: () => import('~/components/viewers/filterButton.vue') }),
+    followersChip: defineAsyncComponent({
+      loader: () => import('~/components/viewers/followersChip.vue'),
+    }),
+    subscribersChip: defineAsyncComponent({
+      loader: () => import('~/components/viewers/subscribersChip.vue'),
+    }),
+    tips: defineAsyncComponent({
+      loader: () => import('~/components/viewers/tips.vue'),
+    }),
+    bits: defineAsyncComponent({
+      loader: () => import('~/components/viewers/bits.vue'),
+    }),
+    FilterButton: defineAsyncComponent({
+      loader: () => import('~/components/viewers/filterButton.vue'),
+    }),
   },
   setup () {
     const rules = {
@@ -428,7 +435,9 @@ export default defineComponent({
           state.value.history = ButtonStates.success;
         });
       }
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch([sortBy, sortDesc], () => {
       if (!sortBy.value) {
@@ -461,41 +470,87 @@ export default defineComponent({
 
     watch([currentPage, sortBy, sortDesc, filter, search, perPage], () => {
       refresh();
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     const headersDelete = [
-      { value: 'userId', text: '' },
-      { value: 'userName', text: '' },
+      {
+        value: 'userId', text: '',
+      },
+      {
+        value: 'userName', text: '',
+      },
     ];
 
     const headersHistory = [
-      { value: 'timestamp', text: '' },
-      { value: 'event', text: '' },
-      { value: 'info', text: '' },
+      {
+        value: 'timestamp', text: '',
+      },
+      {
+        value: 'event', text: '',
+      },
+      {
+        value: 'info', text: '',
+      },
     ];
 
     const headers = [
-      { value: 'userName', text: capitalize(translate('username')) },
-      { value: 'messages', text: capitalize(translate('messages')) },
-      { value: 'level', text: capitalize(translate('level')) },
-      { value: 'points', text: capitalize(translate('points')) },
-      { value: 'watchedTime', text: capitalize(translate('watched-time')) },
-      { value: 'seenAt', text: capitalize(translate('last-seen')) },
-      { value: 'followedAt', text: capitalize(translate('followed-since')) },
-      { value: 'subscribedAt', text: capitalize(translate('subscribed-since')) },
-      { value: 'sumTips', text: capitalize(translate('tips')) },
-      { value: 'sumBits', text: capitalize(translate('bits')) },
-      { value: 'giftedSubscribes', text: capitalize(translate('subgifts')) },
-      { value: 'subscribeCumulativeMonths', text: capitalize(translate('subCumulativeMonths')) },
-      { value: 'subscribeStreak', text: capitalize(translate('subStreak')) },
-      { text: '', value: 'data-table-expand' },
+      {
+        value: 'userName', text: capitalize(translate('username')),
+      },
+      {
+        value: 'messages', text: capitalize(translate('messages')),
+      },
+      {
+        value: 'level', text: capitalize(translate('level')),
+      },
+      {
+        value: 'points', text: capitalize(translate('points')),
+      },
+      {
+        value: 'watchedTime', text: capitalize(translate('watched-time')),
+      },
+      {
+        value: 'seenAt', text: capitalize(translate('last-seen')),
+      },
+      {
+        value: 'followedAt', text: capitalize(translate('followed-since')),
+      },
+      {
+        value: 'subscribedAt', text: capitalize(translate('subscribed-since')),
+      },
+      {
+        value: 'sumTips', text: capitalize(translate('tips')),
+      },
+      {
+        value: 'sumBits', text: capitalize(translate('bits')),
+      },
+      {
+        value: 'giftedSubscribes', text: capitalize(translate('subgifts')),
+      },
+      {
+        value: 'subscribeCumulativeMonths', text: capitalize(translate('subCumulativeMonths')),
+      },
+      {
+        value: 'subscribeStreak', text: capitalize(translate('subStreak')),
+      },
+      {
+        text: '', value: 'data-table-expand',
+      },
     ];
 
     const refresh = () => {
       state.value.loading = ButtonStates.progress;
       console.time('find.viewers');
       getSocket('/core/users').emit('find.viewers', {
-        perPage: perPage.value, page: (currentPage.value - 1), order: { orderBy: sortBy.value, sortOrder: sortDesc.value ? 'DESC' : 'ASC' }, filter: filter.value, search: search.value.length > 0 ? search.value : undefined,
+        perPage: perPage.value,
+        page:    (currentPage.value - 1),
+        order:   {
+          orderBy: sortBy.value, sortOrder: sortDesc.value ? 'DESC' : 'ASC',
+        },
+        filter: filter.value,
+        search: search.value.length > 0 ? search.value : undefined,
       }, (err: string | null, items_: Required<UserInterface>[], count_: number) => {
         if (err) {
           return console.error(err);
@@ -547,7 +602,8 @@ export default defineComponent({
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
-            const toUpdate: Record<string, any> = {};
+            const toUpdate: Record<string, any> = {
+            };
             if (attr === 'isFollower') {
               toUpdate.isFollower = item.isFollower;
               toUpdate.haveFollowerLock = item.haveFollowerLock;
@@ -563,7 +619,9 @@ export default defineComponent({
             } else {
               toUpdate[attr] = item[attr];
             }
-            console.log('Updating', itemToUpdate.userId, { toUpdate });
+            console.log('Updating', itemToUpdate.userId, {
+              toUpdate,
+            });
 
             getSocket('/core/users').emit('viewers::update', [itemToUpdate.userId, toUpdate], (err: string | null) => {
               if (err) {
@@ -710,13 +768,6 @@ export default defineComponent({
       fItems,
       forceCheckFollowedAt,
       timestamp,
-      mdiMagnify,
-      mdiLock,
-      mdiLockOff,
-      mdiRefresh,
-      mdiClose,
-      mdiDotsVertical,
-      mdiCheckboxMultipleMarkedOutline,
       dayjs,
       lockBackup,
       headersHistory,

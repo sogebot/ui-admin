@@ -26,14 +26,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -107,7 +107,7 @@
             :color="hover ? 'primary' : 'secondary lighten-3'"
             nuxt :to='"/registry/textoverlay/" + item.id'
           >
-            <v-icon>{{ mdiPencil }}</v-icon>
+            <v-icon>mdi-pencil</v-icon>
           </v-btn>
         </v-hover>
         <v-hover v-slot="{ hover }">
@@ -116,7 +116,7 @@
             :color="hover ? 'primary' : 'secondary lighten-3'"
             @click.stop="clone(item)"
           >
-            <v-icon>{{ mdiContentCopy }}</v-icon>
+            <v-icon>mdi-content-copy</v-icon>
           </v-btn>
         </v-hover>
         <v-hover v-slot="{ hover }">
@@ -125,7 +125,7 @@
             :color="hover ? 'primary' : 'secondary lighten-3'"
             :href="`/overlays/text/${item.id}`"
           >
-            <v-icon>{{ mdiLink }}</v-icon>
+            <v-icon>mdi-link</v-icon>
           </v-btn>
         </v-hover>
       </template>
@@ -134,9 +134,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCheckboxMultipleMarkedOutline, mdiContentCopy, mdiLink, mdiMagnify, mdiPencil,
-} from '@mdi/js';
 import {
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -153,7 +150,9 @@ import { required } from '~/functions/validators';
 
 export default defineComponent({
   setup () {
-    const rules = { name: [required] };
+    const rules = {
+      name: [required],
+    };
 
     const items = ref([] as TextInterface[]);
     const search = ref('');
@@ -171,12 +170,16 @@ export default defineComponent({
       }
     });
 
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
     const headers = [
-      { value: 'name', text: translate('name') },
+      {
+        value: 'name', text: translate('name'),
+      },
       {
         value:    'actions',
         text:     '',
@@ -186,7 +189,9 @@ export default defineComponent({
     ];
 
     const headersDelete = [
-      { value: 'name', text: '' },
+      {
+        value: 'name', text: '',
+      },
     ];
 
     onMounted(() => {
@@ -238,7 +243,11 @@ export default defineComponent({
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
-            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+            console.log('Updating', {
+              itemToUpdate,
+            }, {
+              attr, value: item[attr],
+            });
             getSocket('/registries/text').emit('text::save', {
               ...itemToUpdate,
               [attr]: item[attr], // save new value for all selected items
@@ -300,11 +309,6 @@ export default defineComponent({
       translate,
       saveSuccess,
       rules,
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
-      mdiContentCopy,
-      mdiPencil,
-      mdiLink,
       ButtonStates,
       clone,
       saveCurrentItems,

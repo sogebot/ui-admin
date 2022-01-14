@@ -13,7 +13,7 @@
           icon
           @click="dialogController = false"
         >
-          <v-icon>{{ mdiClose }}</v-icon>
+          <v-icon>mdi-close</v-icon>
         </v-btn>
         <span class="headline">Edit custom URLs</span>
         <v-spacer />
@@ -25,7 +25,7 @@
           @click="save"
         >
           <v-icon class="d-flex d-sm-none">
-            {{ mdiFloppy }}
+            mdi-floppy
           </v-icon>
           <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
         </v-btn>
@@ -34,7 +34,7 @@
         <v-alert
           border="left"
           color="red"
-          :icon="mdiExclamationThick"
+          icon="mdi-exclamation-thick"
           text
           type="success"
         >
@@ -52,7 +52,7 @@
                 label="URL"
               />
               <v-btn color="error" icon @click="rmItem(item.id)">
-                <v-icon>{{ mdiDelete }}</v-icon>
+                <v-icon>mdi-delete-forever</v-icon>
               </v-btn>
             </v-list-item>
           </transition-group>
@@ -72,9 +72,6 @@
 
 <script lang="ts">
 import {
-  mdiClose, mdiDelete, mdiExclamationThick, mdiFloppy,
-} from '@mdi/js';
-import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
@@ -91,7 +88,9 @@ type Props = {
 };
 
 export default defineComponent({
-  props: { dialog: Boolean },
+  props: {
+    dialog: Boolean,
+  },
   setup (props: Props, ctx) {
     const { loading, onError, refetch, onResult } = useQuery(gql`
       query widgetCustomGetInEdit { widgetCustomGet { id url name } }
@@ -131,11 +130,18 @@ export default defineComponent({
 
     const save = () => {
       markedToDelete.value.forEach((id) => {
-        removeMutation({ id });
+        removeMutation({
+          id,
+        });
       });
       items.value.forEach((item) => {
         const { id, name, url } = item;
-        updateMutation({ id, data: { name, url } });
+        updateMutation({
+          id,
+          data: {
+            name, url,
+          },
+        });
       });
       markedToDelete.value = [];
       dialogController.value = false;
@@ -168,12 +174,6 @@ export default defineComponent({
       save,
       addItem,
       rmItem,
-
-      // icons
-      mdiClose,
-      mdiDelete,
-      mdiExclamationThick,
-      mdiFloppy,
     };
   },
 });

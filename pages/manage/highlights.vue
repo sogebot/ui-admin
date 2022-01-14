@@ -28,7 +28,7 @@
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -62,7 +62,7 @@
           :href="'https://www.twitch.tv/videos/' + item.videoId + '?t=' + timestampToString(item.timestamp)"
           target="_blank"
         >
-          <v-icon>{{ mdiLink }}</v-icon>
+          <v-icon>mdi-link</v-icon>
         </v-btn>
         <span
           v-else
@@ -80,8 +80,6 @@
 </template>
 
 <script lang="ts">
-
-import { mdiLink, mdiMagnify } from '@mdi/js';
 import {
   computed, defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
@@ -111,7 +109,9 @@ export default defineComponent({
       });
     });
 
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
@@ -119,20 +119,36 @@ export default defineComponent({
       {
         value: 'thumbnail', text: '', align: 'left',
       },
-      { value: 'game', text: '' },
-      { value: 'title', text: '' },
-      { value: 'createdAt', text: '' },
-      { value: 'timestamp', text: '' },
+      {
+        value: 'game', text: '',
+      },
+      {
+        value: 'title', text: '',
+      },
+      {
+        value: 'createdAt', text: '',
+      },
+      {
+        value: 'timestamp', text: '',
+      },
       {
         text: 'Actions', value: 'actions', sortable: false, align: 'end',
       },
     ];
 
     const headersDelete = [
-      { value: 'game', text: '' },
-      { value: 'timestamp', text: '' },
-      { value: 'createdAt', text: '' },
-      { value: 'title', text: '' },
+      {
+        value: 'game', text: '',
+      },
+      {
+        value: 'timestamp', text: '',
+      },
+      {
+        value: 'createdAt', text: '',
+      },
+      {
+        value: 'title', text: '',
+      },
     ];
 
     onMounted(() => {
@@ -144,7 +160,9 @@ export default defineComponent({
         if (err) {
           return error(err);
         }
-        console.debug({ _items });
+        console.debug({
+          _items,
+        });
         items.value = _items;
         state.value.loading = ButtonStates.success;
       });
@@ -198,8 +216,6 @@ export default defineComponent({
       deleteExpired,
 
       dayjs,
-      mdiMagnify,
-      mdiLink,
     };
   },
 });

@@ -6,7 +6,7 @@
         <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" dense>
             <v-col align-self="center">
-              <v-text-field v-model="search" :append-icon="mdiMagnify" label="Search" single-line hide-details
+              <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
                 class="pa-0 ma-2" />
             </v-col>
           </v-row>
@@ -16,7 +16,7 @@
       <template #[`group.header`]="{ items, isOpen, toggle }">
         <th colspan="7">
           <v-icon @click="toggle">
-            {{ isOpen ? mdiMinus : mdiPlus }}
+            {{ isOpen ? 'mdi-minus-thick' : 'mdi-plus-thick' }}
           </v-icon>
 
           {{ items[0].type }}
@@ -35,7 +35,7 @@
         <span
           :class="{ 'text-decoration-line-through': item.command !== item.defaultValue }">{{ item.defaultValue }}</span>
         <span v-if="item.command !== item.defaultValue">
-          <v-icon class="d-inline-block">{{ mdiArrowRightBold }}</v-icon> {{ item.command }}
+          <v-icon class="d-inline-block">mdi-arrow-right-bold</v-icon> {{ item.command }}
         </span>
       </template>
 
@@ -49,9 +49,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiArrowRightBold, mdiMagnify, mdiMinus, mdiPlus,
-} from '@mdi/js';
 import {
   computed, defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
@@ -190,10 +187,6 @@ export default defineComponent({
       refresh,
       capitalize,
       fItems,
-      mdiMagnify,
-      mdiPlus,
-      mdiMinus,
-      mdiArrowRightBold,
       ButtonStates,
     };
   },

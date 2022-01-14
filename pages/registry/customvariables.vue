@@ -30,14 +30,14 @@
             <v-col cols="auto" align-self="center" class="pr-2">
               <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
                 <v-icon>
-                  {{ mdiCheckboxMultipleMarkedOutline }}
+                  mdi-checkbox-multiple-marked-outline
                 </v-icon>
               </v-btn>
             </v-col>
             <v-col align-self="center">
               <v-text-field
                 v-model="search"
-                :append-icon="mdiMagnify"
+                append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
@@ -225,7 +225,7 @@
           <span
             v-else
             class="red--text  text--lighten-1"
-          ><v-icon>{{ mdiExclamationThick }}</v-icon>  Permission not found</span>
+          ><v-icon>mdi-exclamation-thick</v-icon>  Permission not found</span>
         </div>
       </template>
 
@@ -237,7 +237,7 @@
               :color="hover ? 'primary' : 'secondary lighten-3'"
               @click.stop="edit(item)"
             >
-              <v-icon>{{ mdiPencil }}</v-icon>
+              <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </v-hover>
           <v-hover v-slot="{ hover }">
@@ -246,7 +246,7 @@
               :color="hover ? 'primary' : 'secondary lighten-3'"
               @click.stop="clone(item)"
             >
-              <v-icon>{{ mdiContentCopy }}</v-icon>
+              <v-icon>mdi-content-copy</v-icon>
             </v-btn>
           </v-hover>
           <v-hover v-if="item.type === 'eval'" v-slot="{ hover }">
@@ -260,7 +260,7 @@
                   'spin': runningScripts.includes(item.id)
                 }"
               >
-                {{ runningScripts.includes(item.id) ? mdiCog : mdiCogRefresh }}
+                {{ runningScripts.includes(item.id) ? 'mdi-cog' : 'mdi-cog-refresh' }}
               </v-icon>
             </v-btn>
           </v-hover>
@@ -271,9 +271,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCheckboxMultipleMarkedOutline, mdiCog, mdiCogRefresh, mdiContentCopy, mdiExclamationThick, mdiMagnify, mdiPencil,
-} from '@mdi/js';
 import {
   computed,
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
@@ -297,7 +294,11 @@ import {
 } from '~/functions/validators';
 
 export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/customvariables-newItem.vue') }) },
+  components: {
+    'new-item': defineAsyncComponent({
+      loader: () => import('~/components/new-item/customvariables-newItem.vue'),
+    }),
+  },
   setup () {
     const { result, loading } = useQuery(gql`
       query {
@@ -305,7 +306,9 @@ export default defineComponent({
       }
     `);
     const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
-    const rules = { variableName: [required, startsWith(['$_']), minLength(3), restrictedChars([' '])] };
+    const rules = {
+      variableName: [required, startsWith(['$_']), minLength(3), restrictedChars([' '])],
+    };
 
     const items = ref([] as VariableInterface[]);
     const editItem = ref(null as null | VariableInterface);
@@ -344,35 +347,55 @@ export default defineComponent({
       timestamp.value = Date.now();
     });
 
-    const state = ref({ loading: ButtonStates.progress } as {
+    const state = ref({
+      loading: ButtonStates.progress,
+    } as {
       loading: number;
     });
 
     const headers = [
-      { value: 'variableName', text: '$_' },
-      { value: 'description', text: translate('registry.customvariables.description.name') },
+      {
+        value: 'variableName', text: '$_',
+      },
+      {
+        value: 'description', text: translate('registry.customvariables.description.name'),
+      },
       {
         value: 'type', sortable: true, text: translate('registry.customvariables.type.name'),
       },
       {
         value: 'additionalInfo', text: translate('registry.customvariables.additional-info'), sortable: false,
       },
-      { value: 'currentValue', text: translate('registry.customvariables.currentValue.name') },
+      {
+        value: 'currentValue', text: translate('registry.customvariables.currentValue.name'),
+      },
       {
         value: 'actions', text: '', sortable: false,
       },
-      { text: '', value: 'data-table-expand' },
+      {
+        text: '', value: 'data-table-expand',
+      },
     ];
 
     const headersDelete = [
-      { value: 'variableName', text: '' },
-      { value: 'type', text: '' },
+      {
+        value: 'variableName', text: '',
+      },
+      {
+        value: 'type', text: '',
+      },
     ];
 
     const headersHistory = [
-      { value: 'changedAt', text: '' },
-      { value: 'value', text: '' },
-      { value: 'username', text: '' },
+      {
+        value: 'changedAt', text: '',
+      },
+      {
+        value: 'value', text: '',
+      },
+      {
+        value: 'username', text: '',
+      },
     ];
 
     onMounted(() => {
@@ -485,13 +508,6 @@ export default defineComponent({
       editDialog,
       timestamp,
       rules,
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
-      mdiContentCopy,
-      mdiCog,
-      mdiCogRefresh,
-      mdiPencil,
-      mdiExclamationThick,
       ButtonStates,
       clone,
       getPermissionName,

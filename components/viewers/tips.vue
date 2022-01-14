@@ -84,7 +84,7 @@
 
           <template #[`item.button`]="{ item }">
             <v-icon @click="remove(item)">
-              {{ mdiDelete }}
+              mdi-delete-forever
             </v-icon>
           </template>
 
@@ -137,7 +137,6 @@
 </template>
 
 <script lang="ts">
-import { mdiDelete } from '@mdi/js';
 import {
   defineAsyncComponent,
   defineComponent, ref, watch,
@@ -152,57 +151,139 @@ import type { UserInterface, UserTipInterface } from '.bot/src/database/entity/u
 import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
-  components: { datetime: defineAsyncComponent({ loader: () => import('~/components/datetime.vue') }) },
-  props:      { sum: Number, userId: String },
+  components: {
+    datetime: defineAsyncComponent({
+      loader: () => import('~/components/datetime.vue'),
+    }),
+  },
+  props: {
+    sum: Number, userId: String,
+  },
   setup (props, ctx) {
     const tips = ref([] as UserTipInterface[]);
     const username = ref('');
     const dialog = ref(false);
     const timestamp = ref(Date.now());
     const currencyBackup = ref('USD');
-    const rules = { amount: [required, minValue(0)] };
+    const rules = {
+      amount: [required, minValue(0)],
+    };
 
     const headers = [
-      { value: 'tippedAt', text: '' },
-      { value: 'amount', text: '' },
-      { value: 'message', text: '' },
-      { value: 'button', text: '' },
+      {
+        value: 'tippedAt', text: '',
+      },
+      {
+        value: 'amount', text: '',
+      },
+      {
+        value: 'message', text: '',
+      },
+      {
+        value: 'button', text: '',
+      },
     ];
 
     const currencyItems = [
-      { value: 'USD', text: 'USD' },
-      { value: 'AUD', text: 'AUD' },
-      { value: 'BGN', text: 'BGN' },
-      { value: 'BRL', text: 'BRL' },
-      { value: 'CAD', text: 'CAD' },
-      { value: 'CHF', text: 'CHF' },
-      { value: 'CNY', text: 'CNY' },
-      { value: 'CZK', text: 'CZK' },
-      { value: 'DKK', text: 'DKK' },
-      { value: 'EUR', text: 'EUR' },
-      { value: 'GBP', text: 'GBP' },
-      { value: 'HKD', text: 'HKD' },
-      { value: 'HRK', text: 'HRK' },
-      { value: 'HUF', text: 'HUF' },
-      { value: 'IDR', text: 'IDR' },
-      { value: 'ILS', text: 'ILS' },
-      { value: 'INR', text: 'INR' },
-      { value: 'ISK', text: 'ISK' },
-      { value: 'JPY', text: 'JPY' },
-      { value: 'KRW', text: 'KRW' },
-      { value: 'MXN', text: 'MXN' },
-      { value: 'MYR', text: 'MYR' },
-      { value: 'NOK', text: 'NOK' },
-      { value: 'NZD', text: 'NZD' },
-      { value: 'PHP', text: 'PHP' },
-      { value: 'PLN', text: 'PLN' },
-      { value: 'RON', text: 'RON' },
-      { value: 'RUB', text: 'RUB' },
-      { value: 'SEK', text: 'SEK' },
-      { value: 'SGD', text: 'SGD' },
-      { value: 'THB', text: 'THB' },
-      { value: 'TRY', text: 'TRY' },
-      { value: 'ZAR', text: 'ZAR' },
+      {
+        value: 'USD', text: 'USD',
+      },
+      {
+        value: 'AUD', text: 'AUD',
+      },
+      {
+        value: 'BGN', text: 'BGN',
+      },
+      {
+        value: 'BRL', text: 'BRL',
+      },
+      {
+        value: 'CAD', text: 'CAD',
+      },
+      {
+        value: 'CHF', text: 'CHF',
+      },
+      {
+        value: 'CNY', text: 'CNY',
+      },
+      {
+        value: 'CZK', text: 'CZK',
+      },
+      {
+        value: 'DKK', text: 'DKK',
+      },
+      {
+        value: 'EUR', text: 'EUR',
+      },
+      {
+        value: 'GBP', text: 'GBP',
+      },
+      {
+        value: 'HKD', text: 'HKD',
+      },
+      {
+        value: 'HRK', text: 'HRK',
+      },
+      {
+        value: 'HUF', text: 'HUF',
+      },
+      {
+        value: 'IDR', text: 'IDR',
+      },
+      {
+        value: 'ILS', text: 'ILS',
+      },
+      {
+        value: 'INR', text: 'INR',
+      },
+      {
+        value: 'ISK', text: 'ISK',
+      },
+      {
+        value: 'JPY', text: 'JPY',
+      },
+      {
+        value: 'KRW', text: 'KRW',
+      },
+      {
+        value: 'MXN', text: 'MXN',
+      },
+      {
+        value: 'MYR', text: 'MYR',
+      },
+      {
+        value: 'NOK', text: 'NOK',
+      },
+      {
+        value: 'NZD', text: 'NZD',
+      },
+      {
+        value: 'PHP', text: 'PHP',
+      },
+      {
+        value: 'PLN', text: 'PLN',
+      },
+      {
+        value: 'RON', text: 'RON',
+      },
+      {
+        value: 'RUB', text: 'RUB',
+      },
+      {
+        value: 'SEK', text: 'SEK',
+      },
+      {
+        value: 'SGD', text: 'SGD',
+      },
+      {
+        value: 'THB', text: 'THB',
+      },
+      {
+        value: 'TRY', text: 'TRY',
+      },
+      {
+        value: 'ZAR', text: 'ZAR',
+      },
     ];
 
     watch(dialog, (val) => {
@@ -251,7 +332,6 @@ export default defineComponent({
       currencyItems,
       currencyBackup,
       rules,
-      mdiDelete,
     };
   },
 });

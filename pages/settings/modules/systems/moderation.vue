@@ -85,7 +85,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.lists.cListsEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.lists.cListsEnabled[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.lists.cListsEnabled[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.lists.cListsEnabled[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -104,7 +104,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.lists.cListsTimeout[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.lists.cListsTimeout[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.lists.cListsTimeout[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.lists.cListsTimeout[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -132,7 +132,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.caps_filter.cCapsEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.caps_filter.cCapsEnabled[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.caps_filter.cCapsEnabled[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.caps_filter.cCapsEnabled[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -151,7 +151,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.caps_filter.cCapsMaxCapsPercent[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.caps_filter.cCapsMaxCapsPercent[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.caps_filter.cCapsMaxCapsPercent[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.caps_filter.cCapsMaxCapsPercent[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -170,7 +170,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.caps_filter.cCapsTriggerLength[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.caps_filter.cCapsTriggerLength[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.caps_filter.cCapsTriggerLength[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.caps_filter.cCapsTriggerLength[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -189,7 +189,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.caps_filter.cCapsTimeout[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.caps_filter.cCapsTimeout[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.caps_filter.cCapsTimeout[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.caps_filter.cCapsTimeout[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -217,7 +217,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.color_filter.cColorEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.color_filter.cColorEnabled[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.color_filter.cColorEnabled[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.color_filter.cColorEnabled[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -236,7 +236,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.color_filter.cColorTimeout[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.color_filter.cColorTimeout[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.color_filter.cColorTimeout[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.color_filter.cColorTimeout[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -262,7 +262,7 @@
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.emotes_filter.cEmotesEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.emotes_filter.cEmotesEnabled[0])">
                         <v-icon>
-                          {{ settings.__permission_based__.emotes_filter.cEmotesEnabled[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                          {{ settings.__permission_based__.emotes_filter.cEmotesEnabled[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                         </v-icon>
                       </v-btn>
                     </v-layout>
@@ -277,7 +277,7 @@
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.emotes_filter.cEmotesEmojisAreEmotes[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.emotes_filter.cEmotesEmojisAreEmotes[0])">
                         <v-icon>
-                          {{ settings.__permission_based__.emotes_filter.cEmotesEmojisAreEmotes[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                          {{ settings.__permission_based__.emotes_filter.cEmotesEmojisAreEmotes[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                         </v-icon>
                       </v-btn>
                     </v-layout>
@@ -297,7 +297,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.emotes_filter.cEmotesMaxCount[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.emotes_filter.cEmotesMaxCount[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.emotes_filter.cEmotesMaxCount[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.emotes_filter.cEmotesMaxCount[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -316,7 +316,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.emotes_filter.cEmotesTimeout[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.emotes_filter.cEmotesTimeout[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.emotes_filter.cEmotesTimeout[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.emotes_filter.cEmotesTimeout[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -342,7 +342,7 @@
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.links_filter.cLinksEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.links_filter.cLinksEnabled[0])">
                         <v-icon>
-                          {{ settings.__permission_based__.links_filter.cLinksEnabled[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                          {{ settings.__permission_based__.links_filter.cLinksEnabled[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                         </v-icon>
                       </v-btn>
                     </v-layout>
@@ -357,7 +357,7 @@
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.links_filter.cLinksIncludeClips[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.links_filter.cLinksIncludeClips[0])">
                         <v-icon>
-                          {{ settings.__permission_based__.links_filter.cLinksIncludeClips[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                          {{ settings.__permission_based__.links_filter.cLinksIncludeClips[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                         </v-icon>
                       </v-btn>
                     </v-layout>
@@ -372,7 +372,7 @@
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.links_filter.cLinksIncludeSpaces[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.links_filter.cLinksIncludeSpaces[0])">
                         <v-icon>
-                          {{ settings.__permission_based__.links_filter.cLinksIncludeSpaces[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                          {{ settings.__permission_based__.links_filter.cLinksIncludeSpaces[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                         </v-icon>
                       </v-btn>
                     </v-layout>
@@ -392,7 +392,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.links_filter.cLinksTimeout[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.links_filter.cLinksTimeout[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.links_filter.cLinksTimeout[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.links_filter.cLinksTimeout[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -419,7 +419,7 @@
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.longMessage_filter.cLongMessageEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.longMessage_filter.cLongMessageEnabled[0])">
                         <v-icon>
-                          {{ settings.__permission_based__.longMessage_filter.cLongMessageEnabled[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                          {{ settings.__permission_based__.longMessage_filter.cLongMessageEnabled[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                         </v-icon>
                       </v-btn>
                     </v-layout>
@@ -439,7 +439,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.longMessage_filter.cLongMessageTimeout[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.longMessage_filter.cLongMessageTimeout[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.longMessage_filter.cLongMessageTimeout[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.longMessage_filter.cLongMessageTimeout[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -465,7 +465,7 @@
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.spam_filter.cSpamEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.spam_filter.cSpamEnabled[0])">
                         <v-icon>
-                          {{ settings.__permission_based__.spam_filter.cSpamEnabled[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                          {{ settings.__permission_based__.spam_filter.cSpamEnabled[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                         </v-icon>
                       </v-btn>
                     </v-layout>
@@ -485,7 +485,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.spam_filter.cSpamTriggerLength[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.spam_filter.cSpamTriggerLength[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.spam_filter.cSpamTriggerLength[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.spam_filter.cSpamTriggerLength[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -504,7 +504,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.spam_filter.cSpamMaxLength[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.spam_filter.cSpamMaxLength[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.spam_filter.cSpamMaxLength[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.spam_filter.cSpamMaxLength[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -523,7 +523,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.spam_filter.cSpamTimeout[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.spam_filter.cSpamTimeout[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.spam_filter.cSpamTimeout[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.spam_filter.cSpamTimeout[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -550,7 +550,7 @@
                       <v-btn v-if="permission.id !== '0efd7b1c-e460-4167-8e06-8aaf2c170311'" icon
                         @click="settings.__permission_based__.symbols_filter.cSymbolsEnabled[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.symbols_filter.cSymbolsEnabled[0])">
                         <v-icon>
-                          {{ settings.__permission_based__.symbols_filter.cSymbolsEnabled[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                          {{ settings.__permission_based__.symbols_filter.cSymbolsEnabled[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                         </v-icon>
                       </v-btn>
                     </v-layout>
@@ -570,7 +570,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.symbols_filter.cSymbolsTriggerLength[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.symbols_filter.cSymbolsTriggerLength[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.symbols_filter.cSymbolsTriggerLength[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.symbols_filter.cSymbolsTriggerLength[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -589,7 +589,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.symbols_filter.cSymbolsMaxSymbolsConsecutively[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.symbols_filter.cSymbolsMaxSymbolsConsecutively[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.symbols_filter.cSymbolsMaxSymbolsConsecutively[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.symbols_filter.cSymbolsMaxSymbolsConsecutively[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -608,7 +608,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.symbols_filter.cSymbolsMaxSymbolsPercent[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.symbols_filter.cSymbolsMaxSymbolsPercent[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.symbols_filter.cSymbolsMaxSymbolsPercent[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.symbols_filter.cSymbolsMaxSymbolsPercent[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -627,7 +627,7 @@
                     <v-btn icon
                       @click="settings.__permission_based__.symbols_filter.cSymbolsTimeout[0][permission.id] = togglePermissionLock(permissions, permission.id, settings.__permission_based__.symbols_filter.cSymbolsTimeout[0])">
                       <v-icon>
-                        {{ settings.__permission_based__.symbols_filter.cSymbolsTimeout[0][permission.id] === null ? mdiLock : mdiLockOpenVariant }}
+                        {{ settings.__permission_based__.symbols_filter.cSymbolsTimeout[0][permission.id] === null ? 'mdi-lock' : 'mdi-lock-open-variant' }}
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -642,7 +642,6 @@
 </template>
 
 <script lang="ts">
-import { mdiLock, mdiLockOpenVariant } from '@mdi/js';
 import { useStore } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -675,12 +674,16 @@ export default defineComponent({
     const autobanMessage = ref('');
 
     const test = (a:any) => {
-      console.log({ a });
+      console.log({
+        a,
+      });
     };
 
     watch(settings, () => {
       store.commit('settings/pending', true);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -690,7 +693,9 @@ export default defineComponent({
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     onMounted(() => {
       getSocket(`/systems/moderation`)
@@ -700,7 +705,9 @@ export default defineComponent({
             return;
           }
           ui.value = _ui;
-          console.log({ _settings });
+          console.log({
+            _settings,
+          });
           settings.value = _settings;
           nextTick(() => { store.commit('settings/pending', false); });
         });
@@ -725,10 +732,6 @@ export default defineComponent({
       required,
       minValue,
       maxValue,
-
-      // icons
-      mdiLock,
-      mdiLockOpenVariant,
     };
   },
 });

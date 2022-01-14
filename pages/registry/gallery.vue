@@ -13,7 +13,7 @@
         <v-col cols="auto" align-self="center" class="pr-2">
           <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
             <v-icon>
-              {{ mdiCheckboxMultipleMarkedOutline }}
+              mdi-checkbox-multiple-marked-outline
             </v-icon>
           </v-btn>
         </v-col>
@@ -167,7 +167,7 @@
             >
               <template #prepend="{ item, open }">
                 <v-icon v-if="!item.file">
-                  {{ open ? mdiFolderOpen : mdiFolder }}
+                  {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                 </v-icon>
                 <v-icon v-else>
                   {{ files[item.file.split('/')[0]] }}
@@ -184,7 +184,7 @@
           </v-card-title>
           <v-card-text v-if="activeItem">
             <v-icon v-if="activeItem.type.includes('audio')" size="125" class="text-center d-block ma-auto">
-              {{ mdiFileMusic }}
+              mdi-file-music
             </v-icon>
             <v-img v-else-if="activeItem.type.includes('image')" :src="activeItem.link" />
 
@@ -336,9 +336,6 @@
 import { normalize } from 'path';
 
 import {
-  mdiCheckboxMultipleMarkedOutline, mdiFileImage, mdiFileMusic, mdiFileVideo, mdiFolder, mdiFolderOpen, mdiLink, mdiThumbUp,
-} from '@mdi/js';
-import {
   computed,
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -353,7 +350,7 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 const files = {
-  audio: mdiFileMusic, video: mdiFileVideo, image: mdiFileImage,
+  audio: 'mdi-file-music', video: 'mdi-file-video', image: 'mdi-file-image',
 };
 
 export default defineComponent({
@@ -467,7 +464,9 @@ export default defineComponent({
       imageWidth.value = 0;
       imageHeight.value = 0;
       duration.value = 0;
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch(uploadedFiles, (val: number) => {
       if (isUploadingNum.value === val) {
@@ -641,7 +640,9 @@ export default defineComponent({
           return new Promise((resolve, reject) => {
             getSocket('/overlays/gallery').emit('generic::setById', {
               id:   _id,
-              item: { folder: newFolder.value },
+              item: {
+                folder: newFolder.value,
+              },
             }, (err: string | null) => {
               if (err) {
                 reject(error(err));
@@ -686,13 +687,6 @@ export default defineComponent({
 
       files,
       itemsTree,
-
-      mdiFolder,
-      mdiFolderOpen,
-      mdiFileMusic,
-      mdiLink,
-      mdiThumbUp,
-      mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
     };
   },

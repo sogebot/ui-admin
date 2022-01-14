@@ -2,7 +2,7 @@
   <div>
     <v-dialog v-model="menu" persistent max-width="1000" scrollable :fullscreen="$vuetify.breakpoint.mobile">
       <template #activator="{ on, attrs }">
-        <v-btn icon v-if="item.id !== undefined" v-bind="attrs" small v-on="on">
+        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" v-on="on" class="primary-hover">
           <v-icon>
             mdi-pencil
           </v-icon>
@@ -46,7 +46,7 @@
                   <v-row dense align="center">
                     <v-col cols="auto">
                       <v-icon class="handle">
-                        {{ mdiDrag }}
+                        mdi-drag
                       </v-icon>
                     </v-col>
                     <v-col>
@@ -87,7 +87,7 @@
                     </v-col>
                     <v-col cols="auto">
                       <v-btn icon @click="remove(i)">
-                        <v-icon>{{ mdiDelete }}</v-icon>
+                        <v-icon>mdi-delete-forever</v-icon>
                       </v-btn>
                     </v-col>
                   </v-row>
@@ -117,10 +117,6 @@
 </template>
 
 <script lang="ts">
-
-import {
-  mdiDelete, mdiDrag, mdiRestore,
-} from '@mdi/js';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
@@ -242,7 +238,7 @@ export default defineComponent({
     };
 
     return {
-      menu, item, save, translate, capitalize, valid, saving, form, mdiRestore, mdiDrag, orderBy, mdiDelete, remove,
+      menu, item, save, translate, capitalize, valid, saving, form, orderBy, remove,
     };
   },
 });

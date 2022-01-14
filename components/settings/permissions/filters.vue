@@ -36,7 +36,7 @@
       </v-col>
       <v-col align-self="end" cols="auto">
         <v-btn icon color="red" @click="remove(index)">
-          <v-icon>{{ mdiDelete }}</v-icon>
+          <v-icon>mdi-delete-forever</v-icon>
         </v-btn>
       </v-col>
     </v-row>
@@ -51,7 +51,6 @@
 </template>
 
 <script lang="ts">
-import { mdiDelete } from '@mdi/js';
 import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -60,12 +59,16 @@ import translate from '@sogebot/ui-helpers/translate';
 import type { PermissionFiltersInterface } from '~/.bot/src/database/entity/permissions';
 
 export default defineComponent({
-  props: { value: Array },
+  props: {
+    value: Array,
+  },
   setup (props: { value: Omit<PermissionFiltersInterface, 'permission'>[] }, ctx) {
     const model = ref(props.value);
     const typeItems = ref([
       'level', 'ranks', 'points', 'watched', 'tips', 'bits', 'messages', 'subtier', 'subcumulativemonths', 'substreakmonths', 'followtime',
-    ].map(o => ({ value: o, text: translate('core.permissions.' + o) })),
+    ].map(o => ({
+      value: o, text: translate('core.permissions.' + o),
+    })),
     );
 
     watch(model, (val) => {
@@ -93,14 +96,24 @@ export default defineComponent({
     const comparatorItems = (filter: PermissionFiltersInterface) => {
       const items: { value:string, text: string }[] = [];
       if (isNumber(filter.type)) {
-        items.push({ value: '<', text: translate('core.permissions.isLowerThan') });
-        items.push({ value: '<=', text: translate('core.permissions.isLowerThanOrEquals') });
+        items.push({
+          value: '<', text: translate('core.permissions.isLowerThan'),
+        });
+        items.push({
+          value: '<=', text: translate('core.permissions.isLowerThanOrEquals'),
+        });
       }
-      items.push({ value: '==', text: translate('core.permissions.equals') });
+      items.push({
+        value: '==', text: translate('core.permissions.equals'),
+      });
 
       if (isNumber(filter.type)) {
-        items.push({ value: '>', text: translate('core.permissions.isHigherThan') });
-        items.push({ value: '>=', text: translate('core.permissions.isHigherThanOrEquals') });
+        items.push({
+          value: '>', text: translate('core.permissions.isHigherThan'),
+        });
+        items.push({
+          value: '>=', text: translate('core.permissions.isHigherThanOrEquals'),
+        });
       }
 
       return items;
@@ -119,7 +132,6 @@ export default defineComponent({
       add,
 
       // icond
-      mdiDelete,
 
       translate,
     };

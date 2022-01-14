@@ -69,7 +69,7 @@
         @click="save"
       >
         <v-icon class="d-flex d-sm-none">
-          {{ mdiFloppy }}
+          mdi-floppy
         </v-icon>
         <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
       </v-btn>
@@ -78,7 +78,6 @@
 </template>
 
 <script lang="ts">
-import { mdiFloppy } from '@mdi/js';
 import {
   defineAsyncComponent, defineComponent,
   ref, useRoute, useRouter, watch,
@@ -113,7 +112,9 @@ export default defineComponent({
           }
         }
       }
-    `, { id: route.value.params.id });
+    `, {
+      id: route.value.params.id,
+    });
     watch(result, (value) => {
       if (value && value.permissions && value.permissions[0]) {
         const { __typename, ...data } = value.permissions[0];
@@ -121,7 +122,9 @@ export default defineComponent({
       }
     });
     watch(() => route.value.params.id, (id) => {
-      variables.value = { id };
+      variables.value = {
+        id,
+      };
     });
     const { mutate: updateMutation, onDone: onDoneUpdate, onError: onErrorUpdate, loading: saving } = useMutation(gql`
       mutation permissionUpdate($id: String!, $data: PermissionInput!) {
@@ -148,16 +151,22 @@ export default defineComponent({
     const valid = ref(true);
 
     const automationItems = ['none', 'casters', 'moderators', 'subscribers', 'vip', 'viewers', 'followers']
-      .map(o => ({ value: o, text: translate('core.permissions.' + o) }));
+      .map(o => ({
+        value: o, text: translate('core.permissions.' + o),
+      }));
 
     const remove = (id: string) => {
-      removeMutation({ id });
+      removeMutation({
+        id,
+      });
     };
 
     const save = () => {
       if (model.value && model.value.id && valid) {
         const { id, ...data } = model.value;
-        updateMutation({ id, data });
+        updateMutation({
+          id, data,
+        });
       }
     };
 
@@ -178,8 +187,6 @@ export default defineComponent({
 
       // validators
       required,
-
-      mdiFloppy,
     };
   },
 });

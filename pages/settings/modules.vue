@@ -11,7 +11,7 @@
           :loading="$store.state.settings.save"
           @click="$store.commit('settings/save', true)"
         >
-          <v-icon class="d-flex d-sm-none">{{ mdiFloppy }}</v-icon>
+          <v-icon class="d-flex d-sm-none">mdi-floppy</v-icon>
           <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
         </v-btn>
       </transition>
@@ -61,7 +61,7 @@
                         </v-toolbar-title>
                         <v-spacer />
                         <v-switch style="transform: translateY(3px);" class="pt-4" @click="update(item)" color="success" :disabled="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)" v-if="item.enabled !== undefined && item.enabled !== null" v-model="item.enabled"/>
-                        <v-btn icon nuxt :to="`/settings/modules/${item.type}/${item.name}`" v-if="hasSettings(item.type, item.name)"><v-icon>{{ mdiCog }}</v-icon></v-btn>
+                        <v-btn icon nuxt :to="`/settings/modules/${item.type}/${item.name}`" v-if="hasSettings(item.type, item.name)"><v-icon>mdi-cog</v-icon></v-btn>
                       </v-toolbar>
                       <v-card-subtitle class="pa-1" v-if="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)">
                         <v-alert class="ma-0" dense border="left" text color="error" v-if="item.isDisabledByEnv">Disabled by ENV variable</v-alert>
@@ -80,7 +80,6 @@
 </template>
 
 <script lang="ts">
-import { mdiCog, mdiFloppy } from '@mdi/js';
 import {
   useRoute, useRouter, useStore,
 } from '@nuxtjs/composition-api';
@@ -123,7 +122,9 @@ export default defineComponent({
           store.commit('panel/back', '/settings/modules');
         });
       }
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     watch(drawer, (val) => {
       if (!val) {
@@ -158,7 +159,9 @@ export default defineComponent({
 
     const update = (item: systemFromIO) => {
       const enabled = item.enabled;
-      getSocket(`/${item.type}/${item.name}`).emit('settings.update', { enabled }, (err: string | null) => {
+      getSocket(`/${item.type}/${item.name}`).emit('settings.update', {
+        enabled,
+      }, (err: string | null) => {
         if (err) {
           return error(err);
         } else {
@@ -179,12 +182,10 @@ export default defineComponent({
       drawer,
       translate,
       menu,
-      mdiCog,
       route,
       hasSettings,
       haveActions,
       update,
-      mdiFloppy,
     };
   },
 });

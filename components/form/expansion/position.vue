@@ -55,7 +55,7 @@
         <v-responsive :aspect-ratio="16/9" style="overflow: visible;">
           <v-sheet ref="example" class="fill-height" style="position: relative;" elevation="2" color="grey darken-4">
             <v-icon ref="anchor" color="primary" style="position: absolute;" x-small :style="positionGenerator('anchor')">
-              {{ mdiSquare }}
+              mdi-square
             </v-icon>
             <div ref="text" style="font-size: 1rem; position: absolute;" :style="positionGenerator('text')">
               EXAMPLE TEXT
@@ -68,7 +68,6 @@
 </template>
 
 <script lang="ts">
-import { mdiSquare } from '@mdi/js';
 import {
   defineComponent,
   reactive,
@@ -99,15 +98,27 @@ export default defineComponent({
     const uuid = ref(v4());
 
     const anchorXOptions = [
-      { value: 'left', text: translate('dialog.position.left') },
-      { value: 'middle', text: translate('dialog.position.middle') },
-      { value: 'right', text: translate('dialog.position.right') },
+      {
+        value: 'left', text: translate('dialog.position.left'),
+      },
+      {
+        value: 'middle', text: translate('dialog.position.middle'),
+      },
+      {
+        value: 'right', text: translate('dialog.position.right'),
+      },
     ];
 
     const anchorYOptions = [
-      { value: 'top', text: translate('dialog.position.top') },
-      { value: 'middle', text: translate('dialog.position.middle') },
-      { value: 'bottom', text: translate('dialog.position.bottom') },
+      {
+        value: 'top', text: translate('dialog.position.top'),
+      },
+      {
+        value: 'middle', text: translate('dialog.position.middle'),
+      },
+      {
+        value: 'bottom', text: translate('dialog.position.bottom'),
+      },
     ];
 
     // refs
@@ -141,13 +152,19 @@ export default defineComponent({
             left = el.getBoundingClientRect().width;
           }
 
-          return { transform: `translate(${(model.x * widthPxPerCent) - left}px, ${(model.y * heightPxPerCent) - top}px)` };
+          return {
+            transform: `translate(${(model.x * widthPxPerCent) - left}px, ${(model.y * heightPxPerCent) - top}px)`,
+          };
         } else {
-          return { transform: `translate(0, 0)` };
+          return {
+            transform: `translate(0, 0)`,
+          };
         }
       }
 
-      return { transform: `translate(0, 0)` };
+      return {
+        transform: `translate(0, 0)`,
+      };
     };
 
     watch(model, (value) => {
@@ -175,7 +192,6 @@ export default defineComponent({
       anchorXOptions,
       ...toRefs(HTMLRef),
       translate,
-      mdiSquare,
     };
   },
 });

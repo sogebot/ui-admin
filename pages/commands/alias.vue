@@ -20,9 +20,9 @@
               <v-col v-if="selected.length > 0" cols="auto">
                 <v-dialog v-model="deleteDialog" max-width="500px">
                   <template #activator="{ on, attrs }">
-                    <v-btn small color="red" v-bind="attrs" v-on="on">
+                    <v-btn class="danger-hover" v-bind="attrs" v-on="on">
                       <v-icon left>
-                        mdi-delete
+                        mdi-delete-forever
                       </v-icon>
                       Delete
                     </v-btn>
@@ -61,7 +61,7 @@
         <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" dense>
             <v-col align-self="center">
-              <v-text-field v-model="search" :append-icon="mdiMagnify" label="Search" single-line hide-details
+              <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
                 class="pa-0 ma-2" />
             </v-col>
             <v-col cols="auto" align-self="center">
@@ -96,19 +96,19 @@
               </div>
 
               <div class="v-data-table__mobile-row__cell">
-        <v-row dense justify="end" align="center">
-          <v-col cols="auto">
-            <alias-edit :rules="rules" :value="item" :permission-items="permissionItems" :group-items="groupItems"
-              @save="refetch()" />
-          </v-col>
-          <v-col cols="auto">
-            <v-btn color="red" small @click="selected = [item]; deleteDialog = true;" icon>
-              <v-icon>
-                mdi-delete
-              </v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
+                <v-row dense justify="end" align="center">
+                  <v-col cols="auto">
+                    <alias-edit :rules="rules" :value="item" :permission-items="permissionItems"
+                      :group-items="groupItems" @save="refetch()" />
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn class="danger-hover" @click="selected = [item]; deleteDialog = true;" icon>
+                      <v-icon>
+                        mdi-delete-forever
+                      </v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
               </div>
             </td>
             <td class="v-data-table__mobile-row">
@@ -123,7 +123,8 @@
             <td class="v-data-table__mobile-row">
               <div class="v-data-table__mobile-row__header">{{translate('command')}}</div>
 
-              <div class="v-data-table__mobile-row__cell text-truncate" style="overflow-wrap: break-word; max-width: 15rem;">
+              <div class="v-data-table__mobile-row__cell text-truncate"
+                style="overflow-wrap: break-word; max-width: 15rem;">
                 {{ item.command }}
               </div>
             </td>
@@ -149,30 +150,23 @@
           </template>
           <template v-else>
             <td>
-              <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-            </td>
-
-            <td>
-              <v-row dense justify="end" align="center">
-                <v-col cols="auto">
-            <alias-edit :rules="rules" :value="item" :permission-items="permissionItems" :group-items="groupItems"
-              @save="refetch()" />
-                </v-col>
-                <v-col cols="auto">
-                  <v-btn color="red" icon small @click="selected = [item]; deleteDialog = true;">
-                    <v-icon>
-                      mdi-delete
-                    </v-icon>
-                  </v-btn>
-                </v-col>
-              </v-row>
+              <div class="d-flex">
+                <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
+                <alias-edit :rules="rules" :value="item" :permission-items="permissionItems" :group-items="groupItems"
+                  @save="refetch()" />
+                <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+                  <v-icon>
+                    mdi-delete-forever
+                  </v-icon>
+                </v-btn>
+              </div>
             </td>
 
             <td class="my-1">
-            <strong>{{ item.alias }}</strong>
-            <ul style="list-style-type: none;">
-              <li>{{ item.command }}</li>
-            </ul>
+              <strong>{{ item.alias }}</strong>
+              <ul style="list-style-type: none;">
+                <li>{{ item.command }}</li>
+              </ul>
             </td>
 
             <td>
@@ -183,8 +177,8 @@
             </td>
             <td>
               <span :class="{ 'text--lighten-1':item.permission === null, 'red--text': item.permission === null }">
-              {{ item.permission === null ? '-- unset --' : getPermissionName(item.permission, permissions) }}
-            </span>
+                {{ item.permission === null ? '-- unset --' : getPermissionName(item.permission, permissions) }}
+              </span>
             </td>
             <td class="text-center">
               <v-simple-checkbox v-model="item.enabled" disabled />
@@ -200,9 +194,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCheckboxMultipleMarkedOutline, mdiMagnify, mdiMinus, mdiPlus,
-} from '@mdi/js';
 import {
   computed, defineAsyncComponent, defineComponent, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
@@ -356,9 +347,6 @@ export default defineComponent({
 
     const headers = [
       {
-        value: 'actions', width: '6rem', sortable: false,
-      },
-      {
         value: 'alias', text: translate('alias'), width: '15rem',
       },
       {
@@ -510,11 +498,6 @@ export default defineComponent({
       toggleGroupSelection,
 
       saveSuccess,
-
-      mdiPlus,
-      mdiMinus,
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
     };
   },
 });

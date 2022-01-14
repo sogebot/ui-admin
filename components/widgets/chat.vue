@@ -11,10 +11,10 @@
           <template v-slot:activator>
             <v-btn v-model="fab" color="blue-grey darken-2" dark fab x-small>
               <v-icon v-if="fab">
-                {{ mdiClose }}
+                mdi-close
               </v-icon>
               <v-icon v-else>
-                {{ mdiDotsVertical }}
+                mdi-dots-vertical
               </v-icon>
             </v-btn>
           </template>
@@ -22,7 +22,7 @@
           <v-tooltip left v-if="!isPopout">
             <template #activator="{ on, attrs }">
               <v-btn fab x-small color='secondary' @click="timestamp = Date.now()" v-bind="attrs" v-on="on">
-                <v-icon>{{ mdiRefresh }}</v-icon>
+                <v-icon>mdi-refresh</v-icon>
               </v-btn>
             </template>
             <span>Refresh Widget</span>
@@ -31,7 +31,7 @@
             <template #activator="{ on, attrs }">
               <v-btn fab x-small :color="showJoins ? 'green lighten-1' : 'red lighten-1'"
                 @click.stop="showJoins = !showJoins" v-bind="attrs" v-on="on">
-                <v-icon>{{ mdiAccountPlus }}</v-icon>
+                <v-icon>mdi-account-plus</v-icon>
               </v-btn>
             </template>
             <span>Show JOINs</span>
@@ -40,7 +40,7 @@
             <template #activator="{ on, attrs }">
               <v-btn fab x-small :color="showParts ? 'green lighten-1' : 'red lighten-1'"
                 @click.stop="showParts = !showParts" v-bind="attrs" v-on="on">
-                <v-icon>{{ mdiAccountMinus }}</v-icon>
+                <v-icon>mdi-account-minus</v-icon>
               </v-btn>
             </template>
             <span>Show PARTs</span>
@@ -48,7 +48,7 @@
           <v-tooltip left v-if="!isPopout">
             <template #activator="{ on, attrs }">
               <v-btn fab x-small color='secondary' @click="dialog = true" v-bind="attrs" v-on="on">
-                <v-icon>{{ mdiCommentPlus }}</v-icon>
+                <v-icon>mdi-comment-plus</v-icon>
               </v-btn>
             </template>
             <span>Send bot message</span>
@@ -56,7 +56,7 @@
           <v-tooltip left v-if="!isPopout">
             <template #activator="{ on, attrs }">
               <v-btn fab x-small color='orange darken-3' @click="joinChat" v-bind="attrs" v-on="on">
-                <v-icon>{{ mdiLogin }}</v-icon>
+                <v-icon>mdi-login</v-icon>
               </v-btn>
             </template>
             <span>Join chat</span>
@@ -64,7 +64,7 @@
           <v-tooltip left v-if="!isPopout">
             <template #activator="{ on, attrs }">
               <v-btn fab x-small color='orange darken-3' @click="leaveChat" v-bind="attrs" v-on="on">
-                <v-icon>{{ mdiLogout }}</v-icon>
+                <v-icon>mdi-logout</v-icon>
               </v-btn>
             </template>
             <span>Leave chat</span>
@@ -72,7 +72,7 @@
           <v-tooltip left v-if="!isPopout">
             <template #activator="{ on, attrs }">
               <v-btn color="secondary" fab x-small href="#/popout/monitor" target="_blank" v-bind="attrs" v-on="on">
-                <v-icon>{{ mdiOpenInNew }}</v-icon>
+                <v-icon>mdi-open-in-new</v-icon>
               </v-btn>
             </template>
             <span>Popout</span>
@@ -80,7 +80,7 @@
         </v-speed-dial>
       </v-col>
     </v-row>
-    <v-alert v-if="!isHttps" border="left" color="red" :icon="mdiExclamationThick" text type="success">
+    <v-alert v-if="!isHttps" border="left" color="red" icon="mdi-exclamation-thick" text type="success">
       You need to run bot on HTTPS on port 443 with valid certificate for this embed to be working
     </v-alert>
 
@@ -121,17 +121,13 @@
         Send message
       </v-btn>
       <v-btn icon @click="dialog=false">
-        <v-icon>{{ mdiClose }}</v-icon>
+        <v-icon>mdi-close</v-icon>
       </v-btn>
     </v-overlay>
   </v-card>
 </template>
 
 <script lang="ts">
-import {
-  mdiAccountMinus, mdiAccountPlus, mdiClose, mdiCommentPlus, mdiDotsVertical,
-  mdiExclamationThick, mdiLogin, mdiLogout, mdiOpenInNew, mdiRefresh,
-} from '@mdi/js';
 import {
   computed, defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -216,7 +212,9 @@ export default defineComponent({
       getSocket('/widgets/joinpart').on('joinpart', (data: { users: string[], type: 'join' | 'part' }) => {
         for (const [index, username] of Object.entries(data.users)) {
           if (!list.value.find(o => o.username === username)) {
-            list.value.push({ username: (data.type === 'join' ? '+' : '-') + username, timestamp: Date.now() + Number(index) });
+            list.value.push({
+              username: (data.type === 'join' ? '+' : '-') + username, timestamp: Date.now() + Number(index),
+            });
           }
         }
         list.value = chunk(list.value.sort((a, b) => {
@@ -283,16 +281,6 @@ export default defineComponent({
       joinChat,
       leaveChat,
       sendMessage,
-      mdiRefresh,
-      mdiClose,
-      mdiCommentPlus,
-      mdiAccountPlus,
-      mdiAccountMinus,
-      mdiExclamationThick,
-      mdiOpenInNew,
-      mdiDotsVertical,
-      mdiLogin,
-      mdiLogout,
       isPopout,
       tab,
       translate,

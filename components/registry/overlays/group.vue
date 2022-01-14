@@ -29,7 +29,7 @@
                   width="20"
                   @click.stop="moveDown((options.items.length - 1) - idx)"
                 >
-                  <v-icon>{{ mdiMenuUp }}</v-icon>
+                  <v-icon>mdi-menu-up</v-icon>
                 </v-btn>
                 <v-btn
                   icon
@@ -38,7 +38,7 @@
                   width="20"
                   @click.stop="moveUp((options.items.length - 1) - idx)"
                 >
-                  <v-icon>{{ mdiMenuDown }}</v-icon>
+                  <v-icon>mdi-menu-down</v-icon>
                 </v-btn>
               </v-list-item-action>
               <v-list-item-title>
@@ -98,7 +98,7 @@
                 style="z-index: 2"
                 v-on="on"
               >
-                <v-icon>{{ mdiPlus }}</v-icon>
+                <v-icon>mdi-plus-thick</v-icon>
               </v-btn>
             </template>
             <v-card>
@@ -142,26 +142,26 @@
               <v-text-field v-model.number="selectedItem.alignX" type="number" label="X" min="0" hide-details="auto">
                 <template #append>
                   <v-btn icon @click="selectedItem.alignX = 0">
-                    <v-icon>{{ mdiFormatHorizontalAlignLeft }}</v-icon>
+                    <v-icon>mdi-format-horizontal-align-Left }}</v-icon>
                   </v-btn>
                   <v-btn icon @click="selectedItem.alignX = options.canvas.width / 2 - selectedItem.width / 2">
-                    <v-icon>{{ mdiFormatHorizontalAlignCenter }}</v-icon>
+                    <v-icon>mdi-format-horizontal-align-center</v-icon>
                   </v-btn>
                   <v-btn icon @click="selectedItem.alignX = options.canvas.width - selectedItem.width">
-                    <v-icon>{{ mdiFormatHorizontalAlignRight }}</v-icon>
+                    <v-icon>mdi-format-horizontal-align-right</v-icon>
                   </v-btn>
                 </template>
               </v-text-field>
               <v-text-field v-model.number="selectedItem.alignY" type="number" label="Y" min="0" hide-details="auto">
                 <template #append>
                   <v-btn icon @click="selectedItem.alignY = 0">
-                    <v-icon>{{ mdiFormatVerticalAlignTop }}</v-icon>
+                    <v-icon>mdi-format-vertical-align-top</v-icon>
                   </v-btn>
                   <v-btn icon @click="selectedItem.alignY = options.canvas.height / 2 - selectedItem.height / 2">
-                    <v-icon>{{ mdiFormatVerticalAlignCenter }}</v-icon>
+                    <v-icon>mdi-format-vertical-align-center</v-icon>
                   </v-btn>
                   <v-btn icon @click="selectedItem.alignY = options.canvas.height - selectedItem.height">
-                    <v-icon>{{ mdiFormatVerticalAlignBottom }}</v-icon>
+                    <v-icon>mdi-format-vertical-align-bottom</v-icon>
                   </v-btn>
                 </template>
               </v-text-field>
@@ -177,26 +177,26 @@
               <v-text-field v-model.number="selectedItem.alignX" type="number" label="X" min="0" hide-details="auto">
                 <template #append>
                   <v-btn icon @click="selectedItem.alignX = 0">
-                    <v-icon>{{ mdiFormatHorizontalAlignLeft }}</v-icon>
+                    <v-icon>mdi-format-horizontal-align-Left }}</v-icon>
                   </v-btn>
                   <v-btn icon @click="selectedItem.alignX = options.canvas.width / 2 - selectedItem.width / 2">
-                    <v-icon>{{ mdiFormatHorizontalAlignCenter }}</v-icon>
+                    <v-icon>mdi-format-horizontal-align-center</v-icon>
                   </v-btn>
                   <v-btn icon @click="selectedItem.alignX = options.canvas.width - selectedItem.width">
-                    <v-icon>{{ mdiFormatHorizontalAlignRight }}</v-icon>
+                    <v-icon>mdi-format-horizontal-align-right</v-icon>
                   </v-btn>
                 </template>
               </v-text-field>
               <v-text-field v-model.number="selectedItem.alignY" type="number" label="Y" min="0" hide-details="auto">
                 <template #append>
                   <v-btn icon @click="selectedItem.alignY = 0">
-                    <v-icon>{{ mdiFormatVerticalAlignTop }}</v-icon>
+                    <v-icon>mdi-format-vertical-align-top</v-icon>
                   </v-btn>
                   <v-btn icon @click="selectedItem.alignY = options.canvas.height / 2 - selectedItem.height / 2">
-                    <v-icon>{{ mdiFormatVerticalAlignCenter }}</v-icon>
+                    <v-icon>mdi-format-vertical-align-center</v-icon>
                   </v-btn>
                   <v-btn icon @click="selectedItem.alignY = options.canvas.height - selectedItem.height">
-                    <v-icon>{{ mdiFormatVerticalAlignBottom }}</v-icon>
+                    <v-icon>mdi-format-vertical-align-bottom</v-icon>
                   </v-btn>
                 </template>
               </v-text-field>
@@ -209,12 +209,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiFormatHorizontalAlignCenter, mdiFormatHorizontalAlignLeft, mdiFormatHorizontalAlignRight,
-  mdiFormatVerticalAlignBottom, mdiFormatVerticalAlignCenter,
-  mdiFormatVerticalAlignTop, mdiMenuDown,
-  mdiMenuUp, mdiPlus,
-} from '@mdi/js';
 import {
   computed,
   defineAsyncComponent, defineComponent, nextTick, onMounted, onUnmounted, ref, watch,
@@ -233,7 +227,9 @@ import type { OverlayMapperGroup } from '~/.bot/src/database/entity/overlay';
 import { haveAnyOptions } from '~/pages/registry/overlays/_id.vue';
 
 export default defineComponent({
-  props:      { value: [Object, Array] },
+  props: {
+    value: [Object, Array],
+  },
   components: {
     media:           () => import('~/components/registry/overlays/media.vue'),
     alertsRegistry:  () => import('~/components/registry/overlays/alertsRegistry.vue'),
@@ -281,10 +277,14 @@ export default defineComponent({
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {
-        console.log({ val });
+        console.log({
+          val,
+        });
         ctx.emit('input', val);
       }
-    }, { deep: true, immediate: true });
+    }, {
+      deep: true, immediate: true,
+    });
 
     const positions = ref({
       clientX:   0,
@@ -295,31 +295,81 @@ export default defineComponent({
     });
 
     const overlayOptions = [
-      { value: null, text: 'Please select an option' },
-      { value: 'alertsRegistry', text: 'alerts registry' },
-      { value: 'textRegistry', text: 'text registry' },
-      { value: 'goalRegistry', text: 'goal registry' },
-      { value: 'media', text: 'media' },
-      { value: 'bets', text: 'bets' },
-      { value: 'carousel', text: 'carousel' },
-      { value: 'clips', text: 'clips' },
-      { value: 'clipscarousel', text: 'clipscarousel' },
-      { value: 'countdown', text: 'countdown' },
-      { value: 'stopwatch', text: 'stopwatch' },
-      { value: 'credits', text: 'credits' },
-      { value: 'emotes', text: 'emotes' },
-      { value: 'emotescombo', text: 'emotescombo' },
-      { value: 'emotesfireworks', text: 'emotesfireworks' },
-      { value: 'emotesexplode', text: 'emotesexplode' },
-      { value: 'eventlist', text: 'eventlist' },
-      { value: 'marathon', text: 'marathon' },
-      { value: 'obswebsocket', text: 'obswebsocket' },
-      { value: 'polls', text: 'polls' },
-      { value: 'randomizer', text: 'randomizer' },
-      { value: 'stats', text: 'stats' },
-      { value: 'wordcloud', text: 'wordcloud' },
-      { value: 'tts', text: 'tts' },
-      { value: 'hypetrain', text: 'hypetrain' },
+      {
+        value: null, text: 'Please select an option',
+      },
+      {
+        value: 'alertsRegistry', text: 'alerts registry',
+      },
+      {
+        value: 'textRegistry', text: 'text registry',
+      },
+      {
+        value: 'goalRegistry', text: 'goal registry',
+      },
+      {
+        value: 'media', text: 'media',
+      },
+      {
+        value: 'bets', text: 'bets',
+      },
+      {
+        value: 'carousel', text: 'carousel',
+      },
+      {
+        value: 'clips', text: 'clips',
+      },
+      {
+        value: 'clipscarousel', text: 'clipscarousel',
+      },
+      {
+        value: 'countdown', text: 'countdown',
+      },
+      {
+        value: 'stopwatch', text: 'stopwatch',
+      },
+      {
+        value: 'credits', text: 'credits',
+      },
+      {
+        value: 'emotes', text: 'emotes',
+      },
+      {
+        value: 'emotescombo', text: 'emotescombo',
+      },
+      {
+        value: 'emotesfireworks', text: 'emotesfireworks',
+      },
+      {
+        value: 'emotesexplode', text: 'emotesexplode',
+      },
+      {
+        value: 'eventlist', text: 'eventlist',
+      },
+      {
+        value: 'marathon', text: 'marathon',
+      },
+      {
+        value: 'obswebsocket', text: 'obswebsocket',
+      },
+      {
+        value: 'polls', text: 'polls',
+      },
+      {
+        value: 'randomizer', text: 'randomizer',
+      },
+      {
+        value: 'stats', text: 'stats',
+      },
+      {
+        value: 'wordcloud', text: 'wordcloud',
+      },
+      {
+        value: 'tts', text: 'tts',
+      },
+      {
+        value: 'hypetrain', text: 'hypetrain',
+      },
     ];
 
     const selected = ref(null as null | string);
@@ -531,17 +581,6 @@ export default defineComponent({
       moveDown,
       generateColorFromString,
       haveAnyOptions,
-
-      // icons
-      mdiPlus,
-      mdiMenuUp,
-      mdiMenuDown,
-      mdiFormatHorizontalAlignLeft,
-      mdiFormatHorizontalAlignRight,
-      mdiFormatHorizontalAlignCenter,
-      mdiFormatVerticalAlignTop,
-      mdiFormatVerticalAlignBottom,
-      mdiFormatVerticalAlignCenter,
     };
   },
 });

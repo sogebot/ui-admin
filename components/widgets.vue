@@ -6,7 +6,7 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn icon v-bind="attrs" href="#/popout/dashboard" target="_blank" v-on="on">
-                <v-icon>{{ mdiOpenInNew }}</v-icon>
+                <v-icon>mdi-open-in-new</v-icon>
               </v-btn>
             </template>
             <span>Popout</span>
@@ -64,7 +64,6 @@
 </template>
 
 <script lang="ts">
-import { mdiOpenInNew } from '@mdi/js';
 import {
   computed,
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
@@ -73,13 +72,27 @@ import translate from '@sogebot/ui-helpers/translate';
 
 export default defineComponent({
   components: {
-    events:    defineAsyncComponent({ loader: () => import('~/components/widgets/events.vue') }),
-    checklist: defineAsyncComponent({ loader: () => import('~/components/widgets/checklist.vue') }),
-    ytplayer:  defineAsyncComponent({ loader: () => import('~/components/widgets/ytplayer.vue') }),
-    queue:     defineAsyncComponent({ loader: () => import('~/components/widgets/queue.vue') }),
-    raffles:   defineAsyncComponent({ loader: () => import('~/components/widgets/raffles.vue') }),
-    social:    defineAsyncComponent({ loader: () => import('~/components/widgets/social.vue') }),
-    custom:    defineAsyncComponent({ loader: () => import('~/components/widgets/custom.vue') }),
+    events: defineAsyncComponent({
+      loader: () => import('~/components/widgets/events.vue'),
+    }),
+    checklist: defineAsyncComponent({
+      loader: () => import('~/components/widgets/checklist.vue'),
+    }),
+    ytplayer: defineAsyncComponent({
+      loader: () => import('~/components/widgets/ytplayer.vue'),
+    }),
+    queue: defineAsyncComponent({
+      loader: () => import('~/components/widgets/queue.vue'),
+    }),
+    raffles: defineAsyncComponent({
+      loader: () => import('~/components/widgets/raffles.vue'),
+    }),
+    social: defineAsyncComponent({
+      loader: () => import('~/components/widgets/social.vue'),
+    }),
+    custom: defineAsyncComponent({
+      loader: () => import('~/components/widgets/custom.vue'),
+    }),
   },
   setup () {
     const tab = ref(Number(localStorage.dashboardTab));
@@ -104,7 +117,7 @@ export default defineComponent({
     });
 
     return {
-      translate, tab, mdiOpenInNew, isPopout, height,
+      translate, tab, isPopout, height,
     };
   },
 });

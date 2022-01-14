@@ -20,9 +20,9 @@
               <v-col v-if="selected.length > 0" cols="auto">
                 <v-dialog v-model="deleteDialog" max-width="500px">
                   <template #activator="{ on, attrs }">
-                    <v-btn small color="red" v-bind="attrs" v-on="on">
+                    <v-btn class="danger-hover" v-bind="attrs" v-on="on">
                       <v-icon left>
-                        mdi-delete
+                        mdi-delete-forever
                       </v-icon>
                       Delete
                     </v-btn>
@@ -62,7 +62,7 @@
         <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" dense>
             <v-col align-self="center">
-              <v-text-field v-model="search" :append-icon="mdiMagnify" label="Search" single-line hide-details
+              <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
                 class="pa-0 ma-2" />
             </v-col>
             <v-col cols="auto" align-self="center">
@@ -103,9 +103,9 @@
                       :permissions="permissions" :group-items="groupItems" @save="refresh()" />
                   </v-col>
                   <v-col cols="auto">
-                    <v-btn color="red" icon small @click="selected = [item]; deleteDialog = true;">
+                    <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
                       <v-icon left>
-                        mdi-delete
+                        mdi-delete-forever
                       </v-icon>
                     </v-btn>
                   </v-col>
@@ -141,23 +141,16 @@
           </template>
           <template v-else>
             <td>
-              <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-            </td>
-
-            <td>
-              <v-row dense align="center">
-                <v-col cols="auto">
-                  <keyword-edit :rules="rules" :value="item" :permission-items="permissionItems"
-                    :permissions="permissions" :group-items="groupItems" @save="refresh()" />
-                </v-col>
-                <v-col cols="auto">
-                  <v-btn color="red" icon small @click="selected = [item]; deleteDialog = true;">
-                    <v-icon>
-                      mdi-delete
-                    </v-icon>
-                  </v-btn>
-                </v-col>
-              </v-row>
+              <div class="d-flex">
+                <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
+                <keyword-edit :rules="rules" :value="item" :permission-items="permissionItems"
+                  :permissions="permissions" :group-items="groupItems" @save="refresh()" />
+                <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+                  <v-icon>
+                    mdi-delete-forever
+                  </v-icon>
+                </v-btn>
+              </div>
             </td>
             <td class="my-1">
               <strong>{{ item.keyword }}</strong>
@@ -180,9 +173,6 @@
 </template>
 
 <script lang="ts">
-import {
-  mdiCheckboxMultipleMarkedOutline, mdiMagnify, mdiMinus, mdiPlus,
-} from '@mdi/js';
 import {
   computed,
   defineAsyncComponent, defineComponent, onMounted, ref,
@@ -265,9 +255,6 @@ export default defineComponent({
     });
 
     const headers = [
-      {
-        value: 'actions', width: '6rem', sortable: false,
-      },
       {
         value: 'keyword', text: translate('keyword'),
       },
@@ -498,8 +485,6 @@ export default defineComponent({
       rules,
       refresh,
       headersDelete,
-      mdiMagnify,
-      mdiCheckboxMultipleMarkedOutline,
       ButtonStates,
       loading,
 
@@ -509,8 +494,6 @@ export default defineComponent({
       getGroup,
       isGroupSelected,
       toggleGroupSelection,
-      mdiMinus,
-      mdiPlus,
     };
   },
 });

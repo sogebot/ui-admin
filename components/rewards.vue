@@ -11,7 +11,7 @@
     <template #append-outer>
       <v-btn class="fill-height" @click="refreshRedeemedRewards()">
         <v-icon :class="{ spin: progress.redeemRewards === ButtonStates.progress }">
-          {{ mdiSync }}
+          mdi-sync
         </v-icon>
       </v-btn>
     </template>
@@ -19,7 +19,6 @@
 </template>
 
 <script lang="ts">
-import { mdiSync } from '@mdi/js';
 import {
   computed,
   defineComponent, onMounted, ref, watch,
@@ -45,7 +44,9 @@ export default defineComponent({
   setup (props: Props, ctx) {
     const redeemRewards = ref([] as string[]);
     const selectedReward = ref(props.value);
-    const progress = ref({ redeemRewards: ButtonStates.progress } as { redeemRewards: number });
+    const progress = ref({
+      redeemRewards: ButtonStates.progress,
+    } as { redeemRewards: number });
 
     const rewardItems = computed(() => {
       return [
@@ -95,7 +96,6 @@ export default defineComponent({
 
       translate,
       ButtonStates,
-      mdiSync,
       required,
     };
   },

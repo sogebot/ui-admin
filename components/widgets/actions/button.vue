@@ -29,7 +29,7 @@
             icon
             @click="dialog = false"
           >
-            <v-icon>{{ mdiClose }}</v-icon>
+            <v-icon>mdi-close</v-icon>
           </v-btn>
           <span class="headline">Edit Action</span>
           <v-spacer />
@@ -41,7 +41,7 @@
             @click="save"
           >
             <v-icon class="d-flex d-sm-none">
-              {{ mdiFloppy }}
+              mdi-floppy
             </v-icon>
             <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
           </v-btn>
@@ -55,7 +55,6 @@
 </template>
 
 <script lang="ts">
-import { mdiClose, mdiFloppy } from '@mdi/js';
 import {
   defineAsyncComponent,
   defineComponent, nextTick, onMounted, ref, watch,
@@ -83,7 +82,9 @@ const rgbToHex = function (rgb: number | string) {
 };
 
 export default defineComponent({
-  props:      { item: Object, editing: Boolean },
+  props: {
+    item: Object, editing: Boolean,
+  },
   components: {
     command:          defineAsyncComponent(() => import('./button/command.vue')),
     customvariable:   defineAsyncComponent(() => import('./button/customvariable.vue')),
@@ -91,7 +92,9 @@ export default defineComponent({
     overlayCountdown: defineAsyncComponent(() => import('./button/overlayCountdown.vue')),
     overlayStopwatch: defineAsyncComponent(() => import('./button/overlayStopwatch.vue')),
     overlayMarathon:  defineAsyncComponent(() => import('./button/overlayMarathon.vue')),
-    edit:             defineAsyncComponent({ loader: () => import('~/components/widgets/actions/edit.vue') }),
+    edit:             defineAsyncComponent({
+      loader: () => import('~/components/widgets/actions/edit.vue'),
+    }),
   },
   setup (props: Props, ctx) {
     const { mutate: updateMutation, onError, onDone, loading: saving } = useMutation(gql`
@@ -147,7 +150,11 @@ export default defineComponent({
       nextTick(() => {
         if (valid.value) {
           const { selected, temporary, show, ...item } = clonedItem.value;
-          updateMutation({ data: { [item.type]: [item] } });
+          updateMutation({
+            data: {
+              [item.type]: [item],
+            },
+          });
         }
       });
     };
@@ -164,10 +171,6 @@ export default defineComponent({
       // fncs
       save,
       emitSelect,
-
-      /* icons */
-      mdiClose,
-      mdiFloppy,
 
       // others
       translate,
