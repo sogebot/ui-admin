@@ -19,7 +19,7 @@
               <v-col v-if="selected.length > 0" cols="auto">
                 <v-dialog v-model="deleteDialog" max-width="500px">
                   <template #activator="{ on, attrs }">
-                    <v-btn class="danger-hover" v-bind="attrs" v-on="on">
+                    <v-btn class="error" small v-bind="attrs" v-on="on">
                       <v-icon left>
                         mdi-delete-forever
                       </v-icon>
@@ -33,8 +33,14 @@
                     </v-card-title>
 
                     <v-card-text>
-                      <v-data-table dense :items="selected" :headers="headersDelete" :items-per-page="-1"
-                        hide-default-header hide-default-footer />
+                      <v-data-table
+                        dense
+                        :items="selected"
+                        :headers="headersDelete"
+                        :items-per-page="-1"
+                        hide-default-header
+                        hide-default-footer
+                      />
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
@@ -54,29 +60,30 @@
       </v-app-bar>
     </v-expand-transition>
 
-    <v-data-table v-model="selected" calculate-widths show-select :search="search"
-      :loading="state.loading !== ButtonStates.success" :headers="headers" :items-per-page="-1" :items="items"
-      @current-items="saveCurrentItems">
+    <v-data-table
+      v-model="selected"
+      calculate-widths
+      show-select
+      :search="search"
+      :loading="state.loading !== ButtonStates.success"
+      :headers="headers"
+      :items-per-page="-1"
+      :items="items"
+      @current-items="saveCurrentItems"
+    >
       <template #top>
-        <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
-          <v-row class="px-2" dense>
-            <v-col align-self="center">
-              <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
-                class="pa-0" />
-            </v-col>
-            <v-col cols="auto" align-self="center">
-              <cooldowns-edit :rules="rules" @save="refresh()" :typeItems="typeItems" />
-            </v-col>
-          </v-row>
-        </v-sheet>
+        <search-bar :search.sync="search">
+          <cooldowns-edit :rules="rules" :type-items="typeItems" @save="refresh()" />
+        </search-bar>
       </template>
 
       <template #[`item`]="{ item }">
-        <tr :class="{
-          'v-data-table__selected': selected.some(o => o.id === item.id),
-          'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
-          }">
-
+        <tr
+          :class="{
+            'v-data-table__selected': selected.some(o => o.id === item.id),
+            'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
+          }"
+        >
           <template v-if="$vuetify.breakpoint.mobile">
             <td class="v-data-table__mobile-row">
               <div>
@@ -86,7 +93,7 @@
               <div class="v-data-table__mobile-row__cell">
                 <v-row dense justify="end" align="center">
                   <v-col cols="auto">
-                    <cooldowns-edit :rules="rules" :value="item" @save="refresh()" :typeItems="typeItems" />
+                    <cooldowns-edit :rules="rules" :value="item" :type-items="typeItems" @save="refresh()" />
                   </v-col>
                   <v-col cols="auto">
                     <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
@@ -101,7 +108,7 @@
             <td class="v-data-table__mobile-row">
               <div>
                 <div class="v-data-table__mobile-row__header">
-                  {{'!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group')}}
+                  {{ '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group') }}
                 </div>
               </div>
 
@@ -110,47 +117,64 @@
               </div>
             </td>
             <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">{{translate('cooldown')}}</div>
-              <div class="v-data-table__mobile-row__cell">{{ item.count}}</div>
+              <div class="v-data-table__mobile-row__header">
+                {{ translate('cooldown') }}
+              </div>
+              <div class="v-data-table__mobile-row__cell">
+                {{ item.count }}
+              </div>
             </td>
             <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">{{translate('type')}}</div>
-              <div class="v-data-table__mobile-row__cell">{{ translate(item.type) }}</div>
+              <div class="v-data-table__mobile-row__header">
+                {{ translate('type') }}
+              </div>
+              <div class="v-data-table__mobile-row__cell">
+                {{ translate(item.type) }}
+              </div>
             </td>
             <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">{{translate('enabled')}}</div>
+              <div class="v-data-table__mobile-row__header">
+                {{ translate('enabled') }}
+              </div>
               <div class="v-data-table__mobile-row__cell">
                 <v-simple-checkbox v-model="item.isEnabled" disabled />
               </div>
             </td>
             <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">{{capitalize(translate('quiet'))}}</div>
+              <div class="v-data-table__mobile-row__header">
+                {{ capitalize(translate('quiet')) }}
+              </div>
               <div class="v-data-table__mobile-row__cell">
                 <v-simple-checkbox v-model="item.isErrorMsgQuiet" disabled />
               </div>
             </td>
             <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.casters'))}}</div>
+              <div class="v-data-table__mobile-row__header">
+                {{ capitalize(translate('core.permissions.casters')) }}
+              </div>
               <div class="v-data-table__mobile-row__cell">
                 <v-simple-checkbox v-model="item.isOwnerAffected" disabled />
               </div>
             </td>
             <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.moderators'))}}
+              <div class="v-data-table__mobile-row__header">
+                {{ capitalize(translate('core.permissions.moderators')) }}
               </div>
               <div class="v-data-table__mobile-row__cell">
                 <v-simple-checkbox v-model="item.isModeratorAffected" disabled />
               </div>
             </td>
             <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.subscribers'))}}
+              <div class="v-data-table__mobile-row__header">
+                {{ capitalize(translate('core.permissions.subscribers')) }}
               </div>
               <div class="v-data-table__mobile-row__cell">
                 <v-simple-checkbox v-model="item.isSubscriberAffected" disabled />
               </div>
             </td>
             <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">{{capitalize(translate('core.permissions.followers'))}}
+              <div class="v-data-table__mobile-row__header">
+                {{ capitalize(translate('core.permissions.followers')) }}
               </div>
               <div class="v-data-table__mobile-row__cell">
                 <v-simple-checkbox v-model="item.isFollowerAffected" disabled />
@@ -161,7 +185,7 @@
             <td>
               <div class="d-flex">
                 <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-                <cooldowns-edit :rules="rules" :value="item" @save="refresh()" :typeItems="typeItems" />
+                <cooldowns-edit :rules="rules" :value="item" :type-items="typeItems" @save="refresh()" />
                 <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
                   <v-icon>
                     mdi-delete-forever
@@ -258,12 +282,9 @@ export type CooldownInterfaceUI = CooldownInterface & { count: number; __typenam
 
 export default defineComponent({
   components: {
-    'cooldowns-edit': defineAsyncComponent({
-      loader: () => import('~/components/manage/cooldowns/cooldownsEdit.vue'),
-    }),
-    'cooldowns-batch': defineAsyncComponent({
-      loader: () => import('~/components/manage/cooldowns/cooldownsBatch.vue'),
-    }),
+    'cooldowns-edit':  defineAsyncComponent(() => import('~/components/manage/cooldowns/cooldownsEdit.vue')),
+    'cooldowns-batch': defineAsyncComponent(() => import('~/components/manage/cooldowns/cooldownsBatch.vue')),
+    'search-bar':      defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
   },
   setup () {
     const rules = {

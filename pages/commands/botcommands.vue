@@ -1,16 +1,16 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-data-table v-model="selected" :loading="state.loading !== ButtonStates.success || loading" :headers="headers"
-      :items-per-page="-1" :items="fItems" sort-by="name" group-by="type">
+    <v-data-table
+      v-model="selected"
+      :loading="state.loading !== ButtonStates.success || loading"
+      :headers="headers"
+      :items-per-page="-1"
+      :items="fItems"
+      sort-by="name"
+      group-by="type"
+    >
       <template #top>
-        <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
-          <v-row class="px-2" dense>
-            <v-col align-self="center">
-              <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
-                class="pa-0 ma-2" />
-            </v-col>
-          </v-row>
-        </v-sheet>
+        <search-bar :search.sync="search" />
       </template>
 
       <template #[`group.header`]="{ items, isOpen, toggle }">
@@ -33,7 +33,8 @@
 
       <template #[`item.command`]="{ item }">
         <span
-          :class="{ 'text-decoration-line-through': item.command !== item.defaultValue }">{{ item.defaultValue }}</span>
+          :class="{ 'text-decoration-line-through': item.command !== item.defaultValue }"
+        >{{ item.defaultValue }}</span>
         <span v-if="item.command !== item.defaultValue">
           <v-icon class="d-inline-block">mdi-arrow-right-bold</v-icon> {{ item.command }}
         </span>
@@ -77,6 +78,7 @@ type CommandsInterface = {
 
 export default defineComponent({
   components: {
+    'search-bar':       defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
     'botcommands-edit': defineAsyncComponent(() => import('~/components/manage/botcommands/edit.vue')),
   },
   setup () {

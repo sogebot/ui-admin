@@ -1,64 +1,19 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-alert
-      v-if="!$store.state.$systems.find(o => o.name === 'songs').enabled"
-      color="error"
-      class="mb-0"
-    >
-      {{ translate('this-system-is-disabled') }}
-    </v-alert>
+    <v-expand-transition>
+      <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>
+        <v-row class="px-2" dense justify="end">
+          <v-col cols="auto" align-self="center">
+            {{ selected.length }} items selected
+          </v-col>
 
-    <v-data-table
-      v-model="selected"
-      calculate-widths
-      hide-default-header
-      :show-select="selectable"
-      :loading="state.loading !== ButtonStates.success"
-      :headers="headers"
-      :items-per-page="-1"
-      @current-items="saveCurrentItems"
-      item-key="videoId"
-      :items="fItems"
-      @click:row="addToSelectedItem"
-    >
-      <template #top>
-        <v-sheet
-          flat
-          color="dark"
-          class="my-2 pb-2 mt-0"
-        >
-          <v-row class="px-2" no-gutters>
-            <v-col cols="auto" align-self="center" class="pr-2">
-              <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
-                <v-icon>
-                  mdi-checkbox-multiple-marked-outline
-                </v-icon>
-              </v-btn>
-            </v-col>
-            <v-col align-self="center">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search or add by link/id"
-                single-line
-                hide-details
-                class="pa-0 ma-2"
-              />
-            </v-col>
-            <v-col cols="auto" align-self="center">
-              <template v-if="selected.length > 0">
-                <v-dialog
-                  v-model="deleteDialog"
-                  max-width="500px"
-                >
+          <v-col cols="auto" align-self="center">
+            <v-row dense>
+              <v-col v-if="selected.length > 0" cols="auto">
+                <v-dialog v-model="deleteDialog" max-width="500px">
                   <template #activator="{ on, attrs }">
-                    <v-btn
-                      color="error"
-                      class="mr-1"
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      Delete {{ selected.length }} Item(s)
+                    <v-btn class="error" small v-bind="attrs" v-on="on">
+                      Delete
                     </v-btn>
                   </template>
 
@@ -72,63 +27,155 @@
                         dense
                         :items="selected"
                         :headers="headersDelete"
+                        :items-per-page="-1"
                         hide-default-header
                         hide-default-footer
                       />
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
-                      <v-btn
-                        text
-                        @click="deleteDialog = false"
-                      >
+                      <v-btn text @click="deleteDialog = false">
                         Cancel
                       </v-btn>
-                      <v-btn
-                        color="error"
-                        text
-                        @click="deleteSelected"
-                      >
+                      <v-btn color="error" text @click="deleteSelected">
                         Delete
                       </v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
-              </template>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-app-bar>
+    </v-expand-transition>
 
-              <v-btn
-                color="primary"
-                :disabled="search.length === 0"
-                :loading="state.import === 1"
-                @click="addSong"
-              >
-                New Item
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-sheet>
-      </template>
+    <v-alert v-if="!$store.state.$systems.find(o => o.name === 'songs').enabled" color="error" class="mb-0" text>
+      {{ translate('this-system-is-disabled') }}
+    </v-alert>
 
-      <template #[`item.thumbnail`]="{ item }">
-        <v-img
-          :aspect-ratio="16/9"
-          :width="100"
-          :src="generateThumbnail(item.videoId)"
-        />
-      </template>
-      <template #[`item.actions`]="{ item }">
-        <v-hover v-slot="{ hover }">
-          <v-btn
-            icon
-            :color="hover ? 'primary' : 'secondary lighten-3'"
-            :href="'http://youtu.be/' + item.videoId"
-            target="_blank"
-          >
-            <v-icon>
-              mdi-link
-            </v-icon>
+    <v-data-table
+      v-model="selected"
+      calculate-widths
+      hide-default-header
+      show-select
+      :loading="state.loading !== ButtonStates.success"
+      :headers="headers"
+      :items-per-page="-1"
+      item-key="videoId"
+      :items="fItems"
+      @current-items="saveCurrentItems"
+    >
+      <template #top>
+        <search-bar :search.sync="search" label="Search or add by link/id">
+          <v-btn color="primary" :disabled="search.length === 0" :loading="state.import === 1" @click="addSong">
+            New Item
           </v-btn>
-        </v-hover>
+        </search-bar>
+      </template>
+
+      <template #[`item`]="{ item }">
+        <tr
+          :class="{
+            'v-data-table__selected': selected.some(o => o.videoId === item.videoId),
+            'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
+          }"
+        >
+          <template v-if="$vuetify.breakpoint.mobile">
+            <td class="v-data-table__mobile-row">
+              <div>
+                <v-simple-checkbox
+                  :value="selected.some(o => o.videoId === item.videoId)"
+                  @click="addToSelectedItem(item)"
+                />
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+                <v-row dense justify="end" align="center">
+                  <v-col cols="auto">
+                    <v-btn class="primary-hover" :href="'http://youtu.be/' + item.videoId" target="_blank" icon>
+                      <v-icon>
+                        mdi-link
+                      </v-icon>
+                    </v-btn>
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+                      <v-icon>
+                        mdi-delete-forever
+                      </v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div>
+                <div class="v-data-table__mobile-row__header">
+                  Thumbnail
+                </div>
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+                <v-img :aspect-ratio="16/9" :width="100" :src="generateThumbnail(item.videoId)" />
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div>
+                <div class="v-data-table__mobile-row__header">
+                  Video ID
+                </div>
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+                {{ item.videoId }}
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div>
+                <div class="v-data-table__mobile-row__header">
+                  Title
+                </div>
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+                {{ item.title }}
+              </div>
+            </td>
+          </template>
+          <template v-else>
+            <td>
+              <div class="d-flex">
+                <v-simple-checkbox
+                  :value="selected.some(o => o.videoId === item.videoId)"
+                  @click="addToSelectedItem(item)"
+                />
+                <v-btn class="primary-hover" :href="'http://youtu.be/' + item.videoId" target="_blank" icon>
+                  <v-icon>
+                    mdi-link
+                  </v-icon>
+                </v-btn>
+                <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+                  <v-icon>
+                    mdi-delete-forever
+                  </v-icon>
+                </v-btn>
+              </div>
+            </td>
+
+            <td class="my-1">
+              <v-img :aspect-ratio="16/9" :width="100" :src="generateThumbnail(item.videoId)" />
+            </td>
+
+            <td class="my-1">
+              {{ item.videoId }}
+            </td>
+
+            <td class="my-1">
+              {{ item.title }}
+            </td>
+          </template>
+        </tr>
       </template>
     </v-data-table>
   </v-container>
@@ -136,7 +183,7 @@
 
 <script lang="ts">
 import {
-  computed, defineComponent, onMounted, ref, watch,
+  computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -149,6 +196,9 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
+  components: {
+    'search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+  },
   setup () {
     const items = ref([] as SongBanInterface[]);
     const search = ref('');
@@ -183,9 +233,6 @@ export default defineComponent({
       },
       {
         value: 'title', text: '',
-      },
-      {
-        text: 'Actions', value: 'actions', sortable: false, align: 'end',
       },
     ];
 
