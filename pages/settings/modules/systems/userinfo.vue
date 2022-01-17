@@ -36,7 +36,7 @@
                     <td>{{item}}</td>
                     <td>
                       <v-icon @click="toggleVisibility(item)">
-                        {{ settings.me._formatDisabled[0].includes(item) ? mdiEyeOff : mdiEye }}
+                        {{ settings.me._formatDisabled[0].includes(item) ? 'mdi-eye-off' : 'mdi-eye' }}
                       </v-icon>
                     </td>
                   </tr>
