@@ -2,7 +2,7 @@
   <div>
     <v-alert
       v-if="!$store.state.configuration.isCastersSet"
-      type="info"
+      type="error"
       dismissible
       prominent
       dense
@@ -13,19 +13,23 @@
         v-html="translate('errors.please_set_your_broadcaster_oauth_or_owners')"
       />
     </v-alert>
-    <v-alert
-      v-if="update.version"
-      type="info"
-      dismissible
-      prominent
-      dense
-    >
+    <v-snackbar absolute app v-model="updateSnackbar" right top style="z-index: 9999">
       <h5>{{ translate('errors.new_update_available') }}</h5>
       <div
         class="text-caption"
         v-html="translate('errors.new_bot_version_available_at').replace(/\$version/gmi, update.version)"
       />
-    </v-alert>
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          icon
+          v-bind="attrs"
+          @click="updateSnackbar = false"
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
     <v-row no-gutters>
       <component
         :is="`${item.split('|')[0]}-${item.split('|')[1].replace(/([A-Z])/g, '-$1').toLowerCase()}`"
@@ -58,30 +62,70 @@ let UIErrorInterval = 0;
 
 export default defineComponent({
   components: {
-    'general-current-song': defineAsyncComponent({ loader: () => import('~/components/microWidgets/general-current-song.vue') }),
-    'general-tips':         defineAsyncComponent({ loader: () => import('~/components/microWidgets/general-tips.vue') }),
-    'twitch-chat-messages': defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-chat-messages.vue') }),
-    'twitch-bits':          defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-bits.vue') }),
-    'twitch-followers':     defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-followers.vue') }),
-    'twitch-subscribers':   defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-subscribers.vue') }),
-    'twitch-viewers':       defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-viewers.vue') }),
-    'twitch-views':         defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-views.vue') }),
-    'twitch-max-viewers':   defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-max-viewers.vue') }),
-    'twitch-new-chatters':  defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-new-chatters.vue') }),
-    'twitch-status':        defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-status.vue') }),
-    'twitch-uptime':        defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-uptime.vue') }),
-    'twitch-watched-time':  defineAsyncComponent({ loader: () => import('~/components/microWidgets/twitch-watched-time.vue') }),
+    'general-current-song': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/general-current-song.vue'),
+    }),
+    'general-tips': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/general-tips.vue'),
+    }),
+    'twitch-chat-messages': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/twitch-chat-messages.vue'),
+    }),
+    'twitch-bits': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/twitch-bits.vue'),
+    }),
+    'twitch-followers': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/twitch-followers.vue'),
+    }),
+    'twitch-subscribers': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/twitch-subscribers.vue'),
+    }),
+    'twitch-viewers': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/twitch-viewers.vue'),
+    }),
+    'twitch-views': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/twitch-views.vue'),
+    }),
+    'twitch-max-viewers': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/twitch-max-viewers.vue'),
+    }),
+    'twitch-new-chatters': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/twitch-new-chatters.vue'),
+    }),
+    'twitch-status': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/twitch-status.vue'),
+    }),
+    'twitch-uptime': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/twitch-uptime.vue'),
+    }),
+    'twitch-watched-time': defineAsyncComponent({
+      loader: () => import('~/components/microWidgets/twitch-watched-time.vue'),
+    }),
   },
   setup () {
-    const averageStats: any = reactive({});
-    const currentStats: any = reactive({});
+    const averageStats: any = reactive({
+    });
+    const currentStats: any = reactive({
+    });
     const timestamp = ref(null as null | number);
     const uptime = ref(null as null | number);
     const broadcasterType = ref(localStorage.broadcasterType || '');
     const version = ref('');
     const update: {
       version: null | string;
-    } = reactive({ version: null });
+    } = reactive({
+      version: null,
+    });
+    const updateSnackbar = computed({
+      get: () => {
+        return update.version !== null;
+      },
+      set (val) {
+        if (val === false) {
+          update.version = null;
+        }
+      },
+    });
     const isLoaded = ref(false);
 
     const isStreamOnline = computed(() => uptime.value !== null);
@@ -116,18 +160,25 @@ export default defineComponent({
             if (!(this.status >= 200 && this.status < 400)) {
               console.error('Error getting version from git', this.status, this.response);
             }
-            resolve({ response: JSON.parse(this.response) });
+            resolve({
+              response: JSON.parse(this.response),
+            });
           };
           request.onerror = function () {
             console.error('Connection error to github');
-            resolve({ response: {} });
+            resolve({
+              response: {
+              },
+            });
           };
 
           request.send();
         });
         const botVersion = recvVersion.replace('-SNAPSHOT', '').split('.').map(o => Number(o));
         const gitVersion = (response.tag_name as string).split('.').map(o => Number(o));
-        console.debug({ botVersion, gitVersion });
+        console.debug({
+          botVersion, gitVersion,
+        });
 
         let isNewer = false;
         for (let index = 0; index < botVersion.length; index++) {
@@ -196,6 +247,7 @@ export default defineComponent({
       timestamp,
       broadcasterType,
       version,
+      updateSnackbar,
       update,
       uptime,
       isLoaded,
