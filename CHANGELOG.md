@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [33.0.3](https://github.com/sogebot/ui-admin/compare/v33.0.2...v33.0.3) (2022-01-17)
+
+
+### Bug Fixes
+
+* **statsbar:** use snackbar for new version ([bbe722d](https://github.com/sogebot/ui-admin/commit/bbe722dbdb85c229be97ebe305682471090aab89))
+* **userinfo:** add missing icons ([5421f9e](https://github.com/sogebot/ui-admin/commit/5421f9e34448c9a2f9a50e46296422c099f7ce6d))
+
 ### [33.0.2](https://github.com/sogebot/ui-admin/compare/v33.0.1...v33.0.2) (2022-01-14)
 
 ### [33.0.1](https://github.com/sogebot/ui-admin/compare/v33.0.0...v33.0.1) (2022-01-13)
