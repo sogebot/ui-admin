@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [33.0.4](https://github.com/sogebot/ui-admin/compare/v33.0.3...v33.0.4) (2022-01-17)
+
+
+### Bug Fixes
+
+* **alerts:** generate proper v4 uuid ([c31daec](https://github.com/sogebot/ui-admin/commit/c31daec6c28fcdcf6a10ba0201b775eee26fe871))
+
 ### [33.0.3](https://github.com/sogebot/ui-admin/compare/v33.0.2...v33.0.3) (2022-01-17)
 
 
