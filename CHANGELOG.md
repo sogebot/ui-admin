@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [34.0.1](https://github.com/sogebot/ui-admin/compare/v34.0.0...v34.0.1) (2022-01-17)
+
+
+### Bug Fixes
+
+* **bannedsongs:** update visuals ([d63c777](https://github.com/sogebot/ui-admin/commit/d63c7773e5c5249c3ae634dd1a0a866bffb9e772))
+* **deps:** bump actions/setup-node from 2.4.1 to 2.5.1 ([#174](https://github.com/sogebot/ui-admin/issues/174)) ([c2e5940](https://github.com/sogebot/ui-admin/commit/c2e5940473d173d7c4270115a22c9b0c603cefe6))
+
 ## [34.0.0](https://github.com/sogebot/ui-admin/compare/v33.0.4...v34.0.0) (2022-01-17)
 
 
