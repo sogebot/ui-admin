@@ -114,6 +114,9 @@
                       <code v-if="user.isFollower">FOLLOWER</code>
                       <code v-if="user.isSubscriber">SUBSCRIBER</code>
                     </v-col>
+                    <v-col>
+                      <div v-if="user.message">{{user.message}}</div>
+                    </v-col>
                   </v-row>
                   <v-row no-gutters>
                     <v-col cols="12">
@@ -146,6 +149,9 @@
                   <v-col>
                     <code v-if="user.isFollower">FOLLOWER</code>
                     <code v-if="user.isSubscriber">SUBSCRIBER</code>
+                  </v-col>
+                  <v-col>
+                    <div v-if="user.message">{{user.message}}</div>
                   </v-col>
                 </v-row>
               </v-container>
