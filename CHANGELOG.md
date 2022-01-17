@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [34.0.0](https://github.com/sogebot/ui-admin/compare/v33.0.4...v34.0.0) (2022-01-17)
+
+
+### Features
+
+* **queue:** add message support ([6781006](https://github.com/sogebot/ui-admin/commit/67810060b378310d9396b7b9cfc9ff35094c3650))
+
 ### [33.0.4](https://github.com/sogebot/ui-admin/compare/v33.0.3...v33.0.4) (2022-01-17)
 
 
