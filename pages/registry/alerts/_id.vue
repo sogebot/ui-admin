@@ -408,7 +408,7 @@ export default defineComponent({
         console.log('Saving', item.value);
         saveMutation({
           data_json: JSON.stringify({
-            ...item.value, id: item.value.id ?? v4(),
+            ...item.value, id: item.value.id === 'new' ? v4() : item.value.id,
           }),
         });
       }
