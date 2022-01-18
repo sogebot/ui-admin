@@ -1,63 +1,19 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <alert-disabled system="songs"/>
+    <v-expand-transition>
+      <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>
+        <v-row class="px-2" dense justify="end">
+          <v-col cols="auto" align-self="center">
+            {{ selected.length }} items selected
+          </v-col>
 
-    <v-data-table
-      v-model="selected"
-      :expanded.sync="expanded"
-      calculate-widths
-      hide-default-header
-      :show-select="selectable"
-      :loading="state.loading !== ButtonStates.success"
-      :headers="headers"
-      :items-per-page.sync="perPage"
-      :items="fItems"
-      :single-expand="true"
-      show-expand
-      item-key="videoId"
-      @current-items="saveCurrentItems"
-      :page.sync="currentPage"
-      :server-items-length.sync="count"
-      @click:row="addToSelectedItem"
-    >
-      <template #top>
-        <v-sheet
-          flat
-          color="dark"
-          class="my-2 pb-2 mt-0"
-        >
-          <v-row class="px-2" no-gutters>
-            <v-col cols="auto" align-self="center" class="pr-2">
-              <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
-                <v-icon>
-                  mdi-checkbox-multiple-marked-outline
-                </v-icon>
-              </v-btn>
-            </v-col>
-            <v-col align-self="center">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search or add by link/id"
-                single-line
-                hide-details
-                class="pa-0 ma-2"
-              />
-            </v-col>
-            <v-col cols="auto" align-self="center">
-              <template v-if="selected.length > 0">
-                <v-dialog
-                  v-model="deleteDialog"
-                  max-width="500px"
-                >
+          <v-col cols="auto" align-self="center">
+            <v-row dense>
+              <v-col v-if="selected.length > 0" cols="auto">
+                <v-dialog v-model="deleteDialog" max-width="500px">
                   <template #activator="{ on, attrs }">
-                    <v-btn
-                      color="error"
-                      class="mr-1"
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      Delete {{ selected.length }} Item(s)
+                    <v-btn class="error" small v-bind="attrs" v-on="on">
+                      Delete
                     </v-btn>
                   </template>
 
@@ -71,58 +27,213 @@
                         dense
                         :items="selected"
                         :headers="headersDelete"
+                        :items-per-page="-1"
                         hide-default-header
                         hide-default-footer
                       />
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
-                      <v-btn
-                        text
-                        @click="deleteDialog = false"
-                      >
+                      <v-btn text @click="deleteDialog = false">
                         Cancel
                       </v-btn>
-                      <v-btn
-                        color="error"
-                        text
-                        @click="deleteSelected"
-                      >
+                      <v-btn color="error" text @click="deleteSelected">
                         Delete
                       </v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
-              </template>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-app-bar>
+    </v-expand-transition>
 
-              <v-btn
-                color="primary"
-                :disabled="search.length === 0"
-                :loading="state.import === 1"
-                @click="addSongOrPlaylist"
-              >
-                New Item
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-sheet>
+    <alert-disabled system="songs"/>
+
+    <v-data-table
+      v-model="selected"
+      calculate-widths
+      show-select
+      :loading="state.loading !== ButtonStates.success"
+      :headers="headers"
+      :items-per-page.sync="perPage"
+      :items="fItems"
+      item-key="videoId"
+      @current-items="saveCurrentItems"
+      :page.sync="currentPage"
+      :server-items-length.sync="count"
+      hide-default-header
+    >
+      <template #top>
+        <search-bar :search.sync="search" label="Search or add by link/id">
+          <v-btn color="primary" :disabled="search.length === 0" :loading="state.import === 1" @click="addSongOrPlaylist">
+            New Item
+          </v-btn>
+        </search-bar>
       </template>
 
       <template #[`body.prepend`]="{}">
         <tr>
-          <td colspan="4" />
-          <td>
+          <td colspan="4" v-if="!$vuetify.breakpoint.mobile"/>
+          <td :class="{'v-data-table__mobile-row': $vuetify.breakpoint.mobile}">
             <v-select
               v-model="showTag"
               :items="tagsItems"
               clearable
             />
           </td>
-          <td colspan="2" />
         </tr>
       </template>
 
-      <template #[`item.title`]="{ item }">
+      <template #[`item`]="{ item }">
+        <tr
+          :class="{
+            'v-data-table__selected': selected.some(o => o.videoId === item.videoId),
+            'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
+          }"
+        >
+          <template v-if="$vuetify.breakpoint.mobile">
+            <td class="v-data-table__mobile-row">
+              <div>
+                <v-simple-checkbox
+                  :value="selected.some(o => o.videoId === item.videoId)"
+                  @click="addToSelectedItem(item)"
+                />
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+                <v-row dense justify="end" align="center">
+                  <v-col cols="auto">
+                <playlist-edit
+                  :rules="rules"
+                  :value="item"
+                  @save="refresh()"
+                  :tagsItems="tagsItems"
+                />
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn class="primary-hover" :href="'http://youtu.be/' + item.videoId" target="_blank" icon>
+                      <v-icon>
+                        mdi-link
+                      </v-icon>
+                    </v-btn>
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+                      <v-icon>
+                        mdi-delete-forever
+                      </v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div>
+                <div class="v-data-table__mobile-row__header">
+                  Thumbnail
+                </div>
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+                <v-img :aspect-ratio="16/9" :width="100" :src="generateThumbnail(item.videoId)" />
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div>
+                <div class="v-data-table__mobile-row__header">
+                  Video ID
+                </div>
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+                {{ item.videoId }}
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div>
+                <div class="v-data-table__mobile-row__header">
+                  Title
+                </div>
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+                {{ item.title }}
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div>
+                <div class="v-data-table__mobile-row__header">
+                </div>
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+          <v-icon>mdi-clock-outside</v-icon> {{ item.length | formatTime }}
+          <v-icon>mdi-volume-high</v-icon> {{ Number(item.volume).toFixed(1) }}%
+          <v-icon>mdi-skip-previous</v-icon> {{ item.startTime | formatTime }} - {{ item.endTime | formatTime }} <v-icon>mdi-skip-next</v-icon>
+          <v-icon>mdi-music</v-icon> {{ dayjs(item.lastPlayedAt).format('LL') }} {{ dayjs(item.lastPlayedAt).format('LTS') }}
+              </div>
+            </td>
+            <td class="v-data-table__mobile-row">
+              <div>
+                <div class="v-data-table__mobile-row__header">
+                  Playlist
+                </div>
+              </div>
+
+              <div class="v-data-table__mobile-row__cell">
+        <v-chip-group class="d-inline-block">
+          <v-chip
+            v-for="tag of item.tags"
+            :key="tag"
+            :color="showTag === tag ? 'primary' : 'secondary'"
+            @click="showTag=tag"
+            label
+            class="mr-2"
+          >
+            {{ tag }}
+          </v-chip>
+        </v-chip-group>
+              </div>
+            </td>
+          </template>
+          <template v-else>
+            <td>
+              <div class="d-flex">
+                <v-simple-checkbox
+                  :value="selected.some(o => o.videoId === item.videoId)"
+                  @click="addToSelectedItem(item)"
+                />
+                <playlist-edit
+                  :rules="rules"
+                  :value="item"
+                  @save="refresh()"
+                  :tagsItems="tagsItems"
+                />
+                <v-btn class="primary-hover" :href="'http://youtu.be/' + item.videoId" target="_blank" icon>
+                  <v-icon>
+                    mdi-link
+                  </v-icon>
+                </v-btn>
+                <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+                  <v-icon>
+                    mdi-delete-forever
+                  </v-icon>
+                </v-btn>
+              </div>
+            </td>
+
+            <td class="my-1">
+              <v-img :aspect-ratio="16/9" :width="100" :src="generateThumbnail(item.videoId)" />
+            </td>
+
+            <td class="my-1">
+              {{ item.videoId }}
+            </td>
+
+            <td class="my-1">
         <div>
           {{ item.title }}
         </div>
@@ -132,130 +243,24 @@
           <v-icon>mdi-skip-previous</v-icon> {{ item.startTime | formatTime }} - {{ item.endTime | formatTime }} <v-icon>mdi-skip-next</v-icon>
           <v-icon>mdi-music</v-icon> {{ dayjs(item.lastPlayedAt).format('LL') }} {{ dayjs(item.lastPlayedAt).format('LTS') }}
         </div>
-      </template>
-
-      <template #[`item.tags`]="{ item }">
+            </td>
+          <td>
         <v-chip-group class="d-inline-block">
           <v-chip
             v-for="tag of item.tags"
             :key="tag"
-            x-small
+            :color="showTag === tag ? 'primary' : 'secondary'"
             @click="showTag=tag"
+            label
+            class="mr-2"
           >
             {{ tag }}
           </v-chip>
         </v-chip-group>
-      </template>
+          </td>
 
-      <template #[`item.thumbnail`]="{ item }">
-        <v-img
-          :aspect-ratio="16/9"
-          :width="100"
-          :src="generateThumbnail(item.videoId)"
-        />
-      </template>
-      <template #[`item.actions`]="{ item }">
-        <v-hover v-slot="{ hover }">
-          <v-btn
-            icon
-            :color="hover ? 'primary' : 'secondary lighten-3'"
-            :href="'http://youtu.be/' + item.videoId"
-            target="_blank"
-          >
-            <v-icon>
-              mdi-link
-            </v-icon>
-          </v-btn>
-        </v-hover>
-      </template>
-
-      <template #expanded-item="{ headers, item }">
-        <td
-          :colspan="headers.length"
-          class="pa-2"
-        >
-          <v-row>
-            <v-col cols="auto">
-              <v-btn-toggle
-                v-model="item.forceVolume"
-              >
-                <v-btn :value="false">
-                  {{ translate('systems.songs.calculated') }}
-                </v-btn>
-                <v-btn :value="true">
-                  {{ translate('systems.songs.set_manually') }}
-                </v-btn>
-              </v-btn-toggle>
-            </v-col>
-            <v-col>
-              <v-text-field
-                v-model.number="item.volume"
-                :label="translate('systems.songs.settings.volume')"
-                min="0"
-                max="100"
-                type="number"
-                :rules="rules.volume"
-                :disabled="!item.forceVolume"
-              />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-text-field
-                v-model.number="item.startTime"
-                :label="translate('systems.songs.startTime')"
-                min="0"
-                :max="Number(item.endTime) - 1"
-                type="number"
-                :rules="rules.time"
-              >
-                <template #append>
-                  {{ translate('systems.songs.seconds') }}
-                </template>
-              </v-text-field>
-            </v-col>
-            <v-col>
-              <v-text-field
-                v-model.number="item.endTime"
-                :label="translate('systems.songs.endTime')"
-                :min="Number(item.startTime) + 1"
-                :max="item.length"
-                type="number"
-                :rules="rules.time"
-              >
-                <template #append>
-                  {{ translate('systems.songs.seconds') }}
-                </template>
-              </v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-combobox
-                v-model="item.tags"
-                :label="translate('tags')"
-                multiple
-                :return-object="false"
-                :items="tagsItemsWithoutNull"
-                @input="ensureGeneralTag(item)"
-              >
-                <template #no-data>
-                  <v-list-item>
-                    <span class="subheading">Add new tag</span>
-                  </v-list-item>
-                </template>
-              </v-combobox>
-            </v-col>
-          </v-row>
-
-          <v-btn
-            color="primary"
-            :loading="state.save !== 0"
-            @click="updateItem(item.videoId)"
-          >
-            Save
-          </v-btn>
-        </td>
+          </template>
+        </tr>
       </template>
     </v-data-table>
   </v-container>
@@ -263,7 +268,7 @@
 
 <script lang="ts">
 import {
-  computed, defineComponent, onMounted, ref, watch,
+  computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -279,6 +284,10 @@ import {
 } from '~/functions/validators';
 
 export default defineComponent({
+  components: {
+    'search-bar':    defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    'playlist-edit': defineAsyncComponent(() => import('~/components/manage/songs/playlistEdit.vue')),
+  },
   filters: {
     formatTime (seconds: number) {
       const h = Math.floor(seconds / 3600);
@@ -301,13 +310,6 @@ export default defineComponent({
     const saveCurrentItems = (value: SongPlaylistInterface[]) => {
       currentItems.value = value;
     };
-    const expanded = ref([] as SongPlaylistInterface[]);
-    const selectable = ref(false);
-    watch(selectable, (val) => {
-      if (!val) {
-        selected.value = [];
-      }
-    });
 
     const state = ref({
       loading: ButtonStates.progress,
@@ -330,14 +332,11 @@ export default defineComponent({
         disabled: false,
       }))];
     });
-    const tagsItemsWithoutNull = computed(() => {
-      const [, ...rest] = tagsItems.value;
-      return rest;
-    });
 
     const rules = {
-      time:   [required],
-      volume: [required, minValue(0), maxValue(100)],
+      endTime:   [required],
+      startTime: [required],
+      volume:    [required, minValue(0), maxValue(100)],
     };
 
     const headers = [
@@ -352,12 +351,6 @@ export default defineComponent({
       },
       {
         value: 'tags', text: '',
-      },
-      {
-        text: 'Actions', value: 'actions', sortable: false, align: 'end',
-      },
-      {
-        text: '', value: 'data-table-expand',
       },
     ];
 
@@ -379,7 +372,7 @@ export default defineComponent({
       refresh();
     });
 
-    watch(showTag, () => {
+    watch([showTag, search], () => {
       currentPage.value = 1;
       refresh();
     });
@@ -462,29 +455,6 @@ export default defineComponent({
       }
     };
 
-    const updateItem = (videoId: string) => {
-      state.value.save = 1;
-
-      const item = items.value.find(o => o.videoId === videoId);
-      if (item) {
-        item.volume = Number(item.volume);
-        item.startTime = Number(item.startTime);
-        item.endTime = Number(item.endTime);
-        getSocket('/systems/songs').emit('songs::save', item, (err: string | null) => {
-          if (err) {
-            console.error(err);
-            state.value.save = 3;
-            return;
-          }
-          state.value.save = 2;
-          refresh();
-          setTimeout(() => {
-            state.value.save = 0;
-          }, 1000);
-        });
-      }
-    };
-
     const deleteSelected = async () => {
       deleteDialog.value = false;
       await Promise.all(
@@ -505,12 +475,6 @@ export default defineComponent({
       selected.value = [];
     };
 
-    const ensureGeneralTag = (item: SongPlaylistInterface) => {
-      if (item.tags.length === 0) {
-        item.tags = ['general'];
-      }
-    };
-
     return {
       addToSelectedItem: addToSelectedItem(selected, 'videoId', currentItems),
       items,
@@ -522,17 +486,14 @@ export default defineComponent({
       showTag,
       currentTag,
       tagsItems,
-      tagsItemsWithoutNull,
       tags,
       perPage,
       currentPage,
       count,
-      selectable,
       saveCurrentItems,
 
       generateThumbnail,
       addSongOrPlaylist,
-      updateItem,
 
       ButtonStates,
       translate,
@@ -541,9 +502,8 @@ export default defineComponent({
       deleteDialog,
       deleteSelected,
       selected,
-      expanded,
       rules,
-      ensureGeneralTag,
+      refresh,
     };
   },
 });
