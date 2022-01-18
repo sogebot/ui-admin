@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [34.1.0](https://github.com/sogebot/ui-admin/compare/v34.0.2...v34.1.0) (2022-01-18)
+
+
+### Features
+
+* **ui:** add support for disabling public page ([239d2e4](https://github.com/sogebot/ui-admin/commit/239d2e4e9774c1faed8c26a50ed8641a3c2dda5f))
+
 ### [34.0.2](https://github.com/sogebot/ui-admin/compare/v34.0.1...v34.0.2) (2022-01-18)
 
 
