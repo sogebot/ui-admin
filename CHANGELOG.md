@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [34.0.2](https://github.com/sogebot/ui-admin/compare/v34.0.1...v34.0.2) (2022-01-18)
+
+
+### Bug Fixes
+
+* **playlist:** update playlist visuals ([84ac092](https://github.com/sogebot/ui-admin/commit/84ac0923da4f8b34dd4d68067c3a2c5f430ae760))
+
 ### [34.0.1](https://github.com/sogebot/ui-admin/compare/v34.0.0...v34.0.1) (2022-01-17)
 
 
