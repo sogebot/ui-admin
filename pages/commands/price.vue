@@ -1,8 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-alert v-if="!$store.state.$systems.find(o => o.name === 'price').enabled" color="error" class="mb-0">
-      {{ translate('this-system-is-disabled') }}
-    </v-alert>
+    <alert-disabled system="price"/>
 
     <v-expand-transition>
       <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>

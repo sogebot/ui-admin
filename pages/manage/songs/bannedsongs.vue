@@ -50,9 +50,7 @@
       </v-app-bar>
     </v-expand-transition>
 
-    <v-alert v-if="!$store.state.$systems.find(o => o.name === 'songs').enabled" color="error" class="mb-0" text>
-      {{ translate('this-system-is-disabled') }}
-    </v-alert>
+    <alert-disabled system="songs" />
 
     <v-data-table
       v-model="selected"
@@ -187,7 +185,6 @@ import {
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import { escapeRegExp, isNil } from 'lodash';
 
 import type { SongBanInterface } from '.bot/src/database/entity/song';
@@ -331,7 +328,6 @@ export default defineComponent({
       generateThumbnail,
       addSong,
 
-      translate,
       ButtonStates,
 
       deleteDialog,

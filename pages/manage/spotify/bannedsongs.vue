@@ -1,12 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-alert
-      v-if="!$store.state.$integrations.find(o => o.name === 'spotify').enabled"
-      color="error"
-      class="mb-0"
-    >
-      {{ translate('this-system-is-disabled') }}
-    </v-alert>
+    <alert-disabled integration="spotify"/>
 
     <v-data-table
       v-model="selected"

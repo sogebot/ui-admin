@@ -1,12 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-alert
-      v-if="!$store.state.$systems.find(o => o.name === 'timers').enabled"
-      color="error"
-      class="mb-0"
-    >
-      {{ translate('this-system-is-disabled') }}
-    </v-alert>
+    <alert-disabled system="timers"/>
 
     <h2 v-if="!$vuetify.breakpoint.mobile">
       {{ translate('menu.timers') }}
