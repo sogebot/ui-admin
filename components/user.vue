@@ -123,26 +123,28 @@
         </v-card>
       </v-menu>
 
-      <v-list-item
-        v-if="!isPublicPage"
-        href="/public/"
-        class="mt-3"
-      >
-        <v-list-item-icon>
-          <v-icon>mdi-earth</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>{{ translate('go-to-public') }}</v-list-item-title>
-      </v-list-item>
-      <v-list-item
-        v-if="isPublicPage && viewer.permission.id === defaultPermissions.CASTERS"
-        href="/"
-        class="mt-3"
-      >
-        <v-list-item-icon>
-          <v-icon>mdi-shield</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>{{ translate('go-to-admin') }}</v-list-item-title>
-      </v-list-item>
+      <template v-if="$store.state.configuration.core.ui.enablePublicPage">
+        <v-list-item
+          v-if="!isPublicPage"
+          href="/public/"
+          class="mt-3"
+        >
+          <v-list-item-icon>
+            <v-icon>mdi-earth</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>{{ translate('go-to-public') }}</v-list-item-title>
+        </v-list-item>
+        <v-list-item
+          v-if="isPublicPage && viewer.permission.id === defaultPermissions.CASTERS"
+          href="/"
+          class="mt-3"
+        >
+          <v-list-item-icon>
+            <v-icon>mdi-shield</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>{{ translate('go-to-admin') }}</v-list-item-title>
+        </v-list-item>
+      </template>
     </template>
     <template v-else>
       <v-list-item @click="login">

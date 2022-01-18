@@ -11,6 +11,8 @@
           <v-card-text>
             <revert-text-field v-model="settings.domain" :label="translate('core.ui.settings.domain.title')"
               :hint="translate('core.ui.settings.domain.help')" :rules="[required]" />
+            <v-switch class="mt-0" v-model="settings.enablePublicPage[0]" dense
+            :label="translate('core.ui.settings.enablePublicPage')" />
             <v-switch class="mt-0" v-model="settings.percentage[0]" dense
               :label="translate('core.ui.settings.percentage')" />
             <v-switch class="mt-0" v-model="settings.shortennumbers[0]" dense
@@ -38,7 +40,9 @@ import { saveSettings } from '~/functions/settings';
 import { required } from '~/functions/validators';
 
 export default defineComponent({
-  components: { revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')) },
+  components: {
+    revertTextField: defineAsyncComponent(() => import('~/components/settings/modules/revert-text-field.vue')),
+  },
   setup () {
     const settings = ref(null as Record<string, any> | null);
     const ui = ref(null as Record<string, any> | null);
@@ -48,7 +52,9 @@ export default defineComponent({
 
     watch(settings, () => {
       store.commit('settings/pending', true);
-    }, { deep: true });
+    }, {
+      deep: true,
+    });
 
     watch(() => store.state.settings.save, (val) => {
       if (val && settings.value) {
@@ -58,7 +64,9 @@ export default defineComponent({
 
     watch(valid, (val) => {
       store.commit('settings/valid', val);
-    }, { immediate: true });
+    }, {
+      immediate: true,
+    });
 
     onMounted(() => {
       getSocket(`/core/ui`)
