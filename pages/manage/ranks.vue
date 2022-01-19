@@ -129,7 +129,7 @@
           <v-icon
             @click="toggle"
           >
-            {{ isOpen ? 'mdi-minus-thick' : 'mdi-plus-thick' }}
+            {{ isOpen ? 'mdi-minus' : 'mdi-plus' }}
           </v-icon>
 
           <v-simple-checkbox

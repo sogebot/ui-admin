@@ -75,7 +75,7 @@ export default {
 
   vuetify: {
     breakpoint: {
-      mobileBreakpoint: 'sm',
+      mobileBreakpoint: 'xs',
     },
     theme: {
       options: {

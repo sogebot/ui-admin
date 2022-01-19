@@ -121,7 +121,7 @@
             </v-col>
             <v-col cols="1" class="text-center" align-self="center">
               <v-btn icon @click="addItem">
-                <v-icon>mdi-plus-thick</v-icon>
+                <v-icon>mdi-plus</v-icon>
               </v-btn>
             </v-col>
           </v-row>

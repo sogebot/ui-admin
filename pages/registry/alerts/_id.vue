@@ -178,7 +178,7 @@
                     </template>
 
                     <v-btn color="success" class="my-1" @click="newAlert(event)">
-                      <v-icon>mdi-plus-thick</v-icon>
+                      <v-icon>mdi-plus</v-icon>
                     </v-btn>
                   </v-tabs>
                 </v-col>

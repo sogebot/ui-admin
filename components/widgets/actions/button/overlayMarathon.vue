@@ -39,7 +39,7 @@
         >
           <template #append>
             <v-btn icon @click="updateTime">
-              <v-icon>mdi-plus-thick</v-icon>
+              <v-icon>mdi-plus</v-icon>
             </v-btn>
           </template>
         </v-text-field>

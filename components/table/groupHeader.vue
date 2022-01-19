@@ -3,7 +3,7 @@
     <v-row no-gutters>
       <v-col>
       <v-icon @click="toggle">
-        {{ isOpen ? 'mdi-minus-thick' : 'mdi-plus-thick' }}
+        {{ isOpen ? 'mdi-minus' : 'mdi-plus' }}
       </v-icon>
 
       <v-simple-checkbox class="d-inline-block px-4" style="transform: translateY(5px);" inline
@@ -44,7 +44,7 @@
     <v-row no-gutters>
       <v-col>
       <v-icon @click="toggle">
-        {{ isOpen ? 'mdi-minus-thick' : 'mdi-plus-thick' }}
+        {{ isOpen ? 'mdi-minus' : 'mdi-plus' }}
       </v-icon>
 
       <v-simple-checkbox class="d-inline-block px-4" style="transform: translateY(5px);" inline

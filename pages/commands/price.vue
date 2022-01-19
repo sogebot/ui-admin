@@ -1,6 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <alert-disabled system="price"/>
+    <alert-disabled system="price" />
 
     <v-expand-transition>
       <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>
@@ -31,14 +31,8 @@
                     </v-card-title>
 
                     <v-card-text>
-                      <v-data-table
-                        dense
-                        :items="selected"
-                        :headers="headersDelete"
-                        :items-per-page="-1"
-                        hide-default-header
-                        hide-default-footer
-                      />
+                      <v-data-table dense :items="selected" :headers="headersDelete" :items-per-page="-1"
+                        hide-default-header hide-default-footer />
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
@@ -58,18 +52,9 @@
       </v-app-bar>
     </v-expand-transition>
 
-    <v-data-table
-      v-model="selected"
-      calculate-widths
-      show-select
-      sort-by="command"
-      :search="search"
-      :loading="state.loading !== ButtonStates.success && state.loadingPrm !== ButtonStates.success"
-      :headers="headers"
-      :items-per-page="-1"
-      :items="items"
-      @current-items="saveCurrentItems"
-    >
+    <v-data-table v-model="selected" calculate-widths show-select sort-by="command" :search="search"
+      :loading="state.loading !== ButtonStates.success && state.loadingPrm !== ButtonStates.success" :headers="headers"
+      :items-per-page="-1" :items="items" @current-items="saveCurrentItems">
       <template #top>
         <search-bar :search.sync="search">
           <edit :rules="rules" @save="refresh()" />
@@ -77,94 +62,24 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <tr
-          :class="{
-            'v-data-table__selected': selected.some(o => o.id === item.id),
-            'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
-          }"
-        >
-          <template v-if="$vuetify.breakpoint.mobile">
-            <td class="v-data-table__mobile-row">
-              <div>
-                <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                <v-row dense justify="end" align="center">
-                  <v-col cols="auto">
-                    <edit :rules="rules" :value="item" @save="refresh()" />
-                  </v-col>
-                  <v-col cols="auto">
-                    <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
-                      <v-icon>
-                        mdi-delete-forever
-                      </v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </div>
-            </td>
-
-            <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">
-                {{ translate('command') }}
-              </div>
-              <div class="v-data-table__mobile-row__cell">
-                <strong>{{ item.command }}</strong>
-              </div>
-            </td>
-
-            <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">
-                {{ translate('enabled') }}
-              </div>
-              <div class="v-data-table__mobile-row__cell">
-                <v-simple-checkbox v-model="item.enabled" disabled />
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">
-                {{ capitalize(translate('systems.price.price.name')) }}
-              </div>
-              <div class="v-data-table__mobile-row__cell">
-                {{ priceFormatter(item) }}
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">
-                {{ translate('systems.price.emitRedeemEvent') }}
-              </div>
-              <div class="v-data-table__mobile-row__cell">
-                <v-simple-checkbox v-model="item.emitRedeemEvent" disabled />
-              </div>
-            </td>
+        <table-mobile :headers="headers" :selected="selected" :item="item">
+          <template #actions>
+            <edit :rules="rules" :value="item" @save="refresh()" />
+            <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+              <v-icon>
+                mdi-delete-forever
+              </v-icon>
+            </v-btn>
           </template>
-          <template v-else>
-            <td>
-              <div class="d-flex">
-                <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-                <edit :rules="rules" :value="item" @save="refresh()" />
-                <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
-                  <v-icon>
-                    mdi-delete-forever
-                  </v-icon>
-                </v-btn>
-              </div>
-            </td>
-            <td class="my-1">
-              <strong>{{ item.command }}</strong>
-            </td>
-            <td class="text-center">
-              <v-simple-checkbox v-model="item.enabled" disabled />
-            </td>
-            <td class="text-center">
-              <v-simple-checkbox v-model="item.emitRedeemEvent" disabled />
-            </td>
-            <td>
-              <div v-html="priceFormatter(item)" />
-            </td>
+
+          <template #command>
+            {{ item.command }}
           </template>
-        </tr>
+
+          <template #price>
+            <div v-html="priceFormatter(item)" />
+          </template>
+        </table-mobile>
       </template>
     </v-data-table>
   </v-container>

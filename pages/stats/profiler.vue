@@ -30,7 +30,7 @@
           :class="[!showChartFunctions.includes(item.function) ? 'green--text' : 'red--text']"
           @click="toggleFunctionChart(item.function)"
         >
-          {{ !showChartFunctions.includes(item.function) ? 'mdi-plus-thick' : 'mdi-minus-thick' }}
+          {{ !showChartFunctions.includes(item.function) ? 'mdi-plus' : 'mdi-minus' }}
         </v-icon>
       </template>
     </v-data-table>

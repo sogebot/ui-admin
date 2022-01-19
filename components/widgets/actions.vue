@@ -67,7 +67,7 @@
       <v-row v-if="editing">
         <v-col cols="12">
           <v-btn color="success" block @click="addItem">
-            <v-icon>mdi-plus-thick</v-icon>
+            <v-icon>mdi-plus</v-icon>
           </v-btn>
           <v-fade-transition>
             <v-btn v-if="isAnySelected" color="error" block @click="deleteItems">

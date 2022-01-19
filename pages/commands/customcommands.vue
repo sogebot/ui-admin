@@ -110,131 +110,40 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <tr
-          :class="{
-            'v-data-table__selected': selected.some(o => o.id === item.id),
-            'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
-          }"
-        >
-          <template v-if="$vuetify.breakpoint.mobile">
-            <td class="v-data-table__mobile-row">
-              <div>
-                <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                <v-row dense justify="end" align="center">
-                  <v-col cols="auto">
-                    <command-edit
-                      :rules="rules"
-                      :value="item"
-                      :permission-items="permissionItems"
-                      :permissions="permissions"
-                      :group-items="groupItems"
-                      @save="refresh()"
-                    />
-                  </v-col>
-                  <v-col cols="auto">
-                    <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
-                      <v-icon>
-                        mdi-delete-forever
-                      </v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div>
-                <div class="v-data-table__mobile-row__header">
-                  {{ translate('command') }}
-                </div>
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                <strong>{{ item.command }}</strong>
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">
-                {{ translate('response') }}
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                <responses :permissions="permissions" :responses="item.responses" :name="item.command" />
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">
-                {{ translate('group') }}
-              </div>
-              <div
-                class="v-data-table__mobile-row__cell"
-                :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }"
-              >
-                {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">
-                {{ translate('enabled') }}
-              </div>
-              <div class="v-data-table__mobile-row__cell">
-                <v-simple-checkbox v-model="item.enabled" disabled />
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">
-                {{ capitalize(translate('visible')) }}
-              </div>
-              <div class="v-data-table__mobile-row__cell">
-                <v-simple-checkbox v-model="item.visible" disabled />
-              </div>
-            </td>
+        <table-mobile :headers="headers" :selected="selected" :item="item">
+          <template #actions>
+            <command-edit
+              :rules="rules"
+              :value="item"
+              :permission-items="permissionItems"
+              :permissions="permissions"
+              :group-items="groupItems"
+              @save="refresh()"
+            />
+            <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+              <v-icon>
+                mdi-delete-forever
+              </v-icon>
+            </v-btn>
           </template>
-          <template v-else>
-            <td>
-              <div class="d-flex">
-                <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-                <command-edit
-                  :rules="rules"
-                  :value="item"
-                  :permission-items="permissionItems"
-                  :permissions="permissions"
-                  :group-items="groupItems"
-                  @save="refresh()"
-                />
-                <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
-                  <v-icon>
-                    mdi-delete-forever
-                  </v-icon>
-                </v-btn>
-              </div>
-            </td>
 
-            <td class="my-1">
-              <strong>{{ item.command }}</strong>
-              <responses :permissions="permissions" :responses="item.responses" :name="item.command" />
-            </td>
-
-            <td>
-              <span
-                :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }"
-              >
-                {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
-              </span>
-            </td>
-            <td class="text-center">
-              <v-simple-checkbox v-model="item.enabled" disabled />
-            </td>
-            <td class="text-center">
-              <v-simple-checkbox v-model="item.visible" disabled />
-            </td>
-            <td class="text-center">
-              {{ item.count }}
-            </td>
+          <template #command>
+            <strong>{{ item.command }}</strong>
+            <responses :permissions="permissions" :responses="item.responses" :name="item.command" />
           </template>
-        </tr>
+
+          <template #permission>
+            <span :class="{ 'text--lighten-1':item.permission === null, 'red--text': item.permission === null }">
+              {{ item.permission === null ? '-- unset --' : getPermissionName(item.permission, permissions) }}
+            </span>
+          </template>
+
+          <template #groupToBeShownInTable>
+            <span :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }">
+              {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
+            </span>
+          </template>
+        </table-mobile>
       </template>
     </v-data-table>
   </v-container>

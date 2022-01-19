@@ -16,7 +16,7 @@
       <template #[`group.header`]="{ items, isOpen, toggle }">
         <th colspan="7">
           <v-icon @click="toggle">
-            {{ isOpen ? 'mdi-minus-thick' : 'mdi-plus-thick' }}
+            {{ isOpen ? 'mdi-minus' : 'mdi-plus' }}
           </v-icon>
 
           {{ items[0].type }}

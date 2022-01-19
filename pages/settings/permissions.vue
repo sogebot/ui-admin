@@ -16,7 +16,7 @@
             </v-toolbar-title>
             <v-spacer />
             <v-btn icon :loading="state.saving" @click="addNewPermissionGroup">
-              <v-icon>mdi-plus-thick</v-icon>
+              <v-icon>mdi-plus</v-icon>
             </v-btn>
           </v-toolbar>
           <v-card-text class="pa-0">

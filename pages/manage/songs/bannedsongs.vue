@@ -23,14 +23,8 @@
                     </v-card-title>
 
                     <v-card-text>
-                      <v-data-table
-                        dense
-                        :items="selected"
-                        :headers="headersDelete"
-                        :items-per-page="-1"
-                        hide-default-header
-                        hide-default-footer
-                      />
+                      <v-data-table dense :items="selected" :headers="headersDelete" :items-per-page="-1"
+                        hide-default-header hide-default-footer />
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
@@ -52,18 +46,9 @@
 
     <alert-disabled system="songs" />
 
-    <v-data-table
-      v-model="selected"
-      calculate-widths
-      hide-default-header
-      show-select
-      :loading="state.loading !== ButtonStates.success"
-      :headers="headers"
-      :items-per-page="-1"
-      item-key="videoId"
-      :items="fItems"
-      @current-items="saveCurrentItems"
-    >
+    <v-data-table v-model="selected" calculate-widths hide-default-header show-select
+      :loading="state.loading !== ButtonStates.success" :headers="headers" :items-per-page="-1" item-key="videoId"
+      :items="fItems" @current-items="saveCurrentItems">
       <template #top>
         <search-bar :search.sync="search" label="Search or add by link/id">
           <v-btn color="primary" :disabled="search.length === 0" :loading="state.import === 1" @click="addSong">
@@ -73,107 +58,24 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <tr
-          :class="{
-            'v-data-table__selected': selected.some(o => o.videoId === item.videoId),
-            'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
-          }"
-        >
-          <template v-if="$vuetify.breakpoint.mobile">
-            <td class="v-data-table__mobile-row">
-              <div>
-                <v-simple-checkbox
-                  :value="selected.some(o => o.videoId === item.videoId)"
-                  @click="addToSelectedItem(item)"
-                />
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                <v-row dense justify="end" align="center">
-                  <v-col cols="auto">
-                    <v-btn class="primary-hover" :href="'http://youtu.be/' + item.videoId" target="_blank" icon>
-                      <v-icon>
-                        mdi-link
-                      </v-icon>
-                    </v-btn>
-                  </v-col>
-                  <v-col cols="auto">
-                    <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
-                      <v-icon>
-                        mdi-delete-forever
-                      </v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div>
-                <div class="v-data-table__mobile-row__header">
-                  Thumbnail
-                </div>
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                <v-img :aspect-ratio="16/9" :width="100" :src="generateThumbnail(item.videoId)" />
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div>
-                <div class="v-data-table__mobile-row__header">
-                  Video ID
-                </div>
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                {{ item.videoId }}
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div>
-                <div class="v-data-table__mobile-row__header">
-                  Title
-                </div>
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                {{ item.title }}
-              </div>
-            </td>
+        <table-mobile :headers="headers" :selected="selected" :item="item">
+          <template #actions>
+            <v-btn class="primary-hover" :href="'http://youtu.be/' + item.videoId" target="_blank" icon>
+              <v-icon>
+                mdi-link
+              </v-icon>
+            </v-btn>
+            <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+              <v-icon>
+                mdi-delete-forever
+              </v-icon>
+            </v-btn>
           </template>
-          <template v-else>
-            <td>
-              <div class="d-flex">
-                <v-simple-checkbox
-                  :value="selected.some(o => o.videoId === item.videoId)"
-                  @click="addToSelectedItem(item)"
-                />
-                <v-btn class="primary-hover" :href="'http://youtu.be/' + item.videoId" target="_blank" icon>
-                  <v-icon>
-                    mdi-link
-                  </v-icon>
-                </v-btn>
-                <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
-                  <v-icon>
-                    mdi-delete-forever
-                  </v-icon>
-                </v-btn>
-              </div>
-            </td>
 
-            <td class="my-1">
-              <v-img :aspect-ratio="16/9" :width="100" :src="generateThumbnail(item.videoId)" />
-            </td>
-
-            <td class="my-1">
-              {{ item.videoId }}
-            </td>
-
-            <td class="my-1">
-              {{ item.title }}
-            </td>
+          <template #thumbnail>
+            <v-img :aspect-ratio="16/9" :width="100" :src="generateThumbnail(item.videoId)" />
           </template>
-        </tr>
+        </table-mobile>
       </template>
     </v-data-table>
   </v-container>
@@ -223,13 +125,13 @@ export default defineComponent({
 
     const headers = [
       {
-        value: 'thumbnail', text: '', align: 'left',
+        value: 'thumbnail', text: 'Thumbnail', align: 'left',
       },
       {
-        value: 'videoId', text: '',
+        value: 'videoId', text: 'Video ID',
       },
       {
-        value: 'title', text: '',
+        value: 'title', text: 'Title',
       },
     ];
 

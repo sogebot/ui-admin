@@ -38,7 +38,7 @@
           :class="[!showChartCommands.includes(item.command) ? 'green--text' : 'red--text']"
           @click="toggleCommandChart(item.command)"
         >
-          {{ !showChartCommands.includes(item.command) ? 'mdi-plus-thick' : 'mdi-minus-thick' }}
+          {{ !showChartCommands.includes(item.command) ? 'mdi-plus' : 'mdi-minus' }}
         </v-icon>
       </template>
     </v-data-table>

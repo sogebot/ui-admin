@@ -78,7 +78,7 @@
               {{ translate('registry.randomizer.form.options') }}
               <div style="text-align: right;">
                 <v-btn v-if="open" icon @click.stop="addOption">
-                  <v-icon>mdi-plus-thick</v-icon>
+                  <v-icon>mdi-plus</v-icon>
                 </v-btn>
               </div>
             </v-expansion-panel-header>

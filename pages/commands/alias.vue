@@ -1,6 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <alert-disabled system="alias"/>
+    <alert-disabled system="alias" />
 
     <v-expand-transition>
       <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>
@@ -109,136 +109,43 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <tr
-          :class="{
-            'v-data-table__selected': selected.some(o => o.id === item.id),
-            'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
-          }"
-        >
-          <template v-if="$vuetify.breakpoint.mobile">
-            <td class="v-data-table__mobile-row">
-              <div>
-                <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                <v-row dense justify="end" align="center">
-                  <v-col cols="auto">
-                    <alias-edit
-                      :rules="rules"
-                      :value="item"
-                      :permission-items="permissionItems"
-                      :group-items="groupItems"
-                      @save="refetch()"
-                    />
-                  </v-col>
-                  <v-col cols="auto">
-                    <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
-                      <v-icon>
-                        mdi-delete-forever
-                      </v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div>
-                <div class="v-data-table__mobile-row__header">
-                  {{ translate('alias') }}
-                </div>
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                <strong>{{ item.alias }}</strong>
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">
-                {{ translate('command') }}
-              </div>
-
-              <div
-                class="v-data-table__mobile-row__cell text-truncate"
-                style="overflow-wrap: break-word; max-width: 15rem;"
-              >
-                {{ item.command }}
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">
-                {{ translate('group') }}
-              </div>
-              <div
-                class="v-data-table__mobile-row__cell"
-                :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }"
-              >
-                {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">
-                {{ translate('enabled') }}
-              </div>
-              <div class="v-data-table__mobile-row__cell">
-                <v-simple-checkbox v-model="item.enabled" disabled />
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div class="v-data-table__mobile-row__header">
-                {{ capitalize(translate('visible')) }}
-              </div>
-              <div class="v-data-table__mobile-row__cell">
-                <v-simple-checkbox v-model="item.visible" disabled />
-              </div>
-            </td>
+        <table-mobile :headers="headers" :selected="selected" :item="item">
+          <template #actions>
+            <alias-edit
+              :rules="rules"
+              :value="item"
+              :permission-items="permissionItems"
+              :group-items="groupItems"
+              @save="refetch()"
+            />
+            <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+              <v-icon>
+                mdi-delete-forever
+              </v-icon>
+            </v-btn>
           </template>
-          <template v-else>
-            <td>
-              <div class="d-flex">
-                <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-                <alias-edit
-                  :rules="rules"
-                  :value="item"
-                  :permission-items="permissionItems"
-                  :group-items="groupItems"
-                  @save="refetch()"
-                />
-                <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
-                  <v-icon>
-                    mdi-delete-forever
-                  </v-icon>
-                </v-btn>
-              </div>
-            </td>
 
-            <td class="my-1">
-              <strong>{{ item.alias }}</strong>
-              <ul style="list-style-type: none;">
-                <li>{{ item.command }}</li>
-              </ul>
-            </td>
-
-            <td>
-              <span
-                :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }"
-              >
-                {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
-              </span>
-            </td>
-            <td>
-              <span :class="{ 'text--lighten-1':item.permission === null, 'red--text': item.permission === null }">
-                {{ item.permission === null ? '-- unset --' : getPermissionName(item.permission, permissions) }}
-              </span>
-            </td>
-            <td class="text-center">
-              <v-simple-checkbox v-model="item.enabled" disabled />
-            </td>
-            <td class="text-center">
-              <v-simple-checkbox v-model="item.visible" disabled />
-            </td>
+          <template #alias>
+            <strong>{{ item.alias }}</strong>
+            <ul style="list-style-type: none;" class="text-truncate" :style="{
+              'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
+            }">
+              <li style="white-space: pre-wrap;">{{ item.command }}</li>
+            </ul>
           </template>
-        </tr>
+
+          <template #permission>
+            <span :class="{ 'text--lighten-1':item.permission === null, 'red--text': item.permission === null }">
+              {{ item.permission === null ? '-- unset --' : getPermissionName(item.permission, permissions) }}
+            </span>
+          </template>
+
+          <template #groupToBeShownInTable>
+            <span :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }">
+              {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
+            </span>
+          </template>
+        </table-mobile>
       </template>
     </v-data-table>
   </v-container>
@@ -278,6 +185,7 @@ export default defineComponent({
     'group-header': defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
     'search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
     'alias-batch':  defineAsyncComponent(() => import('~/components/manage/alias/aliasBatch.vue')),
+    'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
   },
   setup () {
     const { result, loading, error, refetch } = useQuery(GET_ALL);

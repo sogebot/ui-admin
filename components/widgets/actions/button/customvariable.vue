@@ -39,7 +39,7 @@
 
           <v-col v-if="!editing" cols="auto" class="d-flex">
             <v-icon class="plus" :color="color">
-              mdi-plus-thick
+              mdi-plus
             </v-icon>
           </v-col>
         </template>

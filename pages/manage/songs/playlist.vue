@@ -23,14 +23,8 @@
                     </v-card-title>
 
                     <v-card-text>
-                      <v-data-table
-                        dense
-                        :items="selected"
-                        :headers="headersDelete"
-                        :items-per-page="-1"
-                        hide-default-header
-                        hide-default-footer
-                      />
+                      <v-data-table dense :items="selected" :headers="headersDelete" :items-per-page="-1"
+                        hide-default-header hide-default-footer />
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
@@ -50,25 +44,15 @@
       </v-app-bar>
     </v-expand-transition>
 
-    <alert-disabled system="songs"/>
+    <alert-disabled system="songs" />
 
-    <v-data-table
-      v-model="selected"
-      calculate-widths
-      show-select
-      :loading="state.loading !== ButtonStates.success"
-      :headers="headers"
-      :items-per-page.sync="perPage"
-      :items="fItems"
-      item-key="videoId"
-      @current-items="saveCurrentItems"
-      :page.sync="currentPage"
-      :server-items-length.sync="count"
-      hide-default-header
-    >
+    <v-data-table v-model="selected" calculate-widths show-select :loading="state.loading !== ButtonStates.success"
+      :headers="headers" :items-per-page.sync="perPage" :items="fItems" item-key="videoId"
+      @current-items="saveCurrentItems" :page.sync="currentPage" :server-items-length.sync="count" hide-default-header>
       <template #top>
         <search-bar :search.sync="search" label="Search or add by link/id">
-          <v-btn color="primary" :disabled="search.length === 0" :loading="state.import === 1" @click="addSongOrPlaylist">
+          <v-btn color="primary" :disabled="search.length === 0" :loading="state.import === 1"
+            @click="addSongOrPlaylist">
             New Item
           </v-btn>
         </search-bar>
@@ -76,191 +60,51 @@
 
       <template #[`body.prepend`]="{}">
         <tr>
-          <td colspan="4" v-if="!$vuetify.breakpoint.mobile"/>
+          <td colspan="5" v-if="!$vuetify.breakpoint.mobile" />
           <td :class="{'v-data-table__mobile-row': $vuetify.breakpoint.mobile}">
-            <v-select
-              v-model="showTag"
-              :items="tagsItems"
-              clearable
-            />
+            <v-select v-model="showTag" :items="tagsItems" clearable />
           </td>
         </tr>
       </template>
 
       <template #[`item`]="{ item }">
-        <tr
-          :class="{
-            'v-data-table__selected': selected.some(o => o.videoId === item.videoId),
-            'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
-          }"
-        >
-          <template v-if="$vuetify.breakpoint.mobile">
-            <td class="v-data-table__mobile-row">
-              <div>
-                <v-simple-checkbox
-                  :value="selected.some(o => o.videoId === item.videoId)"
-                  @click="addToSelectedItem(item)"
-                />
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                <v-row dense justify="end" align="center">
-                  <v-col cols="auto">
-                <playlist-edit
-                  :rules="rules"
-                  :value="item"
-                  @save="refresh()"
-                  :tagsItems="tagsItems"
-                />
-                  </v-col>
-                  <v-col cols="auto">
-                    <v-btn class="primary-hover" :href="'http://youtu.be/' + item.videoId" target="_blank" icon>
-                      <v-icon>
-                        mdi-link
-                      </v-icon>
-                    </v-btn>
-                  </v-col>
-                  <v-col cols="auto">
-                    <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
-                      <v-icon>
-                        mdi-delete-forever
-                      </v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div>
-                <div class="v-data-table__mobile-row__header">
-                  Thumbnail
-                </div>
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                <v-img :aspect-ratio="16/9" :width="100" :src="generateThumbnail(item.videoId)" />
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div>
-                <div class="v-data-table__mobile-row__header">
-                  Video ID
-                </div>
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                {{ item.videoId }}
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div>
-                <div class="v-data-table__mobile-row__header">
-                  Title
-                </div>
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-                {{ item.title }}
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div>
-                <div class="v-data-table__mobile-row__header">
-                </div>
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-          <v-icon>mdi-clock-outside</v-icon> {{ item.length | formatTime }}
-          <v-icon>mdi-volume-high</v-icon> {{ Number(item.volume).toFixed(1) }}%
-          <v-icon>mdi-skip-previous</v-icon> {{ item.startTime | formatTime }} - {{ item.endTime | formatTime }} <v-icon>mdi-skip-next</v-icon>
-          <v-icon>mdi-music</v-icon> {{ dayjs(item.lastPlayedAt).format('LL') }} {{ dayjs(item.lastPlayedAt).format('LTS') }}
-              </div>
-            </td>
-            <td class="v-data-table__mobile-row">
-              <div>
-                <div class="v-data-table__mobile-row__header">
-                  Playlist
-                </div>
-              </div>
-
-              <div class="v-data-table__mobile-row__cell">
-        <v-chip-group class="d-inline-block">
-          <v-chip
-            v-for="tag of item.tags"
-            :key="tag"
-            :color="showTag === tag ? 'primary' : 'secondary'"
-            @click="showTag=tag"
-            label
-            class="mr-2"
-          >
-            {{ tag }}
-          </v-chip>
-        </v-chip-group>
-              </div>
-            </td>
+        <table-mobile :headers="headers" :selected="selected" :item="item">
+          <template #actions>
+            <playlist-edit :rules="rules" :value="item" @save="refresh()" :tagsItems="tagsItems" />
+            <v-btn class="primary-hover" :href="'http://youtu.be/' + item.videoId" target="_blank" icon>
+              <v-icon>
+                mdi-link
+              </v-icon>
+            </v-btn>
+            <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+              <v-icon>
+                mdi-delete-forever
+              </v-icon>
+            </v-btn>
           </template>
-          <template v-else>
-            <td>
-              <div class="d-flex">
-                <v-simple-checkbox
-                  :value="selected.some(o => o.videoId === item.videoId)"
-                  @click="addToSelectedItem(item)"
-                />
-                <playlist-edit
-                  :rules="rules"
-                  :value="item"
-                  @save="refresh()"
-                  :tagsItems="tagsItems"
-                />
-                <v-btn class="primary-hover" :href="'http://youtu.be/' + item.videoId" target="_blank" icon>
-                  <v-icon>
-                    mdi-link
-                  </v-icon>
-                </v-btn>
-                <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
-                  <v-icon>
-                    mdi-delete-forever
-                  </v-icon>
-                </v-btn>
-              </div>
-            </td>
 
-            <td class="my-1">
-              <v-img :aspect-ratio="16/9" :width="100" :src="generateThumbnail(item.videoId)" />
-            </td>
-
-            <td class="my-1">
-              {{ item.videoId }}
-            </td>
-
-            <td class="my-1">
-        <div>
-          {{ item.title }}
-        </div>
-        <div>
-          <v-icon>mdi-clock-outside</v-icon> {{ item.length | formatTime }}
-          <v-icon>mdi-volume-high</v-icon> {{ Number(item.volume).toFixed(1) }}%
-          <v-icon>mdi-skip-previous</v-icon> {{ item.startTime | formatTime }} - {{ item.endTime | formatTime }} <v-icon>mdi-skip-next</v-icon>
-          <v-icon>mdi-music</v-icon> {{ dayjs(item.lastPlayedAt).format('LL') }} {{ dayjs(item.lastPlayedAt).format('LTS') }}
-        </div>
-            </td>
-          <td>
-        <v-chip-group class="d-inline-block">
-          <v-chip
-            v-for="tag of item.tags"
-            :key="tag"
-            :color="showTag === tag ? 'primary' : 'secondary'"
-            @click="showTag=tag"
-            label
-            class="mr-2"
-          >
-            {{ tag }}
-          </v-chip>
-        </v-chip-group>
-          </td>
-
+          <template #data>
+            <v-icon>mdi-clock-outside</v-icon> {{ item.length | formatTime }}
+            <v-icon>mdi-volume-high</v-icon> {{ Number(item.volume).toFixed(1) }}%
+            <v-icon>mdi-skip-previous</v-icon> {{ item.startTime | formatTime }} - {{ item.endTime | formatTime }}
+            <v-icon>mdi-skip-next</v-icon>
+            <v-icon>mdi-music</v-icon> {{ dayjs(item.lastPlayedAt).format('LL') }}
+            {{ dayjs(item.lastPlayedAt).format('LTS') }}
           </template>
-        </tr>
+
+          <template #tags>
+            <v-chip-group class="d-inline-block">
+              <v-chip v-for="tag of item.tags" :key="tag" :color="showTag === tag ? 'primary' : 'secondary'"
+                @click="showTag=tag" label class="mr-2">
+                {{ tag }}
+              </v-chip>
+            </v-chip-group>
+          </template>
+
+          <template #thumbnail>
+            <v-img :aspect-ratio="16/9" :width="100" :src="generateThumbnail(item.videoId)" />
+          </template>
+        </table-mobile>
       </template>
     </v-data-table>
   </v-container>
@@ -341,16 +185,19 @@ export default defineComponent({
 
     const headers = [
       {
-        value: 'thumbnail', text: '', align: 'left',
+        value: 'thumbnail', text: 'Thumbnail', align: 'left',
       },
       {
-        value: 'videoId', text: '',
+        value: 'videoId', text: 'Video ID',
       },
       {
-        value: 'title', text: '',
+        value: 'title', text: 'Title',
       },
       {
-        value: 'tags', text: '',
+        value: 'data', text: '',
+      },
+      {
+        value: 'tags', text: 'Playlist',
       },
     ];
 
