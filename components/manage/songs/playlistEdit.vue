@@ -59,46 +59,6 @@
                 </v-row>
                 <v-row class="mt-0">
                   <v-col>
-                    <v-text-field
-                      v-model.number="item.startTime"
-                      :label="translate('systems.songs.startTime')"
-                      min="0"
-                      :max="Number(item.endTime) - 1"
-                      type="number"
-                      :rules="rules.startTime"
-                    >
-                      <template #append>
-                        {{ translate('systems.songs.seconds') }}
-                      </template>
-                      <template #append-outer>
-                        <v-btn icon @click="startSegment">
-                          <v-icon>mdi-format-horizontal-align-left</v-icon>
-                        </v-btn>
-                      </template>
-                    </v-text-field>
-                  </v-col>
-                  <v-col>
-                    <v-text-field
-                      v-model.number="item.endTime"
-                      :label="translate('systems.songs.endTime')"
-                      :min="Number(item.startTime) + 1"
-                      :max="item.length"
-                      type="number"
-                      :rules="rules.endTime"
-                    >
-                      <template #append>
-                        {{ translate('systems.songs.seconds') }}
-                      </template>
-                      <template #append-outer>
-                        <v-btn icon @click="endSegment">
-                          <v-icon>mdi-format-horizontal-align-right</v-icon>
-                        </v-btn>
-                      </template>
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row class="mt-0">
-                  <v-col>
                     <v-combobox
                       v-model="item.tags"
                       :label="translate('tags')"
@@ -117,6 +77,51 @@
                 </v-row>
               </v-col>
             </v-row>
+
+                <v-row class="mt-0">
+                  <v-col>
+                    <v-range-slider
+                      class="playlist-item-trim"
+                      v-model="range"
+                      label="Trim song"
+                      :max="item.length"
+                      min="0"
+                    >
+                    <template v-slot:prepend>
+                    <v-text-field
+                      v-model.number="item.startTime"
+                      min="0"
+                      :max="Number(item.endTime) - 1"
+                      type="number"
+                      :rules="rules.startTime"
+                      hide-details="auto"
+                    >
+                      <template #prepend>
+                        <v-btn icon @click="startSegment">
+                          <v-icon>mdi-format-horizontal-align-left</v-icon>
+                        </v-btn>
+                      </template>
+                    </v-text-field>
+                    </template>
+                    <template #append>
+                    <v-text-field
+                      v-model.number="item.endTime"
+                      :min="Number(item.startTime) + 1"
+                      :max="item.length"
+                      type="number"
+                      :rules="rules.endTime"
+                      hide-details="auto"
+                    >
+                      <template #append-outer>
+                        <v-btn icon @click="endSegment">
+                          <v-icon>mdi-format-horizontal-align-right</v-icon>
+                        </v-btn>
+                      </template>
+                    </v-text-field>
+                    </template>
+                    </v-range-slider>
+                  </v-col>
+                </v-row>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -185,6 +190,21 @@ export default defineComponent({
     const valid = ref(true);
     const form = ref(null);
     const saving = ref(false);
+
+    const range = ref([item.value.startTime, item.value.endTime]);
+
+    watch(range, (val) => {
+      if (item.value.startTime !== val[0]) {
+        item.value.startTime = val[0];
+      }
+      if (item.value.endTime !== val[1]) {
+        item.value.endTime = val[1];
+      }
+    });
+
+    watch([() => item.value.startTime, () => item.value.endTime], (val) => {
+      range.value = [val[0], val[1]];
+    });
 
     const playerRef = ref(null as null | any);
     const player = computed(() => {
@@ -299,6 +319,7 @@ export default defineComponent({
       form,
       tagsItemsWithoutNull,
       videoTimeUpdated,
+      range,
       startSegment,
       endSegment,
       playerRef,
@@ -317,3 +338,11 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.playlist-item-trim .v-input__prepend-outer .v-input, .playlist-item-trim .v-input__append-outer .v-input {
+  padding-top: 0;
+  margin-top: 0;
+  min-width: 100px;
+}
+</style>
