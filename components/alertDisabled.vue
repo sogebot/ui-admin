@@ -1,5 +1,5 @@
 <template>
-  <v-alert v-if="isEnabled" color="error" class="mb-0" text>
+  <v-alert v-if="!isEnabled" color="error" class="mb-0" text>
     {{ translate('this-system-is-disabled') }}
   </v-alert>
 </template>
@@ -7,7 +7,7 @@
 <script lang="ts">
 import { useStore } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { defineComponent } from '@vue/composition-api';
+import { computed, defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   props: {
@@ -17,7 +17,7 @@ export default defineComponent({
   setup (props) {
     const store = useStore<any>();
     return {
-      isEnabled: () => {
+      isEnabled: computed(() => {
         if (props.system) {
           return store.state.$systems.find((o: any) => o.name === props.system).enabled;
         }
@@ -27,7 +27,7 @@ export default defineComponent({
         }
 
         return false;
-      },
+      }),
       translate,
     };
   },
