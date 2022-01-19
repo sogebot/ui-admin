@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [34.1.1](https://github.com/sogebot/ui-admin/compare/v34.1.0...v34.1.1) (2022-01-19)
+
+
+### Bug Fixes
+
+* fix incorrectly showing systems as disabled ([a0188cf](https://github.com/sogebot/ui-admin/commit/a0188cfe8f3a6446728542e3cd6425a56a49ab5b))
+
 ## [34.1.0](https://github.com/sogebot/ui-admin/compare/v34.0.2...v34.1.0) (2022-01-18)
 
 
