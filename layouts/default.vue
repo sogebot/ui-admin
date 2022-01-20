@@ -3,6 +3,7 @@
     <template v-if="$store.state.isUILoaded && $store.state.loggedUser">
       <navbar />
       <v-main>
+        <portal-target name="main"/>
         <!-- dashboard needs to be visible all the time -->
         <v-fade-transition>
           <statsbar v-show="$route.name === 'index'" />
@@ -37,7 +38,9 @@ export default defineComponent({
     navbar:    () => import('../components/navbar/navbar.vue'),
     snackbar:  () => import('../components/snackbar.vue'),
     dashboard: () => import('../components/dashboard.vue'),
-    statsbar:  defineAsyncComponent({ loader: () => import('~/components/statsbar.vue') }),
+    statsbar:  defineAsyncComponent({
+      loader: () => import('~/components/statsbar.vue'),
+    }),
   },
   middleware: ['isBotStarted'],
 });

@@ -38,7 +38,10 @@
     >
       <v-toolbar dense class="text-button" color="primary">
         <v-slide-x-transition leave-absolute>
-          <span v-if="!miniVariant || $vuetify.breakpoint.mobile">{{ name }}</span>
+          <span v-if="!miniVariant || $vuetify.breakpoint.mobile">
+            {{ name }}
+            <version/>
+          </span>
         </v-slide-x-transition>
         <template v-if="!$vuetify.breakpoint.mobile">
           <v-spacer v-if="!miniVariant" />
@@ -77,17 +80,11 @@ import translate from '@sogebot/ui-helpers/translate';
 
 import { error } from '~/functions/error';
 
-const navmenu = defineAsyncComponent({
-  loader: () => import('./menu.vue'),
-});
-const user = defineAsyncComponent({
-  loader: () => import('../user.vue'),
-});
-
 export default defineComponent({
   components: {
-    navmenu,
-    user,
+    navmenu: defineAsyncComponent(() => import('./menu.vue')),
+    version: defineAsyncComponent(() => import('./version.vue')),
+    user:    defineAsyncComponent(() => import('../user.vue')),
   },
   setup () {
     const name = ref('');

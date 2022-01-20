@@ -13,23 +13,6 @@
         v-html="translate('errors.please_set_your_broadcaster_oauth_or_owners')"
       />
     </v-alert>
-    <v-snackbar absolute app v-model="updateSnackbar" right top style="z-index: 9999">
-      <h5>{{ translate('errors.new_update_available') }}</h5>
-      <div
-        class="text-caption"
-        v-html="translate('errors.new_bot_version_available_at').replace(/\$version/gmi, update.version)"
-      />
-
-      <template v-slot:action="{ attrs }">
-        <v-btn
-          icon
-          v-bind="attrs"
-          @click="updateSnackbar = false"
-        >
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </template>
-    </v-snackbar>
     <v-row no-gutters>
       <component
         :is="`${item.split('|')[0]}-${item.split('|')[1].replace(/([A-Z])/g, '-$1').toLowerCase()}`"
@@ -110,22 +93,6 @@ export default defineComponent({
     const timestamp = ref(null as null | number);
     const uptime = ref(null as null | number);
     const broadcasterType = ref(localStorage.broadcasterType || '');
-    const version = ref('');
-    const update: {
-      version: null | string;
-    } = reactive({
-      version: null,
-    });
-    const updateSnackbar = computed({
-      get: () => {
-        return update.version !== null;
-      },
-      set (val) {
-        if (val === false) {
-          update.version = null;
-        }
-      },
-    });
     const isLoaded = ref(false);
 
     const isStreamOnline = computed(() => uptime.value !== null);
@@ -149,55 +116,6 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      getSocket('/').emit('version', async (recvVersion: string) => {
-        version.value = recvVersion;
-
-        const { response } = await new Promise<{ response: Record<string, any>}>((resolve) => {
-          const request = new XMLHttpRequest();
-          request.open('GET', 'https://api.github.com/repos/sogehige/sogebot/releases/latest', true);
-
-          request.onload = function () {
-            if (!(this.status >= 200 && this.status < 400)) {
-              console.error('Error getting version from git', this.status, this.response);
-            }
-            resolve({
-              response: JSON.parse(this.response),
-            });
-          };
-          request.onerror = function () {
-            console.error('Connection error to github');
-            resolve({
-              response: {
-              },
-            });
-          };
-
-          request.send();
-        });
-        const botVersion = recvVersion.replace('-SNAPSHOT', '').split('.').map(o => Number(o));
-        const gitVersion = (response.tag_name as string).split('.').map(o => Number(o));
-        console.debug({
-          botVersion, gitVersion,
-        });
-
-        let isNewer = false;
-        for (let index = 0; index < botVersion.length; index++) {
-          if (botVersion[index] < gitVersion[index]) {
-            isNewer = true;
-            break;
-          } else if (botVersion[index] === gitVersion[index]) {
-            continue;
-          } else {
-            isNewer = false;
-            break;
-          }
-        }
-
-        if (isNewer) {
-          update.version = gitVersion.join('.');
-        }
-      });
-
       UIErrorInterval = window.setInterval(() => {
         getSocket('/').emit('panel::alerts', (err: string | null, data: { errors: { name: string; message: string }[], warns: { name: string; message: string }[] }) => {
           if (err) {
@@ -246,9 +164,6 @@ export default defineComponent({
       currentStats,
       timestamp,
       broadcasterType,
-      version,
-      updateSnackbar,
-      update,
       uptime,
       isLoaded,
       isStreamOnline,
