@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [34.1.6](https://github.com/sogebot/ui-admin/compare/v34.1.5...v34.1.6) (2022-01-21)
+
+
+### Bug Fixes
+
+* remove groupToBeShownInTable ([927668f](https://github.com/sogebot/ui-admin/commit/927668f5e7e44bfa1fa6d44c5ab6b03aebe95e24))
+* update keyword type ([da687e7](https://github.com/sogebot/ui-admin/commit/da687e778bf5cff3fba53309cab6dd277098426d))
+
 ### [34.1.5](https://github.com/sogebot/ui-admin/compare/v34.1.4...v34.1.5) (2022-01-21)
 
 
