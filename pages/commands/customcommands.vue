@@ -137,12 +137,6 @@
               {{ item.permission === null ? '-- unset --' : getPermissionName(item.permission, permissions) }}
             </span>
           </template>
-
-          <template #groupToBeShownInTable>
-            <span :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }">
-              {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
-            </span>
-          </template>
         </table-mobile>
       </template>
     </v-data-table>
@@ -180,7 +174,7 @@ let count: {
   command: string; count: number;
 }[] = [];
 
-export type CommandsInterfaceUI = CommandsInterface & { count: number, groupToBeShownInTable: null | string };
+export type CommandsInterfaceUI = CommandsInterface & { count: number };
 
 export default defineComponent({
   components: {
@@ -236,9 +230,6 @@ export default defineComponent({
         value: 'command', text: translate('command'), width: '15rem',
       },
       {
-        value: 'groupToBeShownInTable', text: translate('group'),
-      },
-      {
         value: 'enabled', text: translate('enabled'), align: 'center',
       },
       {
@@ -268,9 +259,8 @@ export default defineComponent({
         for (const command of commands) {
           items.value.push({
             ...command,
-            groupToBeShownInTable: command.group, // we need this to have group shown even when group-by
-            responses:             orderBy(command.responses, 'order', 'asc'),
-            count:                 count.find(o => o.command === command.command)?.count || 0,
+            responses: orderBy(command.responses, 'order', 'asc'),
+            count:     count.find(o => o.command === command.command)?.count || 0,
           });
         }
         // we also need to reset selection values

@@ -35,13 +35,13 @@
                   :label="translate('group')"
                   hide-details="auto"
                   clearable
-                  :search-input.sync="item.groupToBeShownInTable"
+                  :search-input.sync="group"
                   :return-object="false"
                   :items="groupItems.filter(o => o.value !== null)"
                 >
                   <template #no-data>
                     <v-list-item>
-                      Create&nbsp;<strong>{{ item.groupToBeShownInTable }}</strong>
+                      Create&nbsp;<strong>{{ group }}</strong>
                     </v-list-item>
                   </template>
                 </v-combobox>
@@ -244,6 +244,7 @@ export default defineComponent({
     const valid = ref(true);
     const saving = ref(false);
     const form = ref(null);
+    const group = ref();
 
     function saveSuccess () {
       EventBus.$emit('snack', 'success', 'Data updated.');
@@ -313,7 +314,7 @@ export default defineComponent({
     };
 
     return {
-      menu, item, save, translate, capitalize, valid, saving, form, orderBy, remove,
+      menu, item, save, translate, capitalize, valid, saving, form, orderBy, remove, group,
     };
   },
 });

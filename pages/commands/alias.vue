@@ -139,12 +139,6 @@
               {{ item.permission === null ? '-- unset --' : getPermissionName(item.permission, permissions) }}
             </span>
           </template>
-
-          <template #groupToBeShownInTable>
-            <span :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }">
-              {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
-            </span>
-          </template>
         </table-mobile>
       </template>
     </v-data-table>
@@ -176,7 +170,7 @@ import {
 } from '~/functions/validators';
 import GET_ALL from '~/queries/alias/getAll.gql';
 
-export type AliasInterfaceUI = AliasInterface & { groupToBeShownInTable: null | string, __typename: string };
+export type AliasInterfaceUI = AliasInterface & { __typename: string };
 
 export default defineComponent({
   components: {
@@ -193,10 +187,6 @@ export default defineComponent({
     const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
     const items = useResult<{ aliases: AliasInterfaceUI[] }, AliasInterfaceUI[], AliasInterfaceUI[]>(result, [], (data) => {
       const output = orderBy(data.aliases, 'alias', 'asc');
-
-      for (const item of output) {
-        item.groupToBeShownInTable = item.group; // we need this to have group shown even when group-by
-      }
 
       // we also need to reset selection values
       if (selected.value.length > 0) {
@@ -310,9 +300,6 @@ export default defineComponent({
         value: 'alias', text: translate('alias'), width: '15rem',
       },
       {
-        value: 'groupToBeShownInTable', text: translate('group'),
-      },
-      {
         value: 'permission', text: translate('permission'),
       },
       {
@@ -358,7 +345,7 @@ export default defineComponent({
               (item as any)[key] = value[key];
             }
           }
-          const { __typename, id, groupToBeShownInTable, ...data } = item;
+          const { __typename, id, ...data } = item;
           console.log('Updating', {
             data,
           });

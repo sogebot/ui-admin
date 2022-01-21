@@ -57,13 +57,13 @@
                   :label="translate('group')"
                   hide-details="auto"
                   clearable
-                  :search-input.sync="item.groupToBeShownInTable"
+                  :search-input.sync="group"
                   :return-object="false"
                   :items="groupItems.filter(o => o.value !== null)"
                 >
                   <template #no-data>
                     <v-list-item>
-                      Create&nbsp;<strong>{{ item.groupToBeShownInTable }}</strong>
+                      Create&nbsp;<strong>{{ group }}</strong>
                     </v-list-item>
                   </template>
                 </v-combobox>
@@ -155,6 +155,7 @@ export default defineComponent({
     const item = ref(cloneDeep(props.value || newAlias));
     const valid = ref(true);
     const form = ref(null);
+    const group = ref('');
 
     const { mutate: updateMutation, onDone: onDoneUpdate, onError: onErrorUpdate, loading: saving } = useMutation(gql`
       mutation setAlias($id: String!, $data: AliasInput!) {
@@ -208,7 +209,7 @@ export default defineComponent({
             }
           }
         }
-        const { __typename, id, groupToBeShownInTable, ...data } = item.value;
+        const { __typename, id, ...data } = item.value;
         console.log('Updating', {
           data,
         });
@@ -222,7 +223,7 @@ export default defineComponent({
     };
 
     return {
-      menu, item, save, translate, capitalize, valid, saving, form,
+      menu, item, save, translate, capitalize, valid, saving, form, group,
     };
   },
 });

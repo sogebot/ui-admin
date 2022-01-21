@@ -90,13 +90,6 @@
             <strong>{{ item.keyword }}</strong>
             <responses :permissions="permissions" :responses="item.responses" :name="item.keyword" />
           </template>
-
-          <template #groupToBeShownInTable>
-            <span
-              :class="{ 'text--lighten-1': item.groupToBeShownInTable === null, 'red--text': item.groupToBeShownInTable === null }">
-              {{ item.groupToBeShownInTable === null ? '-- unset --' : item.groupToBeShownInTable }}
-            </span>
-          </template>
         </table-mobile>
       </template>
     </v-data-table>
@@ -130,8 +123,6 @@ import {
 } from '~/functions/validators';
 import GET_ALL from '~/queries/keyword/getAll.gql';
 
-export type KeywordInterfaceUI = KeywordInterface & { groupToBeShownInTable: null | string };
-
 export default defineComponent({
   components: {
     'keyword-edit':  defineAsyncComponent(() => import('~/components/manage/keywords/keywordsEdit.vue')),
@@ -153,7 +144,7 @@ export default defineComponent({
     });
 
     const search = ref('');
-    const items = ref([] as Required<KeywordInterfaceUI>[]);
+    const items = ref([] as Required<KeywordInterface>[]);
 
     const { mutate: updateGroupMutation, onDone: onDoneUpdateGroup, onError: onErrorUpdateGroup } = useMutation(gql`
       mutation setKeywordGroup($name: String!, $data: String!) {
@@ -164,11 +155,11 @@ export default defineComponent({
     onDoneUpdateGroup(() => { EventBus.$emit('snack', 'success', 'Data updated.'); });
     onErrorUpdateGroup(error);
 
-    const selected = ref([] as KeywordInterfaceUI[]);
+    const selected = ref([] as KeywordInterface[]);
     const deleteDialog = ref(false);
 
-    const currentItems = ref([] as KeywordInterfaceUI[]);
-    const saveCurrentItems = (value: KeywordInterfaceUI[]) => {
+    const currentItems = ref([] as KeywordInterface[]);
+    const saveCurrentItems = (value: KeywordInterface[]) => {
       currentItems.value = value;
     };
 
@@ -191,9 +182,6 @@ export default defineComponent({
         value: 'keyword', text: translate('keyword'),
       },
       {
-        value: 'groupToBeShownInTable', text: translate('group'),
-      },
-      {
         value: 'enabled', text: translate('enabled'), align: 'center',
       },
     ];
@@ -213,8 +201,7 @@ export default defineComponent({
         for (const keyword of keywordsGetAll) {
           items.value.push({
             ...keyword,
-            groupToBeShownInTable: keyword.group, // we need this to have group shown even when group-by
-            responses:             orderBy(keyword.responses, 'order', 'asc'),
+            responses: orderBy(keyword.responses, 'order', 'asc'),
           });
         }
         console.debug({
