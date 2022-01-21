@@ -58,7 +58,7 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <table-mobile :headers="headers" :selected="selected" :item="item">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :addToSelectedItem="addToSelectedItem" item-key="videoId">
           <template #actions>
             <v-btn class="primary-hover" :href="'http://youtu.be/' + item.videoId" target="_blank" icon>
               <v-icon>

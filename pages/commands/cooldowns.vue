@@ -76,7 +76,7 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <table-mobile :headers="headers" :selected="selected" :item="item">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :addToSelectedItem="addToSelectedItem">
           <template #actions>
             <cooldowns-edit :rules="rules" :value="item" :type-items="typeItems" @save="refresh()" />
             <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">

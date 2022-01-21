@@ -109,7 +109,7 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <table-mobile :headers="headers" :selected="selected" :item="item">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :addToSelectedItem="addToSelectedItem">
           <template #actions>
             <alias-edit
               :rules="rules"

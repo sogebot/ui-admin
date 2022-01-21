@@ -13,61 +13,45 @@
       :items="fItems"
     >
       <template #top>
-        <v-sheet
-          flat
-          color="dark"
-          class="my-2 pb-2 mt-0"
-        >
-          <v-row class="px-2" no-gutters>
-            <v-col align-self="center">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-                class="pa-0 ma-2"
-              />
-            </v-col>
-            <v-col cols="auto" align-self="center">
-              <v-btn
-                color="error"
-                class="mr-1"
-                @click="deleteExpired"
-              >
-                Delete Expired
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-sheet>
+        <search-bar :search.sync="search">
+          <v-btn
+            color="error"
+            class="mr-1"
+            @click="deleteExpired"
+          >
+            Delete Expired
+          </v-btn>
+        </search-bar>
       </template>
 
-      <template #[`item.thumbnail`]="{ item }">
-        <v-img
-          :aspect-ratio="16/9"
-          :width="60"
-          :src="generateThumbnail(item.game)"
-        />
-      </template>
-      <template #[`item.actions`]="{ item }">
-        <v-btn
-          v-if="!item.expired"
-          plain
-          :href="'https://www.twitch.tv/videos/' + item.videoId + '?t=' + timestampToString(item.timestamp)"
-          target="_blank"
-        >
-          <v-icon>mdi-link</v-icon>
-        </v-btn>
-        <span
-          v-else
-          class="red--text text--lighten-1"
-        >Expired</span>
-      </template>
-      <template #[`item.timestamp`]="{ item }">
-        {{ timestampToString(item.timestamp) }}
-      </template>
-      <template #[`item.createdAt`]="{ item }">
-        {{ dayjs(item.createdAt).format('LL') }} {{ dayjs(item.createdAt).format('LTS') }}
+      <template #[`item`]="{ item }">
+        <table-mobile :headers="headers" :item="item">
+          <template #actions>
+            <v-btn class="primary-hover" :href="'https://www.twitch.tv/videos/' + item.videoId + '?t=' + timestampToString(item.timestamp)" target="_blank" icon v-if="!item.expired">
+              <v-icon>
+                mdi-link
+              </v-icon>
+            </v-btn>
+            <span
+              v-else
+              class="red--text text--lighten-1"
+            >Expired</span>
+          </template>
+
+          <template #thumbnail>
+            <v-img
+              :aspect-ratio="16/9"
+              :width="100"
+              :src="generateThumbnail(item.game)"
+            />
+          </template>
+          <template #createdAt>
+            {{ dayjs(item.createdAt).format('LL') }} {{ dayjs(item.createdAt).format('LTS') }}
+          </template>
+          <template #timestamp>
+            {{ timestampToString(item.timestamp) }}
+          </template>
+        </table-mobile>
       </template>
     </v-data-table>
   </v-container>
@@ -75,7 +59,7 @@
 
 <script lang="ts">
 import {
-  computed, defineComponent, onMounted, ref,
+  computed, defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
@@ -88,6 +72,9 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
+  components: {
+    'search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+  },
   setup () {
     const items = ref([] as HighlightInterface[]);
     const search = ref('');
@@ -124,9 +111,6 @@ export default defineComponent({
       },
       {
         value: 'timestamp', text: '',
-      },
-      {
-        text: 'Actions', value: 'actions', sortable: false, align: 'end',
       },
     ];
 

@@ -1,30 +1,32 @@
 <template>
   <tr
     :class="{
-      'v-data-table__selected': selected.some(o => o.id === item.id),
+      'v-data-table__selected': selected && selected.some(o => (itemKey ? o[itemKey] : o.id) === (itemKey ? item[itemKey] : item.id)),
       'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,
     }"
   >
     <template v-if="$vuetify.breakpoint.mobile">
       <td class="v-data-table__mobile-row">
         <div>
-          <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
+          <v-simple-checkbox v-if="selected" :value="selected.some(o => (itemKey ? o[itemKey] : o.id) === (itemKey ? item[itemKey] : item.id))" @click="addToSelectedItem(item)" />
         </div>
 
         <div class="v-data-table__mobile-row__cell d-flex">
-          <slot name="actions"/>
+          <slot name="actions" />
         </div>
       </td>
 
-      <td class="v-data-table__mobile-row" v-for="header of headers" :key="header.value">
+      <td v-for="header of headers" :key="header.value" class="v-data-table__mobile-row">
         <div class="v-data-table__mobile-row__header">
           {{ header.text }}
         </div>
 
         <div class="v-data-table__mobile-row__cell">
           <slot :name="header.value">
-            <v-simple-checkbox :value="item[header.value]" disabled v-if="typeof item[header.value] === 'boolean'" />
-            <template v-else>{{ item[header.value] }}</template>
+            <v-simple-checkbox v-if="typeof item[header.value] === 'boolean'" :value="item[header.value]" disabled />
+            <template v-else>
+              {{ item[header.value] }}
+            </template>
           </slot>
         </div>
       </td>
@@ -32,18 +34,24 @@
     <template v-else>
       <td>
         <div class="d-flex">
-          <v-simple-checkbox :value="selected.some(o => o.id === item.id)" @click="addToSelectedItem(item)" />
-          <slot name="actions"/>
+          <v-simple-checkbox v-if="selected" :value="selected.some(o => (itemKey ? o[itemKey] : o.id) === (itemKey ? item[itemKey] : item.id))" @click="addToSelectedItem(item)" />
+          <slot name="actions" />
         </div>
       </td>
 
-      <td class="pa-2" v-for="header of headers" :key="header.value"
+      <td
+        v-for="header of headers"
+        :key="header.value"
+        class="pa-2"
         :class="{
           'text-center': header.align === 'center',
-        }">
+        }"
+      >
         <slot :name="header.value">
-          <v-simple-checkbox :value="item[header.value]" disabled v-if="typeof item[header.value] === 'boolean'" />
-          <template v-else>{{ item[header.value] }}</template>
+          <v-simple-checkbox v-if="typeof item[header.value] === 'boolean'" :value="item[header.value]" disabled />
+          <template v-else>
+            {{ item[header.value] }}
+          </template>
         </slot>
       </td>
     </template>
@@ -55,9 +63,11 @@ import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   props: {
-    selected: Array,
-    headers:  Array,
-    item:     Object,
+    selected:          Array,
+    headers:           Array,
+    item:              Object,
+    addToSelectedItem: Function,
+    itemKey:           String,
   },
 });
 </script>

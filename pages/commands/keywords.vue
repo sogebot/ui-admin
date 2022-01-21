@@ -75,7 +75,7 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <table-mobile :headers="headers" :selected="selected" :item="item">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :addToSelectedItem="addToSelectedItem">
           <template #actions>
             <keyword-edit :rules="rules" :value="item" :permission-items="permissionItems" :permissions="permissions"
               :group-items="groupItems" @save="refresh()" />
