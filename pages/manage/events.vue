@@ -75,59 +75,133 @@
       </v-card>
     </v-dialog>
 
-    <v-sheet
-      flat
-      color="dark"
-      class="my-2 pb-2 mt-0"
+    <v-data-table
+      v-model="selected"
+      show-select
+      calculate-widths
+      group-by="name"
+      :loading="state.loading !== 2"
+      :headers="headers"
+      :items-per-page="-1"
+      :items="filteredItems"
+      @current-items="saveCurrentItems"
     >
-      <v-row class="px-2" no-gutters>
-        <v-col>
-          <v-autocomplete
-            v-model="search"
-            label="Filter"
-            multiple
-            :items="eventsItems"
-            :return-object="false"
-            chips
-            deletable-chips
-            class="pr-2"
-          />
-        </v-col>
+      <template #top>
+        <v-sheet
+          flat
+          color="dark"
+          class="my-2 pb-2 mt-0"
+        >
+          <v-row class="px-2" no-gutters>
+            <v-col>
+              <v-autocomplete
+                v-model="search"
+                label="Filter"
+                multiple
+                :items="eventsItems"
+                :return-object="false"
+                chips
+                deletable-chips
+                class="pr-2"
+              />
+            </v-col>
 
-        <v-col cols="auto" align-self="center">
-          <v-dialog
-            v-model="newDialog"
-            max-width="800px"
-          >
-            <template #activator="{ on, attrs }">
-              <v-btn
-                color="primary"
-                v-bind="attrs"
-                v-on="on"
+            <v-col cols="auto" align-self="center">
+              <v-dialog
+                v-model="newDialog"
+                max-width="800px"
               >
-                New item
-              </v-btn>
-            </template>
+                <template #activator="{ on, attrs }">
+                  <v-btn
+                    color="primary"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    New item
+                  </v-btn>
+                </template>
 
-            <v-card>
-              <v-card-title>
-                <span class="headline">New item</span>
-              </v-card-title>
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">New item</span>
+                  </v-card-title>
 
-              <v-card-text :key="timestamp">
-                <new-item
-                  :rules="rules"
-                  @close="newDialog = false"
-                  @save="saveSuccess"
-                />
-              </v-card-text>
-            </v-card>
-          </v-dialog>
-        </v-col>
-      </v-row>
-    </v-sheet>
+                  <v-card-text :key="timestamp">
+                    <new-item
+                      :rules="rules"
+                      @close="newDialog = false"
+                      @save="saveSuccess"
+                    />
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
+            </v-col>
+          </v-row>
+        </v-sheet>
+      </template>
 
-    <v-card v-for="item of filteredItems" :key="item.id" class="my-2">
+      <template #[`group.header`]="{ items, isOpen, toggle }">
+        <group-header
+          group-key="name"
+          no-filter
+          no-permission
+          :is-open="isOpen"
+          :toggle="toggle"
+          :get-group="getGroup"
+          :is-group-selected="isGroupSelected"
+          :toggle-group-selection="toggleGroupSelection"
+          :items="items"
+        />
+      </template>
+
+      <template #[`item`]="{ item }">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem">
+          <template #actions>
+            <!--alias-edit
+              :rules="rules"
+              :value="item"
+              :permission-items="permissionItems"
+              :group-items="groupItems"
+              @save="refetch()"
+            /-->
+            <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+              <v-icon>
+                mdi-delete-forever
+              </v-icon>
+            </v-btn>
+          </template>
+
+          <template #definitions>
+            <span class="grey--text text--lighten-1" v-if="Object.keys(item.definitions).length === 0"/>
+            <div v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
+              {{ translate('events.definitions.' + key + '.label') }}:<code class="ml-2">{{ item.definitions[key] }}</code>
+            </div>
+          </template>
+
+          <template #operations>
+              <span class="grey--text text--lighten-1" v-if="item.operations.length === 0">No operations set for this event</span>
+              <template v-for="operation of item.operations">
+                <div :key="operation.id + operation.name" class="pa-0 ma-0 grey--text text--lighten-1" style="line-height: 1rem;">
+                  {{ capitalize(translate(operation.name)) }}
+                </div>
+                <ul style="list-style-type: none;" class="text-truncate" :style="{
+                  'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
+                }" :key="operation.id + key + 'ul'">
+                  <li
+                  v-for="key of Object.keys(operation.definitions)"
+                  :key="operation.id + key + 'li'">
+{{ translate('events.definitions.' + key + '.label') }}
+<code class="ml-2">{{ operation.definitions[key] }}</code>
+                  </li>
+                </ul>
+              </template>
+            </v-list>
+          </template>
+        </table-mobile>
+      </template>
+    </v-data-table>
+
+    <!--v-card v-for="item of filteredItems" :key="item.id" class="my-2">
       <v-card-text>
         <v-row>
           <v-col cols="12" md="6" lg="3">
@@ -247,7 +321,7 @@
           {{ translate('delete') }}
         </v-btn>
       </v-card-actions>
-    </v-card>
+    </v-card!-->
   </v-container>
 </template>
 
@@ -262,6 +336,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, cloneDeep } from 'lodash';
 
 import type { EventInterface, Events } from '.bot/src/database/entity/event';
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import {
@@ -273,12 +348,16 @@ export default defineComponent({
     'new-item': defineAsyncComponent({
       loader: () => import('~/components/new-item/events-newItem.vue'),
     }),
-    operations: defineAsyncComponent({
-      loader: () => import('~/components/manage/events/operations.vue'),
-    }),
+    'group-header': defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
+    'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
   },
   setup () {
     const timestamp = ref(Date.now());
+
+    const currentItems = ref([] as any[]);
+    const saveCurrentItems = (value: any[]) => {
+      currentItems.value = value;
+    };
 
     const search = ref([] as string[]);
 
@@ -364,6 +443,15 @@ export default defineComponent({
     onMounted(() => {
       refresh();
     });
+
+    const headers = [
+      {
+        value: 'definitions', text: '', sortable: false,
+      },
+      {
+        value: 'operations', text: '', sortable: false,
+      },
+    ];
 
     const headersDelete = [
       {
@@ -516,7 +604,32 @@ export default defineComponent({
       return variables;
     };
 
+    const getGroup = computed(() => {
+      // set empty groups from aliases
+      const returnGroups: { [name: string]: any } = {
+      };
+      for (const item of items.value) {
+        if (item.name && !returnGroups[item.name]) {
+          returnGroups[item.name] = {
+            name:    item.name,
+            options: {
+              filter:     null,
+              permission: null,
+            },
+          };
+        }
+      }
+      console.log(returnGroups);
+      return returnGroups;
+    });
+
     return {
+      saveCurrentItems,
+      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
+      getGroup,
+
+      headers,
+
       availableVariables,
       definitions,
       items,
