@@ -132,10 +132,9 @@ import draggable from 'vuedraggable';
 import type { KeywordInterface } from '../../../.bot/src/database/entity/keyword.js';
 
 import { EventBus } from '~/functions/event-bus';
-import type { KeywordInterfaceUI } from '~/pages/commands/keywords.vue';
 
 type Props = {
-  value: Required<KeywordInterfaceUI>;
+  value: Required<KeywordInterface>;
   rules: [];
 };
 
