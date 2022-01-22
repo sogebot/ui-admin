@@ -23,17 +23,17 @@
               cols="auto"
               class="caption"
             >
-              <v-icon>mdi-key</v-icon>
+              <v-icon small left>mdi-key</v-icon>
               {{ getPermissionName(r.permission, permissions) }}
             </v-col>
             <v-col
               cols="auto"
               class="caption"
             >
-              <v-icon v-if="r.stopIfExecuted">
+              <v-icon v-if="r.stopIfExecuted" small left>
                 mdi-pause
               </v-icon>
-              <v-icon v-else>
+              <v-icon v-else small left>
                 mdi-play
               </v-icon>
               {{ r.stopIfExecuted ? translate('commons.stop-if-executed') : translate('commons.continue-if-executed') }}
@@ -42,7 +42,7 @@
               v-if="r.filter.length > 0"
               class="caption"
             >
-              <v-icon>
+              <v-icon small left>
                 mdi-filter
               </v-icon>
               <text-with-tags

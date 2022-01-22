@@ -7,25 +7,27 @@
       </v-icon>
 
       <v-simple-checkbox class="d-inline-block px-4" style="transform: translateY(5px);" inline
-        :value="isGroupSelected(items[0].group)" @click="toggleGroupSelection(items[0].group)" />
+        :value="isGroupSelected(items[0][groupKey || 'group'])" @click="toggleGroupSelection(items[0][groupKey || 'group'])" />
 
-      <span v-if="items[0].group === null" class="red--text text--lighten-1">Ungrouped</span>
+      <span v-if="items[0][groupKey || 'group'] === null" class="red--text text--lighten-1">Ungrouped</span>
       <span v-else>
-        {{ items[0].group }}
+        <slot name="headerText" v-bind:group="items[0][groupKey || 'group']">
+          {{ items[0][groupKey || 'group'] }}
+        </slot>
 
-        <span class="px-4" :class="!getGroup[items[0].group].options.permission ? 'red--text' : ''">
+        <span class="px-4" :class="!getGroup[items[0][groupKey || 'group']].options.permission ? 'red--text' : ''" v-if="!noPermission">
           {{
-            getGroup[items[0].group].options.permission
-              ? getPermissionName(getGroup[items[0].group].options.permission, permissions)
+            getGroup[items[0][groupKey || 'group']].options.permission
+              ? getPermissionName(getGroup[items[0][groupKey || 'group']].options.permission, permissions)
               : '-- unset --'
           }}
         </span>
 
-        <span class="px-4">
-          <template v-if="getGroup[items[0].group].options.filter">
+        <span class="px-4" v-if="!noFilter">
+          <template v-if="getGroup[items[0][groupKey || 'group']].options.filter">
             <v-icon>mdi-filter</v-icon>
             <code>
-              {{ getGroup[items[0].group].options.filter }}
+              {{ getGroup[items[0][groupKey || 'group']].options.filter }}
             </code>
           </template>
           <template v-else>
@@ -48,25 +50,27 @@
       </v-icon>
 
       <v-simple-checkbox class="d-inline-block px-4" style="transform: translateY(5px);" inline
-        :value="isGroupSelected(items[0].group)" @click="toggleGroupSelection(items[0].group)" />
+        :value="isGroupSelected(items[0][groupKey || 'group'])" @click="toggleGroupSelection(items[0][groupKey || 'group'])" />
 
-      <span v-if="items[0].group === null" class="red--text text--lighten-1">Ungrouped</span>
+      <span v-if="items[0][groupKey || 'group'] === null" class="red--text text--lighten-1">Ungrouped</span>
       <span v-else>
-        {{ items[0].group }}
+        <slot name="headerText" v-bind:group="items[0][groupKey || 'group']">
+          {{ items[0][groupKey || 'group'] }}
+        </slot>
 
-        <span class="px-4" :class="!getGroup[items[0].group].options.permission ? 'red--text' : ''">
+        <span class="px-4" :class="!getGroup[items[0][groupKey || 'group']].options.permission ? 'red--text' : ''" v-if="!noPermission">
           {{
-            getGroup[items[0].group].options.permission
-              ? getPermissionName(getGroup[items[0].group].options.permission, permissions)
+            getGroup[items[0][groupKey || 'group']].options.permission
+              ? getPermissionName(getGroup[items[0][groupKey || 'group']].options.permission, permissions)
               : '-- unset --'
           }}
         </span>
 
-        <span class="px-4">
-          <template v-if="getGroup[items[0].group].options.filter">
+        <span class="px-4" v-if="!noFilter">
+          <template v-if="getGroup[items[0][groupKey || 'group']].options.filter">
             <v-icon>mdi-filter</v-icon>
             <code>
-              {{ getGroup[items[0].group].options.filter }}
+              {{ getGroup[items[0][groupKey || 'group']].options.filter }}
             </code>
           </template>
           <template v-else>
@@ -94,6 +98,9 @@ export default defineComponent({
     toggleGroupSelection: Function,
     items:                Array,
     getGroup:             Object,
+    groupKey:             String,
+    noFilter:             Boolean,
+    noPermission:         Boolean,
   },
 });
 </script>
