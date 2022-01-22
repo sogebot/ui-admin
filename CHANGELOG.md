@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [34.1.7](https://github.com/sogebot/ui-admin/compare/v34.1.6...v34.1.7) (2022-01-22)
+
+
+### Bug Fixes
+
+* **events:** update visuals ([#175](https://github.com/sogebot/ui-admin/issues/175)) ([90b58b1](https://github.com/sogebot/ui-admin/commit/90b58b1ebe013186ebbfdd59a9d617dc5fbf4dcc))
+
 ### [34.1.6](https://github.com/sogebot/ui-admin/compare/v34.1.5...v34.1.6) (2022-01-21)
 
 
