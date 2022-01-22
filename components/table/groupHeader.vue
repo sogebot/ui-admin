@@ -11,7 +11,9 @@
 
       <span v-if="items[0][groupKey || 'group'] === null" class="red--text text--lighten-1">Ungrouped</span>
       <span v-else>
-        {{ items[0][groupKey || 'group'] }}
+        <slot name="headerText" v-bind:group="items[0][groupKey || 'group']">
+          {{ items[0][groupKey || 'group'] }}
+        </slot>
 
         <span class="px-4" :class="!getGroup[items[0][groupKey || 'group']].options.permission ? 'red--text' : ''" v-if="!noPermission">
           {{
@@ -52,7 +54,9 @@
 
       <span v-if="items[0][groupKey || 'group'] === null" class="red--text text--lighten-1">Ungrouped</span>
       <span v-else>
-        {{ items[0][groupKey || 'group'] }}
+        <slot name="headerText" v-bind:group="items[0][groupKey || 'group']">
+          {{ items[0][groupKey || 'group'] }}
+        </slot>
 
         <span class="px-4" :class="!getGroup[items[0][groupKey || 'group']].options.permission ? 'red--text' : ''" v-if="!noPermission">
           {{

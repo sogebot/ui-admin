@@ -1,43 +1,5 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    transition="dialog-bottom-transition"
-    fullscreen
-    persistent
-    hide-overlay
-    large
-  >
-    <template #activator="{ on, attrs }">
-      <div
-        v-bind="attrs"
-        v-on="on"
-      >
-        <v-list dense outlined class="dense">
-          <v-list-item v-if="operations.length === 0">
-            <span class="grey--text text--darken-2">No operations set for this event</span>
-          </v-list-item>
-
-          <template v-for="operation of operations">
-            <v-subheader :key="operation.id + operation.name">
-              {{ capitalize(translate(operation.name)) }}
-            </v-subheader>
-            <v-list-item
-              v-for="key of Object.keys(operation.definitions)"
-              :key="operation.id + key + '2'"
-            >
-              <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong>
-              <code class="ml-2">{{ operation.definitions[key] }}</code>
-            </v-list-item>
-          </template>
-        </v-list>
-      </div>
-    </template>
-    <v-card>
-      <v-card-title class="headline">
-        Update <code class="mx-2">{{ item.name }}</code> {{ translate('events.dialog.operations').toLowerCase() }}
-      </v-card-title>
-
-      <v-card-text>
+<div>
         <v-form
           ref="form"
           v-model="valid"
@@ -46,10 +8,10 @@
           <v-list-item
             v-for="(o, i) of operationsUpdated"
             :key="'operation' + i"
-            class="item"
+            class="item py-0"
           >
-            <v-list-item-content>
-              <v-row>
+            <v-list-item-content class="pa-0">
+              <v-row dense>
                 <v-col>
                   <v-autocomplete
                     v-model="o.name"
@@ -66,6 +28,7 @@
                       v-if="typeof o.definitions[defKey] === 'boolean'"
                       v-model="o.definitions[defKey]"
                       :label="translate(`events.definitions.${defKey}.label`)"
+                      hide-details="auto"
                     />
                     <v-select
                       v-if="defKey === 'taskId'"
@@ -75,6 +38,7 @@
                       :rules="rules[defKey]"
                       :return-object="false"
                       item-value="id"
+                      hide-details="auto"
                     >
                       <template v-slot:selection="data">
                         {{ data.item.name }}&nbsp;<small>{{ data.item.id }}</small>
@@ -90,6 +54,7 @@
                       :label="translate(`events.definitions.${defKey}.label`)"
                       :hint="translate('events.definitions.' + defKey + '.placeholder')"
                       persistent-hint
+                      hide-details="auto"
                     >
                       <template #append>
                         <input-variables
@@ -108,6 +73,7 @@
                       :label="translate(`events.definitions.${defKey}.label`)"
                       :hint="translate('events.definitions.' + defKey + '.placeholder')"
                       persistent-hint
+                      hide-details="auto"
                     />
                   </div>
                 </v-col>
@@ -124,41 +90,17 @@
             </v-list-item-content>
           </v-list-item>
         </v-form>
-
-        <v-divider />
-
-        <tester :event="item.name" :events="events" :event-id="item.id" />
-      </v-card-text>
-
-      <v-card-actions>
-        <v-btn @click="addEmptyOperation">
-          Add operation
-        </v-btn>
-        <v-spacer />
-        <v-btn
-          color="blue darken-1"
-          text
-          @click="close"
-        >
-          Close
-        </v-btn>
-        <v-btn
-          color="blue darken-1"
-          text
-          :disabled="!valid"
-          @click="save"
-        >
-          Save
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        <div class="text-center pt-5">
+          <v-btn @click="addEmptyOperation">
+            Add operation
+          </v-btn>
+        </div>
+</div>
 </template>
 
 <script lang="ts">
 import {
   computed,
-  defineAsyncComponent,
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -175,16 +117,10 @@ import { error } from '~/functions/error';
 import GET_ALL from '~/queries/obsWebsocket/getAll.gql';
 
 export default defineComponent({
-  components: {
-    tester: defineAsyncComponent({
-      loader: () => import('~/components/manage/events/test-dialog.vue'),
-    }),
-  },
   props: {
     operations: Array, item: Object, rules: Object, filters: Array, variables: Object, events: Array,
   },
   setup (props, ctx) {
-    let operationsBackup: any[] = [];
     const { result } = useQuery(GET_ALL, null, {
       pollInterval: 5000,
     });
@@ -195,7 +131,6 @@ export default defineComponent({
 
     const operationsUpdated = ref(cloneDeep(props.operations ?? []) as Omit<EventOperationInterface, 'event'>[]);
     const supportedOperations = ref([] as Events.SupportedOperation[]);
-    const dialog = ref(false);
 
     const operationItems = computed(() => {
       return supportedOperations.value.map(o => ({
@@ -224,24 +159,11 @@ export default defineComponent({
       });
     });
 
-    watch(dialog, (val) => {
-      if (val) {
-        operationsBackup = cloneDeep(props.operations ?? []);
-      }
+    watch(operationsUpdated, (val) => {
+      ctx.emit('update:operations', val);
+    }, {
+      deep: true,
     });
-
-    const save = () => {
-      if ((form.value as unknown as HTMLFormElement).validate()) {
-        ctx.emit('save', operationsUpdated.value);
-        dialog.value = false;
-      }
-    };
-
-    const close = () => {
-      ctx.emit('close');
-      operationsUpdated.value = cloneDeep(operationsBackup); // revert
-      dialog.value = false;
-    };
 
     const remove = (idx: number) => {
       operationsUpdated.value.splice(idx, 1);
@@ -283,10 +205,8 @@ export default defineComponent({
     return {
       orderBy,
       translate,
-      dialog,
       capitalize,
       close,
-      save,
       remove,
       operationsUpdated,
       addEmptyOperation,

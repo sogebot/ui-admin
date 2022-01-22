@@ -1,79 +1,75 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-dialog
-      v-model="deleteDialog"
-    >
-      <v-card>
-        <v-card-title>
-          <span class="headline">Delete {{ selected.length }} Item(s)?</span>
-        </v-card-title>
+    <v-expand-transition>
+      <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>
+        <v-row class="px-2" dense justify="end">
+          <v-col cols="auto" align-self="center">
+            {{ selected.length }} items selected
+          </v-col>
 
-        <v-card-text>
-          <v-card v-for="item of selected" :key="item.id" class="my-2">
-            <v-card-text>
-              <v-row>
-                <v-col cols="3">
-                  <v-list dense outlined class="dense">
-                    <v-subheader>{{ translate('name') }}</v-subheader>
-                    <v-list-item>{{ capitalize(translate(item.name)) }}</v-list-item>
-                    <v-subheader>
-                      {{ translate('events.definitions.filter.label') }}
-                    </v-subheader>
-                    <v-list-item :key="item.id + item.filter + '0'">
-                      <code v-if="item.filter.length > 0" class="ml-2">{{ item.filter }}</code>
-                      <span v-else class="grey--text text--darken-2">No filters set for this event</span>
-                    </v-list-item>
+          <v-col cols="auto" align-self="center">
+            <v-row dense>
+              <v-col v-if="selected.length > 0" cols="auto">
+                <v-dialog v-model="deleteDialog" max-width="800px">
+                  <template #activator="{ on, attrs }">
+                    <v-btn class="error" small v-bind="attrs" v-on="on">
+                      Delete
+                    </v-btn>
+                  </template>
 
-                    <v-subheader v-if="Object.keys(item.definitions).length > 0">
-                      Definitions
-                    </v-subheader>
-                    <v-list-item v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
-                      <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
-                    </v-list-item>
-                  </v-list>
-                </v-col>
-                <v-col cols="9">
-                  <v-list dense outlined class="dense">
-                    <v-list-item v-if="item.operations.length === 0">
-                      <span class="grey--text text--darken-2">No operations set for this event</span>
-                    </v-list-item>
+                  <v-card>
+                    <v-card-title>
+                      <span class="headline">Delete {{ selected.length }} Item(s)?</span>
+                    </v-card-title>
 
-                    <template v-for="operation of item.operations">
-                      <v-subheader :key="item.id + operation.name">
-                        {{ capitalize(translate(operation.name)) }}
-                      </v-subheader>
-                      <v-list-item
-                        v-for="key of Object.keys(operation.definitions)"
-                        :key="item.id + key + '2'"
-                      >
-                        <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong>
-                        <code class="ml-2">{{ operation.definitions[key] }}</code>
-                      </v-list-item>
-                    </template>
-                  </v-list>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            text
-            @click="deleteDialog = false"
-          >
-            Cancel
-          </v-btn>
-          <v-btn
-            color="error"
-            text
-            @click="deleteSelected"
-          >
-            Delete
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+                    <v-card-text>
+                      <v-data-table dense :items="selected" :headers="headersDelete" :items-per-page="-1"
+                        hide-default-header hide-default-footer>
+
+                        <template #[`item.definitions`]="{item}">
+                          <span class="grey--text text--lighten-1" v-if="Object.keys(item.definitions).length === 0"/>
+                          <div v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
+                            {{ translate('events.definitions.' + key + '.label') }}:<code class="ml-2">{{ item.definitions[key] }}</code>
+                          </div>
+                        </template>
+
+                        <template #[`item.operations`]="{item}">
+                            <span class="grey--text text--lighten-1" v-if="item.operations.length === 0">No operations set for this event</span>
+                            <template v-for="operation of item.operations">
+                              <div :key="operation.id + operation.name" class="pa-0 ma-0 grey--text text--lighten-1" style="line-height: 1rem;">
+                                {{ capitalize(translate(operation.name)) }}
+                              </div>
+                              <ul style="list-style-type: none;" class="text-truncate" :style="{
+                                'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
+                              }" :key="operation.id + key + 'ul'">
+                                <li
+                                v-for="key of Object.keys(operation.definitions)"
+                                :key="operation.id + key + 'li'">
+              {{ translate('events.definitions.' + key + '.label') }}
+              <code class="ml-2">{{ operation.definitions[key] }}</code>
+                                </li>
+                              </ul>
+                            </template>
+                        </template>
+                      </v-data-table>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn text @click="deleteDialog = false">
+                        Cancel
+                      </v-btn>
+                      <v-btn color="error" text @click="deleteSelected">
+                        Delete
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-app-bar>
+    </v-expand-transition>
 
     <v-data-table
       v-model="selected"
@@ -107,34 +103,10 @@
             </v-col>
 
             <v-col cols="auto" align-self="center">
-              <v-dialog
-                v-model="newDialog"
-                max-width="800px"
-              >
-                <template #activator="{ on, attrs }">
-                  <v-btn
-                    color="primary"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    New item
-                  </v-btn>
-                </template>
-
-                <v-card>
-                  <v-card-title>
-                    <span class="headline">New item</span>
-                  </v-card-title>
-
-                  <v-card-text :key="timestamp">
-                    <new-item
-                      :rules="rules"
-                      @close="newDialog = false"
-                      @save="saveSuccess"
-                    />
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
+              <events-edit
+                :rules="rules"
+                @save="refresh()"
+              />
             </v-col>
           </v-row>
         </v-sheet>
@@ -151,19 +123,21 @@
           :is-group-selected="isGroupSelected"
           :toggle-group-selection="toggleGroupSelection"
           :items="items"
-        />
+        >
+          <template #headerText="{ group }">
+            {{ capitalize(translate(group)) }}
+          </template>
+        </group-header>
       </template>
 
       <template #[`item`]="{ item }">
         <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem">
           <template #actions>
-            <!--alias-edit
+            <events-edit
               :rules="rules"
               :value="item"
-              :permission-items="permissionItems"
-              :group-items="groupItems"
-              @save="refetch()"
-            /-->
+              @save="refresh()"
+            />
             <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
               <v-icon>
                 mdi-delete-forever
@@ -176,6 +150,14 @@
             <div v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
               {{ translate('events.definitions.' + key + '.label') }}:<code class="ml-2">{{ item.definitions[key] }}</code>
             </div>
+
+            <div v-if="item.filter.length > 0">
+              <v-icon left small>mdi-filter</v-icon>
+              <text-with-tags
+                class="d-inline-block"
+                :value="item.filter"
+              />
+            </div>
           </template>
 
           <template #operations>
@@ -186,7 +168,7 @@
                 </div>
                 <ul style="list-style-type: none;" class="text-truncate" :style="{
                   'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
-                }" :key="operation.id + key + 'ul'">
+                }" :key="operation.id + operation.name + 'ul'">
                   <li
                   v-for="key of Object.keys(operation.definitions)"
                   :key="operation.id + key + 'li'">
@@ -195,140 +177,17 @@
                   </li>
                 </ul>
               </template>
-            </v-list>
           </template>
         </table-mobile>
       </template>
     </v-data-table>
-
-    <!--v-card v-for="item of filteredItems" :key="item.id" class="my-2">
-      <v-card-text>
-        <v-row>
-          <v-col cols="12" md="6" lg="3">
-            <v-list dense outlined class="dense">
-              <v-subheader>{{ translate('name') }}</v-subheader>
-              <v-list-item>{{ capitalize(translate(item.name)) }}</v-list-item>
-              <v-edit-dialog
-                persistent
-                large
-                :return-value.sync="item.filter"
-                @save="update(item, false, 'filter')"
-              >
-                <v-subheader>
-                  {{ translate('events.definitions.filter.label') }}
-                </v-subheader>
-                <v-list-item :key="item.id + item.filter + '0'">
-                  <code v-if="item.filter.length > 0" class="ml-2">{{ item.filter }}</code>
-                  <span v-else class="grey--text text--darken-2">No filters set for this event</span>
-                </v-list-item>
-
-                <template #input>
-                  <v-textarea
-                    v-model="item.filter"
-                    hide-details="auto"
-                    :label="capitalize(translate('systems.customcommands.filter.name'))"
-                    :rows="1"
-                    counter
-                    auto-grow
-                    @keydown.enter.prevent
-                  >
-                    <template #append>
-                      <input-variables
-                        :filters="availableVariables(item.name)"
-                        @input="item.filter = item.filter + $event"
-                      />
-                    </template>
-                  </v-textarea>
-                </template>
-              </v-edit-dialog>
-
-              <v-edit-dialog
-                v-if="Object.keys(item.definitions).length > 0"
-                persistent
-                large
-                @open="backupDefinitions(item.definitions)"
-                @close="restoreDefinitions(item)"
-                @save="update(item, false, 'definitions')"
-              >
-                <v-subheader>
-                  Definitions
-                </v-subheader>
-                <v-list-item v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
-                  <strong>{{ translate('events.definitions.' + key + '.label') }}:</strong> <code class="ml-2">{{ item.definitions[key] }}</code>
-                </v-list-item>
-
-                <template #input>
-                  <div
-                    v-for="defKey of Object.keys(item.definitions)"
-                    :key="timestamp + defKey"
-                  >
-                    <v-switch
-                      v-if="typeof item.definitions[defKey] === 'boolean'"
-                      v-model="item.definitions[defKey]"
-                      :label="translate(`events.definitions.${defKey}.label`)"
-                    />
-                    <rewards
-                      v-if="defKey === 'titleOfReward'"
-                      v-model="item.definitions[defKey]"
-                    />
-                    <v-text-field
-                      v-else-if="typeof item.definitions[defKey] === 'string'"
-                      v-model="item.definitions[defKey]"
-                      :rules="rules[defKey]"
-                      :label="translate(`events.definitions.${defKey}.label`)"
-                      :hint="translate('events.definitions.' + defKey + '.placeholder')"
-                      persistent-hint
-                    />
-                    <v-text-field
-                      v-else-if="typeof item.definitions[defKey] === 'number'"
-                      v-model.number="item.definitions[defKey]"
-                      :rules="rules[defKey]"
-                      type="number"
-                      min="0"
-                      :label="translate(`events.definitions.${defKey}.label`)"
-                      :hint="translate('events.definitions.' + defKey + '.placeholder')"
-                      persistent-hint
-                    />
-                  </div>
-                </template>
-              </v-edit-dialog>
-            </v-list>
-          </v-col>
-          <v-col cols="12" md="6" lg="9">
-            <operations
-              :item="item"
-              :operations="item.operations"
-              :events="availableEvents"
-              :variables="availableEvents.find(o => o.id === item.name) || { variables: []}.variables"
-              :rules="rules"
-              :filters="availableVariables(item.name)"
-              @save="item.operations = $event; update(item, false, 'operations')"
-            />
-          </v-col>
-        </v-row>
-      </v-card-text>
-
-      <v-card-actions class="ma-2">
-        <v-spacer />
-        <v-btn
-          :color="item.isEnabled ? 'success' : 'error'"
-          @click="item.isEnabled = !item.isEnabled; update(item, true, 'isEnabled')"
-        >
-          {{ translate(item.isEnabled ? 'enabled' : 'disabled') }}
-        </v-btn>
-
-        <v-btn color="error" text @click="selected = [item]; deleteDialog = true;">
-          {{ translate('delete') }}
-        </v-btn>
-      </v-card-actions>
-    </v-card!-->
   </v-container>
 </template>
 
 <script lang="ts">
 import {
   computed,
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -345,15 +204,11 @@ import {
 
 export default defineComponent({
   components: {
-    'new-item': defineAsyncComponent({
-      loader: () => import('~/components/new-item/events-newItem.vue'),
-    }),
     'group-header': defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
     'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
+    'events-edit':  defineAsyncComponent(() => import('~/components/manage/events/eventsEdit.vue')),
   },
   setup () {
-    const timestamp = ref(Date.now());
-
     const currentItems = ref([] as any[]);
     const saveCurrentItems = (value: any[]) => {
       currentItems.value = value;
@@ -363,7 +218,6 @@ export default defineComponent({
 
     const selected = ref([] as EventInterface[]);
     const deleteDialog = ref(false);
-    const newDialog = ref(false);
     const availableEvents = ref([] as Events.SupportedEvent[]);
 
     const items = ref([] as EventInterface[]);
@@ -384,7 +238,6 @@ export default defineComponent({
 
     const backupDefinitions = (value: any) => {
       definitions.value = cloneDeep(value);
-      timestamp.value = Date.now();
     };
 
     const restoreDefinitions = (item: EventInterface) => {
@@ -430,14 +283,9 @@ export default defineComponent({
       loading: number;
     });
 
-    watch(newDialog, () => {
-      timestamp.value = Date.now();
-    });
-
     const saveSuccess = () => {
       refresh();
       EventBus.$emit('snack', 'success', 'Data updated.');
-      newDialog.value = false;
     };
 
     onMounted(() => {
@@ -644,12 +492,11 @@ export default defineComponent({
 
       selected,
       deleteDialog,
-      newDialog,
 
       rules,
 
-      timestamp,
       saveSuccess,
+      refresh,
 
       capitalize,
 
