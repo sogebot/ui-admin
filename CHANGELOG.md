@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [35.0.1](https://github.com/sogebot/ui-admin/compare/v35.0.0...v35.0.1) (2022-01-24)
+
+
+### Bug Fixes
+
+* **overlays:** remove apollo usage ([cec50e7](https://github.com/sogebot/ui-admin/commit/cec50e7cf56f7b1abb18728cb443664831c8cf8a))
+
 ## [35.0.0](https://github.com/sogebot/ui-admin/compare/v34.1.11...v35.0.0) (2022-01-24)
 
 
