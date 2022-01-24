@@ -160,12 +160,10 @@
 
 <script lang="ts">
 import {
-  defineComponent, onMounted, ref, useRouter, watch,
+  defineComponent, onMounted, ref, useContext, useRouter, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
+import { useMutation } from '@vue/apollo-composable';
 import { v4 } from 'uuid';
 
 import { error } from '../../../functions/error';
@@ -178,39 +176,26 @@ import REMOVE from '~/queries/overlays/remove.gql';
 
 export default defineComponent({
   setup () {
-    const { result, loading, onError, refetch } = useQuery(GET);
-    onError(error);
+    const ctx = useContext();
 
-    const items = useResult<{ overlays: any[] }, OverlayMappers[], OverlayMappers[]>(result, [], (data) => {
-      const outputData: OverlayMappers[] = [];
-      for (const key of Object.keys(data.overlays)) {
-        if (key.startsWith('__')) {
-          continue;
-        }
-        outputData.push(...data.overlays[key as any]);
-      }
-      // we also need to reset selection values
-      if (selected.value.length > 0) {
-        selected.value.forEach((selectedItem, index) => {
-          selectedItem = outputData.find(o => o.id === selectedItem.id) || selectedItem;
-          selected.value[index] = selectedItem;
-        });
-      }
-      return outputData;
-    });
+    const loading = ref(true);
 
     const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, {
       refetchQueries: [{
         query: GET,
       }],
     });
-    onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
+    onDoneRemove(() => {
+      EventBus.$emit('snack', 'success', 'Data removed.');
+      refresh();
+    });
     onErrorRemove(error);
 
     const router = useRouter();
 
     const selected = ref([] as OverlayMappers[]);
     const copied = ref('');
+    const items = ref([] as OverlayMappers[]);
     const currentItems = ref([] as OverlayMappers[]);
     const saveCurrentItems = (value: OverlayMappers[]) => {
       currentItems.value = value;
@@ -256,8 +241,31 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      refetch();
+      refresh();
     });
+
+    const refresh = async () => {
+      loading.value = true;
+      const result = await (ctx as any).$graphql.default.request(GET);
+
+      const outputData: OverlayMappers[] = [];
+      for (const key of Object.keys(result.overlays)) {
+        if (key.startsWith('__')) {
+          continue;
+        }
+        outputData.push(...result.overlays[key as any]);
+      }
+      // we also need to reset selection values
+      if (selected.value.length > 0) {
+        selected.value.forEach((selectedItem, index) => {
+          selectedItem = outputData.find(o => o.id === selectedItem.id) || selectedItem;
+          selected.value[index] = selectedItem;
+        });
+      }
+
+      items.value = outputData;
+      loading.value = false;
+    };
 
     const deleteSelected = () => {
       deleteDialog.value = false;

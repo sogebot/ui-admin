@@ -46,12 +46,10 @@
 
 <script lang="ts">
 import {
-  defineComponent, onMounted, ref, useRoute, useStore, watch,
+  defineComponent, onMounted, ref, useContext, useRoute, useStore, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
+import { useMutation } from '@vue/apollo-composable';
 import { cloneDeep } from 'lodash';
 
 import { error } from '../../../functions/error';
@@ -94,36 +92,15 @@ export default defineComponent({
   setup () {
     const store = useStore();
     const route = useRoute();
+    const ctx = useContext();
+
+    const loading = ref(true);
 
     const item = ref(cloneDeep({
       id:    route.value.params.id,
       value: null,
       opts:  null,
     }) as OverlayMappers);
-    watch(item, () => {
-      store.commit('settings/pending', true);
-    }, {
-      deep: true,
-    });
-
-    const { result, loading } = useQuery(GET, {
-      id: route.value.params.id,
-    });
-    const cache = useResult<{ overlays: any[] }, OverlayMappers[]>(result, []);
-    watch(cache, (value) => {
-      for (const key of Object.keys(value)) {
-        if (key.startsWith('__')) {
-          continue;
-        }
-        if (value[key as any].length > 0) {
-          item.value = cloneDeep(value[key as any][0]);
-          setTimeout(() => store.commit('settings/pending', false), 100);
-          break;
-        }
-      }
-    }, {
-      immediate: true, deep: true,
-    });
 
     const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(SAVE);
     onDoneSave(() => {
@@ -206,8 +183,26 @@ export default defineComponent({
       },
     ];
 
-    onMounted(() => {
+    onMounted(async () => {
       store.commit('panel/back', '/registry/overlays');
+
+      const result = await (ctx as any).$graphql.default.request(GET, {
+        id: route.value.params.id,
+      });
+
+      for (const key of Object.keys(result.overlays)) {
+        if (result.overlays[key].length > 0) {
+          item.value = result.overlays[key][0];
+          break;
+        }
+      }
+      loading.value = false;
+
+      watch(item, () => {
+        store.commit('settings/pending', true);
+      }, {
+        deep: true,
+      });
     });
 
     const save = () => {
