@@ -337,6 +337,8 @@ export default defineComponent({
         console.groupCollapsed(`alert::${route.value.params.id}`);
         console.log(item.value);
         console.groupEnd();
+      } else {
+        loading.value = false;
       }
     });
 
@@ -446,6 +448,7 @@ export default defineComponent({
       ]);
       const _default: any = {
         messageTemplate: '',
+        ttsTemplate:     '',
 
         id:                   v4(),
         title:                '',
