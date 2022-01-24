@@ -95,10 +95,12 @@
         :animation-options.sync="model.animationTextOptions"
       />
       <animation-in
+        v-if="!model.enableAdvancedMode"
         :animation.sync="model.animationIn"
         :animation-duration.sync="model.animationInDuration"
       />
       <animation-out
+        v-if="!model.enableAdvancedMode"
         :animation.sync="model.animationOut"
         :animation-duration.sync="model.animationOutDuration"
       />
