@@ -214,13 +214,11 @@
 <script lang="ts">
 import {
   defineAsyncComponent,
-  defineComponent, onMounted, ref, useRoute, useRouter, useStore, watch,
+  defineComponent, onMounted, ref, useContext, useRoute, useRouter, useStore,
 } from '@nuxtjs/composition-api';
 import { getContrastColor } from '@sogebot/ui-helpers/colors';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
+import { useMutation } from '@vue/apollo-composable';
 import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 
@@ -316,34 +314,32 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
+    const ctx = useContext();
 
     const item = ref(cloneDeep(emptyItem) as AlertInterface);
 
-    const { result, loading } = useQuery(GET_ONE, {
-      id: route.value.params.id,
-    });
-    if (route.value.params.id !== 'new') {
-      const cache = useResult<{ alerts: AlertInterface[] }, null, AlertInterface[]>(result, null, data => data.alerts);
-      watch(cache, (value) => {
-        if (!value) {
-          return;
-        }
+    const loading = ref(true);
 
-        if (value.length === 0) {
+    onMounted(async () => {
+      if (route.value.params.id !== 'new') {
+        const result = await (ctx as any).$graphql.default.request(GET_ONE, {
+          id: route.value.params.id,
+        });
+        if (result.alerts.length === 0) {
           EventBus.$emit('snack', 'error', 'Data not found.');
           router.push({
             path: '/registry/alert',
           });
-        } else {
-          item.value = cloneDeep(value[0]);
-          console.groupCollapsed(`alert::${route.value.params.id}`);
-          console.log(value[0]);
-          console.groupEnd();
         }
-      }, {
-        immediate: true, deep: true,
-      });
-    }
+        item.value = result.alerts[0];
+        loading.value = false;
+
+        console.groupCollapsed(`alert::${route.value.params.id}`);
+        console.log(item.value);
+        console.groupEnd();
+      }
+    });
+
     const { mutate: uploadMutation, onError: onErrorUpload } = useMutation(UPLOAD);
     onErrorUpload(error);
 

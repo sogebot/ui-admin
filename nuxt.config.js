@@ -45,10 +45,10 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '@/plugins/apollo-overrides.ts',
     '@/plugins/remove-shift-selection',
     '@/plugins/before-each.ts',
     '@/plugins/apollo-hook.ts',
+    '@/plugins/graphql-config.ts',
     {
       src: '@/plugins/log-version.js', ssr: false,
     },
@@ -62,6 +62,7 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
+    'nuxt-graphql-request',
     // https://go.nuxtjs.dev/typescript
     '@nuxt/typescript-build',
     // https://go.nuxtjs.dev/stylelint
@@ -158,6 +159,14 @@ export default {
       '/public': {
         changeOrigin: true,
         target:       'http://localhost:3003',
+      },
+    },
+  },
+
+  graphql: {
+    clients: {
+      default: {
+        endpoint: '/graphql',
       },
     },
   },
