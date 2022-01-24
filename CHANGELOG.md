@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [34.1.11](https://github.com/sogebot/ui-admin/compare/v34.1.10...v34.1.11) (2022-01-24)
+
+
+### Bug Fixes
+
+* **graphql:** load alerts with graphql request lib ([c684130](https://github.com/sogebot/ui-admin/commit/c6841309d154838f029adca95e171cd3dd09b238))
+
 ### [34.1.10](https://github.com/sogebot/ui-admin/compare/v34.1.9...v34.1.10) (2022-01-24)
 
 
