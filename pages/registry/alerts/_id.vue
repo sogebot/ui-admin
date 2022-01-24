@@ -328,7 +328,7 @@ export default defineComponent({
         if (result.alerts.length === 0) {
           EventBus.$emit('snack', 'error', 'Data not found.');
           router.push({
-            path: '/registry/alert',
+            path: '/registry/alerts',
           });
         }
         item.value = result.alerts[0];
