@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [34.1.10](https://github.com/sogebot/ui-admin/compare/v34.1.9...v34.1.10) (2022-01-24)
+
+
+### Bug Fixes
+
+* **alerts:** remove animationIn/animationOut settings on advanceMode ([03f9265](https://github.com/sogebot/ui-admin/commit/03f9265e8f6f9055db8fe15a1e0d1f8b601e7773))
+
 ### [34.1.9](https://github.com/sogebot/ui-admin/compare/v34.1.8...v34.1.9) (2022-01-24)
 
 
