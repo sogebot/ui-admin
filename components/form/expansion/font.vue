@@ -14,13 +14,13 @@
           validate-on-blur
         />
         <v-select
-          v-if="model.align"
+          v-if="model.align !== undefined"
           v-model="model.align"
           :label="translate('registry.alerts.font.align.name')"
           :items="alignItems"
         />
         <v-slider
-          v-if="model.size"
+          v-if="model.size !== undefined"
           v-model="model.size"
           :label="translate('registry.alerts.font.size.name')"
           class="align-center"
@@ -52,7 +52,7 @@
           </template>
         </v-slider>
         <v-slider
-          v-if="model.borderPx"
+          v-if="model.borderPx !== undefined"
           v-model="model.borderPx"
           :label="translate('registry.alerts.font.borderPx.name')"
           class="align-center"
@@ -68,25 +68,25 @@
           </template>
         </v-slider>
         <color
-          v-if="model.color"
+          v-if="model.color !== undefined"
           :id="id + '|fontcolor'"
           v-model="model.color"
           :label="translate('registry.alerts.font.color.name')"
         />
         <color
-          v-if="model.borderColor"
+          v-if="model.borderColor !== undefined"
           :id="id + '|fontbordercolor'"
           v-model="model.borderColor"
           :label="translate('registry.alerts.font.borderColor.name')"
         />
         <color
-          v-if="model.highlightcolor"
+          v-if="model.highlightcolor !== undefined"
           :id="id + '|fonthighlightcolor'"
           v-model="model.highlightcolor"
           :label="translate('registry.alerts.font.highlightcolor.name')"
         />
 
-        <v-card v-if="model.shadow">
+        <v-card v-if="model.shadow !== undefined">
           <v-card-text class="pa-0">
             <v-row no-gutters>
               <v-col cols="11">
