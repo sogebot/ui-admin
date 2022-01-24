@@ -497,6 +497,10 @@ export default defineComponent({
           item.value.follows.push({
             ..._default,
             messageTemplate: '{name} is now following!',
+            tts:             {
+              enabled:        false,
+              keepAlertShown: false,
+            },
           });
           break;
         case 'cheers':
@@ -538,6 +542,11 @@ export default defineComponent({
             messageTemplate: '{name} was redeemed by {recipient}!',
             ttsTemplate:     '{message}',
             rewardId:        null,
+            tts:             {
+              enabled:        false,
+              keepAlertShown: false,
+              skipUrls:       true,
+            },
           });
           break;
         case 'cmdredeems':
@@ -545,12 +554,20 @@ export default defineComponent({
             ..._default,
             // eslint-disable-next-line no-template-curly-in-string
             messageTemplate: '{name} was redeemed by {recipient} for x{amount}!',
+            tts:             {
+              enabled:        false,
+              keepAlertShown: false,
+            },
           });
           break;
         case 'subs':
           item.value.subs.push({
             ..._default,
             messageTemplate: '{name} just subscribed!',
+            tts:             {
+              enabled:        false,
+              keepAlertShown: false,
+            },
           });
           break;
         case 'resubs':

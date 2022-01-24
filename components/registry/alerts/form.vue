@@ -26,9 +26,7 @@
       :hint="translate('registry.alerts.messageTemplate.help')"
       persistent-hint
     />
-
     <v-text-field
-      v-if="model.ttsTemplate"
       v-model="model.ttsTemplate"
       :placeholder="translate('registry.alerts.ttsTemplate.placeholder')"
       :label="translate('registry.alerts.ttsTemplate.name')"
@@ -170,7 +168,7 @@
           </font>
         </v-expansion-panel-content>
       </v-expansion-panel>
-      <tts v-model="model.tts" v-if="setableTTS"/>
+      <tts v-model="model.tts"/>
       <v-expansion-panel>
         <v-expansion-panel-header>
           {{ translate('registry.alerts.image.setting') }}
@@ -299,9 +297,7 @@
 
 <script lang="ts">
 import {
-  computed,
-  defineAsyncComponent,
-  defineComponent, onMounted, ref, watch,
+  defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
@@ -343,10 +339,6 @@ export default defineComponent({
     const model = ref(props.value);
     const customTab = ref(0);
     const form1 = ref(null);
-
-    const setableTTS = computed(() => {
-      return ['tips', 'resubs', 'cheers', 'rewardredeems'].includes(props.event);
-    });
 
     const rules = (type: string) => {
       switch (type) {
@@ -400,7 +392,6 @@ export default defineComponent({
       form1,
       model,
       customTab,
-      setableTTS,
 
       // functions
       revertCode,
