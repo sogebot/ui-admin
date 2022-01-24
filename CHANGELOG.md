@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [35.0.0](https://github.com/sogebot/ui-admin/compare/v34.1.11...v35.0.0) (2022-01-24)
+
+
+### Features
+
+* **alerts:** set ttsTemplate for all types ([2cfdc45](https://github.com/sogebot/ui-admin/commit/2cfdc451a416a9907acb897520b183180bd0bf60))
+
+
+### Bug Fixes
+
+* **alerts:** fix incorrect url on 404 ([e8b2607](https://github.com/sogebot/ui-admin/commit/e8b26076fd7cd431bbf6635c7100baa03ea4715d))
+* **alert:** unset loading state on new alert ([72a60ce](https://github.com/sogebot/ui-admin/commit/72a60ce562750264dd7d1e7abfa584deb7c5b6ca))
+
 ### [34.1.11](https://github.com/sogebot/ui-admin/compare/v34.1.10...v34.1.11) (2022-01-24)
 
 
