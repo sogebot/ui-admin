@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [36.0.1](https://github.com/sogebot/ui-admin/compare/v36.0.0...v36.0.1) (2022-01-25)
+
+
+### Bug Fixes
+
+* **viewers:** update for iso dates ([916b745](https://github.com/sogebot/ui-admin/commit/916b745e00f214a7cad54ffb79a309c21fb36b87))
+
 ## [36.0.0](https://github.com/sogebot/ui-admin/compare/v35.0.1...v36.0.0) (2022-01-25)
 
 
