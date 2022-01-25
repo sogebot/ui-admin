@@ -136,6 +136,10 @@ export default {
   // enable api proxy
   ...process.env.NODE_ENV === 'development' && {
     proxy: {
+      '/gallery': {
+        changeOrigin: true,
+        target:       'http://localhost:20000',
+      },
       '/assets': {
         changeOrigin: true,
         target:       'http://localhost:20000',

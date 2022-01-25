@@ -138,7 +138,7 @@
               type="file"
               :disabled="state.uploading === ButtonStates .progress"
               multiple
-              accept="image/*, video/mp4, audio/*"
+              accept="image/*, video/mp4, video/webm, audio/*"
               @change="filesChange($event.target.files)"
             >
           </form>
@@ -189,7 +189,7 @@
             <v-img v-else-if="activeItem.type.includes('image')" :src="activeItem.link" />
 
             <video
-              v-if="activeItem.type.includes('mp4')"
+              v-if="activeItem.type.includes('video')"
               style="width: 100%;"
               controls
             >
@@ -343,7 +343,7 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { uniq } from 'lodash';
-import { v4 as uuid } from 'uuid';
+import shortid from 'shortid';
 
 import type { GalleryInterface } from '.bot/src/database/entity/gallery';
 import { error } from '~/functions/error';
@@ -506,7 +506,7 @@ export default defineComponent({
       for (let i = 0, l = filesUpload.length; i < l; i++) {
         const reader = new FileReader();
         reader.onload = async () => {
-          const id = uuid();
+          const id = shortid();
           const chunks = String(reader.result).match(/.{1,500000}/g);
           if (!chunks) {
             return;
@@ -550,7 +550,7 @@ export default defineComponent({
             width:    imageWidth.value,
             height:   imageHeight.value,
             duration: duration.value,
-            link:     (process.env.isNuxtDev ? 'http://localhost:20000/gallery/' : location.origin + '/gallery/') + item.id,
+            link:     location.origin + '/gallery/' + item.id,
           };
         }
       }

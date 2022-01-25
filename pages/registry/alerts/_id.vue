@@ -413,28 +413,7 @@ export default defineComponent({
     };
 
     const newAlert = async (event: typeof supportedEvents[number]) => {
-      const defaultAudio = '456968__funwithsound__success-resolution-video-game-fanfare-sound-effect.mp3';
-      const defaultImage = 'cow01.gif';
-
-      const [defaultAudioId, defaultImageId, defaultJs, defaultHtml] = await Promise.all([
-        new Promise<string>((resolve) => {
-          getBase64FromUrl('/_static/' + defaultAudio).then((data) => {
-            uploadMutation({
-              data,
-            }).then((res) => {
-              resolve(res?.data.alertMediaUpload);
-            });
-          });
-        }),
-        new Promise<string>((resolve) => {
-          getBase64FromUrl('/_static/' + defaultImage).then((data) => {
-            uploadMutation({
-              data,
-            }).then((res) => {
-              resolve(res?.data.alertMediaUpload);
-            });
-          });
-        }),
+      const [defaultJs, defaultHtml] = await Promise.all([
         new Promise<string>((resolve) => {
           fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/alerts-js.txt')
             .then(response => response.text())
@@ -466,14 +445,14 @@ export default defineComponent({
           characters:       '█▓░ </>',
           maxTimeToDecrypt: 4000,
         },
-        imageId:      defaultImageId,
+        imageId:      '_default_',
         imageOptions: {
           translateX: 0,
           translateY: 0,
           scale:      100,
           loop:       false,
         },
-        soundId:            defaultAudioId,
+        soundId:            '_default_',
         soundVolume:        20,
         alertDurationInMs:  10000,
         alertTextDelayInMs: 1500,
