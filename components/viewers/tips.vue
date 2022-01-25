@@ -47,7 +47,6 @@
               large
               :return-value.sync="item.tippedAt"
             >
-              {{ dayjs(item.tippedAt).format('LL') }} {{ dayjs(item.tippedAt).format('LTS') }}
               <template #input>
                 {{ item.tippedAt}}
                 <datetime :key="userId + 'tippedAt'" @input="item.tippedAt = $event" />
