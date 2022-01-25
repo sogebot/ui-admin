@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [36.0.0](https://github.com/sogebot/ui-admin/compare/v35.0.1...v36.0.0) (2022-01-25)
+
+
+### Features
+
+* **alerts:** link alerts with gallery ([c3462ce](https://github.com/sogebot/ui-admin/commit/c3462ce5530c187a8295829f89270ce42dc55dd6))
+
 ### [35.0.1](https://github.com/sogebot/ui-admin/compare/v35.0.0...v35.0.1) (2022-01-24)
 
 
