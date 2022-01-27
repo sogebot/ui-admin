@@ -5,7 +5,7 @@
       :items="itemsTree"
       transition
       :active.sync="active"
-      activatable
+      :activatable="type !== 'audio'"
       :open.sync="opened"
       dense
       item-key="id"
@@ -17,10 +17,10 @@
         </v-icon>
         <template v-else>
           <div class="d-flex">
-          <v-icon left>
-            {{ files[item.file.split('/')[0]] }}
-          </v-icon>
-            <v-simple-checkbox :value="model === item.id" @click="model === item.id ? model = null : model = item.id"/>
+            <v-icon left>
+              {{ files[item.file.split('/')[0]] }}
+            </v-icon>
+            <v-simple-checkbox :value="model === item.id" @click="model === item.id ? model = null : model = item.id" />
           </div>
         </template>
       </template>
@@ -47,9 +47,21 @@
         <template v-else>
           {{ item.name }}
 
-          <v-btn v-if="hoverItem(item) && hoverItem(item).type.includes('audio')" icon small @click.stop="playItem(item)">
-            <v-icon>mdi-play</v-icon>
-          </v-btn>
+          <template v-if="hoverItem(item) && hoverItem(item).type.includes('audio')">
+            <v-progress-circular v-if="!loadedItems.includes(item.id)" indeterminate size="16" />
+            <template v-else>
+              <v-btn icon small @click.stop="playItem(item)">
+                <v-icon v-if="playingItems.includes(item.id)">
+                  mdi-pause
+                </v-icon>
+                <v-icon v-else>
+                  mdi-play
+                </v-icon>
+              </v-btn>
+
+              <small class="secondary--text text--lighten-3">{{ Math.floor(audioData(item.id).duration * 100) / 100 }}s</small>
+            </template>
+          </template>
         </template>
       </template>
     </v-treeview>
@@ -67,7 +79,7 @@
         >
           Upload item
         </v-btn>
-        <v-btn small @click="showInfo = !showInfo">
+        <v-btn v-if="type !== 'audio'" small @click="showInfo = !showInfo">
           Show info
         </v-btn>
         <input
@@ -179,6 +191,8 @@ const files = {
   audio: 'mdi-file-music', video: 'mdi-file-video', image: 'mdi-file-image',
 };
 
+const audioElements = new Map<string, { audio: HTMLAudioElement, duration: number }>();
+
 export default defineComponent({
   props: {
     value:   String,
@@ -194,6 +208,9 @@ export default defineComponent({
     const mediaType = ref(props.type as 'image' | 'video' | 'audio');
     const model = ref(props.value as string | null);
     const items = ref([] as GalleryInterface[]);
+
+    const loadedItems = ref([] as string[]);
+    const playingItems = ref([] as string[]);
 
     const opened = ref([] as string[]);
     const active = ref([] as string[]);
@@ -267,7 +284,47 @@ export default defineComponent({
         if (item) {
           opened.value = item.folder.split('/');
         }
+
+        if (props.type === 'audio') {
+          for (const audioItem of [{
+            id: '_default_',
+          }, ...items.value]) {
+            if (!audioItem.id) {
+              break;
+            }
+
+            const link = audioItem.id === '_default_'
+              ? `${location.origin}/gallery/_default_${props.type}`
+              : location.origin + '/gallery/' + audioItem?.id;
+
+            const audio = new Audio();
+            audio.addEventListener('play', () => {
+              if (audioItem.id) {
+                playingItems.value.push(audioItem.id);
+              }
+            });
+            audio.addEventListener('pause', () => {
+              if (audioItem.id) {
+                playingItems.value = playingItems.value.filter(val => val !== audioItem.id);
+              }
+            });
+            audio.addEventListener('loadedmetadata', function () {
+              if (audioItem.id) {
+                audioElements.set(audioItem.id, {
+                  audio, duration: this.duration,
+                });
+                loadedItems.value.push(audioItem.id);
+              }
+            });
+            console.log(link);
+            audio.src = link;
+          }
+        }
       });
+    };
+
+    const audioData = (id: string) => {
+      return audioElements.get(id);
     };
 
     const hoverItem = (val: GalleryInterface) => {
@@ -316,12 +373,6 @@ export default defineComponent({
             imageHeight.value = this.naturalHeight;
           });
           img.src = val.link;
-        } else if (val.type.includes('audio')) {
-          const audio = new Audio();
-          audio.addEventListener('loadedmetadata', function () {
-            duration.value = this.duration;
-          });
-          audio.src = val.link;
         } else if (val.type.includes('video')) {
           const video = document.createElement('video');
           video.addEventListener('loadedmetadata', function () {
@@ -468,14 +519,18 @@ export default defineComponent({
     };
 
     const playItem = (item: GalleryInterface) => {
-      let snd;
-      if (item.id === '_default_') {
-        snd = new Audio(location.origin + '/gallery/_default_audio');
-      } else {
-        snd = new Audio(location.origin + '/gallery/' + item?.id);
+      if (item.id && audioElements.has(item.id)) {
+        const snd = audioElements.get(item.id)?.audio;
+        if (snd) {
+          snd.volume = props.volume / 100;
+          // check if playing then toggle and save to playingId variable
+          if (snd.paused) {
+            snd.play();
+          } else {
+            snd.pause();
+          }
+        }
       }
-      snd.volume = props.volume / 100;
-      snd.play();
     };
 
     return {
@@ -496,6 +551,9 @@ export default defineComponent({
       src,
       hoverItem,
       filesChange,
+      audioData,
+      loadedItems,
+      playingItems,
     };
   },
 });
