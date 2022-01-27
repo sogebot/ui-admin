@@ -192,7 +192,7 @@ export default defineComponent({
 
       for (const key of Object.keys(result.overlays)) {
         if (result.overlays[key].length > 0) {
-          item.value = result.overlays[key][0];
+          item.value = cloneDeep(result.overlays[key][0]);
           break;
         }
       }

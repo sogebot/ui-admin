@@ -1,6 +1,6 @@
 <template>
   <v-expansion-panels v-model="model">
-    <slot/>
+    <slot />
     <v-expansion-panel :readonly="typeof $slots.default === 'undefined'">
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
@@ -24,7 +24,7 @@
         </v-row>
         <v-select
           v-model="options.animation"
-          :items="['fadeup', 'fadezoom', 'facebook']"
+          :items="['fadeup', 'fadezoom', 'facebook', 'fall']"
           :label="translate('overlays.emotes.settings.cEmotesAnimation')"
         />
         <v-text-field
@@ -37,6 +37,29 @@
           :label="translate('overlays.emotes.settings.cEmotesAnimationTime')"
           min="200"
         />
+
+        <v-text-field
+          v-if="options.animation === 'fall'"
+          v-model.number="options.maxRotation"
+          :label="translate('overlays.emotes.settings.cEmotesMaxRotation')"
+          min="0"
+        >
+          <template #append>
+            deg
+          </template>
+        </v-text-field>
+
+        <v-text-field
+          v-if="options.animation === 'fall'"
+          v-model.number="options.offsetX"
+          :label="translate('overlays.emotes.settings.cEmotesOffsetX')"
+          min="0"
+        >
+          <template #append>
+            px
+          </template>
+        </v-text-field>
+
         <v-btn @click="test">
           {{ translate('overlays.emotes.settings.btnTestEmote') }}
         </v-btn>
@@ -52,28 +75,38 @@ import {
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defaults, isEqual, pick,
+  defaults, isEqual, isNull, omitBy, pick,
 } from 'lodash';
 
+const defaultValues = {
+  emotesSize:          3,
+  animation:           'fadeup',
+  animationTime:       1000,
+  maxEmotesPerMessage: 5,
+  maxRotation:         2250,
+  offsetX:             200,
+};
+
 export default defineComponent({
-  props: { value: [Object, Array] },
+  props: {
+    value: [Object, Array],
+  },
   setup (props: any, ctx) {
     const model = ref(0);
     const options = ref(
       pick(
-        defaults(Array.isArray(props.value) ? null : props.value, {
-          emotesSize:          3,
-          animation:           'fadeup',
-          animationTime:       1000,
-          maxEmotesPerMessage: 5,
-        }),
-        ['emotesSize', 'animation', 'animationTime', 'maxEmotesPerMessage']));
+        defaults(Array.isArray(props.value) ? null : omitBy(props.value, isNull), defaultValues),
+        Object.keys(defaultValues),
+      ),
+    );
 
     watch(options, (val: any) => {
       if (!isEqual(props.value, options.value)) {
         ctx.emit('input', val);
       }
-    }, { deep: true, immediate: true });
+    }, {
+      deep: true, immediate: true,
+    });
 
     const test = () => {
       getSocket('/services/twitch').emit('test', () => {
