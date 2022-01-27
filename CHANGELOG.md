@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [36.1.0](https://github.com/sogebot/ui-admin/compare/v36.0.2...v36.1.0) (2022-01-27)
+
+
+### Features
+
+* **emotes:** add fall type ([bc05108](https://github.com/sogebot/ui-admin/commit/bc051081b620a7cff5932dfe0ed52bfb1f7cfdca))
+
 ### [36.0.2](https://github.com/sogebot/ui-admin/compare/v36.0.1...v36.0.2) (2022-01-27)
 
 
