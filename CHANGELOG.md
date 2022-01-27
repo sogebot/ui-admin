@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [36.0.2](https://github.com/sogebot/ui-admin/compare/v36.0.1...v36.0.2) (2022-01-27)
+
+
+### Bug Fixes
+
+* **media:** show duration inline and toggle play ([0b94b48](https://github.com/sogebot/ui-admin/commit/0b94b489d97bfd633afbe0a82578079dda09e44c))
+
 ### [36.0.1](https://github.com/sogebot/ui-admin/compare/v36.0.0...v36.0.1) (2022-01-25)
 
 
