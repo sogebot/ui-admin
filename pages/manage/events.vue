@@ -34,22 +34,22 @@
                         </template>
 
                         <template #[`item.operations`]="{item}">
-                            <span class="grey--text text--lighten-1" v-if="item.operations.length === 0">No operations set for this event</span>
-                            <template v-for="operation of item.operations">
-                              <div :key="operation.id + operation.name" class="pa-0 ma-0 grey--text text--lighten-1" style="line-height: 1rem;">
-                                {{ capitalize(translate(operation.name)) }}
-                              </div>
-                              <ul style="list-style-type: none;" class="text-truncate" :style="{
-                                'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
-                              }" :key="operation.id + key + 'ul'">
-                                <li
-                                v-for="key of Object.keys(operation.definitions)"
-                                :key="operation.id + key + 'li'">
-              {{ translate('events.definitions.' + key + '.label') }}
-              <code class="ml-2">{{ operation.definitions[key] }}</code>
-                                </li>
-                              </ul>
-                            </template>
+                          <span class="grey--text text--lighten-1" v-if="item.operations.length === 0">No operations set for this event</span>
+                          <template v-for="operation of item.operations">
+                            <div :key="operation.id + operation.name" class="pa-0 ma-0 grey--text text--lighten-1" style="line-height: 1rem;">
+                              {{ capitalize(translate(operation.name)) }}
+                            </div>
+                            <ul style="list-style-type: none;" class="text-truncate" :style="{
+                              'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
+                            }" :key="operation.id + key + 'ul'">
+                              <li
+                              v-for="key of Object.keys(operation.definitions)"
+                              :key="operation.id + key + 'li'">
+                                {{ translate('events.definitions.' + key + '.label') }}
+                                <code class="ml-2">{{ operation.definitions[key] }}</code>
+                              </li>
+                            </ul>
+                          </template>
                         </template>
                       </v-data-table>
                     </v-card-text>
@@ -161,22 +161,22 @@
           </template>
 
           <template #operations>
-              <span class="grey--text text--lighten-1" v-if="item.operations.length === 0">No operations set for this event</span>
-              <template v-for="operation of item.operations">
-                <div :key="operation.id + operation.name" class="pa-0 ma-0 grey--text text--lighten-1" style="line-height: 1rem;">
-                  {{ capitalize(translate(operation.name)) }}
-                </div>
-                <ul style="list-style-type: none;" class="text-truncate" :style="{
-                  'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
-                }" :key="operation.id + operation.name + 'ul'">
-                  <li
-                  v-for="key of Object.keys(operation.definitions)"
-                  :key="operation.id + key + 'li'">
-{{ translate('events.definitions.' + key + '.label') }}
-<code class="ml-2">{{ operation.definitions[key] }}</code>
-                  </li>
-                </ul>
-              </template>
+            <span class="grey--text text--lighten-1" v-if="item.operations.length === 0">No operations set for this event</span>
+            <template v-for="operation of item.operations">
+              <div :key="operation.id + operation.name" class="pa-0 ma-0 grey--text text--lighten-1" style="line-height: 1rem;">
+                {{ capitalize(translate(operation.name)) }}
+              </div>
+              <ul style="list-style-type: none;" class="text-truncate" :style="{
+                'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
+              }" :key="operation.id + operation.name + 'ul'">
+                <li
+                v-for="key of Object.keys(operation.definitions)"
+                :key="operation.id + key + 'li'">
+                  {{ translate('events.definitions.' + key + '.label') }}
+                  <code class="ml-2">{{ operation.definitions[key] }}</code>
+                </li>
+              </ul>
+            </template>
           </template>
         </table-mobile>
       </template>
@@ -298,6 +298,9 @@ export default defineComponent({
       },
       {
         value: 'operations', text: '', sortable: false,
+      },
+      {
+        value: 'isEnabled', text: translate('enabled'), align: 'center',
       },
     ];
 

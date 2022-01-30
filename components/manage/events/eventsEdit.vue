@@ -26,23 +26,34 @@
                   :label="capitalize(translate('event'))"
                   :items="eventsItems"
                   :return-object="false"
-              hide-details="auto"
+                  hide-details="auto"
                   hide-selected
                 />
 
-            <v-text-field
-              v-model="item.filter"
-              hide-details="auto"
-              :label="capitalize(translate('systems.customcommands.filter.name'))"
-              @keydown.enter.prevent
-            >
-              <template #append>
-                <input-variables
-                  :filters="availableVariables"
-                  @input="item.filter = item.filter + $event"
+                <v-text-field
+                  v-model="item.filter"
+                  hide-details="auto"
+                  :label="capitalize(translate('systems.customcommands.filter.name'))"
+                  @keydown.enter.prevent
+                >
+                  <template #append>
+                    <input-variables
+                      :filters="availableVariables"
+                      @input="item.filter = item.filter + $event"
+                    />
+                  </template>
+                </v-text-field>
+
+                <v-switch
+                  v-model="item.isEnabled"
+                  :label="translate('enabled')"
+                  persistent-hint
+                  hide-details="auto"
+                  class="pb-2"
+                  :hint="(item.isEnabled
+                    ? 'Event is enabled'
+                    : 'Event is disabled')"
                 />
-              </template>
-            </v-text-field>
 
                 <div
                   v-for="defKey of Object.keys(item.definitions)"
