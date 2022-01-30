@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [36.1.1](https://github.com/sogebot/ui-admin/compare/v36.1.0...v36.1.1) (2022-01-30)
+
+
+### Bug Fixes
+
+* **events:** add missing enabled toggle ([e9db176](https://github.com/sogebot/ui-admin/commit/e9db17619e679dfaeb58ca179acff0f32c84245e))
+
 ## [36.1.0](https://github.com/sogebot/ui-admin/compare/v36.0.2...v36.1.0) (2022-01-27)
 
 
