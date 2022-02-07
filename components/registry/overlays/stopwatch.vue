@@ -36,8 +36,12 @@ import {
 } from 'lodash';
 
 export default defineComponent({
-  components: { font: defineAsyncComponent(() => import('~/components/form/expansion/font.vue')) },
-  props:      { value: [Object, Array] },
+  components: {
+    font: defineAsyncComponent(() => import('~/components/form/expansion/font.vue')),
+  },
+  props: {
+    value: [Object, Array],
+  },
   setup (props, ctx) {
     const model = ref([0]);
     const options = ref(
@@ -98,6 +102,8 @@ export default defineComponent({
     });
 
     const keydownHandler: EventListener = (event) => {
+      options.value.time = Number(options.value.time);
+
       const key = (event as KeyboardEvent).key;
       const shiftKey = (event as KeyboardEvent).shiftKey;
       const ctrlKey = (event as KeyboardEvent).ctrlKey;
@@ -122,7 +128,9 @@ export default defineComponent({
       if (!isEqual(props.value, options.value)) {
         ctx.emit('input', val);
       }
-    }, { deep: true, immediate: true });
+    }, {
+      deep: true, immediate: true,
+    });
 
     return {
       model,
