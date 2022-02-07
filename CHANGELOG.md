@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [36.1.2](https://github.com/sogebot/ui-admin/compare/v36.1.1...v36.1.2) (2022-02-07)
+
+
+### Bug Fixes
+
+* **countdown:** fix key handler ([cf1ffe1](https://github.com/sogebot/ui-admin/commit/cf1ffe134f67958ce3c42fb3d8faff589e278f44))
+* **stopwatch:** fix key handler ([64eb677](https://github.com/sogebot/ui-admin/commit/64eb677ca221043fd49242b5cfd3aa526c869bb9))
+
 ### [36.1.1](https://github.com/sogebot/ui-admin/compare/v36.1.0...v36.1.1) (2022-01-30)
 
 
