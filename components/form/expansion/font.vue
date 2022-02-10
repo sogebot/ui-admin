@@ -196,7 +196,7 @@
                 color: typeof model.color === 'undefined' ? exampleColor : model.color,
                 'font-size': model.size + 'px',
                 'font-weight': model.weight,
-                'font-family': model.family,
+                'font-family': `'${model.family}'`,
                 'text-align': 'center',
                 'text-shadow': [textStrokeGenerator(model.borderPx, model.borderColor), shadowGenerator(model.shadow)].filter(Boolean).join(', ')
               }"
