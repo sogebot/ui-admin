@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [36.1.3](https://github.com/sogebot/ui-admin/compare/v36.1.2...v36.1.3) (2022-02-10)
+
+
+### Bug Fixes
+
+* **font:** properly load fonts with multiple words ([88616a2](https://github.com/sogebot/ui-admin/commit/88616a2709b2920f41083b8561ff6ac0fc675755))
+
 ### [36.1.2](https://github.com/sogebot/ui-admin/compare/v36.1.1...v36.1.2) (2022-02-07)
 
 
