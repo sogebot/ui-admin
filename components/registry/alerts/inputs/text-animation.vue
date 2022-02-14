@@ -1,22 +1,37 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header>{{ translate('registry.alerts.animationText.name') }}</v-expansion-panel-header>
+    <v-expansion-panel-header>{{ $t('registry.alerts.animationText.name') }}</v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-row no-gutters>
         <v-col>
           <v-select
             v-model="animType"
-            :label="translate('registry.alerts.animationType.name')"
+            :label="$t('registry.alerts.animationType.name')"
             :items="options"
           />
         </v-col>
-        <v-col v-if="animType !== 'baffle'" align-self="center" class="text-center">
+        <v-col v-if="!['baffle', 'typewriter'].includes(animType)" align-self="center" class="text-center">
           <div
             v-for="(char, index) of text.split('')"
             :key="char + index"
             class="char d-inline-block animate__animated animate__infinite"
             :class="['animate__' + animType, 'animate__' + animOptions.speed]"
             :style="{'animation-delay' : (index * 50) + 'ms'}"
+          >
+            {{ char === ' ' ? '&nbsp;' : char }}
+          </div>
+        </v-col>
+        <v-col v-else-if="animType === 'typewriter'" align-self="center" class="text-center">
+          <div
+            v-for="(char, index) of text.split('')"
+            :key="char + index + animOptions.speed"
+            class="char d-inline-block animate__animated animate__fadeIn"
+            :class="['animate__' + animOptions.speed]"
+            :style="{
+              'animation-timing-function': 'steps(1, end)',
+              'animation-duration': `${animOptions.speed}ms`,
+              'animation-delay': (index * animOptions.speed) + 'ms'
+            }"
           >
             {{ char === ' ' ? '&nbsp;' : char }}
           </div>
@@ -30,43 +45,43 @@
         </v-col>
       </v-row>
       <v-row
-        v-if="!['baffle', 'wiggle', 'wiggle2' ,'wave', 'none'].includes(animType)"
+        v-if="!['baffle', 'wiggle', 'wiggle2' ,'wave', 'none', 'typewriter'].includes(animType)"
         no-gutters
       >
         <v-col>
           <v-select
             v-model="animOptions.speed"
-            :label="translate('registry.alerts.speed.name')"
+            :label="$t('registry.alerts.speed.name')"
             :items="speedOptions"
           />
         </v-col>
       </v-row>
-      <template v-if="['baffle'].includes(animType)">
+      <template v-if="['baffle', 'typewriter'].includes(animType)">
         <v-row no-gutters>
           <v-col>
             <v-text-field
               v-model.number="animOptions.speed"
               type="number"
               min="0"
-              :label="translate('registry.alerts.speed.name')"
+              :label="$t('registry.alerts.speed.name')"
             />
           </v-col>
         </v-row>
-        <v-row no-gutters>
+        <v-row no-gutters v-if="['baffle'].includes(animType)">
           <v-col>
             <v-text-field
               v-model.number="animOptions.maxTimeToDecrypt"
               type="number"
               min="0"
-              :label="translate('registry.alerts.maxTimeToDecrypt.name')"
+              :label="$t('registry.alerts.maxTimeToDecrypt.name')"
             />
           </v-col>
         </v-row>
-        <v-row no-gutters>
+        <v-row no-gutters v-if="['baffle'].includes(animType)">
           <v-col>
             <v-text-field
               v-model="animOptions.characters"
-              :label="translate('registry.alerts.characters.name')"
+              :label="$t('registry.alerts.characters.name')"
             />
           </v-col>
         </v-row>
@@ -80,7 +95,6 @@ import {
   defineAsyncComponent,
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
-import translate from '@sogebot/ui-helpers/translate';
 
 require('animate.css');
 
@@ -91,7 +105,7 @@ export default defineComponent({
     animationOptions: Object,
   },
   setup (props, ctx) {
-    const animType = ref(props.animation);
+    const animType = ref(props.animation as string);
     const animOptions = ref(props.animationOptions ?? {});
 
     const text = ref('Sample text');
@@ -115,6 +129,7 @@ export default defineComponent({
       { value: 'shake2', text: 'shake' },
       { value: 'swing', text: 'swing' },
       { value: 'tada', text: 'tada' },
+      { value: 'typewriter', text: 'typewriter' },
       { value: 'wave', text: 'wave' },
       { value: 'wobble', text: 'wobble' },
       { value: 'wiggle', text: 'wiggle' },
@@ -127,6 +142,8 @@ export default defineComponent({
         animOptions.value.speed = 50;
         animOptions.value.characters = '█▓░ </>';
         animOptions.value.maxTimeToDecrypt = '4000';
+      } else if (val === 'typewriter') {
+        animOptions.value.speed = 50;
       } else {
         animOptions.value.speed = 'slower';
       }
@@ -142,7 +159,6 @@ export default defineComponent({
       animType,
       animOptions,
       speedOptions,
-      translate,
     };
   },
 });
