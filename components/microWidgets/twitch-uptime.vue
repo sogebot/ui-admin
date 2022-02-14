@@ -24,7 +24,7 @@
             </template>
           </v-card-title>
           <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
-            {{ capitalize(translate('uptime')) }}
+            {{ capitalize($t('uptime')) }}
           </v-card-subtitle>
 
           <v-fade-transition>
@@ -34,7 +34,7 @@
               color="#333"
             >
               <v-btn x-small @click="saveHighlight">
-                {{ translate('click-to-highlight') }}
+                {{ $t('click-to-highlight') }}
               </v-btn>
             </v-overlay>
           </v-fade-transition>
@@ -48,7 +48,6 @@
 import { defineComponent } from '@nuxtjs/composition-api';
 import { getTime } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash';
 
 export default defineComponent({
@@ -61,7 +60,7 @@ export default defineComponent({
     const saveHighlight = () => getSocket('/systems/highlights').emit('highlight');
 
     return {
-      saveHighlight, getTime, translate, capitalize,
+      saveHighlight, getTime, capitalize,
     };
   },
 });

@@ -13,10 +13,10 @@
       :loading="!isLoaded"
     >
       <v-card-title :key="timestamp" class="px-1 py-0 text-truncate" style="font-size: 1rem;">
-        {{ song || capitalize(translate('not-available')) }}
+        {{ song || capitalize($t('not-available')) }}
       </v-card-title>
       <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
-        {{ capitalize(translate('currentsong')) }}
+        {{ capitalize($t('currentsong')) }}
       </v-card-subtitle>
     </v-card>
   </v-col>
@@ -28,11 +28,12 @@ import {
 } from '@nuxtjs/composition-api';
 import { getTime } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash';
 
 export default defineComponent({
-  props: { timestamp: Number },
+  props: {
+    timestamp: Number,
+  },
   setup () {
     const song = ref(null);
     const isLoaded = ref(false);
@@ -47,7 +48,7 @@ export default defineComponent({
       });
     });
     return {
-      getTime, translate, capitalize, song, isLoaded,
+      getTime, capitalize, song, isLoaded,
     };
   },
 });

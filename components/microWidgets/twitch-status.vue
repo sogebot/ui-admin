@@ -17,23 +17,23 @@
           <v-row no-gutters>
             <v-col>
               <v-card-title :key="timestamp" class="px-1 py-0 text-truncate" style="font-size: 1rem;">
-                <span v-html="game || capitalize(translate('not-available'))" />
+                <span v-html="game || capitalize($t('not-available'))" />
               </v-card-title>
               <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
-                {{ capitalize(translate('game')) }}
+                {{ capitalize($t('game')) }}
               </v-card-subtitle>
             </v-col>
             <v-col>
               <v-card-title :key="timestamp" class="px-1 py-0 text-truncate" style="font-size: 1rem;">
-                <span v-html="title || capitalize(translate('not-available'))" />
+                <span v-html="title || capitalize($t('not-available'))" />
               </v-card-title>
               <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
-                {{ capitalize(translate('title')) }}
+                {{ capitalize($t('title')) }}
               </v-card-subtitle>
             </v-col>
             <v-col>
               <v-card-title :key="timestamp" class="px-1 py-0 text-truncate" style="font-size: 1rem;">
-                <span v-if="tags.length === 0">{{ capitalize(translate('not-available')) }}</span>
+                <span v-if="tags.length === 0">{{ capitalize($t('not-available')) }}</span>
                 <small
                   v-for="(tag, idx) of filterTags(true)"
                   :key="tag.name"
@@ -50,7 +50,7 @@
                 </span>
               </v-card-title>
               <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
-                {{ capitalize(translate('tags')) }}
+                {{ capitalize($t('tags')) }}
               </v-card-subtitle>
             </v-col>
           </v-row>
@@ -62,7 +62,7 @@
               color="#333"
             >
               <v-btn x-small @click.stop="dialog = true">
-                {{ translate('click-to-change') }}
+                {{ $t('click-to-change') }}
               </v-btn>
             </v-overlay>
           </v-fade-transition>
@@ -81,14 +81,19 @@ import {
 } from '@nuxtjs/composition-api';
 import { getTime } from '@sogebot/ui-helpers/getTime';
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, isNil } from 'lodash';
 
 import { error } from '~/functions/error';
 
 export default defineComponent({
-  props:      { timestamp: Number },
-  components: { changeGameDialog: defineAsyncComponent({ loader: () => import('./commons/change-game-dialog.vue') }) },
+  props: {
+    timestamp: Number,
+  },
+  components: {
+    changeGameDialog: defineAsyncComponent({
+      loader: () => import('./commons/change-game-dialog.vue'),
+    }),
+  },
   setup () {
     const dialog = ref(false);
     const game = ref(null as null | string);
@@ -101,12 +106,22 @@ export default defineComponent({
     const filterTags = (is_auto: boolean) => {
       return tags.value.filter(o => !!o.is_auto === is_auto).map((o) => {
         const key = Object.keys(o.localization_names).find(key2 => key2.includes(store.state.configuration.lang));
-        return { name: o.localization_names[key || 'en-us'], is_auto: !!o.is_auto };
+        return {
+          name: o.localization_names[key || 'en-us'], is_auto: !!o.is_auto,
+        };
       }).sort((a, b) => {
-        if ((a || { name: '' }).name < (b || { name: '' }).name) { // sort string ascending
+        if ((a || {
+          name: '',
+        }).name < (b || {
+          name: '',
+        }).name) { // sort string ascending
           return -1;
         }
-        if ((a || { name: '' }).name > (b || { name: '' }).name) {
+        if ((a || {
+          name: '',
+        }).name > (b || {
+          name: '',
+        }).name) {
           return 1;
         }
         return 0; // default return value (no sorting)
@@ -165,7 +180,7 @@ export default defineComponent({
       });
     });
     return {
-      getTime, translate, capitalize, game, title, tags, filterTags, isLoaded, dialog,
+      getTime, capitalize, game, title, tags, filterTags, isLoaded, dialog,
     };
   },
 });

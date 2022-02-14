@@ -98,6 +98,7 @@ export default {
     '@nuxtjs/proxy',
     'portal-vue/nuxt',
     '@nuxtjs/apollo',
+    '@nuxtjs/i18n',
   ],
 
   apollo: {
@@ -173,5 +174,18 @@ export default {
         endpoint: '/graphql',
       },
     },
+  },
+
+  i18n: {
+    locales: [
+      {
+        code: 'en',
+        file: 'dynamic.js',
+      },
+    ],
+    lazy:          true,
+    langDir:       'lang/',
+    defaultLocale: 'en',
+    strategy:      'no_prefix',
   },
 };

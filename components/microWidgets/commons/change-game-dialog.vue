@@ -22,7 +22,7 @@
           @click="save"
         >
           <v-icon class="d-flex d-sm-none">mdi-floppy</v-icon>
-          <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
+          <span class="d-none d-sm-flex">{{ $t('dialog.buttons.saveChanges.idle') }}</span>
         </v-btn>
       </v-toolbar>
 
@@ -124,7 +124,6 @@ import {
   defineComponent, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
 import { debounce, orderBy } from 'lodash';
 
 import type { CacheTitlesInterface } from '.bot/src/database/entity/cacheTitles';
@@ -284,7 +283,6 @@ export default defineComponent({
 
     return {
       dialogController,
-      translate,
       titles,
       lastGames,
       isLoading,

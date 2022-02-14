@@ -69,7 +69,7 @@
               >
                 <v-icon
                   :style="{
-                    'transform': isTrending(currentAnimated.value, averageAnimated.value) ? 'translateY(-7px)' : 'translateY(5px)',
+                    'transform': isTrending(currentAnimated.value, averageAnimated.value) ? '$tY(-7px)' : '$tY(5px)',
                   }"
                   x-small
                   :color="isTrending(currentAnimated.value, averageAnimated.value) ? 'green' : 'red'"
@@ -141,11 +141,11 @@
               </small>
             </template>
             <small v-else class="text-overline">
-              {{ translate('hidden') }}
+              {{ $t('hidden') }}
             </small>
           </v-card-title>
           <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
-            {{ translate(title) }}
+            {{ $t(title) }}
           </v-card-subtitle>
 
           <v-fade-transition v-if="hide">
@@ -155,7 +155,7 @@
               color="#333"
             >
               <v-btn x-small @click="toggleDisplay">
-                {{ translate('click-to-toggle-display') }}
+                {{ $t('click-to-toggle-display') }}
               </v-btn>
             </v-overlay>
           </v-fade-transition>
@@ -169,7 +169,6 @@
 import {
   defineComponent, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
-import translate from '@sogebot/ui-helpers/translate';
 import gsap from 'gsap';
 
 import { isTrending } from '~/functions/isTrending';
@@ -227,7 +226,7 @@ export default defineComponent({
     };
 
     return {
-      toggleDisplay, currentAnimated, numberReducer, translate, isTrending, averageAnimated,
+      toggleDisplay, currentAnimated, numberReducer, isTrending, averageAnimated,
     };
   },
 });

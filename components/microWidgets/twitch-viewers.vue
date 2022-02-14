@@ -29,11 +29,11 @@
               }}
             </template>
             <small v-else class="text-overline">
-              {{ translate('hidden') }}
+              {{ $t('hidden') }}
             </small>
           </v-card-title>
           <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
-            {{ translate('viewers') }}
+            {{ $t('viewers') }}
           </v-card-subtitle>
 
           <v-fade-transition>
@@ -43,7 +43,7 @@
               color="#333"
             >
               <v-btn x-small @click="toggleDisplay">
-                {{ translate('click-to-toggle-display') }}
+                {{ $t('click-to-toggle-display') }}
               </v-btn>
             </v-overlay>
           </v-fade-transition>
@@ -57,7 +57,6 @@
 import {
   defineComponent, onMounted, ref, useStore,
 } from '@nuxtjs/composition-api';
-import translate from '@sogebot/ui-helpers/translate';
 import { gsap } from 'gsap';
 
 export default defineComponent({
@@ -68,7 +67,9 @@ export default defineComponent({
     current:        Object,
   },
   setup (props) {
-    const currentAnimated = ref({ value: 0 });
+    const currentAnimated = ref({
+      value: 0,
+    });
     const store = useStore<any>();
 
     onMounted(() => {
@@ -83,7 +84,7 @@ export default defineComponent({
       store.commit('setUIStatsHidden', !store.state.areUIStatsHidden);
     };
     return {
-      toggleDisplay, translate, currentAnimated,
+      toggleDisplay, currentAnimated,
     };
   },
 });
