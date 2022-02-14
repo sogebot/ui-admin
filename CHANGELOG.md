@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [36.2.0](https://github.com/sogebot/ui-admin/compare/v36.1.3...v36.2.0) (2022-02-14)
+
+
+### Features
+
+* **alerts:** add typewriter animation ([2ea3a4e](https://github.com/sogebot/ui-admin/commit/2ea3a4ebce36eafb41e036aa8502e57c7359a942))
+
 ### [36.1.3](https://github.com/sogebot/ui-admin/compare/v36.1.2...v36.1.3) (2022-02-10)
 
 
