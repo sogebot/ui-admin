@@ -167,7 +167,7 @@ import {
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { Filter } from '~/.bot/src/database/entity/alert';
+import type { Filter } from '@entity/alert';
 
 type Props = {
   value: string,

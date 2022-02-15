@@ -116,7 +116,7 @@ import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import { v4 } from 'uuid';
 
-import type { PriceInterface } from '~/.bot/src/database/entity/price';
+import type { PriceInterface } from '@entity/price';
 import { EventBus } from '~/functions/event-bus';
 
 type Props = {

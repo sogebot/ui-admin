@@ -301,7 +301,7 @@ import {
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { AlertInterface, CommonSettingsInterface } from '~/.bot/src/database/entity/alert';
+import type { AlertInterface, CommonSettingsInterface } from '@entity/alert';
 import { EventBus } from '~/functions/event-bus';
 import {
   highlighterCSS, highlighterHTML, highlighterJS, PrismEditor,

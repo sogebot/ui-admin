@@ -204,7 +204,7 @@ import {
 } from '@vue/apollo-composable';
 import { v4 } from 'uuid';
 
-import type { GoalGroupInterface } from '.bot/src/database/entity/goal';
+import type { GoalGroupInterface } from '@entity/goal';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

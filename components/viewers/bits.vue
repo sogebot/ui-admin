@@ -138,7 +138,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import type { UserBitInterface, UserInterface } from '.bot/src/database/entity/user';
+import type { UserBitInterface, UserInterface } from '@entity/user';
 import { minValue, required } from '~/functions/validators';
 
 const socket = {

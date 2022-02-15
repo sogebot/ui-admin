@@ -125,7 +125,7 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { AlertInterface, CommonSettingsInterface } from '~/.bot/src/database/entity/alert';
+import type { AlertInterface, CommonSettingsInterface } from '@entity/alert';
 
 declare global {
   interface Window {

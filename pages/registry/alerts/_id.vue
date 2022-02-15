@@ -224,7 +224,7 @@ import { v4 } from 'uuid';
 
 import { getBase64FromUrl } from '../../../functions/getBase64FromURL';
 
-import { AlertInterface } from '~/.bot/src/database/entity/alert';
+import { AlertInterface } from '@entity/alert';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';

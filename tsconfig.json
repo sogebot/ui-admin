@@ -26,6 +26,9 @@
       ],
       "@/*": [
         "./*"
+      ],
+      "@entity/*": [
+        "./node_modules/@sogebot/backend/src/database/entity/*"
       ]
     },
     "types": [

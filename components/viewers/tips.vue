@@ -146,7 +146,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import type { UserInterface, UserTipInterface } from '.bot/src/database/entity/user';
+import type { UserInterface, UserTipInterface } from '@entity/user';
 import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({

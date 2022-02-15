@@ -277,10 +277,13 @@
 </template>
 
 <script lang="ts">
+import { OBSWebsocketInterface } from '@entity/obswebsocket';
 import {
   computed,
   defineComponent, onMounted, ref, useRoute, useRouter, useStore, watch,
 } from '@nuxtjs/composition-api';
+import { availableActions } from '@sogebot/backend/src/helpers/obswebsocket/actions';
+import type { Source, Type } from '@sogebot/backend/src/helpers/obswebsocket/sources';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   useMutation, useQuery, useResult,
@@ -291,9 +294,6 @@ import { cloneDeep } from 'lodash';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
 
-import { OBSWebsocketInterface } from '~/.bot/src/database/entity/obswebsocket';
-import { availableActions } from '~/.bot/src/helpers/obswebsocket/actions';
-import type { Source, Type } from '~/.bot/src/helpers/obswebsocket/sources';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { highlighterJS, PrismEditor } from '~/functions/prismjs';
@@ -312,9 +312,7 @@ const emptyItem: OBSWebsocketInterface = {
 };
 
 export default defineComponent({
-  components: {
-    PrismEditor,
-  },
+  components: { PrismEditor },
   setup (_, ctx) {
     const router = useRouter();
     const route = useRoute();
@@ -323,9 +321,7 @@ export default defineComponent({
     const item = ref(cloneDeep(emptyItem) as OBSWebsocketInterface);
 
     if (route.value.params.id !== 'new') {
-      const query = useQuery(GET_ONE, {
-        id: route.value.params.id,
-      });
+      const query = useQuery(GET_ONE, { id: route.value.params.id });
       query.onError(error);
       loading = query.loading;
       const cache = useResult<{ OBSWebsocket: OBSWebsocketInterface[] }, null>(query.result, null);
@@ -336,25 +332,17 @@ export default defineComponent({
 
         if (value.length === 0) {
           EventBus.$emit('snack', 'error', 'Data not found.');
-          router.push({
-            path: '/registry/obswebsocket',
-          });
+          router.push({ path: '/registry/obswebsocket' });
         } else {
           item.value = cloneDeep(value[0]);
         }
-      }, {
-        immediate: true, deep: true,
-      });
+      }, { immediate: true, deep: true });
     }
-    const { result: sceneResult } = useQuery(SCENES_AND_SOURCES, null, {
-      pollInterval: 1000,
-    });
+    const { result: sceneResult } = useQuery(SCENES_AND_SOURCES, null, { pollInterval: 1000 });
     watch(sceneResult, (value) => {
       if (value) {
         availableScenes.value = [
-          {
-            value: '', text: translate('integrations.obswebsocket.noSceneSelected'),
-          },
+          { value: '', text: translate('integrations.obswebsocket.noSceneSelected') },
           ...value.OBSWebsocketGetScenes.map((scene: { name: string }) => ({
             value: scene.name,
             text:  scene.name,
@@ -363,9 +351,7 @@ export default defineComponent({
         availableSources.value = value.OBSWebsocketGetSources;
         sourceTypes.value = value.OBSWebsocketGetSourceTypes;
       }
-    }, {
-      deep: true,
-    });
+    }, { deep: true });
 
     const { mutate: trigger, loading: testing, onDone: onDone1, onError: onError1 } = useMutation(gql`
       mutation OBSWebsocketTrigger($tasks: String!) {
@@ -378,11 +364,7 @@ export default defineComponent({
         OBSWebsocketSave(data: $data) { id }
       }`);
     onDoneSave((result) => {
-      router.push({
-        params: {
-          id: result.data.OBSWebsocketSave.id,
-        },
-      });
+      router.push({ params: { id: result.data.OBSWebsocketSave.id } });
       EventBus.$emit('snack', 'success', 'Data saved.');
     });
     onErrorSave(error);
@@ -405,16 +387,12 @@ export default defineComponent({
     const availableAudioSources = computed(() => {
       const audioTypeId = sourceTypes.value.filter(type => type.caps.hasAudio).map(type => type.typeId);
       return [
-        {
-          value: '', text: translate('integrations.obswebsocket.noSourceSelected'),
-        },
+        { value: '', text: translate('integrations.obswebsocket.noSourceSelected') },
         ...availableSources.value
           .filter(source => audioTypeId.includes(source.typeId))
-          .map(source => ({
-            value: source.name, text: source.name,
-          }))];
+          .map(source => ({ value: source.name, text: source.name }))];
     });
-    const actionToAdd = ref(Object.keys(availableActions)[0]);
+    const actionToAdd = ref(Object.keys(availableActions)[0] as keyof typeof availableActions);
 
     onMounted(() => {
       store.commit('panel/back', '/registry/obswebsocket');
@@ -478,11 +456,8 @@ export default defineComponent({
             value = true;
             break;
         }
-        return {
-          [cur]: value, ...prev,
-        };
-      }, {
-      });
+        return { [cur]: value, ...prev };
+      }, {});
       item.value.simpleModeTasks.push({
         id:    shortid.generate(),
         event: actionKey,

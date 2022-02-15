@@ -317,8 +317,8 @@ import { useQuery, useResult } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
-import type { VariableInterface } from '.bot/src/database/entity/variable';
-import type { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
+import type { VariableInterface } from '@entity/variable';
+import type { PermissionsInterface } from '@entity/permissions';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { origin } from '~/functions/origin';

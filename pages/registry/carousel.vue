@@ -345,7 +345,7 @@ import { cloneDeep, sortBy } from 'lodash';
 
 import { error } from '../../functions/error';
 
-import type { CarouselInterface } from '.bot/src/database/entity/carousel';
+import type { CarouselInterface } from '@entity/carousel';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
 import { getBase64FromUrl } from '~/functions/getBase64FromURL';

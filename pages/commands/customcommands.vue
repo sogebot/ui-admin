@@ -159,8 +159,8 @@ import {
   capitalize, isEqual, orderBy,
 } from 'lodash';
 
-import type { CommandsGroupInterface, CommandsInterface } from '.bot/src/database/entity/commands';
-import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
+import type { CommandsGroupInterface, CommandsInterface } from '@entity/commands';
+import type { PermissionsInterface } from '@entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

@@ -65,7 +65,7 @@ import { useMutation } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { cloneDeep } from 'lodash';
 
-import type { QuickActions } from '.bot/src/database/entity/dashboard';
+import type { QuickActions } from '@entity/dashboard';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 

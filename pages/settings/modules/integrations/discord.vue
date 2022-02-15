@@ -132,7 +132,7 @@ import {
 } from '@vue/composition-api';
 import gql from 'graphql-tag';
 
-import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
+import { PermissionsInterface } from '@entity/permissions';
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
 import { minValue, required } from '~/functions/validators';

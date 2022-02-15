@@ -242,7 +242,7 @@ import {
   capitalize, flatten, orderBy, uniq,
 } from 'lodash';
 
-import type { QuotesInterface } from '.bot/src/database/entity/quotes';
+import type { QuotesInterface } from '@entity/quotes';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

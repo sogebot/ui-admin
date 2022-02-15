@@ -223,7 +223,7 @@ import {
 } from 'lodash';
 import { v4 } from 'uuid';
 
-import type { OverlayMapperGroup } from '~/.bot/src/database/entity/overlay';
+import type { OverlayMapperGroup } from '@entity/overlay';
 import { haveAnyOptions } from '~/pages/registry/overlays/_id.vue';
 
 export default defineComponent({

@@ -37,7 +37,7 @@ import { defineComponent, ref } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 as uuid } from 'uuid';
 
-import type { RankInterface } from '.bot/src/database/entity/rank';
+import type { RankInterface } from '@entity/rank';
 
 export default defineComponent({
   props: { rules: Object },

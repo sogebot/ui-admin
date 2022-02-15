@@ -129,7 +129,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { v4 as uuid } from 'uuid';
 import draggable from 'vuedraggable';
 
-import type { KeywordInterface } from '../../../.bot/src/database/entity/keyword.js';
+import type { KeywordInterface } from '@entity/keyword.js';
 
 import { EventBus } from '~/functions/event-bus';
 

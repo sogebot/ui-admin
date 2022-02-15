@@ -26,7 +26,7 @@ import {
   defaults, isEqual, pick,
 } from 'lodash';
 
-import type { AlertInterface } from '.bot/src/database/entity/alert';
+import type { AlertInterface } from '@entity/alert';
 import GET_ALL from '~/queries/alert/getAll.gql';
 
 export default defineComponent({

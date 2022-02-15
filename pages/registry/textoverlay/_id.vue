@@ -175,7 +175,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
-import type { TextInterface } from '.bot/src/database/entity/text';
+import type { TextInterface } from '@entity/text';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import {

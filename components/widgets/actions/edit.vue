@@ -77,7 +77,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { cloneDeep } from 'lodash';
 
-import type { QuickActions } from '.bot/src/database/entity/dashboard';
+import type { QuickActions } from '@entity/dashboard';
 
 type Props = {
   item: QuickActions.Item,

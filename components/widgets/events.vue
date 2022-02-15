@@ -317,7 +317,7 @@ import {
 } from '@vue/apollo-composable';
 import { get } from 'lodash';
 
-import type { EventListInterface } from '~/.bot/src/database/entity/eventList';
+import type { EventListInterface } from '@entity/eventList';
 import GET_CFG from '~/queries/alert/getCfg.gql';
 import SET_CFG from '~/queries/alert/setCfg.gql';
 

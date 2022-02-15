@@ -218,8 +218,8 @@ import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { RaffleInterface } from '.bot/src/database/entity/raffle';
-import { UserInterface } from '~/.bot/src/database/entity/user';
+import type { RaffleInterface } from '@entity/raffle';
+import { UserInterface } from '@entity/user';
 import { error } from '~/functions/error';
 import {
   minLength, required, startsWith,

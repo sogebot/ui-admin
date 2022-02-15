@@ -38,7 +38,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import type { TimerInterface } from '.bot/src/database/entity/timer';
+import type { TimerInterface } from '@entity/timer';
 
 export default defineComponent({
   props: { rules: Object },

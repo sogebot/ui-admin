@@ -69,7 +69,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import { getUsernameById } from '@sogebot/ui-helpers/userById';
 import { capitalize } from 'lodash';
 
-import type { QuotesInterface } from '.bot/src/database/entity/quotes';
+import type { QuotesInterface } from '@entity/quotes';
 
 export default defineComponent({
   props: { tags: Array, rules: Object },

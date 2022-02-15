@@ -60,7 +60,7 @@ import { useQuery, useResult } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { capitalize, orderBy } from 'lodash';
 
-import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
+import type { PermissionsInterface } from '@entity/permissions';
 import { error } from '~/functions/error';
 import { getPermissionName } from '~/functions/getPermissionName';
 import {

@@ -38,7 +38,7 @@ import { cloneDeep, pick } from 'lodash';
 
 import type {
   OverlayMapperGroup, OverlayMappers, OverlayMapperStopwatch,
-} from '.bot/src/database/entity/overlay';
+} from '@entity/overlay';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 import GET from '~/queries/overlays/get.gql';

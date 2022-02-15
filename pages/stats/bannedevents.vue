@@ -34,7 +34,7 @@ import { useQuery, useResult } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { capitalize, orderBy } from 'lodash';
 
-import type { BannedEventsInterface } from '~/.bot/src/database/entity/bannedEvents';
+import type { BannedEventsInterface } from '@entity/bannedEvents';
 
 export default defineComponent({
   setup () {

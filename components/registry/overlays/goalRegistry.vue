@@ -26,7 +26,7 @@ import {
   defaults, isEqual, pick,
 } from 'lodash';
 
-import type { GoalGroupInterface } from '~/.bot/src/database/entity/goal';
+import type { GoalGroupInterface } from '@entity/goal';
 import GET_ALL from '~/queries/goals/getAll.gql';
 
 export default defineComponent({

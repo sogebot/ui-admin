@@ -13,7 +13,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { cloneDeep, pick } from 'lodash';
 
-import type { CommandItem } from '.bot/src/database/entity/dashboard';
+import type { CommandItem } from '@entity/dashboard';
 import { EventBus } from '~/functions/event-bus';
 import {
   minLength, required, startsWith,

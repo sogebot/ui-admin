@@ -176,7 +176,7 @@ import shortid from 'shortid';
 
 import { error } from '../../../../functions/error';
 
-import { GalleryInterface } from '~/.bot/src/database/entity/gallery';
+import { GalleryInterface } from '@entity/gallery';
 
 const defaultTypes = {
   image: 'image/gif',

@@ -334,7 +334,7 @@ import gql from 'graphql-tag';
 import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 
-import { GoalGroupInterface, GoalInterface } from '~/.bot/src/database/entity/goal';
+import { GoalGroupInterface, GoalInterface } from '@entity/goal';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import {

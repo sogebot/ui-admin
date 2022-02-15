@@ -67,7 +67,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { escapeRegExp, isNil } from 'lodash';
 
-import type { HighlightInterface } from '.bot/src/database/entity/highlight';
+import type { HighlightInterface } from '@entity/highlight';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 

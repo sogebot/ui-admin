@@ -345,7 +345,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import { uniq } from 'lodash';
 import shortid from 'shortid';
 
-import type { GalleryInterface } from '.bot/src/database/entity/gallery';
+import type { GalleryInterface } from '@entity/gallery';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 

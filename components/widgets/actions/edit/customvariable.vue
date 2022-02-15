@@ -12,7 +12,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { cloneDeep, pick } from 'lodash';
 
-import type { CustomVariableItem } from '.bot/src/database/entity/dashboard';
+import type { CustomVariableItem } from '@entity/dashboard';
 import { EventBus } from '~/functions/event-bus';
 import {
   minLength, required, startsWith,

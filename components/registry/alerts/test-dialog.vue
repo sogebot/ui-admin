@@ -159,7 +159,7 @@ import { generateUsername } from '@sogebot/ui-helpers/generateUsername';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { EmitData } from '.bot/src/database/entity/alert';
+import type { EmitData } from '@entity/alert';
 
 export default defineComponent({
   components: {

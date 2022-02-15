@@ -36,7 +36,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
-import type { ChecklistInterface } from '.bot/src/database/entity/checklist';
+import type { ChecklistInterface } from '@entity/checklist';
 
 export default defineComponent({
   props: {

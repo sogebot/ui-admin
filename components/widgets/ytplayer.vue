@@ -127,7 +127,7 @@ import Vue from 'vue';
 // Workaround is to load css in head https://github.com/skjnldsv/vue-plyr/issues/28
 // import '@skjnldsv/vue-plyr/dist/dist/vue-plyr.css';
 
-import type { currentSongType, SongRequestInterface } from '.bot/src/database/entity/song';
+import type { currentSongType, SongRequestInterface } from '@entity/song';
 import { error } from '~/functions/error';
 
 Vue.use(VuePlyr, {

@@ -18,7 +18,7 @@ import {
 } from '@vue/composition-api';
 import gql from 'graphql-tag';
 
-import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
+import { PermissionsInterface } from '@entity/permissions';
 
 export default defineComponent({
   props:      { ignored: Array },

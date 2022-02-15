@@ -111,8 +111,8 @@ import {
 } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import type { EventOperationInterface, Events } from '~/.bot/src/database/entity/event';
-import { OBSWebsocketInterface } from '~/.bot/src/database/entity/obswebsocket.js';
+import type { EventOperationInterface, Events } from '@entity/event';
+import { OBSWebsocketInterface } from '@entity/obswebsocket.js';
 import { error } from '~/functions/error';
 import GET_ALL from '~/queries/obsWebsocket/getAll.gql';
 

@@ -93,7 +93,7 @@ import {
 import translate from '@sogebot/ui-helpers/translate';
 import { orderBy } from 'lodash';
 
-import type { RandomizerItemInterface } from '~/.bot/src/database/entity/randomizer';
+import type { RandomizerItemInterface } from '@entity/randomizer';
 import { EventBus } from '~/functions/event-bus';
 import {
   isHexColor, minValue, required,

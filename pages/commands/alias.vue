@@ -158,8 +158,8 @@ import {
   capitalize, isEqual, orderBy,
 } from 'lodash';
 
-import type { AliasGroupInterface, AliasInterface } from '.bot/src/database/entity/alias';
-import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
+import type { AliasGroupInterface, AliasInterface } from '@entity/alias';
+import type { PermissionsInterface } from '@entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error as errorLog } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

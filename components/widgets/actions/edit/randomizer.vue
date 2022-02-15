@@ -29,9 +29,9 @@ import {
 import { useQuery, useResult } from '@vue/apollo-composable';
 import { cloneDeep, pick } from 'lodash';
 
-import { RandomizerInterface } from '../../../../.bot/src/database/entity/randomizer';
+import { RandomizerInterface } from '@entity/randomizer';
 
-import type { RandomizerItem } from '.bot/src/database/entity/dashboard';
+import type { RandomizerItem } from '@entity/dashboard';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 import GET_ALL from '~/queries/randomizer/getAll.gql';

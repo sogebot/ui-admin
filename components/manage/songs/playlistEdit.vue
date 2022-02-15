@@ -151,7 +151,7 @@ import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import Vue from 'vue';
 
-import type { SongPlaylistInterface } from '~/.bot/src/database/entity/song';
+import type { SongPlaylistInterface } from '@entity/song';
 import { EventBus } from '~/functions/event-bus';
 
 Vue.use(VuePlyr, {

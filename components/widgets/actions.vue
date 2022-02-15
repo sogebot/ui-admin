@@ -90,7 +90,7 @@ import { useMutation, useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
-import type { QuickActions } from '.bot/src/database/entity/dashboard';
+import type { QuickActions } from '@entity/dashboard';
 import { error } from '~/functions/error';
 import { omitDeep } from '~/functions/omitDeep';
 

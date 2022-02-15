@@ -70,7 +70,7 @@ import {
 
 import type {
   OverlayMapperGroup, OverlayMappers, OverlayMapperStopwatch,
-} from '.bot/src/database/entity/overlay';
+} from '@entity/overlay';
 import GET from '~/queries/overlays/get.gql';
 
 export default defineComponent({

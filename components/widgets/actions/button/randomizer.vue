@@ -45,7 +45,7 @@ import {
 } from '@vue/composition-api';
 import gql from 'graphql-tag';
 
-import { RandomizerInterface } from '../../../../.bot/src/database/entity/randomizer';
+import { RandomizerInterface } from '@entity/randomizer';
 
 import GET_ONE from '~/queries/randomizer/getOne.gql';
 

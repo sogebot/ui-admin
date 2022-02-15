@@ -137,8 +137,8 @@ import gql from 'graphql-tag';
 import { orderBy } from 'lodash';
 import { v4 } from 'uuid';
 
-import type { RandomizerInterface } from '.bot/src/database/entity/randomizer';
-import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
+import type { RandomizerInterface } from '@entity/randomizer';
+import { PermissionsInterface } from '@entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

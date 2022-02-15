@@ -328,8 +328,8 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash';
 
-import type { EventListInterface } from '.bot/src/database/entity/eventList';
-import type { UserInterface } from '.bot/src/database/entity/user';
+import type { EventListInterface } from '@entity/eventList';
+import type { UserInterface } from '@entity/user';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -623,7 +623,7 @@ export default defineComponent({
 
     const forceCheckFollowedAt = (item: UserInterface) => {
       state.value.forceCheckFollowedAt = ButtonStates.progress;
-      getSocket('/core/users').emit('viewers::followedAt', item.userId, (err: string | null, followedAt: number) => {
+      getSocket('/core/users').emit('viewers::followedAt', item.userId, (err: string | null, followedAt: string) => {
         state.value.forceCheckFollowedAt = ButtonStates.idle;
         if (err) {
           if (err.includes('Not a follower') && item) {

@@ -81,7 +81,7 @@ import { v4 } from 'uuid';
 
 import { error } from '../../../functions/error';
 
-import { WidgetCustomInterface } from '~/.bot/src/database/entity/widget';
+import { WidgetCustomInterface } from '@entity/widget';
 
 type Props = {
   dialog: boolean,

@@ -177,7 +177,7 @@ import {
   useMutation, useQuery, useResult,
 } from '@vue/apollo-composable';
 
-import type { AlertInterface } from '.bot/src/database/entity/alert';
+import type { AlertInterface } from '@entity/alert';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

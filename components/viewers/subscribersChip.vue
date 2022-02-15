@@ -52,7 +52,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { cloneDeep } from 'lodash';
 
-import type { UserInterface } from '.bot/src/database/entity/user';
+import type { UserInterface } from '@entity/user';
 
 export default defineComponent({
   props: {

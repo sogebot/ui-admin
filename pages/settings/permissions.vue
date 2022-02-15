@@ -81,7 +81,7 @@ import { cloneDeep, sortBy } from 'lodash';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
 
-import type { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
+import type { PermissionsInterface } from '@entity/permissions';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 

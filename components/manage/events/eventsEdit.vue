@@ -132,7 +132,7 @@ import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import { v4 } from 'uuid';
 
-import type { EventInterface, Events } from '~/.bot/src/database/entity/event';
+import type { EventInterface, Events } from '@entity/event';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 

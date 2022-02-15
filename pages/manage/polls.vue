@@ -208,7 +208,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import type { PollInterface } from '.bot/src/database/entity/poll';
+import type { PollInterface } from '@entity/poll';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

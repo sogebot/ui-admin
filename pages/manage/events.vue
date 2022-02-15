@@ -194,7 +194,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, cloneDeep } from 'lodash';
 
-import type { EventInterface, Events } from '.bot/src/database/entity/event';
+import type { EventInterface, Events } from '@entity/event';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

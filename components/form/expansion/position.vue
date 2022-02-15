@@ -78,7 +78,7 @@ import {
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
-import type { RandomizerInterface } from '~/.bot/src/database/entity/randomizer';
+import type { RandomizerInterface } from '@entity/randomizer';
 
 interface Props {
   value: RandomizerInterface['position'];

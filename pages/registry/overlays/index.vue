@@ -168,7 +168,7 @@ import { v4 } from 'uuid';
 
 import { error } from '../../../functions/error';
 
-import type { OverlayMappers } from '.bot/src/database/entity/overlay';
+import type { OverlayMappers } from '@entity/overlay';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
 import GET from '~/queries/overlays/get.gql';

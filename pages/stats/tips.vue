@@ -70,7 +70,7 @@ import { capitalize, orderBy } from 'lodash';
 import Vue from 'vue';
 import Chartkick from 'vue-chartkick';
 
-import type { UserTipInterface } from '.bot/src/database/entity/user';
+import type { UserTipInterface } from '@entity/user';
 import { getPermissionName } from '~/functions/getPermissionName';
 
 Vue.use(Chartkick.use(Chart));

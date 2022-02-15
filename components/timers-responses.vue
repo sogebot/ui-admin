@@ -125,7 +125,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, cloneDeep } from 'lodash';
 import draggable from 'vuedraggable';
 
-import type { TimerResponseInterface } from '.bot/src/database/entity/timer';
+import type { TimerResponseInterface } from '@entity/timer';
 
 export default defineComponent({
   components: {

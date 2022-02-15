@@ -8,7 +8,7 @@
   "description": "Nuxt.js version of ui-admin",
   "scripts": {
     "build-fragment": "node schemaQuery.js",
-    "postinstall": "patch-package || true",
+    "postinstall": "(patch-package || true) && npm link ../backend",
     "release": "standard-version && git push --follow-tags origin main",
     "release:major": "standard-version -r major && git push --follow-tags origin main",
     "prepublishOnly": "npm run generate",
@@ -26,7 +26,7 @@
   },
   "simple-git-hooks": {
     "pre-commit": "npx simple-git-hooks && npx lint-staged",
-    "commit-msg": "node ./.bot/tools/pre-commit-message.js $1 $2 $3",
+    "commit-msg": "node ../backend/tools/pre-commit-message.js $1 $2 $3",
     "preserveUnused": true
   },
   "repository": {

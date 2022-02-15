@@ -114,7 +114,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, xor } from 'lodash';
 
-import type { Events } from '~/.bot/src/database/entity/event';
+import type { Events } from '@entity/event';
 
 type Props = {
   events: Events.SupportedEvent[]

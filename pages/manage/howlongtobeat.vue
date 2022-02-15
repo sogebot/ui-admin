@@ -233,7 +233,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep, debounce } from 'lodash';
 
-import { HowLongToBeatGameInterface, HowLongToBeatGameItemInterface } from '.bot/src/database/entity/howLongToBeatGame';
+import { HowLongToBeatGameInterface, HowLongToBeatGameItemInterface } from '@entity/howLongToBeatGame';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

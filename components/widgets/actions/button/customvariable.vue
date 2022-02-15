@@ -110,7 +110,7 @@ import {
 import gql from 'graphql-tag';
 import { debounce } from 'lodash';
 
-import { VariableInterface } from '~/.bot/src/database/entity/variable';
+import { VariableInterface } from '@entity/variable';
 
 export default defineComponent({
   props: {

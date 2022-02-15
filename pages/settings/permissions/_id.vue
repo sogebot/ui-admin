@@ -86,7 +86,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import { useMutation, useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 
-import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
+import { PermissionsInterface } from '@entity/permissions';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';

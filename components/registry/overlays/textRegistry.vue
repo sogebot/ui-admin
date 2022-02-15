@@ -26,7 +26,7 @@ import {
   defaults, isEqual, pick,
 } from 'lodash';
 
-import type { TextInterface } from '.bot/src/database/entity/text';
+import type { TextInterface } from '@entity/text';
 import { error } from '~/functions/error';
 
 export default defineComponent({

@@ -126,7 +126,7 @@ import {
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { debounce, orderBy } from 'lodash';
 
-import type { CacheTitlesInterface } from '.bot/src/database/entity/cacheTitles';
+import type { CacheTitlesInterface } from '@entity/cacheTitles';
 import { error } from '~/functions/error';
 
 export default defineComponent({

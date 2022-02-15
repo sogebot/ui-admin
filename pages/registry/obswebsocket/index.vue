@@ -124,7 +124,7 @@ import {
   useMutation, useQuery, useResult,
 } from '@vue/apollo-composable';
 
-import type { OBSWebsocketInterface } from '.bot/src/database/entity/obswebsocket';
+import type { OBSWebsocketInterface } from '@entity/obswebsocket';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';

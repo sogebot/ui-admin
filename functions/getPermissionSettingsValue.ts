@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 
-import { PermissionsInterface } from '~/.bot/src/database/entity/permissions';
+import { PermissionsInterface } from '@entity/permissions';
 
 export const getPermissionSettingsValue = (permissions: PermissionsInterface[], permId: string, values: { [x: string]: string | null }) => {
   const startingOrder = get(permissions.find(permission => permission.id === permId), 'order', permissions.length);

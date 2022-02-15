@@ -63,7 +63,7 @@ import gql from 'graphql-tag';
 
 import { error } from '../../functions/error';
 
-import type { WidgetCustomInterface } from '.bot/src/database/entity/widget';
+import type { WidgetCustomInterface } from '@entity/widget';
 
 export default defineComponent({
   props: {

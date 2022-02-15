@@ -1,4 +1,4 @@
-import type { PermissionsInterface } from '.bot/src/database/entity/permissions';
+import type { PermissionsInterface } from '@entity/permissions';
 
 const getPermissionName = (id: string | null, permissions: PermissionsInterface[]) => {
   if (!permissions) {

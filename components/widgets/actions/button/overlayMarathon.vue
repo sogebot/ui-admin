@@ -61,7 +61,7 @@ import {
 
 import type {
   OverlayMapperGroup, OverlayMapperMarathon, OverlayMappers,
-} from '.bot/src/database/entity/overlay';
+} from '@entity/overlay';
 import GET from '~/queries/overlays/get.gql';
 
 export default defineComponent({

@@ -55,7 +55,7 @@ import { cloneDeep } from 'lodash';
 import { error } from '../../../functions/error';
 import { EventBus } from '../../../functions/event-bus';
 
-import type { OverlayMappers } from '~/.bot/src/database/entity/overlay';
+import type { OverlayMappers } from '@entity/overlay';
 import { required } from '~/functions/validators';
 import GET from '~/queries/overlays/get.gql';
 import SAVE from '~/queries/overlays/save.gql';
