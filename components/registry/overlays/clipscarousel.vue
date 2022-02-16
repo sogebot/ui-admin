@@ -4,12 +4,20 @@
     <v-expansion-panel :readonly="typeof $slots.default === 'undefined'">
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
-        <v-text-field
+        <v-slider
           v-model.number="options.volume"
           :label="translate('volume')"
           min="0"
           max="100"
-        />
+          :thumb-size="0"
+          thumb-label="always"
+        >
+          <template #thumb-label="{ value }">
+            <div style="transform: translateY(-8px);">
+              {{ Number(value) + '%' }}
+            </div>
+          </template>
+        </v-slider>
         <v-text-field
           v-model.number="options.customPeriod"
           :label="translate('overlays.clipscarousel.settings.cClipsCustomPeriodInDays')"
@@ -19,6 +27,11 @@
           v-model.number="options.numOfClips"
           :label="translate('overlays.clipscarousel.settings.cClipsNumOfClips')"
           min="1"
+        />
+        <v-select
+          v-model="options.animation"
+          :items="['fade', 'slide']"
+          :label="translate('overlays.emotes.settings.cEmotesAnimation')"
         />
       </v-expansion-panel-content>
     </v-expansion-panel>
@@ -44,8 +57,9 @@ export default defineComponent({
           volume:       0,
           customPeriod: 31,
           numOfClips:   20,
+          animation:    'slide',
         }),
-        ['volume', 'customPeriod', 'numOfClips'],
+        ['volume', 'customPeriod', 'numOfClips', 'animation'],
       ));
 
     watch(options, (val: any) => {
