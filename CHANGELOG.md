@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [37.0.0](https://github.com/sogebot/ui-admin/compare/v36.2.1...v37.0.0) (2022-02-16)
+
+
+### Features
+
+* **clipscarousel:** add fade animation support ([9d9aa12](https://github.com/sogebot/ui-admin/commit/9d9aa1236b24e4f374dbfff3129ce82f92ce75b1))
+
+
+### Bug Fixes
+
+* update linking ([79b9ec6](https://github.com/sogebot/ui-admin/commit/79b9ec6b64e3f1a36b47beda38c2f39602441886))
+
 ### [36.2.2](https://github.com/sogebot/ui-admin/compare/v36.2.1...v36.2.2) (2022-02-15)
 
 
