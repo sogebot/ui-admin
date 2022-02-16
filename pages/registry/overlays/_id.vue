@@ -28,6 +28,7 @@
             :is="item.value"
             v-if="haveAnyOptions(item.value)"
             v-model="item.opts"
+            :id="item.id"
             @update="item.opts = $event;"
           />
         </v-form>
@@ -45,6 +46,7 @@
 </template>
 
 <script lang="ts">
+import type { OverlayMappers } from '@entity/overlay';
 import {
   defineComponent, onMounted, ref, useContext, useRoute, useStore, watch,
 } from '@nuxtjs/composition-api';
@@ -55,7 +57,6 @@ import { cloneDeep } from 'lodash';
 import { error } from '../../../functions/error';
 import { EventBus } from '../../../functions/event-bus';
 
-import type { OverlayMappers } from '@entity/overlay';
 import { required } from '~/functions/validators';
 import GET from '~/queries/overlays/get.gql';
 import SAVE from '~/queries/overlays/save.gql';
@@ -112,83 +113,35 @@ export default defineComponent({
     const valid1 = ref(true);
 
     const overlayOptions = [
-      {
-        value: null, text: 'Please select an option',
-      },
-      {
-        value: 'group', text: 'group of overlays',
-      },
-      {
-        value: 'media', text: 'media',
-      },
-      {
-        value: 'bets', text: 'bets',
-      },
-      {
-        value: 'carousel', text: 'carousel',
-      },
-      {
-        value: 'countdown', text: 'countdown',
-      },
-      {
-        value: 'clips', text: 'clips',
-      },
-      {
-        value: 'clipscarousel', text: 'clipscarousel',
-      },
-      {
-        value: 'credits', text: 'credits',
-      },
-      {
-        value: 'emotes', text: 'emotes',
-      },
-      {
-        value: 'emotescombo', text: 'emotescombo',
-      },
-      {
-        value: 'emotesfireworks', text: 'emotesfireworks',
-      },
-      {
-        value: 'emotesexplode', text: 'emotesexplode',
-      },
-      {
-        value: 'eventlist', text: 'eventlist',
-      },
-      {
-        value: 'marathon', text: 'marathon',
-      },
-      {
-        value: 'obswebsocket', text: 'obswebsocket',
-      },
-      {
-        value: 'polls', text: 'polls',
-      },
-      {
-        value: 'randomizer', text: 'randomizer',
-      },
-      {
-        value: 'stats', text: 'stats',
-      },
-      {
-        value: 'wordcloud', text: 'wordcloud',
-      },
-      {
-        value: 'stopwatch', text: 'stopwatch',
-      },
-      {
-        value: 'tts', text: 'tts',
-      },
-      {
-        value: 'hypetrain', text: 'hypetrain',
-      },
+      { value: null, text: 'Please select an option' },
+      { value: 'group', text: 'group of overlays' },
+      { value: 'media', text: 'media' },
+      { value: 'bets', text: 'bets' },
+      { value: 'carousel', text: 'carousel' },
+      { value: 'countdown', text: 'countdown' },
+      { value: 'clips', text: 'clips' },
+      { value: 'clipscarousel', text: 'clipscarousel' },
+      { value: 'credits', text: 'credits' },
+      { value: 'emotes', text: 'emotes' },
+      { value: 'emotescombo', text: 'emotescombo' },
+      { value: 'emotesfireworks', text: 'emotesfireworks' },
+      { value: 'emotesexplode', text: 'emotesexplode' },
+      { value: 'eventlist', text: 'eventlist' },
+      { value: 'marathon', text: 'marathon' },
+      { value: 'obswebsocket', text: 'obswebsocket' },
+      { value: 'polls', text: 'polls' },
+      { value: 'randomizer', text: 'randomizer' },
+      { value: 'stats', text: 'stats' },
+      { value: 'wordcloud', text: 'wordcloud' },
+      { value: 'stopwatch', text: 'stopwatch' },
+      { value: 'tts', text: 'tts' },
+      { value: 'hypetrain', text: 'hypetrain' },
     ];
 
     onMounted(async () => {
       store.commit('panel/back', '/registry/overlays');
 
-      const result = await (ctx as any).$graphql.default.request(GET, {
-        id: route.value.params.id,
-      });
+      const result = await (ctx as any).$graphql.default.request(GET, { id: route.value.params.id });
 
       for (const key of Object.keys(result.overlays)) {
         if (result.overlays[key].length > 0) {
@@ -200,18 +153,15 @@ export default defineComponent({
 
       watch(item, () => {
         store.commit('settings/pending', true);
-      }, {
-        deep: true,
-      });
+      }, { deep: true });
     });
 
     const save = () => {
       if (
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
-        saveMutation({
-          data_json: JSON.stringify(item.value),
-        }).then(() => store.commit('settings/pending', false));
+        EventBus.$emit(`save::${item.value.id}`);
+        saveMutation({ data_json: JSON.stringify(item.value) }).then(() => store.commit('settings/pending', false));
       }
     };
 

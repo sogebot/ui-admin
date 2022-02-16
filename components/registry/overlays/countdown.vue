@@ -1,35 +1,34 @@
 <template>
-  <div>
-    <v-expansion-panels v-model="model" multiple>
-      <v-expansion-panel>
-        <v-expansion-panel-header>Settings</v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <v-text-field v-model.lazy="time" label="Countdown" @keydown="keydownHandler" hide-details="auto"/>
+  <v-expansion-panels v-model="model" multiple>
+    <slot />
+    <v-expansion-panel>
+      <v-expansion-panel-header>Settings</v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <v-text-field v-model.lazy="time" label="Countdown" @keydown="keydownHandler" hide-details="auto"/>
 
-          <v-switch label="Persistent" :persistent-hint="true" :hint="(options.isPersistent ? 'Countdown will keep value on browser source load, you will need to reset by dashboard\'s action button.' : 'Countdown will reset on browser source load.')" v-model="options.isPersistent"/>
-          <v-switch label="Start automatically" :persistent-hint="true" :hint="(options.isStartedOnSourceLoad ? 'Countdown will start automatically on browser source load.' : 'Countdown won\'t start on browser source load, you will need to start it by dashboard\'s action button.')" v-model="options.isStartedOnSourceLoad"/>
-          <v-switch v-model="options.showMilliseconds" label="Show milliseconds" />
+        <v-switch label="Persistent" :persistent-hint="true" :hint="(options.isPersistent ? 'Countdown will keep value on browser source load, you will need to reset by dashboard\'s action button.' : 'Countdown will reset on browser source load.')" v-model="options.isPersistent"/>
+        <v-switch label="Start automatically" :persistent-hint="true" :hint="(options.isStartedOnSourceLoad ? 'Countdown will start automatically on browser source load.' : 'Countdown won\'t start on browser source load, you will need to start it by dashboard\'s action button.')" v-model="options.isStartedOnSourceLoad"/>
+        <v-switch v-model="options.showMilliseconds" label="Show milliseconds" />
 
-          <v-row align="center" class="pa-2 pt-4">
-            <v-simple-checkbox v-model="options.showMessageWhenReachedZero" class="shrink" />
-            <v-text-field v-model="options.messageWhenReachedZero" label="Message to show, when countdown reaches zero" :disabled="!options.showMessageWhenReachedZero" />
-          </v-row>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-      <v-expansion-panel>
-        <v-expansion-panel-header>Countdown font</v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <font v-model="options.countdownFont" />
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-      <v-expansion-panel>
-        <v-expansion-panel-header>Message font</v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <font v-model="options.messageFont" />
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-    </v-expansion-panels>
-  </div>
+        <v-row align="center" class="pa-2 pt-4">
+          <v-simple-checkbox v-model="options.showMessageWhenReachedZero" class="shrink" />
+          <v-text-field v-model="options.messageWhenReachedZero" label="Message to show, when countdown reaches zero" :disabled="!options.showMessageWhenReachedZero" />
+        </v-row>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+    <v-expansion-panel>
+      <v-expansion-panel-header>Countdown font</v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <font v-model="options.countdownFont" />
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+    <v-expansion-panel>
+      <v-expansion-panel-header>Message font</v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <font v-model="options.messageFont" />
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+  </v-expansion-panels>
 </template>
 
 <script lang="ts">

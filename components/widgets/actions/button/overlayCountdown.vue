@@ -58,6 +58,9 @@
 </template>
 
 <script lang="ts">
+import type {
+  OverlayMapperCountdown,
+} from '@entity/overlay';
 import {
   DAY, HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
@@ -68,9 +71,6 @@ import {
   defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
 
-import type {
-  OverlayMapperCountdown, OverlayMapperGroup, OverlayMappers,
-} from '@entity/overlay';
 import GET from '~/queries/overlays/get.gql';
 
 export default defineComponent({
@@ -123,26 +123,15 @@ export default defineComponent({
       return output;
     });
 
-    const { result, refetch } = useQuery(GET);
-    const items = useResult<{ overlays: Record<string, any> }, (OverlayMapperCountdown | OverlayMapperGroup)[], (OverlayMapperCountdown | OverlayMapperGroup)[]>(result, [], data => [...data.overlays.countdown, ...data.overlays.group]);
+    const { result, refetch } = useQuery(GET, { id: props.item.options.countdownId });
+    const items = useResult<{ overlays: Record<string, any> }, OverlayMapperCountdown[], OverlayMapperCountdown[]>(result, [], data => [...data.overlays.countdown]);
+    const countdown = ref(null as null | OverlayMapperCountdown);
 
-    const groupCheck = (item: OverlayMappers): item is OverlayMapperGroup => {
-      return item.value === 'group';
-    };
-    const countdown = computed(() => {
-      for (const item of items.value) {
-        if (groupCheck(item)) {
-          const found = item.opts.items.find(o => o.id === props.item.options.countdownId && o.type === 'countdown');
-          if (found) {
-            found.opts = JSON.parse(found.opts);
-            return found;
-          }
-        } else if (item.id === props.item.options.countdownId) {
-          return item;
-        }
+    watch(items, (val) => {
+      if (val.length > 0) {
+        countdown.value = val[0];
       }
-      return null;
-    });
+    }, { immediate: true, deep: true });
 
     const timeInput = computed({
       get () {

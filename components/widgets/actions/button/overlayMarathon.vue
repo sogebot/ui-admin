@@ -49,6 +49,9 @@
 </template>
 
 <script lang="ts">
+import type {
+  OverlayMapperMarathon,
+} from '@entity/overlay';
 import {
   DAY, HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
@@ -59,9 +62,6 @@ import {
   defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@vue/composition-api';
 
-import type {
-  OverlayMapperGroup, OverlayMapperMarathon, OverlayMappers,
-} from '@entity/overlay';
 import GET from '~/queries/overlays/get.gql';
 
 export default defineComponent({
@@ -125,25 +125,14 @@ export default defineComponent({
     };
 
     const { result, refetch } = useQuery(GET);
-    const items = useResult<{ overlays: Record<string, any> }, (OverlayMapperMarathon | OverlayMapperGroup)[], (OverlayMapperMarathon | OverlayMapperGroup)[]>(result, [], data => [...data.overlays.marathon, ...data.overlays.group]);
+    const items = useResult<{ overlays: Record<string, any> }, OverlayMapperMarathon[], OverlayMapperMarathon[]>(result, [], data => [...data.overlays.marathon]);
+    const marathon = ref(null as null | OverlayMapperMarathon);
 
-    const groupCheck = (item: OverlayMappers): item is OverlayMapperGroup => {
-      return item.value === 'group';
-    };
-    const marathon = computed(() => {
-      for (const item of items.value) {
-        if (groupCheck(item)) {
-          const found = item.opts.items.find(o => o.id === props.item.options.marathonId && o.type === 'marathon');
-          if (found) {
-            found.opts = JSON.parse(found.opts);
-            return found;
-          }
-        } else if (item.id === props.item.options.marathonId) {
-          return item;
-        }
+    watch(items, (val) => {
+      if (val.length > 0) {
+        marathon.value = val[0];
       }
-      return null;
-    });
+    }, { immediate: true, deep: true });
 
     const timeInput = computed({
       get () {

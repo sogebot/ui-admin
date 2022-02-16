@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <loading v-if="loading" />
+  <div v-else>
     <v-row no-gutters>
       <v-col cols="2">
         <v-list dense>
@@ -42,7 +43,7 @@
                 </v-btn>
               </v-list-item-action>
               <v-list-item-title>
-                {{ item.type }}
+                {{ getChildItem(item.id).value }}
               </v-list-item-title>
               <v-list-item-avatar size="20">
                 <v-sheet :color="generateColorFromString(item.id)" height="40" width="40" />
@@ -67,6 +68,7 @@
                     handler: () => selected = null,
                     include: include,
                   }"
+                  :type="getChildItem(item.id).value"
                   :is-moving="positions.moved"
                   :item="item"
                   :selected.sync="selected"
@@ -126,41 +128,41 @@
     </v-row>
 
     <v-fade-transition>
-      <div v-if="selectedItem" class="pt-4" :key="selectedItem.id">
+      <div v-if="selectedItem" :key="selectedItem.id" class="pt-4">
         <component
-          :is="selectedItem.type"
-          v-if="haveAnyOptions(selectedItem.type)"
-          :value="JSON.parse(selectedItem.opts)"
+          :is="selectedItem.value"
+          v-if="haveAnyOptions(selectedItem.value)"
+          :value="selectedItem.opts"
           class="overlayItem"
-          @input="selectedItem.opts = JSON.stringify($event);"
+          @input="updateChildOpts(selectedItem.id, $event)"
         >
           <v-expansion-panel>
             <v-expansion-panel-header>Position / Size</v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-text-field v-model.number="selectedItem.width" type="number" label="Width" min="1" hide-details="auto" />
-              <v-text-field v-model.number="selectedItem.height" type="number" label="Height" min="1" hide-details="auto" />
-              <v-text-field v-model.number="selectedItem.alignX" type="number" label="X" min="0" hide-details="auto">
+              <v-text-field v-model.number="selectedParentItem.width" type="number" label="Width" min="1" hide-details="auto" />
+              <v-text-field v-model.number="selectedParentItem.height" type="number" label="Height" min="1" hide-details="auto" />
+              <v-text-field v-model.number="selectedParentItem.alignX" type="number" label="X" min="0" hide-details="auto">
                 <template #append>
-                  <v-btn icon @click="selectedItem.alignX = 0">
+                  <v-btn icon @click="selectedParentItem.alignX = 0">
                     <v-icon>mdi-format-horizontal-align-Left }}</v-icon>
                   </v-btn>
-                  <v-btn icon @click="selectedItem.alignX = options.canvas.width / 2 - selectedItem.width / 2">
+                  <v-btn icon @click="selectedParentItem.alignX = options.canvas.width / 2 - selectedParentItem.width / 2">
                     <v-icon>mdi-format-horizontal-align-center</v-icon>
                   </v-btn>
-                  <v-btn icon @click="selectedItem.alignX = options.canvas.width - selectedItem.width">
+                  <v-btn icon @click="selectedParentItem.alignX = options.canvas.width - selectedParentItem.width">
                     <v-icon>mdi-format-horizontal-align-right</v-icon>
                   </v-btn>
                 </template>
               </v-text-field>
-              <v-text-field v-model.number="selectedItem.alignY" type="number" label="Y" min="0" hide-details="auto">
+              <v-text-field v-model.number="selectedParentItem.alignY" type="number" label="Y" min="0" hide-details="auto">
                 <template #append>
-                  <v-btn icon @click="selectedItem.alignY = 0">
+                  <v-btn icon @click="selectedParentItem.alignY = 0">
                     <v-icon>mdi-format-vertical-align-top</v-icon>
                   </v-btn>
-                  <v-btn icon @click="selectedItem.alignY = options.canvas.height / 2 - selectedItem.height / 2">
+                  <v-btn icon @click="selectedParentItem.alignY = options.canvas.height / 2 - selectedParentItem.height / 2">
                     <v-icon>mdi-format-vertical-align-center</v-icon>
                   </v-btn>
-                  <v-btn icon @click="selectedItem.alignY = options.canvas.height - selectedItem.height">
+                  <v-btn icon @click="selectedParentItem.alignY = options.canvas.height - selectedParentItem.height">
                     <v-icon>mdi-format-vertical-align-bottom</v-icon>
                   </v-btn>
                 </template>
@@ -172,30 +174,30 @@
           <v-expansion-panel readonly>
             <v-expansion-panel-header>Position / Size</v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-text-field v-model.number="selectedItem.width" type="number" label="Width" min="1" hide-details="auto" />
-              <v-text-field v-model.number="selectedItem.height" type="number" label="Height" min="1" hide-details="auto" />
-              <v-text-field v-model.number="selectedItem.alignX" type="number" label="X" min="0" hide-details="auto">
+              <v-text-field v-model.number="selectedParentItem.width" type="number" label="Width" min="1" hide-details="auto" />
+              <v-text-field v-model.number="selectedParentItem.height" type="number" label="Height" min="1" hide-details="auto" />
+              <v-text-field v-model.number="selectedParentItem.alignX" type="number" label="X" min="0" hide-details="auto">
                 <template #append>
-                  <v-btn icon @click="selectedItem.alignX = 0">
+                  <v-btn icon @click="selectedParentItem.alignX = 0">
                     <v-icon>mdi-format-horizontal-align-Left }}</v-icon>
                   </v-btn>
-                  <v-btn icon @click="selectedItem.alignX = options.canvas.width / 2 - selectedItem.width / 2">
+                  <v-btn icon @click="selectedParentItem.alignX = options.canvas.width / 2 - selectedParentItem.width / 2">
                     <v-icon>mdi-format-horizontal-align-center</v-icon>
                   </v-btn>
-                  <v-btn icon @click="selectedItem.alignX = options.canvas.width - selectedItem.width">
+                  <v-btn icon @click="selectedParentItem.alignX = options.canvas.width - selectedParentItem.width">
                     <v-icon>mdi-format-horizontal-align-right</v-icon>
                   </v-btn>
                 </template>
               </v-text-field>
-              <v-text-field v-model.number="selectedItem.alignY" type="number" label="Y" min="0" hide-details="auto">
+              <v-text-field v-model.number="selectedParentItem.alignY" type="number" label="Y" min="0" hide-details="auto">
                 <template #append>
-                  <v-btn icon @click="selectedItem.alignY = 0">
+                  <v-btn icon @click="selectedParentItem.alignY = 0">
                     <v-icon>mdi-format-vertical-align-top</v-icon>
                   </v-btn>
-                  <v-btn icon @click="selectedItem.alignY = options.canvas.height / 2 - selectedItem.height / 2">
+                  <v-btn icon @click="selectedParentItem.alignY = options.canvas.height / 2 - selectedParentItem.height / 2">
                     <v-icon>mdi-format-vertical-align-center</v-icon>
                   </v-btn>
-                  <v-btn icon @click="selectedItem.alignY = options.canvas.height - selectedItem.height">
+                  <v-btn icon @click="selectedParentItem.alignY = options.canvas.height - selectedParentItem.height">
                     <v-icon>mdi-format-vertical-align-bottom</v-icon>
                   </v-btn>
                 </template>
@@ -209,9 +211,10 @@
 </template>
 
 <script lang="ts">
+import type { OverlayMapperGroup, OverlayMappers } from '@entity/overlay';
 import {
   computed,
-  defineAsyncComponent, defineComponent, nextTick, onMounted, onUnmounted, ref, watch,
+  defineAsyncComponent, defineComponent, nextTick, onMounted, onUnmounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import translate from '@sogebot/ui-helpers/translate';
@@ -223,13 +226,14 @@ import {
 } from 'lodash';
 import { v4 } from 'uuid';
 
-import type { OverlayMapperGroup } from '@entity/overlay';
+import { EventBus } from '~/functions/event-bus';
 import { haveAnyOptions } from '~/pages/registry/overlays/_id.vue';
+import GET from '~/queries/overlays/get.gql';
+import REMOVE from '~/queries/overlays/remove.gql';
+import SAVE from '~/queries/overlays/save.gql';
 
 export default defineComponent({
-  props: {
-    value: [Object, Array],
-  },
+  props:      { value: [Object, Array], id: String },
   components: {
     media:           () => import('~/components/registry/overlays/media.vue'),
     alertsRegistry:  () => import('~/components/registry/overlays/alertsRegistry.vue'),
@@ -253,6 +257,9 @@ export default defineComponent({
     item:            defineAsyncComponent(() => import('~/components/registry/overlays/item.vue')),
   },
   setup (props, ctx) {
+    const context = useContext();
+    const loading = ref(true);
+
     const generateColorFromString = (stringInput: string) => {
       const stringUniqueHash = [...stringInput].reduce((acc, char) => {
         return char.charCodeAt(0) + ((acc << 5) - acc);
@@ -261,6 +268,7 @@ export default defineComponent({
     };
 
     const itemToAdd = ref(null as null | string);
+    const children = ref([] as OverlayMappers[]);
     const initialResize = ref(false);
     const dialog = ref(false);
 
@@ -277,14 +285,10 @@ export default defineComponent({
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {
-        console.log({
-          val,
-        });
+        console.log({ val });
         ctx.emit('input', val);
       }
-    }, {
-      deep: true, immediate: true,
-    });
+    }, { deep: true, immediate: true });
 
     const positions = ref({
       clientX:   0,
@@ -295,81 +299,31 @@ export default defineComponent({
     });
 
     const overlayOptions = [
-      {
-        value: null, text: 'Please select an option',
-      },
-      {
-        value: 'alertsRegistry', text: 'alerts registry',
-      },
-      {
-        value: 'textRegistry', text: 'text registry',
-      },
-      {
-        value: 'goalRegistry', text: 'goal registry',
-      },
-      {
-        value: 'media', text: 'media',
-      },
-      {
-        value: 'bets', text: 'bets',
-      },
-      {
-        value: 'carousel', text: 'carousel',
-      },
-      {
-        value: 'clips', text: 'clips',
-      },
-      {
-        value: 'clipscarousel', text: 'clipscarousel',
-      },
-      {
-        value: 'countdown', text: 'countdown',
-      },
-      {
-        value: 'stopwatch', text: 'stopwatch',
-      },
-      {
-        value: 'credits', text: 'credits',
-      },
-      {
-        value: 'emotes', text: 'emotes',
-      },
-      {
-        value: 'emotescombo', text: 'emotescombo',
-      },
-      {
-        value: 'emotesfireworks', text: 'emotesfireworks',
-      },
-      {
-        value: 'emotesexplode', text: 'emotesexplode',
-      },
-      {
-        value: 'eventlist', text: 'eventlist',
-      },
-      {
-        value: 'marathon', text: 'marathon',
-      },
-      {
-        value: 'obswebsocket', text: 'obswebsocket',
-      },
-      {
-        value: 'polls', text: 'polls',
-      },
-      {
-        value: 'randomizer', text: 'randomizer',
-      },
-      {
-        value: 'stats', text: 'stats',
-      },
-      {
-        value: 'wordcloud', text: 'wordcloud',
-      },
-      {
-        value: 'tts', text: 'tts',
-      },
-      {
-        value: 'hypetrain', text: 'hypetrain',
-      },
+      { value: null, text: 'Please select an option' },
+      { value: 'alertsRegistry', text: 'alerts registry' },
+      { value: 'textRegistry', text: 'text registry' },
+      { value: 'goalRegistry', text: 'goal registry' },
+      { value: 'media', text: 'media' },
+      { value: 'bets', text: 'bets' },
+      { value: 'carousel', text: 'carousel' },
+      { value: 'clips', text: 'clips' },
+      { value: 'clipscarousel', text: 'clipscarousel' },
+      { value: 'countdown', text: 'countdown' },
+      { value: 'stopwatch', text: 'stopwatch' },
+      { value: 'credits', text: 'credits' },
+      { value: 'emotes', text: 'emotes' },
+      { value: 'emotescombo', text: 'emotescombo' },
+      { value: 'emotesfireworks', text: 'emotesfireworks' },
+      { value: 'emotesexplode', text: 'emotesexplode' },
+      { value: 'eventlist', text: 'eventlist' },
+      { value: 'marathon', text: 'marathon' },
+      { value: 'obswebsocket', text: 'obswebsocket' },
+      { value: 'polls', text: 'polls' },
+      { value: 'randomizer', text: 'randomizer' },
+      { value: 'stats', text: 'stats' },
+      { value: 'wordcloud', text: 'wordcloud' },
+      { value: 'tts', text: 'tts' },
+      { value: 'hypetrain', text: 'hypetrain' },
     ];
 
     const selected = ref(null as null | string);
@@ -378,8 +332,17 @@ export default defineComponent({
     const ratio = ref(0);
     const height = ref(1080);
 
+    const selectedParentItem = computed(() => {
+      return options.value.items.find(o => o.id === selected.value)
+    });
+
     const selectedItem = computed(() => {
-      return options.value.items.find(o => o.id === selected.value);
+      const item = {
+        ...selectedParentItem.value,
+        ...children.value.find(o => o.id === selected.value),
+      };
+
+      return selectedParentItem.value ? item : undefined;
     });
 
     watch(dialog, (val) => {
@@ -462,7 +425,7 @@ export default defineComponent({
     const resizeListener = () => {
       resize(responsive.value);
     };
-    onMounted(() => {
+    onMounted(async () => {
       window.addEventListener('resize', resizeListener);
       nextTick(() => {
         setTimeout(() => {
@@ -470,10 +433,46 @@ export default defineComponent({
           resize(responsive.value);
         }, 1000);
       });
+
+      // get children
+      children.value = [];
+      const result = await (context as any).$graphql.default.request(GET, { groupId: props.id });
+      for (const key of Object.keys(result.overlays)) {
+        if (key.startsWith('__')) {
+          continue;
+        }
+        children.value.push(...result.overlays[key as any]);
+      }
+
+      // cleanup missing children from options
+      options.value.items = options.value.items.filter((o) => {
+        return children.value.map(child => child.id).includes(o.id);
+      });
+
+      loading.value = false;
+
+      EventBus.$on(`save::${props.id}`, async () => {
+        console.log(`Catched event - save::${props.id}`);
+        const beforeIds = children.value.map(o => o.id);
+        const afterIds = options.value.items.map(o => o.id);
+
+        console.log({beforeIds, afterIds})
+
+        for (const id of beforeIds) {
+          if (afterIds.includes(id)) {
+            console.log(`Updating child ${id}`);
+            await (context as any).$graphql.default.request(SAVE, { data_json: JSON.stringify(children.value.find(o => o.id === id)) });
+          } else {
+            console.log(`Removing child ${id}`);
+            await (context as any).$graphql.default.request(REMOVE, { id });
+          }
+        }
+      });
     });
 
     onUnmounted(() => {
       window.removeEventListener('resize', resizeListener);
+      EventBus.$off(`save::${props.id}`);
     });
 
     const startMove = (event: { ev: MouseEvent, id: string}) => {
@@ -535,12 +534,16 @@ export default defineComponent({
         const id = v4();
         options.value.items.push({
           id,
-          type:   itemToAdd.value,
           width:  200,
           height: 200,
           alignX: 0,
           alignY: 0,
-          opts:   JSON.stringify(null),
+        });
+        children.value.push({
+          id,
+          value:   itemToAdd.value,
+          opts:    null,
+          groupId: props.id as string,
         });
         dialog.value = false;
         selected.value = id;
@@ -551,6 +554,17 @@ export default defineComponent({
       const idx = options.value.items.findIndex(o => o.id === id);
       if (idx >= 0) {
         options.value.items.splice(idx, 1);
+      }
+    };
+
+    const getChildItem = (id: string) => {
+      return children.value.find(o => o.id === id);
+    };
+
+    const updateChildOpts = (id: string, opts: any) => {
+      const child = children.value.find(o => o.id === id);
+      if (child) {
+        child.opts = opts;
       }
     };
 
@@ -570,8 +584,12 @@ export default defineComponent({
       dialog,
       itemToAdd,
       selectedItem,
+      loading,
+      selectedParentItem,
 
       // functions
+      getChildItem,
+      updateChildOpts,
       startMove,
       stopMove,
       include,

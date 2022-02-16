@@ -1,24 +1,23 @@
 <template>
-  <div>
-    <v-expansion-panels v-model="model" multiple>
-      <v-expansion-panel>
-        <v-expansion-panel-header>Settings</v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <v-text-field v-model.lazy="time" label="Current time" hide-details="auto" @keydown="keydownHandler" />
+  <v-expansion-panels v-model="model" multiple>
+    <slot />
+    <v-expansion-panel>
+      <v-expansion-panel-header>Settings</v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <v-text-field v-model.lazy="time" label="Current time" hide-details="auto" @keydown="keydownHandler" />
 
-          <v-switch v-model="options.isPersistent" label="Persistent" :persistent-hint="true" :hint="(options.isPersistent ? 'Countdown will keep value on browser source load, you will need to reset by dashboard\'s action button.' : 'Countdown will reset on browser source load.')" />
-          <v-switch v-model="options.isStartedOnSourceLoad" label="Start automatically" :persistent-hint="true" :hint="(options.isStartedOnSourceLoad ? 'Countdown will start automatically on browser source load.' : 'Countdown won\'t start on browser source load, you will need to start it by dashboard\'s action button.')" />
-          <v-switch v-model="options.showMilliseconds" label="Show milliseconds" />
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-      <v-expansion-panel>
-        <v-expansion-panel-header>Stopwatch font</v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <font v-model="options.stopwatchFont" />
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-    </v-expansion-panels>
-  </div>
+        <v-switch v-model="options.isPersistent" label="Persistent" :persistent-hint="true" :hint="(options.isPersistent ? 'Countdown will keep value on browser source load, you will need to reset by dashboard\'s action button.' : 'Countdown will reset on browser source load.')" />
+        <v-switch v-model="options.isStartedOnSourceLoad" label="Start automatically" :persistent-hint="true" :hint="(options.isStartedOnSourceLoad ? 'Countdown will start automatically on browser source load.' : 'Countdown won\'t start on browser source load, you will need to start it by dashboard\'s action button.')" />
+        <v-switch v-model="options.showMilliseconds" label="Show milliseconds" />
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+    <v-expansion-panel>
+      <v-expansion-panel-header>Stopwatch font</v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <font v-model="options.stopwatchFont" />
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+  </v-expansion-panels>
 </template>
 
 <script lang="ts">

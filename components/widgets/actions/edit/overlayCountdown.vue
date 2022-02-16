@@ -4,7 +4,7 @@
       <v-select
         v-model="clonedItem.options.countdownId"
         item-value="id"
-        :items="overlaysCountdown"
+        :items="overlays"
         label="Countdown"
         :rules="rules.countdownId"
         :loading="loading"
@@ -37,7 +37,7 @@ import { useQuery, useResult } from '@vue/apollo-composable';
 import { cloneDeep, pick } from 'lodash';
 
 import type {
-  OverlayMapperCountdown, OverlayMapperGroup, OverlayMappers,
+  OverlayMapperCountdown, OverlayMappers,
 } from '@entity/overlay';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
@@ -55,20 +55,8 @@ export default defineComponent({
     const valid = ref(true);
     const form = ref(null);
 
-    const overlaysCountdown = computed(() => {
-      const countdowns: ((OverlayMapperGroup['opts']['items'][number] & {groupId: string}) | OverlayMapperCountdown)[] = overlays.value.filter((o): o is OverlayMapperCountdown => o.value === 'countdown');
-      overlays.value.filter((o): o is OverlayMapperGroup => o.value === 'group').forEach((item) => {
-        if (item.opts) {
-          item.opts.items.filter(o => o.type === 'countdown').forEach(item2 => countdowns.push({
-            groupId: item.id,
-            ...item2,
-          }));
-        }
-      });
-      return countdowns;
-    });
-    const { result, refetch, loading } = useQuery(GET);
-    const overlays = useResult<{ overlays: Record<string, any> }, (OverlayMapperCountdown | OverlayMapperGroup)[], (OverlayMapperCountdown | OverlayMapperGroup)[]>(result, [], data => [...data.overlays.countdown, ...data.overlays.group]);
+    const { result, refetch, loading } = useQuery(GET, { allowGroups: true });
+    const overlays = useResult<{ overlays: Record<string, any> }, OverlayMapperCountdown[], OverlayMapperCountdown[]>(result, [], data => [...data.overlays.countdown]);
 
     onMounted(() => {
       refetch();
@@ -98,7 +86,7 @@ export default defineComponent({
     });
 
     return {
-      clonedItem, rules, valid, form, loading, overlaysCountdown,
+      clonedItem, rules, valid, form, loading, overlays,
     };
   },
 });

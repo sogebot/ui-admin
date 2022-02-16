@@ -30,7 +30,7 @@
     @click="selectItem"
   >
     <div class="center text-button text-truncate">
-      {{ item.type }}
+      {{ type }}
     </div>
   </v-sheet>
 </div>
@@ -48,6 +48,7 @@ export default defineComponent({
     selected: [Object, String],
     ratio:    Number,
     isMoving: Boolean,
+    type:     String,
   },
   setup (props, ctx) {
     const selectedSync = ref(props.selected);

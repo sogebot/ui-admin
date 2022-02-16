@@ -1,6 +1,7 @@
 <template>
   <v-expansion-panels>
     <v-expansion-panel>
+      <slot />
       <v-expansion-panel-header>Text</v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-select

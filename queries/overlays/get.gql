@@ -1,8 +1,21 @@
-query OverlayGet($id: String) {
-  overlays(id: $id) {
+query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
+  overlays(id: $id, groupId: $groupId, allowGroups: $allowGroups) {
+    textRegistry {
+      id
+      value
+      groupId
+      opts { id }
+    }
+    alertsRegistry {
+      id
+      value
+      groupId
+      opts { id }
+    }
     wordcloud {
       id
       value
+      groupId
       opts {
         fadeOutInterval
         fadeOutIntervalType
@@ -16,18 +29,22 @@ query OverlayGet($id: String) {
     randomizer {
       id
       value
+      groupId
     }
     stats {
       id
       value
+      groupId
     }
     carousel {
       id
       value
+      groupId
     }
     marathon {
       id
       value
+      groupId
       opts {
         disableWhenReachedZero
         showProgressGraph
@@ -78,6 +95,7 @@ query OverlayGet($id: String) {
     stopwatch {
       id
       value
+      groupId
       opts {
         currentTime
         isPersistent
@@ -105,6 +123,7 @@ query OverlayGet($id: String) {
     countdown {
       id
       value
+      groupId
       opts {
         time
         currentTime
@@ -152,6 +171,7 @@ query OverlayGet($id: String) {
     credits {
       id
       value
+      groupId
       opts {
         social {
           type
@@ -202,6 +222,7 @@ query OverlayGet($id: String) {
     eventlist {
       id
       value
+      groupId
       opts {
         count
         ignore
@@ -212,6 +233,7 @@ query OverlayGet($id: String) {
     clips {
       id
       value
+      groupId
       opts {
         volume
         filter
@@ -221,6 +243,7 @@ query OverlayGet($id: String) {
     media {
       id
       value
+      groupId
       opts {
         galleryCache
         galleryCacheLimitInMb
@@ -229,6 +252,7 @@ query OverlayGet($id: String) {
     emotes {
       id
       value
+      groupId
       opts {
         emotesSize
         maxEmotesPerMessage
@@ -241,6 +265,7 @@ query OverlayGet($id: String) {
     emotescombo {
       id
       value
+      groupId
       opts {
         showEmoteInOverlayThreshold
         hideEmoteInOverlayAfter
@@ -249,6 +274,7 @@ query OverlayGet($id: String) {
     emotesfireworks {
       id
       value
+      groupId
       opts {
         emotesSize
         animationTime
@@ -259,6 +285,7 @@ query OverlayGet($id: String) {
     emotesexplode {
       id
       value
+      groupId
       opts {
         emotesSize
         animationTime
@@ -268,10 +295,12 @@ query OverlayGet($id: String) {
     hypetrain {
       id
       value
+      groupId
     }
     clipscarousel {
       id
       value
+      groupId
       opts {
         animation
         customPeriod
@@ -282,6 +311,7 @@ query OverlayGet($id: String) {
     tts {
       id
       value
+      groupId
       opts {
         voice
         volume
@@ -293,6 +323,7 @@ query OverlayGet($id: String) {
     polls {
       id
       value
+      groupId
       opts {
         theme
         hideAfterInactivity
@@ -303,6 +334,7 @@ query OverlayGet($id: String) {
     obswebsocket {
       id
       value
+      groupId
       opts {
         allowedIPs
       }
@@ -310,6 +342,7 @@ query OverlayGet($id: String) {
     group {
       id
       value
+      groupId
       opts {
         canvas {
           width
@@ -321,8 +354,6 @@ query OverlayGet($id: String) {
           height
           alignX
           alignY
-          type
-          opts
         }
       }
     }
