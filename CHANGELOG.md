@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [38.0.3](https://github.com/sogebot/ui-admin/compare/v38.0.2...v38.0.3) (2022-02-23)
+
+
+### Bug Fixes
+
+* **ranks:** don't populate item id ([2d3b902](https://github.com/sogebot/ui-admin/commit/2d3b902fe54ac2a092fb19d35bff81f8b25b2a6a))
+
 ### [38.0.2](https://github.com/sogebot/ui-admin/compare/v38.0.1...v38.0.2) (2022-02-23)
 
 
