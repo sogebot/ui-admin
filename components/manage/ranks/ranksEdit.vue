@@ -73,7 +73,6 @@ import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import { v4 } from 'uuid';
 
-import { error as errorLog } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 type Props = {
@@ -122,7 +121,7 @@ export default defineComponent({
       }
     });
 
-    const save = async () => {
+    const save = () => {
       if ((form.value as unknown as HTMLFormElement).validate()) {
         // check validity
         for (const key of Object.keys(props.rules)) {
@@ -155,7 +154,6 @@ export default defineComponent({
             menu.value = false;
           }
         });
-
       }
     };
 
