@@ -102,6 +102,8 @@ export default defineComponent({
     const group = ref('');
     const saving = ref(false);
 
+    let id: null | string = null;
+
     const resetForm = () => {
       valid.value = true;
       if (form.value as unknown) {
@@ -135,13 +137,13 @@ export default defineComponent({
           }
         }
 
-        if (!item.value.id) {
-          item.value.id = v4();
-        }
+        id = item.value.id
+          ? item.value.id
+          : (id || v4());
 
         console.log('Updating', item.value);
         saving.value = true;
-        getSocket('/systems/ranks').emit('ranks::save', item.value, (err: string | null) => {
+        getSocket('/systems/ranks').emit('ranks::save', { id, ...item.value }, (err: string | null) => {
           saving.value = false;
           if (err) {
             if (err.includes('UNIQUE constraint failed')) {
