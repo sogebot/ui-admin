@@ -35,7 +35,7 @@
         minute to subscribe to missing events</v-alert>
 
       <v-btn target="_blank"
-        :href="`https://id.twitch.tv/oauth2/authorize?client_id=${_settings.eventsub.eventSubClientId[0]}&redirect_uri=${origin}/credentials/oauth/eventsub&response_type=token&force_verify=true&scope=channel:read:hype_train channel:read:polls channel:manage:polls`"
+        :href="`https://id.twitch.tv/oauth2/authorize?client_id=${_settings.eventsub.eventSubClientId[0]}&redirect_uri=${origin}/credentials/oauth/eventsub&response_type=token&force_verify=true&scope=channel:read:hype_train channel:read:polls channel:manage:polls channel:manage:predictions`"
         :disabled="_settings.eventsub.eventSubClientId[0].trim().length === 0">Authorize to enable EventSub
         subscriptions</v-btn>
 
