@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [39.0.0](https://github.com/sogebot/ui-admin/compare/v38.0.3...v39.0.0) (2022-02-25)
+
+
+### Features
+
+* **eventsub:** add prediction scope ([7767a22](https://github.com/sogebot/ui-admin/commit/7767a226c19555295635448a54042fcc11b3e633))
+
 ### [38.0.3](https://github.com/sogebot/ui-admin/compare/v38.0.2...v38.0.3) (2022-02-23)
 
 
