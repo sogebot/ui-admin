@@ -125,31 +125,34 @@
         </v-tab-item>
         <v-tab-item>
           <v-text-field v-model="search" filled dense hide-details label="Search" />
-          <v-list dense>
-            <v-fade-transition>
-              <v-list-item
-                v-for="participant of fParticipants"
-                :key="participant.id"
-                @click="toggleEligibility(participant)"
-              >
-                <v-icon v-if="participant.isEligible" class="pr-2" color="success">
-                  mdi-check-circle-outline
-                </v-icon>
-                <v-icon v-else class="pr-2" color="error">
-                  mdi-checkbox-blank-circle-outline
-                </v-icon>
-                {{ participant.username }}
-              </v-list-item>
-            </v-fade-transition>
-            <v-fade-transition>
-              <v-list-item v-if="Math.abs(fParticipants.length - participants.length) > 0">
-                <v-icon class="pr-2">
-                  mdi-eye-off
-                </v-icon>
-                <span class="grey--text">{{ Math.abs(fParticipants.length - participants.length) }} {{ translate('hidden') }}</span>
-              </v-list-item>
-            </v-fade-transition>
-          </v-list>
+          <div :style="{ 'max-height': (height || 0) - 36 - 52 + 'px' }" style="overflow: auto; overflow-x: clip;">
+            <v-list dense style="column-count: 3; column-fill: balance;">
+              <v-fade-transition group>
+                <v-list-item
+                  style="break-inside: avoid;"
+                  v-for="participant of fParticipants"
+                  :key="participant.id"
+                  @click="toggleEligibility(participant)"
+                >
+                  <v-icon v-if="participant.isEligible" class="pr-2" color="success">
+                    mdi-check-circle-outline
+                  </v-icon>
+                  <v-icon v-else class="pr-2" color="error">
+                    mdi-checkbox-blank-circle-outline
+                  </v-icon>
+                  {{ participant.username }}
+                </v-list-item>
+              </v-fade-transition>
+              <v-fade-transition>
+                <v-list-item v-if="Math.abs(fParticipants.length - participants.length) > 0">
+                  <v-icon class="pr-2">
+                    mdi-eye-off
+                  </v-icon>
+                  <span class="grey--text">{{ Math.abs(fParticipants.length - participants.length) }} {{ translate('hidden') }}</span>
+                </v-list-item>
+              </v-fade-transition>
+            </v-list>
+          </div>
         </v-tab-item>
         <v-tab-item>
           <div
