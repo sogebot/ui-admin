@@ -1,5 +1,12 @@
 <template>
-  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e5" :loading="isLoading" width="100%" :height="isPopout ? '100%' : undefined" style="overflow: inherit" flat>
+  <v-card
+    id="5b90af97-ad95-4776-89e3-9a59c67510e5"
+    :loading="isLoading"
+    width="100%"
+    :height="isPopout ? '100%' : undefined"
+    style="overflow: inherit"
+    flat
+  >
     <v-card-text class="pa-0 ma-0">
       <v-tabs
         v-model="tab"
@@ -12,7 +19,7 @@
         <v-tab>Winner</v-tab>
       </v-tabs>
 
-      <v-tabs-items v-model="tab" :style="{ height: height - 36 + 'px' }">
+      <v-tabs-items v-model="tab" :style="{ height: (height || 0) - 36 + 'px' }">
         <v-tab-item>
           <v-form v-model="valid" lazy-validation>
             <v-text-field
@@ -122,7 +129,7 @@
             <v-fade-transition>
               <v-list-item
                 v-for="participant of fParticipants"
-                :key="participant._id"
+                :key="participant.id"
                 @click="toggleEligibility(participant)"
               >
                 <v-icon v-if="participant.isEligible" class="pr-2" color="success">
@@ -155,8 +162,8 @@
             v-else
             class="font-weight-light pa-3"
           >
-            <div class="text-h4 m-auto text-center">
-              {{ winner.username }}
+            <div class="text-h5 m-auto text-center text-uppercase">
+              {{ winner.userName }}
             </div>
             <v-row no-gutters class="m-auto text-center">
               <v-col :class="{'text-decoration-line-through': !winner.isFollower }">
@@ -187,8 +194,8 @@
               <template #default>
                 <tbody>
                   <tr
-                    v-for="item in winnerMessages"
-                    :key="item.timestamp"
+                    v-for="message in winnerMessages"
+                    :key="message.timestamp"
                   >
                     <td>{{ message.text }}</td>
                     <td>{{ dayjs(message.timestamp).format('LL') }} {{ dayjs(message.timestamp).format('LTS') }}</td>
@@ -210,6 +217,8 @@
 </template>
 
 <script lang="ts">
+import type { RaffleInterface } from '@entity/raffle';
+import { UserInterface } from '@entity/user';
 import {
   computed,
   defineComponent, onMounted, ref, watch,
@@ -218,17 +227,13 @@ import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { RaffleInterface } from '@entity/raffle';
-import { UserInterface } from '@entity/user';
 import { error } from '~/functions/error';
 import {
   minLength, required, startsWith,
 } from '~/functions/validators';
 
 export default defineComponent({
-  props: {
-    height: Number,
-  },
+  props: { height: Number },
   setup () {
     const isPopout = computed(() => location.href.includes('popout'));
     const tab = ref(0);
@@ -261,23 +266,13 @@ export default defineComponent({
     });
 
     const eligibleItems = [
-      {
-        text: translate('everyone'), value: 'all',
-      },
-      {
-        text: translate('followers'), value: 'followers',
-      },
-      {
-        text: translate('subscribers'), value: 'subscribers',
-      },
+      { text: translate('everyone'), value: 'all' },
+      { text: translate('followers'), value: 'followers' },
+      { text: translate('subscribers'), value: 'subscribers' },
     ];
     const typeItems = [
-      {
-        text: translate('raffle-type-keywords'), value: true,
-      },
-      {
-        text: translate('raffle-type-tickets'), value: false,
-      },
+      { text: translate('raffle-type-keywords'), value: true },
+      { text: translate('raffle-type-tickets'), value: false },
     ];
     const fParticipants = computed(() => {
       if (search.value.trim().length === 0) {
@@ -333,9 +328,7 @@ export default defineComponent({
     function refresh () {
       getSocket('/systems/raffles').emit('raffle:getLatest', (err: string | null, raffle: RaffleInterface) => {
         console.groupCollapsed('raffle:getLatest');
-        console.log({
-          err, raffle,
-        });
+        console.log({ err, raffle });
         console.groupEnd();
         isLoading.value = false;
         if (err) {
@@ -381,9 +374,7 @@ export default defineComponent({
 
     function toggleEligibility (participant: typeof participants.value[number]) {
       participant.isEligible = !participant.isEligible;
-      getSocket('/systems/raffles').emit('raffle::setEligibility', {
-        id: participant.id, isEligible: participant.isEligible,
-      }, (err: string | null) => {
+      getSocket('/systems/raffles').emit('raffle::setEligibility', { id: participant.id, isEligible: participant.isEligible }, (err: string | null) => {
         if (err) {
           return error(err);
         }
