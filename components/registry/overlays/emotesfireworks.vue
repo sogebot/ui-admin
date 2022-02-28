@@ -77,7 +77,7 @@ export default defineComponent({
     }, { deep: true, immediate: true });
 
     const test = () => {
-      getSocket('/services/twitch').emit('testFireworks', () => {
+      getSocket('/core/emotes').emit('testFireworks', () => {
         return true;
       });
     };

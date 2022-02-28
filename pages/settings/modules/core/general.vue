@@ -3,7 +3,6 @@
   <v-form v-else v-model="valid" lazy-validation>
     <v-tabs v-model="tab">
       <v-tab>{{ translate('categories.general') }}</v-tab>
-      <v-tab>{{ translate('categories.emotes') }}</v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="tab">
@@ -53,15 +52,6 @@
           </v-card-text>
         </v-card>
       </v-tab-item>
-      <v-tab-item eager>
-        <v-card>
-          <v-card-text>
-            <v-btn @click="removeEmoteCache">
-              Remove emotes cache
-            </v-btn>
-          </v-card-text>
-        </v-card>
-      </v-tab-item>
     </v-tabs-items>
   </v-form>
 </template>
@@ -77,7 +67,6 @@ import {
 } from '@vue/composition-api';
 
 import { error } from '~/functions/error';
-import { EventBus } from '~/functions/event-bus';
 import { saveSettings } from '~/functions/settings';
 import { minValue, required } from '~/functions/validators';
 
@@ -121,12 +110,6 @@ export default defineComponent({
         });
     });
 
-    const removeEmoteCache = () => {
-      getSocket(`/core/general`).emit('removeCache', () => {
-        EventBus.$emit('snack', 'success', `Emotes cache was cleared.`);
-      });
-    };
-
     return {
       settings,
       ui,
@@ -135,7 +118,6 @@ export default defineComponent({
       required,
       minValue,
       tab,
-      removeEmoteCache,
       pointsOptions,
     };
   },

@@ -109,7 +109,7 @@ export default defineComponent({
     });
 
     const test = () => {
-      getSocket('/services/twitch').emit('test', () => {
+      getSocket('/core/emotes').emit('test', () => {
         return true;
       });
     };

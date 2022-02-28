@@ -147,12 +147,8 @@ export default defineComponent({
       }
     };
 
-    const callback = () => {
-      alert('test');
-    };
-
     return {
-      menu, item, save, translate, capitalize, valid, saving, form, callback,
+      menu, item, save, translate, capitalize, valid, saving, form,
     };
   },
 });
