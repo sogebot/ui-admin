@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [40.0.0](https://github.com/sogebot/ui-admin/compare/v39.0.2...v40.0.0) (2022-02-28)
+
+
+### Features
+
+* **emotes:** add emotes configuration ([2bfb989](https://github.com/sogebot/ui-admin/commit/2bfb98960829d1b305609402f7a2246d983f20bc))
+
 ### [39.0.2](https://github.com/sogebot/ui-admin/compare/v39.0.1...v39.0.2) (2022-02-26)
 
 
