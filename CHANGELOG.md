@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [40.0.1](https://github.com/sogebot/ui-admin/compare/v40.0.0...v40.0.1) (2022-03-01)
+
+
+### Bug Fixes
+
+* **actions:** fix incorrectly loaded buttons ([d258498](https://github.com/sogebot/ui-admin/commit/d258498e9a7c1690d2420ed78e11f00de8cda8b3))
+
 ## [40.0.0](https://github.com/sogebot/ui-admin/compare/v39.0.2...v40.0.0) (2022-02-28)
 
 
