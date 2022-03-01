@@ -5,7 +5,7 @@
       class="text-button pa-1 mb-1 text-center"
       style="font-size: 12px !important; display: block;"
       :style="{ 'color': color }"
-      @click="!editing ? trigger($event) : showDialog()"
+      @click="!editing ? trigger() : showDialog()"
     >
       <v-row no-gutters ripple>
         <v-slide-x-transition>
@@ -49,9 +49,7 @@
 </template>
 
 <script lang="ts">
-import type {
-  OverlayMapperMarathon,
-} from '@entity/overlay';
+import type { OverlayMapperMarathon } from '@entity/overlay';
 import {
   DAY, HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
@@ -124,7 +122,7 @@ export default defineComponent({
       return output;
     };
 
-    const { result, refetch } = useQuery(GET);
+    const { result, refetch } = useQuery(GET, { id: props.item.options.marathonId });
     const items = useResult<{ overlays: Record<string, any> }, OverlayMapperMarathon[], OverlayMapperMarathon[]>(result, [], data => [...data.overlays.marathon]);
     const marathon = ref(null as null | OverlayMapperMarathon);
 

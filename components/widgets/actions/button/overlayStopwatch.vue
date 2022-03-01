@@ -58,9 +58,7 @@
 </template>
 
 <script lang="ts">
-import type {
-  OverlayMapperStopwatch,
-} from '@entity/overlay';
+import type { OverlayMapperStopwatch } from '@entity/overlay';
 import {
   DAY, HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
@@ -123,7 +121,7 @@ export default defineComponent({
       return output;
     });
 
-    const { result, refetch } = useQuery(GET);
+    const { result, refetch } = useQuery(GET, { id: props.item.options.stopwatchId });
     const items = useResult<{ overlays: Record<string, any> }, OverlayMapperStopwatch[], OverlayMapperStopwatch[]>(result, [], data => [...data.overlays.stopwatch]);
     const stopwatch = ref(null as null | OverlayMapperStopwatch);
 
@@ -197,9 +195,7 @@ export default defineComponent({
       const text = document.getElementsByClassName(`text`)[0] as HTMLElement;
 
       const getClassList = (el: Element) => {
-        if (el.tagName === 'path') {
-          return (Array.from(el.parentElement?.parentElement?.classList ?? []));
-        } if (el.tagName === 'SPAN') {
+        if (el.tagName === 'SPAN' || el.tagName === 'I') {
           return (Array.from(el.classList ?? []));
         } else {
           return (Array.from(el.parentElement?.classList ?? []));
@@ -207,11 +203,12 @@ export default defineComponent({
       };
 
       const mouseOffsetX = ev.offsetX;
-      const isText = getClassList(ev.target as Element).includes('text');
+      const classList = getClassList(ev.target as Element);
+      const isText = classList.includes('text');
 
-      const isDecrement = !getClassList(ev.target as Element).includes('plus')
-        && (getClassList(ev.target as Element).includes('minus') || mouseOffsetX < ((isText ? text.clientWidth : card.clientWidth) / 2));
-
+      const isDecrement = !classList.includes('plus')
+        && (classList.includes('minus') || mouseOffsetX < ((isText ? text.clientWidth : card.clientWidth) / 2));
+      debugger;
       if (isDecrement) {
         isStarted.value = !isStarted.value;
         getSocket('/overlays/stopwatch').emit('stopwatch::update::set', {

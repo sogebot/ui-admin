@@ -1,5 +1,6 @@
 <template>
   <v-card
+    v-if="item"
     :id="'quickaction-' + item.id"
     class="noselect"
     :color="item.options.color"
@@ -55,6 +56,7 @@
 </template>
 
 <script lang="ts">
+import type { QuickActions } from '@entity/dashboard';
 import {
   defineAsyncComponent,
   defineComponent, nextTick, onMounted, ref, watch,
@@ -65,7 +67,6 @@ import { useMutation } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { cloneDeep } from 'lodash';
 
-import type { QuickActions } from '@entity/dashboard';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
@@ -82,9 +83,7 @@ const rgbToHex = function (rgb: number | string) {
 };
 
 export default defineComponent({
-  props: {
-    item: Object, editing: Boolean,
-  },
+  props:      { item: Object, editing: Boolean },
   components: {
     command:          defineAsyncComponent(() => import('./button/command.vue')),
     customvariable:   defineAsyncComponent(() => import('./button/customvariable.vue')),
@@ -92,9 +91,7 @@ export default defineComponent({
     overlayCountdown: defineAsyncComponent(() => import('./button/overlayCountdown.vue')),
     overlayStopwatch: defineAsyncComponent(() => import('./button/overlayStopwatch.vue')),
     overlayMarathon:  defineAsyncComponent(() => import('./button/overlayMarathon.vue')),
-    edit:             defineAsyncComponent({
-      loader: () => import('~/components/widgets/actions/edit.vue'),
-    }),
+    edit:             defineAsyncComponent(() => import('~/components/widgets/actions/edit.vue')),
   },
   setup (props: Props, ctx) {
     const { mutate: updateMutation, onError, onDone, loading: saving } = useMutation(gql`
@@ -150,11 +147,7 @@ export default defineComponent({
       nextTick(() => {
         if (valid.value) {
           const { selected, temporary, show, ...item } = clonedItem.value;
-          updateMutation({
-            data: {
-              [item.type]: [item],
-            },
-          });
+          updateMutation({ data: { [item.type]: [item] } });
         }
       });
     };
