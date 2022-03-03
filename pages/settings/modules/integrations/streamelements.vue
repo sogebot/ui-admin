@@ -12,6 +12,10 @@
             <v-text-field v-model="settings.jwtToken[0]" type="password" dense
               :label="translate('integrations.streamelements.settings.jwtToken.title')"
               :hint="translate('integrations.streamelements.settings.jwtToken.help')" persistent-hint>
+
+              <template v-slot:message="{ message }">
+                <span v-html="message"/>
+              </template>
               <template #append-outer>
                 <v-btn @click='validate' v-if="settings.jwtToken[0].length > 0" :loading="isValidating">Validate</v-btn>
               </template>

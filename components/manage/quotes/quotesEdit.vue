@@ -78,7 +78,7 @@ import {
 } from '@vue/composition-api';
 import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
-import { QuoteInterface } from '@entity/quotes';
+import { QuotesInterface } from '@entity/quotes';
 
 import { EventBus } from '~/functions/event-bus';
 import { getSocket } from '@sogebot/ui-helpers/socket';
@@ -92,7 +92,7 @@ const newItem = {
 
 type Props = {
   rules: Record<string, any>,
-  value: QuoteInterface,
+  value: QuotesInterface,
 }
 
 export default defineComponent({
