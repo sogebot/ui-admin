@@ -302,6 +302,9 @@ export default defineComponent({
       {
         value: 'isEnabled', text: translate('enabled'), align: 'center',
       },
+      {
+        value: 'actions', sortable: false,
+      },
     ];
 
     const headersDelete = [

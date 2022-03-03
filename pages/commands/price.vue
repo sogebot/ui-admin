@@ -147,7 +147,10 @@ export default defineComponent({
         value: 'emitRedeemEvent', text: translate('systems.price.emitRedeemEvent'), align: 'center',
       },
       {
-        value: 'price', text: capitalize(translate('systems.price.price.name')),
+        value: 'price', text: capitalize(translate('systems.price.price.name')), align: 'right',
+      },
+      {
+        value: 'actions', sortable: false,
       },
     ];
     const headersDelete = [

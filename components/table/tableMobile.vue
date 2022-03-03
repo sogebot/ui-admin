@@ -16,7 +16,7 @@
         </div>
       </td>
 
-      <td v-for="header of headers" :key="header.value" class="v-data-table__mobile-row">
+      <td v-for="header of headers.filter(o => o.value !== 'actions')" :key="header.value" class="v-data-table__mobile-row">
         <div class="v-data-table__mobile-row__header">
           {{ header.text }}
         </div>
@@ -35,16 +35,15 @@
       <td>
         <div class="d-flex">
           <v-simple-checkbox v-if="selected" :value="selected.some(o => (itemKey ? o[itemKey] : o.id) === (itemKey ? item[itemKey] : item.id))" @click="addToSelectedItem(item)" />
-          <slot name="actions" />
         </div>
       </td>
-
       <td
-        v-for="header of headers"
+        v-for="header of headers.filter(o => o.value !== 'actions')"
         :key="header.value"
-        class="pa-2"
+        class="pa-2 mx-4"
         :class="{
           'text-center': header.align === 'center',
+          'text-right': header.align === 'right',
         }"
       >
         <slot :name="header.value">
@@ -53,6 +52,11 @@
             {{ item[header.value] }}
           </template>
         </slot>
+      </td>
+      <td>
+        <div class="d-flex" style="justify-content: right;">
+          <slot name="actions" />
+        </div>
       </td>
     </template>
   </tr>

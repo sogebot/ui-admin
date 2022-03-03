@@ -1,57 +1,24 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <alert-disabled system="quotes"/>
+    <alert-disabled system="quotes" />
 
-    <v-data-table
-      v-model="selected"
-      calculate-widths
-      :show-select="selectable"
-      :search="search"
-      :loading="state.loading !== ButtonStates.success"
-      :headers="headers"
-      :items-per-page="-1"
-      :items="fItems"
-      @current-items="saveCurrentItems"
-      @click:row="addToSelectedItem"
-    >
-      <template #top>
-        <v-sheet
-          flat
-          color="dark"
-          class="my-2 pb-2 mt-0"
-        >
-          <v-row class="px-2" no-gutters>
-            <v-col cols="auto" align-self="center" class="pr-2">
-              <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
-                <v-icon>
-                  mdi-checkbox-multiple-marked-outline
-                </v-icon>
-              </v-btn>
-            </v-col>
-            <v-col align-self="center">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-                class="pa-0 ma-2"
-              />
-            </v-col>
-            <v-col cols="auto" align-self="center">
-              <template v-if="selected.length > 0">
-                <v-dialog
-                  v-model="deleteDialog"
-                  max-width="500px"
-                >
+    <v-expand-transition>
+      <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>
+        <v-row class="px-2" dense justify="end">
+          <v-col cols="auto" align-self="center">
+            {{ selected.length }} items selected
+          </v-col>
+
+          <v-col cols="auto" align-self="center">
+            <v-row dense>
+              <v-col v-if="selected.length > 0" cols="auto">
+                <v-dialog v-model="deleteDialog" max-width="500px">
                   <template #activator="{ on, attrs }">
-                    <v-btn
-                      color="error"
-                      class="mr-1"
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      Delete {{ selected.length }} Item(s)
+                    <v-btn class="error" small v-bind="attrs" v-on="on">
+                      <v-icon left>
+                        mdi-delete-forever
+                      </v-icon>
+                      Delete
                     </v-btn>
                   </template>
 
@@ -72,165 +39,102 @@
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
-                      <v-btn
-                        text
-                        @click="deleteDialog = false"
-                      >
+                      <v-btn text @click="deleteDialog = false">
                         Cancel
                       </v-btn>
-                      <v-btn
-                        color="error"
-                        text
-                        @click="deleteSelected"
-                      >
+                      <v-btn color="error" text @click="deleteSelected">
                         Delete
                       </v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
-              </template>
-
-              <v-dialog
-                v-model="newDialog"
-                max-width="500px"
-              >
-                <template #activator="{ on, attrs }">
-                  <v-btn
-                    color="primary"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    New item
-                  </v-btn>
-                </template>
-
-                <v-card>
-                  <v-card-title>
-                    <span class="headline">New item</span>
-                  </v-card-title>
-
-                  <v-card-text :key="timestamp">
-                    <new-item
-                      :rules="rules"
-                      @close="newDialog = false"
-                      @save="saveSuccess"
-                    />
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
-            </v-col>
-          </v-row>
-        </v-sheet>
-      </template>
-
-      <template #[`item.quote`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.quote"
-          @save="update(item, false, 'quote')"
-        >
-          {{ item.quote }}
-          <template #input>
-            <v-lazy>
-              <v-textarea
-                v-model="item.quote"
-                hide-details="auto"
-                :label="capitalize(translate('systems.quotes.quote.name'))"
-                :rows="1"
-                counter
-                auto-grow
-                @keydown.enter.prevent
-              />
-            </v-lazy>
-          </template>
-        </v-edit-dialog>
-      </template>
-
-      <template #[`item.createdAt`]="{ item }">
-        {{ dayjs(item.createdAt).format('LL') }} {{ dayjs(item.createdAt).format('LTS') }}
-      </template>
-
-      <template #[`item.quotedByName`]="{ item }">
-        <NuxtLink :to="'/manage/viewers/' + item.quotedBy">
-          {{ item.quotedByName }}&nbsp;<small>{{ item.quotedBy }}</small>
-        </NuxtLink>
-      </template>
-
-      <template #[`item.tags`]="{ item }">
-        <v-row
-          no-gutters
-          dense
-        >
-          <v-col cols="auto">
-            <v-chip-group>
-              <v-chip
-                v-for="tag of item.tags"
-                :key="tag"
-                x-small
-                @click.stop="showTag=tag"
-              >
-                {{ tag }}
-              </v-chip>
-            </v-chip-group>
-          </v-col>
-          <v-col cols="auto">
-            <v-edit-dialog
-              persistent
-              large
-              :return-value.sync="item.tags"
-              @save="update(item, false, 'tags')"
-            >
-              <v-icon
-                small
-                class="pa-2"
-                @click="tagsSearch = ''"
-              >
-                mdi-tag-plus
-              </v-icon>
-              <template #input>
-                <v-combobox
-                  v-model="item.tags"
-                  hide-selected
-                  small-chips
-                  clearable
-                  :search-input.sync="tagsSearch"
-                  :return-object="false"
-                  multiple
-                  dense
-                  :items="tagsItemsWithoutNull"
-                >
-                  <template #no-data>
-                    <v-list-item>
-                      <span class="subheading">Add new tag</span>
-                      <strong class="pl-2">{{ tagsSearch }}</strong>
-                    </v-list-item>
-                  </template>
-                </v-combobox>
-              </template>
-            </v-edit-dialog>
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
+      </v-app-bar>
+    </v-expand-transition>
+
+    <v-data-table
+      v-model="selected"
+      show-select
+      calculate-widths
+      :search="search"
+      :loading="state.loading === 1"
+      :headers="headers"
+      :items-per-page="-1"
+      :items="fItems"
+      @current-items="saveCurrentItems"
+    >
+      <template #top>
+        <search-bar :search.sync="search">
+          <quotes-edit
+            :rules="rules"
+            :tags="tags"
+            @save="refresh()"
+          />
+        </search-bar>
       </template>
 
       <template #[`body.prepend`]="{}">
         <tr>
-          <td colspan="4" />
-          <td>
-            <v-select
-              v-model="showTag"
-              :items="tagsItems"
-              clearable
-            />
+          <td v-if="!$vuetify.breakpoint.mobile" colspan="3" />
+          <td :class="{'v-data-table__mobile-row': $vuetify.breakpoint.mobile}">
+            <v-select v-model="showTag" :items="tagsItems" clearable />
           </td>
-          <td colspan="2" />
+          <td v-if="!$vuetify.breakpoint.mobile" colspan="2" />
         </tr>
+      </template>
+
+      <template #[`item`]="{ item }">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem">
+          <template #actions>
+            <quotes-edit
+              :rules="rules"
+              :tags="tags"
+              :value="item"
+              @save="refresh()"
+            />
+            <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+              <v-icon>
+                mdi-delete-forever
+              </v-icon>
+            </v-btn>
+          </template>
+
+          <template #id>
+            {{ item.id }}
+            <div class="grey--text">
+              {{ dayjs(item.createdAt).format('LL') }} {{ dayjs(item.createdAt).format('LTS') }}
+            </div>
+          </template>
+          <template #quotedByName>
+            <NuxtLink :to="'/manage/viewers/' + item.quotedBy">
+              {{ item.quotedByName }}&nbsp;<small>{{ item.quotedBy }}</small>
+            </NuxtLink>
+          </template>
+          <template #tags>
+            <v-chip-group class="d-inline-block">
+              <v-chip
+                v-for="tag of item.tags"
+                :key="tag"
+                :color="showTag === tag ? 'primary' : 'secondary'"
+                label
+                class="mr-2"
+                @click="showTag=tag"
+              >
+                {{ tag }}
+              </v-chip>
+            </v-chip-group>
+          </template>
+        </table-mobile>
       </template>
     </v-data-table>
   </v-container>
 </template>
 
 <script lang="ts">
+import type { QuotesInterface } from '@entity/quotes';
 import {
   computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -242,7 +146,6 @@ import {
   capitalize, flatten, orderBy, uniq,
 } from 'lodash';
 
-import type { QuotesInterface } from '@entity/quotes';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -250,48 +153,27 @@ import { required } from '~/functions/validators';
 
 export default defineComponent({
   components: {
-    'new-item': defineAsyncComponent({
-      loader: () => import('~/components/new-item/quotes-newItem.vue'),
-    }),
+    'search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
+    'quotes-edit':  defineAsyncComponent(() => import('~/components/manage/quotes/quotesEdit.vue')),
   },
   setup () {
-    const timestamp = ref(Date.now());
-
     const selected = ref([] as QuotesInterface[]);
     const currentItems = ref([] as QuotesInterface[]);
     const saveCurrentItems = (value: QuotesInterface[]) => {
       currentItems.value = value;
     };
-    const selectable = ref(false);
-    watch(selectable, (val) => {
-      if (!val) {
-        selected.value = [];
-      }
-    });
     const deleteDialog = ref(false);
-    const newDialog = ref(false);
 
-    const saveSuccess = () => {
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
-      newDialog.value = false;
-    };
-
-    const rules = {
-      quote: [required],
-    };
+    const rules = { quote: [required] };
 
     const items = ref([] as QuotesInterface[]);
     const search = ref('');
     const showTag = ref(null as null | string);
-    const tagsSearch = ref('');
 
     const headers = [
       {
-        value: 'id', text: '', sortable: true,
-      },
-      {
-        value: 'createdAt', text: translate('systems.quotes.date.name'), sortable: true,
+        value: 'id', text: '#', sortable: true,
       },
       {
         value: 'quote', text: translate('systems.quotes.quote.name'), sortable: true,
@@ -302,6 +184,7 @@ export default defineComponent({
       {
         value: 'quotedByName', text: translate('systems.quotes.by.name'), sortable: true,
       },
+      { value: 'actions', sortable: false },
     ];
 
     const headersDelete = [
@@ -313,9 +196,7 @@ export default defineComponent({
       },
     ];
 
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number,
     });
 
@@ -324,8 +205,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/quotes').emit('quotes:getAll', {
-      }, (err: string | null, data: QuotesInterface[]) => {
+      getSocket('/systems/quotes').emit('quotes:getAll', {}, (err: string | null, data: QuotesInterface[]) => {
         if (err) {
           error(err);
           return;
@@ -370,62 +250,12 @@ export default defineComponent({
       return orderBy(uniq(flatten(_tags)));
     });
     const tagsItems = computed(() => {
-      return [{
-        text: 'Not filtered', value: null,
-      }, ...tags.value.map(item => ({
+      return [{ text: 'Not filtered', value: null }, ...tags.value.map(item => ({
         text:     item,
         value:    item,
         disabled: false,
       }))];
     });
-    const tagsItemsWithoutNull = computed(() => {
-      const [, ...rest] = tagsItems.value;
-      return rest;
-    });
-
-    const update = async (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
-      // check validity
-      for (const key of Object.keys(rules)) {
-        for (const rule of (rules as any)[key]) {
-          const ruleStatus = rule((item as any)[key]);
-          if (ruleStatus === true) {
-            continue;
-          } else {
-            EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-            refresh();
-            return;
-          }
-        }
-      }
-
-      // update all instantly
-      for (const i of [item, ...(multi ? selected.value : [])]) {
-        (i as any)[attr] = item[attr];
-      }
-
-      await Promise.all(
-        [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
-          return new Promise((resolve) => {
-            console.log('Updating', {
-              itemToUpdate,
-            }, {
-              attr, value: item[attr],
-            });
-            getSocket('/systems/quotes').emit('generic::setById', {
-              id:   itemToUpdate.id,
-              item: {
-                ...itemToUpdate,
-                [attr]: item[attr], // save new value for all selected items
-              },
-            }, () => {
-              resolve(true);
-            });
-          });
-        }),
-      );
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
-    };
 
     const deleteSelected = async () => {
       deleteDialog.value = false;
@@ -454,28 +284,22 @@ export default defineComponent({
       fItems,
       tags,
       tagsItems,
-      tagsItemsWithoutNull,
       headers,
       headersDelete,
       state,
       search,
-      update,
       showTag,
       capitalize,
-      tagsSearch,
-      selectable,
 
-      newDialog,
       deleteDialog,
       deleteSelected,
       selected,
-      timestamp,
-      saveSuccess,
       rules,
 
       dayjs,
       translate,
       ButtonStates,
+      refresh,
     };
   },
 });

@@ -86,6 +86,10 @@
             </v-btn>
           </template>
 
+          <template #name>
+            {{ item.name }}
+            <div class="grey--text">{{ item.type }}</div>
+          </template>
           <template #count>{{ item.count }}s</template>
         </table-mobile>
       </template>
@@ -157,10 +161,7 @@ export default defineComponent({
         value: 'name', text: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group'),
       },
       {
-        value: 'count', text: translate('cooldown'),
-      },
-      {
-        value: 'type', text: translate('type'),
+        value: 'count', text: translate('cooldown'), align: 'right',
       },
       {
         value: 'isEnabled', text: capitalize(translate('enabled')), align: 'center',
@@ -179,6 +180,9 @@ export default defineComponent({
       },
       {
         value: 'isFollowerAffected', text: capitalize(translate('core.permissions.followers')), align: 'center',
+      },
+      {
+        value: 'actions', sortable: false,
       },
     ];
 

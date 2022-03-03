@@ -97,7 +97,7 @@
             Cancel
           </v-btn>
           <v-btn color="primary" :loading="saving" text :disabled="!valid" @click="save()">
-            Save
+            Save &amp; Close
           </v-btn>
         </v-card-actions>
       </v-card>

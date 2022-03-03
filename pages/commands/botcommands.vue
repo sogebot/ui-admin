@@ -118,9 +118,6 @@ export default defineComponent({
 
     const headers = [
       {
-        value: 'actions', width: '3rem', sortable: false,
-      },
-      {
         value: 'command', text: translate('command'),
       },
       {
@@ -131,6 +128,9 @@ export default defineComponent({
       },
       {
         value: 'permission', text: translate('permission'),
+      },
+      {
+        value: 'actions', sortable: false,
       },
     ];
 

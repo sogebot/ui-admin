@@ -64,6 +64,7 @@
           <td :class="{'v-data-table__mobile-row': $vuetify.breakpoint.mobile}">
             <v-select v-model="showTag" :items="tagsItems" clearable />
           </td>
+          <td colspan="1" v-if="!$vuetify.breakpoint.mobile" />
         </tr>
       </template>
 
@@ -198,6 +199,9 @@ export default defineComponent({
       },
       {
         value: 'tags', text: 'Playlist',
+      },
+      {
+        value: 'actions', sortable: false,
       },
     ];
 

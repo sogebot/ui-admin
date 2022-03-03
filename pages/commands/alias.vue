@@ -308,6 +308,9 @@ export default defineComponent({
       {
         value: 'visible', text: capitalize(translate('visible')), align: 'center',
       },
+      {
+        value: 'actions', sortable: false,
+      },
     ];
 
     const headersDelete = [

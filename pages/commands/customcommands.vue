@@ -236,7 +236,10 @@ export default defineComponent({
         value: 'visible', text: capitalize(translate('visible')), align: 'center',
       },
       {
-        value: 'count', text: capitalize(translate('count')), align: 'center',
+        value: 'count', text: capitalize(translate('count')), align: 'right',
+      },
+      {
+        value: 'actions', sortable: false,
       },
     ];
 
