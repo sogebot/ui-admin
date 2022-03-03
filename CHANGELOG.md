@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [40.0.3](https://github.com/sogebot/ui-admin/compare/v40.0.2...v40.0.3) (2022-03-03)
+
+
+### Bug Fixes
+
+* **streamelements:** use hint as html ([53714ed](https://github.com/sogebot/ui-admin/commit/53714edb7e13174c812bb9412ee05fdd0851ebbc))
+
 ### [40.0.2](https://github.com/sogebot/ui-admin/compare/v40.0.1...v40.0.2) (2022-03-03)
 
 
