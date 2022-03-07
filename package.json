@@ -47,7 +47,7 @@
     "@skjnldsv/vue-plyr": "^7.0.1-beta.0",
     "@sogebot/ui-helpers": "^2.8.0",
     "@types/chart.js": "^2.9.35",
-    "@types/marked": "^3.0.2",
+    "@types/marked": "^4.0.2",
     "@types/prismjs": "^1.16.6",
     "@types/shortid": "^0.0.29",
     "@types/uuid": "^8.3.4",
