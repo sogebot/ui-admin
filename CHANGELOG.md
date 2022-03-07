@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [41.0.0](https://github.com/sogebot/ui-admin/compare/v40.0.3...v41.0.0) (2022-03-07)
+
+
+### Features
+
+* **overlays:** add name support ([1a11caf](https://github.com/sogebot/ui-admin/commit/1a11caf324dc0cf3bb676cbd975bdaa630247198))
+
 ### [40.0.3](https://github.com/sogebot/ui-admin/compare/v40.0.2...v40.0.3) (2022-03-03)
 
 
