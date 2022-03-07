@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [41.0.1](https://github.com/sogebot/ui-admin/compare/v41.0.0...v41.0.1) (2022-03-07)
+
+
+### Bug Fixes
+
+* **group:** fix missing name ([6fde02e](https://github.com/sogebot/ui-admin/commit/6fde02e559ea920dd32f2f833a6a712fd777b41b))
+
 ## [41.0.0](https://github.com/sogebot/ui-admin/compare/v40.0.3...v41.0.0) (2022-03-07)
 
 
