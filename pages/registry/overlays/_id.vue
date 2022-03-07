@@ -19,6 +19,10 @@
     <v-fade-transition>
       <v-container v-if="!loading" fluid>
         <v-form ref="form1" v-model="valid1" lazy-validation>
+          <v-text-field
+            v-model="item.name"
+            :label="translate('name')"
+          />
           <v-select
             v-model="item.value"
             :label="translate('type')"
@@ -27,8 +31,8 @@
           <component
             :is="item.value"
             v-if="haveAnyOptions(item.value)"
-            v-model="item.opts"
             :id="item.id"
+            v-model="item.opts"
             @update="item.opts = $event;"
           />
         </v-form>
@@ -98,9 +102,11 @@ export default defineComponent({
     const loading = ref(true);
 
     const item = ref(cloneDeep({
-      id:    route.value.params.id,
-      value: null,
-      opts:  null,
+      id:      route.value.params.id,
+      name:    '',
+      value:   null,
+      groupId: null,
+      opts:    null,
     }) as OverlayMappers);
 
     const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(SAVE);

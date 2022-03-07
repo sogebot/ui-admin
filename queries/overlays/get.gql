@@ -4,18 +4,21 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts { id }
     }
     alertsRegistry {
       id
       value
       groupId
+      name
       opts { id }
     }
     wordcloud {
       id
       value
       groupId
+      name
       opts {
         fadeOutInterval
         fadeOutIntervalType
@@ -30,21 +33,25 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
     }
     stats {
       id
       value
       groupId
+      name
     }
     carousel {
       id
       value
       groupId
+      name
     }
     marathon {
       id
       value
       groupId
+      name
       opts {
         disableWhenReachedZero
         showProgressGraph
@@ -96,6 +103,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         currentTime
         isPersistent
@@ -124,6 +132,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         time
         currentTime
@@ -172,6 +181,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         social {
           type
@@ -223,6 +233,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         count
         ignore
@@ -234,6 +245,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         volume
         filter
@@ -244,6 +256,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         galleryCache
         galleryCacheLimitInMb
@@ -253,6 +266,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         emotesSize
         maxEmotesPerMessage
@@ -266,6 +280,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         showEmoteInOverlayThreshold
         hideEmoteInOverlayAfter
@@ -275,6 +290,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         emotesSize
         animationTime
@@ -286,6 +302,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         emotesSize
         animationTime
@@ -296,11 +313,13 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
     }
     clipscarousel {
       id
       value
       groupId
+      name
       opts {
         animation
         customPeriod
@@ -312,6 +331,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         voice
         volume
@@ -324,6 +344,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         theme
         hideAfterInactivity
@@ -335,6 +356,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         allowedIPs
       }
@@ -343,6 +365,7 @@ query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
       id
       value
       groupId
+      name
       opts {
         canvas {
           width

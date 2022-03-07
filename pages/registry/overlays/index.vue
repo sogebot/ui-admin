@@ -3,140 +3,122 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
+    <v-expand-transition>
+      <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>
+        <v-row class="px-2" dense justify="end">
+          <v-col cols="auto" align-self="center">
+            {{ selected.length }} items selected
+          </v-col>
+
+          <v-col cols="auto" align-self="center">
+            <v-row dense>
+              <v-col v-if="selected.length > 0" cols="auto">
+                <v-dialog v-model="deleteDialog" max-width="500px">
+                  <template #activator="{ on, attrs }">
+                    <v-btn class="error" small v-bind="attrs" v-on="on">
+                      <v-icon left>
+                        mdi-delete-forever
+                      </v-icon>
+                      Delete
+                    </v-btn>
+                  </template>
+
+                  <v-card>
+                    <v-card-title>
+                      <span class="headline">Delete {{ selected.length }} Item(s)?</span>
+                    </v-card-title>
+
+                    <v-card-text>
+                      <v-data-table
+                        dense
+                        :items="selected"
+                        :headers="headersDelete"
+                        :items-per-page="-1"
+                        hide-default-header
+                        hide-default-footer
+                      >
+                        <template #[`item.id`]="{ item }">
+                          <code>{{item.id}}</code>
+                        </template>
+                      </v-data-table>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn text @click="deleteDialog = false">
+                        Cancel
+                      </v-btn>
+                      <v-btn color="error" text @click="deleteSelected">
+                        Delete
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-app-bar>
+    </v-expand-transition>
+
     <v-data-table
       v-model="selected"
-      :show-select="selectable"
-      :loading="loading || state.saving"
+      :show-select="true"
+      :loading="loading"
       :headers="headers"
       :items-per-page="-1"
-      hide-default-footer
-      hide-default-header
       sort-by="value"
+      :search="search"
       :items="items"
       @current-items="saveCurrentItems"
       @click:row="addToSelectedItem"
     >
       <template #top>
-        <v-sheet
-          flat
-          color="dark"
-          class="my-2 pb-2 mt-0"
-        >
-          <v-row class="px-2" no-gutters>
-            <v-col cols="auto" align-self="center" class="pr-2">
-              <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
-                <v-icon>
-                  mdi-checkbox-multiple-marked-outline
-                </v-icon>
-              </v-btn>
-            </v-col>
-            <v-col cols="auto" align-self="center" class="ml-auto mt-2">
-              <v-row no-gutters>
-                <v-col>
-                  <template v-if="selected.length > 0">
-                    <v-dialog
-                      v-model="deleteDialog"
-                      max-width="500px"
-                    >
-                      <template #activator="{ on, attrs }">
-                        <v-btn
-                          color="error"
-                          class="mr-1"
-                          v-bind="attrs"
-                          v-on="on"
-                        >
-                          Delete {{ selected.length }} Item(s)
-                        </v-btn>
-                      </template>
-
-                      <v-card>
-                        <v-card-title>
-                          <span class="headline">Delete {{ selected.length }} Item(s)?</span>
-                        </v-card-title>
-
-                        <v-card-text>
-                          <v-data-table
-                            :headers="headers"
-                            :items-per-page="-1"
-                            hide-default-footer
-                            hide-default-header
-                            :items="selected"
-                          >
-                            <template #[`item.arrow`]="{ }">
-                              <v-icon>mdi-chevron-right</v-icon>
-                            </template>
-                            <template #[`item.overlay`]="{ item }">
-                              {{ item.value }}
-                            </template>
-                          </v-data-table>
-                        </v-card-text>
-
-                        <v-card-actions>
-                          <v-spacer />
-                          <v-btn
-                            text
-                            @click="deleteDialog = false"
-                          >
-                            Cancel
-                          </v-btn>
-                          <v-btn
-                            color="error"
-                            text
-                            @click="deleteSelected"
-                          >
-                            Delete
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-                  </template>
-                </v-col>
-                <v-col align-self="end">
-                  <v-btn
-                    color="primary"
-                    @click="addItem()"
-                  >
-                    Add item
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-sheet>
+        <search-bar :search.sync="search">
+          <v-btn
+            color="primary"
+            @click="addItem()"
+          >
+            Add item
+          </v-btn>
+        </search-bar>
       </template>
 
-      <template #[`item.id`]="{ item }">
-        <code>{{ item.id }}</code>
-      </template>
+      <template #[`item`]="{ item }">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem">
+          <template #id>
+            <code>{{ item.id }}</code>
+          </template>
 
-      <template #[`item.arrow`]="{ }">
-        <v-icon>mdi-chevron-right</v-icon>
-      </template>
-
-      <template #[`item.actions`]="{ item }">
-        <div style="width: max-content;">
-          <v-hover v-slot="{ hover }">
-            <v-btn
-              icon
-              :color="hover ? 'primary' : 'secondary lighten-3'"
-              nuxt
-              :to="`/registry/overlays/${item.id}`"
-            >
+          <template #actions>
+            <v-btn class="primary-hover" icon nuxt :to="`/registry/overlays/${item.id}`">
               <v-icon>
                 mdi-pencil
               </v-icon>
             </v-btn>
-          </v-hover>
-          <v-hover v-slot="{ hover }">
-            <v-btn
-              icon
-              :color="hover ? 'primary' : 'secondary lighten-3'"
-              :href="'/overlays/' + item.id"
-              @click.stop
-            >
-              <v-icon>mdi-link</v-icon>
+            <v-btn class="primary-hover" icon :href="'/overlays/' + item.id" @click.stop>
+              <v-icon>
+                mdi-link
+              </v-icon>
             </v-btn>
-          </v-hover>
+            <v-btn class="primary-hover" icon :disabled="copied===item.id" @click.stop="copied=item.id">
+              <v-icon v-if="copied !== item.id">
+                mdi-clipboard
+              </v-icon>
+              <v-icon v-else>
+                mdi-clipboard-check
+              </v-icon>
+            </v-btn>
+            <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+              <v-icon>
+                mdi-delete-forever
+              </v-icon>
+            </v-btn>
+          </template>
+        </table-mobile>
+      </template>
+
+      <template #[`item.actions`]="{ item }">
+        <div style="width: max-content;">
           <v-hover v-slot="{ hover }">
             <v-btn
               icon
@@ -159,7 +141,9 @@
 </template>
 
 <script lang="ts">
+import type { OverlayMappers } from '@entity/overlay';
 import {
+  defineAsyncComponent,
   defineComponent, onMounted, ref, useContext, useRouter, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
@@ -168,23 +152,22 @@ import { v4 } from 'uuid';
 
 import { error } from '../../../functions/error';
 
-import type { OverlayMappers } from '@entity/overlay';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
 import GET from '~/queries/overlays/get.gql';
 import REMOVE from '~/queries/overlays/remove.gql';
 
 export default defineComponent({
+  components: {
+    'search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
+  },
   setup () {
     const ctx = useContext();
 
     const loading = ref(true);
 
-    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, {
-      refetchQueries: [{
-        query: GET,
-      }],
-    });
+    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, { refetchQueries: [{ query: GET }] });
     onDoneRemove(() => {
       EventBus.$emit('snack', 'success', 'Data removed.');
       refresh();
@@ -192,6 +175,7 @@ export default defineComponent({
     onErrorRemove(error);
 
     const router = useRouter();
+    const search = ref('');
 
     const selected = ref([] as OverlayMappers[]);
     const copied = ref('');
@@ -219,25 +203,23 @@ export default defineComponent({
       }
     });
 
-    const state = ref({
-      saving: false,
-    } as {
-      saving: boolean;
-    });
-
     const headers = [
       {
-        value: 'id', text: '', sortable: false,
+        value: 'id', text: 'ID', sortable: false,
       },
-      {
-        value: 'arrow', text: '', sortable: false,
-      },
-      {
-        value: 'value', text: '', sortable: false,
-      },
+      { value: 'name', text: translate('name') },
+      { value: 'value', text: translate('type') },
       {
         value: 'actions', text: '', sortable: false,
       },
+    ];
+
+    const headersDelete = [
+      {
+        value: 'id', text: 'ID', sortable: false,
+      },
+      { value: 'name', text: translate('name') },
+      { value: 'value', text: translate('type') },
     ];
 
     onMounted(() => {
@@ -270,9 +252,7 @@ export default defineComponent({
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        removeMutation({
-          id: item.id,
-        });
+        removeMutation({ id: item.id });
       });
 
       EventBus.$emit('snack', 'success', 'Data removed.');
@@ -286,9 +266,10 @@ export default defineComponent({
     return {
       // refs
       items,
-      state,
+      search,
       loading,
       headers,
+      headersDelete,
       selected,
       deleteSelected,
       selectable,

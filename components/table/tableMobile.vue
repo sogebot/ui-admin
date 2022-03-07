@@ -1,5 +1,6 @@
 <template>
   <tr
+    v-if="headers.length"
     :class="{
       'v-data-table__selected': selected && selected.some(o => (itemKey ? o[itemKey] : o.id) === (itemKey ? item[itemKey] : item.id)),
       'v-data-table__mobile-table-row': $vuetify.breakpoint.mobile,

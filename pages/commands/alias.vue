@@ -109,7 +109,7 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <table-mobile :headers="headers" :selected="selected" :item="item" :addToSelectedItem="addToSelectedItem">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem">
           <template #actions>
             <alias-edit
               :rules="rules"
@@ -127,10 +127,16 @@
 
           <template #alias>
             <strong>{{ item.alias }}</strong>
-            <ul style="list-style-type: none;" class="text-truncate" :style="{
-              'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
-            }">
-              <li style="white-space: pre-wrap;">{{ item.command }}</li>
+            <ul
+              style="list-style-type: none;"
+              class="text-truncate"
+              :style="{
+                'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
+              }"
+            >
+              <li style="white-space: pre-wrap;">
+                {{ item.command }}
+              </li>
             </ul>
           </template>
 
@@ -146,6 +152,8 @@
 </template>
 
 <script lang="ts">
+import type { AliasGroupInterface, AliasInterface } from '@entity/alias';
+import type { PermissionsInterface } from '@entity/permissions';
 import {
   computed, defineAsyncComponent, defineComponent, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
@@ -158,8 +166,6 @@ import {
   capitalize, isEqual, orderBy,
 } from 'lodash';
 
-import type { AliasGroupInterface, AliasInterface } from '@entity/alias';
-import type { PermissionsInterface } from '@entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error as errorLog } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -299,27 +305,19 @@ export default defineComponent({
       {
         value: 'alias', text: translate('alias'), width: '15rem',
       },
-      {
-        value: 'permission', text: translate('permission'),
-      },
+      { value: 'permission', text: translate('permission') },
       {
         value: 'enabled', text: translate('enabled'), align: 'center',
       },
       {
         value: 'visible', text: capitalize(translate('visible')), align: 'center',
       },
-      {
-        value: 'actions', sortable: false,
-      },
+      { value: 'actions', sortable: false },
     ];
 
     const headersDelete = [
-      {
-        value: 'alias', text: translate('alias'),
-      },
-      {
-        value: 'command', text: translate('command'),
-      },
+      { value: 'alias', text: translate('alias') },
+      { value: 'command', text: translate('command') },
     ];
     const batchUpdate = (value: Record<string, any>) => {
       // check validity
@@ -349,12 +347,8 @@ export default defineComponent({
             }
           }
           const { __typename, id, ...data } = item;
-          console.log('Updating', {
-            data,
-          });
-          updateMutation({
-            id, data,
-          });
+          console.log('Updating', { data });
+          updateMutation({ id, data });
         }
       }
     };
@@ -362,9 +356,7 @@ export default defineComponent({
     const deleteSelected = () => {
       deleteDialog.value = false;
       selected.value.forEach((item) => {
-        removeMutation({
-          id: item.id,
-        });
+        removeMutation({ id: item.id });
       });
       selected.value = [];
     };
@@ -372,8 +364,7 @@ export default defineComponent({
     const getGroup = computed<{ [name: string]: AliasGroupInterface }>({
       get () {
         // set empty groups from aliases
-        const returnGroups: { [name: string]: AliasGroupInterface } = {
-        };
+        const returnGroups: { [name: string]: AliasGroupInterface } = {};
         for (const item of items.value) {
           if (item.group && !returnGroups[item.group]) {
             const group = groups.value.find(o => o.name === item.group);
@@ -395,11 +386,7 @@ export default defineComponent({
             updateGroupMutation({
               name: groupName,
               data: JSON.stringify(value[groupName].options),
-            }, {
-              refetchQueries: [{
-                query: GET_ALL,
-              }],
-            });
+            }, { refetchQueries: [{ query: GET_ALL }] });
           }
         }
         return true;
