@@ -333,7 +333,7 @@ export default defineComponent({
     const height = ref(1080);
 
     const selectedParentItem = computed(() => {
-      return options.value.items.find(o => o.id === selected.value)
+      return options.value.items.find(o => o.id === selected.value);
     });
 
     const selectedItem = computed(() => {
@@ -456,7 +456,7 @@ export default defineComponent({
         const beforeIds = children.value.map(o => o.id);
         const afterIds = options.value.items.map(o => o.id);
 
-        console.log({beforeIds, afterIds})
+        console.log({ beforeIds, afterIds });
 
         for (const id of beforeIds) {
           if (afterIds.includes(id)) {
@@ -541,6 +541,7 @@ export default defineComponent({
         });
         children.value.push({
           id,
+          name:    '',
           value:   itemToAdd.value,
           opts:    null,
           groupId: props.id as string,
