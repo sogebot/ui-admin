@@ -1,18 +1,5 @@
 <template>
   <div>
-    <v-alert
-      v-if="!$store.state.configuration.isCastersSet"
-      type="error"
-      dismissible
-      prominent
-      dense
-    >
-      <h5>{{ translate('errors.owner_and_broadcaster_oauth_is_not_set') }}</h5>
-      <div
-        class="text-caption"
-        v-html="translate('errors.please_set_your_broadcaster_oauth_or_owners')"
-      />
-    </v-alert>
     <v-row no-gutters>
       <component
         :is="`${item.split('|')[0]}-${item.split('|')[1].replace(/([A-Z])/g, '-$1').toLowerCase()}`"

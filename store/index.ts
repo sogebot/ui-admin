@@ -13,14 +13,22 @@ export const state = () => ({
   $systems:          [],
   $integrations:     [],
   navbarMiniVariant: false,
+  currentVersion:    '',
+  nextVersion:       '',
+  notifications:     [],
 });
 
 export const mutations = {
   setLoggedUser (storeState: { loggedUser: any; }, user: any) {
     storeState.loggedUser = user;
   },
-  setConfiguration (storeState: { configuration: any; }, configuration: any) {
+  setConfiguration (storeState: { configuration: any; notifications: string[] }, configuration: any) {
     storeState.configuration = configuration;
+
+    if (!configuration.isCastersSet) {
+      // trigger notification
+      storeState.notifications.push('caster-not-set');
+    }
   },
   setCurrentGame (storeState: { currentGame: any; }, currentGame: any) {
     storeState.currentGame = currentGame;
@@ -58,5 +66,17 @@ export const mutations = {
   },
   setNavbarMiniVariant (storeState: { navbarMiniVariant: boolean }, value: boolean) {
     storeState.navbarMiniVariant = value;
+  },
+  setVersion (storeState: { currentVersion: any; nextVersion: any; notifications: string[] }, value: [type: 'current' | 'next', version: string]) {
+    console.debug('store::setVersion', value);
+    if (value[0] === 'current') {
+      storeState.currentVersion = value[1];
+    } else {
+      storeState.nextVersion = value[1];
+      if (value[1]) {
+        // trigger notification
+        storeState.notifications.push('new-version-available');
+      }
+    }
   },
 };

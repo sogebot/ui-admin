@@ -1,7 +1,13 @@
 <template>
   <v-list nav dense>
-    <v-list-item v-for="item of menu.filter(o => o.category === 'main')" :key="item.name"
-      :to="'/' + item.id.replace(/\./g, '/')" nuxt>
+    <notification />
+
+    <v-list-item
+      v-for="item of menu.filter(o => o.category === 'main')"
+      :key="item.name"
+      :to="'/' + item.id.replace(/\./g, '/')"
+      nuxt
+    >
       <v-list-item-icon>
         <v-icon>{{ icons.get(item.name) }}</v-icon>
       </v-list-item-icon>
@@ -9,25 +15,36 @@
     </v-list-item>
 
     <template v-if="$store.state.navbarMiniVariant && !$vuetify.breakpoint.mobile">
-      <v-menu offset-x v-for="category of categories" :key="category + '2'" nudge-right="10" :rounded="false">
-        <template v-slot:activator="{ on, attrs }">
-          <v-tooltip right >
-            <template v-slot:activator="{ on: on2, attrs: attrs2 }">
-              <div v-bind="attrs2" v-on="on2" style="position: relative">
-                <v-icon class="miniIcon" v-bind="attrs" v-on="on">{{ icons.get(category) }}</v-icon>
-                <v-icon size="12" class="caretIcon">mdi-menu-down</v-icon>
+      <v-menu v-for="category of categories" :key="category + '2'" offset-x nudge-right="10" :rounded="false">
+        <template #activator="{ on, attrs }">
+          <v-tooltip right>
+            <template #activator="{ on: on2, attrs: attrs2 }">
+              <div v-bind="attrs2" style="position: relative" v-on="on2">
+                <v-icon class="miniIcon" v-bind="attrs" v-on="on">
+                  {{ icons.get(category) }}
+                </v-icon>
+                <v-icon size="12" class="caretIcon">
+                  mdi-menu-down
+                </v-icon>
               </div>
             </template>
             <span>{{ translate('menu.' + category) }}</span>
           </v-tooltip>
         </template>
         <v-list color="#363636" class="pa-0" :rounded="false" flat>
-          <v-list-item v-for="item of menu.filter(o => o.category === category)" dense :key="item.name"
-            :to="'/' + item.id.replace(/\./g, '/')" nuxt>
-            <v-list-item-title :class="{
-            'grey--text': !item.enabled,
-            'darken-3': !item.enabled,
-          }">
+          <v-list-item
+            v-for="item of menu.filter(o => o.category === category)"
+            :key="item.name"
+            dense
+            :to="'/' + item.id.replace(/\./g, '/')"
+            nuxt
+          >
+            <v-list-item-title
+              :class="{
+                'grey--text': !item.enabled,
+                'darken-3': !item.enabled,
+              }"
+            >
               {{ translate('menu.' + item.name) }}
             </v-list-item-title>
           </v-list-item>
@@ -40,12 +57,18 @@
           <v-list-item-title>{{ translate('menu.' + category) }}</v-list-item-title>
         </template>
 
-        <v-list-item v-for="item of menu.filter(o => o.category === category)" :key="item.name"
-          :to="'/' + item.id.replace(/\./g, '/')" nuxt>
-          <v-list-item-title :class="{
-            'grey--text': !item.enabled,
-            'darken-3': !item.enabled,
-          }">
+        <v-list-item
+          v-for="item of menu.filter(o => o.category === category)"
+          :key="item.name"
+          :to="'/' + item.id.replace(/\./g, '/')"
+          nuxt
+        >
+          <v-list-item-title
+            :class="{
+              'grey--text': !item.enabled,
+              'darken-3': !item.enabled,
+            }"
+          >
             {{ translate('menu.' + item.name) }}
           </v-list-item-title>
         </v-list-item>
@@ -55,7 +78,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from '@nuxtjs/composition-api';
+import {
+  defineAsyncComponent, defineComponent, ref,
+} from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 import { useQuery, useResult } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
@@ -73,15 +98,15 @@ const icons = new Map<string, string>([
 ]);
 
 export default defineComponent({
+  components: { notification: defineAsyncComponent(() => import('./notification.vue')) },
   setup () {
     const { result } = useQuery(gql`
       query getPrivateMenu { menuPrivate { id name enabled category } }
     `);
+
     const menu = useResult<{ menuPrivate: menuWithEnabled[] }, menuWithEnabled[], menuWithEnabled[]>(result, [], (data) => {
       console.groupCollapsed('menu::menu');
-      console.log({
-        menu: data.menuPrivate,
-      });
+      console.log({ menu: data.menuPrivate });
       console.groupEnd();
       return data.menuPrivate.sort((a, b) => {
         return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
