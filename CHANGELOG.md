@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [41.1.0](https://github.com/sogebot/ui-admin/compare/v41.0.1...v41.1.0) (2022-03-09)
+
+
+### Features
+
+* **notification:** add notifications to menu ([#195](https://github.com/sogebot/ui-admin/issues/195)) ([12477e9](https://github.com/sogebot/ui-admin/commit/12477e977744cbd662a8b1006cc732e63d7e306d))
+
 ### [41.0.1](https://github.com/sogebot/ui-admin/compare/v41.0.0...v41.0.1) (2022-03-07)
 
 
