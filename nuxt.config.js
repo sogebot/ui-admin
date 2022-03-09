@@ -55,6 +55,9 @@ export default {
     {
       src: '@/plugins/check-token-validity.ts', ssr: false,
     },
+    {
+      src: '@/plugins/get-bot-versions.ts', ssr: false,
+    },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

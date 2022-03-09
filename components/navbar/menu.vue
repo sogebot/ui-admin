@@ -1,66 +1,6 @@
 <template>
   <v-list nav dense>
-    <v-menu offset-x nudge-right="10" :rounded="false" :close-on-content-click="false" :key="'notifications-' + $store.state.navbarMiniVariant">
-      <template #activator="{ on, attrs }">
-        <v-tooltip right v-if="$store.state.navbarMiniVariant && !$vuetify.breakpoint.mobile">
-          <template #activator="{ on: on2, attrs: attrs2 }">
-            <div v-bind="attrs2 && attrs" style="position: relative" v-on="on2 && on">
-              <v-badge content="0" color="red" overlap class="mb-3" :offset-x="20" :offset-y="20"
-                style="cursor: pointer">
-                <v-icon class="miniIcon" v-bind="attrs" v-on="on">
-                  mdi-bell-ring
-                </v-icon>
-              </v-badge>
-            </div>
-          </template>
-          <span>{{ $t('menu.notifications') }}</span>
-        </v-tooltip>
-        <v-badge content="0" color="red" overlap class="mb-2" :offset-x="40" :offset-y="20"
-          style="cursor: pointer; width: 100%;" v-else left>
-          <v-list-item style="cursor: pointer" v-bind="attrs" v-on="on">
-            <v-list-item-icon>
-              <v-icon>mdi-bell-ring</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>{{ $t('menu.notifications') }}</v-list-item-title>
-          </v-list-item>
-        </v-badge>
-      </template>
-
-      <v-alert
-        type="error"
-        dismissible
-        max-width="400px"
-        class="mb-1"
-        tile
-        border="bottom"
-        dense
-        text
-      transition="scroll-x-transition"
-      >
-        <h5>{{ translate('errors.owner_and_broadcaster_oauth_is_not_set') }}</h5>
-        <div
-          class="text-caption"
-          v-html="translate('errors.please_set_your_broadcaster_oauth_or_owners')"
-        />
-      </v-alert>
-      <v-alert
-        type="info"
-        dismissible
-        max-width="400px"
-        class="mb-1"
-        tile
-        border="bottom"
-        dense
-        text
-      transition="scroll-x-transition"
-      >
-        <h5>{{ translate('errors.new_update_available') }}</h5>
-        <div
-          class="text-caption"
-          v-html="translate('errors.new_bot_version_available_at').replace(/\$version/gmi, '1.2.3')"
-        />
-      </v-alert>
-    </v-menu>
+    <notification />
 
     <v-list-item
       v-for="item of menu.filter(o => o.category === 'main')"
@@ -138,7 +78,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from '@nuxtjs/composition-api';
+import {
+  defineAsyncComponent, defineComponent, ref,
+} from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 import { useQuery, useResult } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
@@ -156,6 +98,7 @@ const icons = new Map<string, string>([
 ]);
 
 export default defineComponent({
+  components: { notification: defineAsyncComponent(() => import('./notification.vue')) },
   setup () {
     const { result } = useQuery(gql`
       query getPrivateMenu { menuPrivate { id name enabled category } }
