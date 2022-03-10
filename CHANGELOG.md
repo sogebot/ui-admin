@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [41.2.0](https://github.com/sogebot/ui-admin/compare/v41.1.0...v41.2.0) (2022-03-10)
+
+
+### Features
+
+* **group:** add referenced overlays ([c2de76c](https://github.com/sogebot/ui-admin/commit/c2de76c99854c4c076d01fba12fab1ccf3ea29e3))
+
 ## [41.1.0](https://github.com/sogebot/ui-admin/compare/v41.0.1...v41.1.0) (2022-03-09)
 
 
