@@ -43,7 +43,7 @@
                 </v-btn>
               </v-list-item-action>
               <v-list-item-title>
-                {{ getChildItem(item.id).value }}
+                {{ (!getChildItem(item.id).name || getChildItem(item.id).name.length === 0) ? getChildItem(item.id).value : getChildItem(item.id).name }}
               </v-list-item-title>
               <v-list-item-avatar size="20">
                 <v-sheet :color="generateColorFromString(item.id)" height="40" width="40" />
@@ -68,7 +68,7 @@
                     handler: () => selected = null,
                     include: include,
                   }"
-                  :type="getChildItem(item.id).value"
+                  :type="(!getChildItem(item.id).name || getChildItem(item.id).name.length === 0) ? getChildItem(item.id).value : getChildItem(item.id).name"
                   :is-moving="positions.moved"
                   :item="item"
                   :selected.sync="selected"
@@ -137,11 +137,16 @@
           @input="updateChildOpts(selectedItem.id, $event)"
         >
           <v-expansion-panel>
-            <v-expansion-panel-header>Position / Size</v-expansion-panel-header>
+            <v-expansion-panel-header>Item generic settings</v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-text-field v-model.number="selectedParentItem.width" type="number" label="Width" min="1" hide-details="auto" />
-              <v-text-field v-model.number="selectedParentItem.height" type="number" label="Height" min="1" hide-details="auto" />
-              <v-text-field v-model.number="selectedParentItem.alignX" type="number" label="X" min="0" hide-details="auto">
+              <v-text-field
+                :value="selectedItem.name"
+                :label="translate('name')"
+                @input="updateChildName(selectedItem.id, $event)"
+              />
+              <v-text-field v-model.number="selectedParentItem.width" type="number" label="Width" min="1"/>
+              <v-text-field v-model.number="selectedParentItem.height" type="number" label="Height" min="1"/>
+              <v-text-field v-model.number="selectedParentItem.alignX" type="number" label="X" min="0">
                 <template #append>
                   <v-btn icon @click="selectedParentItem.alignX = 0">
                     <v-icon>mdi-format-horizontal-align-Left }}</v-icon>
@@ -172,8 +177,13 @@
         </component>
         <v-expansion-panels v-else class="overlayItem" :value="0">
           <v-expansion-panel readonly>
-            <v-expansion-panel-header>Position / Size</v-expansion-panel-header>
+            <v-expansion-panel-header>Item generic settings</v-expansion-panel-header>
             <v-expansion-panel-content>
+              <v-text-field
+                :value="selectedItem.name"
+                :label="translate('name')"
+                @input="updateChildName(selectedItem.id, $event)"
+              />
               <v-text-field v-model.number="selectedParentItem.width" type="number" label="Width" min="1" hide-details="auto" />
               <v-text-field v-model.number="selectedParentItem.height" type="number" label="Height" min="1" hide-details="auto" />
               <v-text-field v-model.number="selectedParentItem.alignX" type="number" label="X" min="0" hide-details="auto">
@@ -254,6 +264,7 @@ export default defineComponent({
     polls:           () => import('~/components/registry/overlays/polls.vue'),
     eventlist:       () => import('~/components/registry/overlays/eventlist.vue'),
     wordcloud:       () => import('~/components/registry/overlays/wordcloud.vue'),
+    reference:       () => import('~/components/registry/overlays/reference.vue'),
     item:            defineAsyncComponent(() => import('~/components/registry/overlays/item.vue')),
   },
   setup (props, ctx) {
@@ -324,6 +335,7 @@ export default defineComponent({
       { value: 'wordcloud', text: 'wordcloud' },
       { value: 'tts', text: 'tts' },
       { value: 'hypetrain', text: 'hypetrain' },
+      { value: 'reference', text: 'referenced groupless overlay, e.g. stopwatch' },
     ];
 
     const selected = ref(null as null | string);
@@ -562,6 +574,13 @@ export default defineComponent({
       return children.value.find(o => o.id === id);
     };
 
+    const updateChildName = (id: string, name: any) => {
+      const child = children.value.find(o => o.id === id);
+      if (child) {
+        child.name = name;
+      }
+    };
+
     const updateChildOpts = (id: string, opts: any) => {
       const child = children.value.find(o => o.id === id);
       if (child) {
@@ -591,6 +610,7 @@ export default defineComponent({
       // functions
       getChildItem,
       updateChildOpts,
+      updateChildName,
       startMove,
       stopMove,
       include,
