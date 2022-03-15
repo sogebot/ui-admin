@@ -96,12 +96,12 @@
     </v-tabs-items>
 
     <v-expand-transition>
-      <v-card v-if="showJoins || showParts" height="200px">
+      <v-card v-if="showJoins || showParts">
         <v-toolbar color="blue-grey darken-4" class="mb-1" height="36">
           <small class="text-button">Chat Events</small>
         </v-toolbar>
 
-        <v-card-text v-html="
+        <v-card-text style="height: 173px; max-height: 173px; overflow: auto;" class="pa-2" v-html="
             list.filter(o => {
               if (showJoins && showParts) {
                 return true;
@@ -111,7 +111,7 @@
                 return o.username.startsWith('-');
               }
             }).map(o => `<span class='${o.username.startsWith('+') ? 'green--text' : 'red--text'} text--lighten-2'>${o.username.substring(1)}</span>`).join(', ')
-          " />
+          "/>
       </v-card>
     </v-expand-transition>
 
