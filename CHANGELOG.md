@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [41.2.1](https://github.com/sogebot/ui-admin/compare/v41.2.0...v41.2.1) (2022-03-15)
+
+
+### Bug Fixes
+
+* **chat:** set max height of join/part widget ([b34b28d](https://github.com/sogebot/ui-admin/commit/b34b28d308da8cebcaf7a727d7e8dc5ceb2e6e58))
+
 ## [41.2.0](https://github.com/sogebot/ui-admin/compare/v41.1.0...v41.2.0) (2022-03-10)
 
 
