@@ -28,6 +28,7 @@ export const mutations = {
     if (!configuration.isCastersSet) {
       // trigger notification
       storeState.notifications.push('caster-not-set');
+      storeState.notifications = [...new Set(storeState.notifications)]
     }
   },
   setCurrentGame (storeState: { currentGame: any; }, currentGame: any) {
@@ -76,6 +77,7 @@ export const mutations = {
       if (value[1]) {
         // trigger notification
         storeState.notifications.push('new-version-available');
+        storeState.notifications = [...new Set(storeState.notifications)]
       }
     }
   },

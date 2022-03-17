@@ -8,7 +8,7 @@
               :content="$store.state.notifications.length"
               color="red"
               overlap
-              class="mb-3"
+              class="mb-3 pa-2"
               :offset-x="20"
               :offset-y="20"
               style="cursor: pointer"
@@ -41,39 +41,41 @@
       </v-badge>
     </template>
 
-    <v-alert
-      v-if="$store.state.notifications.includes('caster-not-set')"
-      type="error"
-      max-width="400px"
-      class="mb-1"
-      tile
-      border="bottom"
-      dense
-      text
-      transition="scroll-x-transition"
-    >
-      <h5>{{ $t('errors.owner_and_broadcaster_oauth_is_not_set') }}</h5>
-      <div
-        class="text-caption"
-        v-html="$t('errors.please_set_your_broadcaster_oauth_or_owners')"
-      />
-    </v-alert>
-    <v-alert
-      v-if="$store.state.notifications.includes('new-version-available')"
-      type="info"
-      max-width="400px"
-      class="mb-1"
-      tile
-      border="bottom"
-      dense
-      text
-      transition="scroll-x-transition"
-    >
-      <h5>{{ $t('errors.new_update_available') }}</h5>
-      <div
-        class="text-caption"
-        v-html="$t('errors.new_bot_version_available_at', { version: $store.state.nextVersion })"
-      />
-    </v-alert>
+    <div style="background-color: black">
+      <v-alert
+        v-if="$store.state.notifications.includes('caster-not-set')"
+        type="error"
+        max-width="400px"
+        class="mb-1"
+        tile
+        border="bottom"
+        dense
+        text
+        transition="scroll-x-transition"
+      >
+        <h5>{{ $t('errors.owner_and_broadcaster_oauth_is_not_set') }}</h5>
+        <div
+          class="text-caption"
+          v-html="$t('errors.please_set_your_broadcaster_oauth_or_owners')"
+        />
+      </v-alert>
+      <v-alert
+        v-if="$store.state.notifications.includes('new-version-available')"
+        type="info"
+        max-width="400px"
+        class="mb-1"
+        tile
+        border="bottom"
+        dense
+        text
+        transition="scroll-x-transition"
+      >
+        <h5>{{ $t('errors.new_update_available') }}</h5>
+        <div
+          class="text-caption"
+          v-html="$t('errors.new_bot_version_available_at', { version: $store.state.nextVersion })"
+        />
+      </v-alert>
+    </div>
   </v-menu>
 </template>
