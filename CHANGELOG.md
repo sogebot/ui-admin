@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [41.2.2](https://github.com/sogebot/ui-admin/compare/v41.2.1...v41.2.2) (2022-03-17)
+
+
+### Bug Fixes
+
+* **microwidgets:** show widgets even if user is not partner ([8a19e07](https://github.com/sogebot/ui-admin/commit/8a19e0713b16b64cda2cbf5c967599155badec18))
+* **notifications:** set background color and set errors as unique ([260e854](https://github.com/sogebot/ui-admin/commit/260e85412f02fd784fa46941ec7aad1907d6fc88))
+
 ### [41.2.1](https://github.com/sogebot/ui-admin/compare/v41.2.0...v41.2.1) (2022-03-15)
 
 
