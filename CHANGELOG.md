@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [41.3.1](https://github.com/sogebot/ui-admin/compare/v41.3.0...v41.3.1) (2022-03-20)
+
+
+### Bug Fixes
+
+* **changeGameDialog:** change on enter ([a26bdd6](https://github.com/sogebot/ui-admin/commit/a26bdd6db1374327917c3a7500215d46dce1aedf))
+
 ## [41.3.0](https://github.com/sogebot/ui-admin/compare/v41.2.2...v41.3.0) (2022-03-20)
 
 
