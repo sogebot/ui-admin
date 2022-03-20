@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [41.3.0](https://github.com/sogebot/ui-admin/compare/v41.2.2...v41.3.0) (2022-03-20)
+
+
+### Features
+
+* **api:** remove deprecated banned events ([02de97b](https://github.com/sogebot/ui-admin/commit/02de97bbaf5e61fb662aafc393c5eb9105725c26))
+
 ### [41.2.2](https://github.com/sogebot/ui-admin/compare/v41.2.1...v41.2.2) (2022-03-17)
 
 
