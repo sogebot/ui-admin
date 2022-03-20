@@ -93,6 +93,7 @@
           label="Change Title"
           counter=""
           rows="1"
+          @keydown.enter="save"
         />
 
         <v-subheader class="pl-0" style="height: 30px; font-size: 0.75rem;">
