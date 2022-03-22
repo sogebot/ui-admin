@@ -84,7 +84,7 @@
     "stylelint-config-prettier": "^9.0.3",
     "stylelint-config-standard": "^22.0.0",
     "type-graphql": "^1.1.1",
-    "typeorm": "^0.2.45",
+    "typeorm": "^0.3.1",
     "uuid": "^8.3.2",
     "v-snackbars": "^3.2.4",
     "vue-chartkick": "^0.6.1",
