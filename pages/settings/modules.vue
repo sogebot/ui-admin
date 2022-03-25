@@ -1,7 +1,7 @@
 <template>
   <loading v-if="isLoading" />
   <div v-else>
-    <portal to="navbar" v-if="route.path.split('/').length === 5">
+    <portal v-if="route.path.split('/').length === 5" to="navbar">
       <transition appear name="fade">
         <v-btn
           small
@@ -11,27 +11,28 @@
           :loading="$store.state.settings.save"
           @click="$store.commit('settings/save', true)"
         >
-          <v-icon class="d-flex d-sm-none">mdi-floppy</v-icon>
+          <v-icon class="d-flex d-sm-none">
+            mdi-floppy
+          </v-icon>
           <span class="d-none d-sm-flex">{{ translate('dialog.buttons.saveChanges.idle') }}</span>
         </v-btn>
       </transition>
     </portal>
     <v-navigation-drawer
+      v-if="drawer"
+      v-model="drawer"
       class="fullscreen-drawer"
       right
       :width="$vuetify.breakpoint.mobile ? '100%' : '100%'"
       absolute
       hide-overlay
-      v-if="drawer"
-      v-model="drawer"
     >
-      <nuxt-child/>
+      <nuxt-child />
     </v-navigation-drawer>
 
     <v-fade-transition>
       <div v-show="!drawer">
-
-        <v-card v-for="type of Object.keys(menu)" flat :key="type" class="ma-2">
+        <v-card v-for="type of Object.keys(menu)" :key="type" flat class="ma-2">
           <v-card-title v-if="haveActions(menu[type]).length > 0">
             {{ translate(`menu.${type}`) }}
           </v-card-title>
@@ -42,7 +43,7 @@
               :items-per-page="-1"
               hide-default-footer
             >
-              <template v-slot:default="{ items }">
+              <template #default="{ items }">
                 <v-row dense>
                   <v-col
                     v-for="item in items"
@@ -60,12 +61,40 @@
                           {{ item.name }}
                         </v-toolbar-title>
                         <v-spacer />
-                        <v-switch style="transform: translateY(3px);" class="pt-4" @click="update(item)" color="success" :disabled="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)" v-if="item.enabled !== undefined && item.enabled !== null" v-model="item.enabled"/>
-                        <v-btn icon nuxt :to="`/settings/modules/${item.type}/${item.name}`" v-if="hasSettings(item.type, item.name)"><v-icon>mdi-cog</v-icon></v-btn>
+                        <v-switch
+                          v-if="item.enabled !== undefined && item.enabled !== null"
+                          v-model="item.enabled"
+                          style="transform: translateY(3px);"
+                          class="pt-4"
+                          color="success"
+                          :disabled="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)"
+                          @click="update(item)"
+                        />
+                        <v-btn v-if="hasSettings(item.type, item.name)" icon nuxt :to="`/settings/modules/${item.type}/${item.name}`">
+                          <v-icon>mdi-cog</v-icon>
+                        </v-btn>
                       </v-toolbar>
-                      <v-card-subtitle class="pa-1" v-if="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)">
-                        <v-alert class="ma-0" dense border="left" text color="error" v-if="item.isDisabledByEnv">Disabled by ENV variable</v-alert>
-                        <v-alert class="ma-0" dense border="left" text color="error" v-if="!item.areDependenciesEnabled">Dependency system is disabled.</v-alert>
+                      <v-card-subtitle v-if="item.areDependenciesEnabled !== undefined && (item.isDisabledByEnv || !item.areDependenciesEnabled)" class="pa-1">
+                        <v-alert
+                          v-if="item.isDisabledByEnv"
+                          class="ma-0"
+                          dense
+                          border="left"
+                          text
+                          color="error"
+                        >
+                          Disabled by ENV variable
+                        </v-alert>
+                        <v-alert
+                          v-if="!item.areDependenciesEnabled"
+                          class="ma-0"
+                          dense
+                          border="left"
+                          text
+                          color="error"
+                        >
+                          Dependency system is disabled.
+                        </v-alert>
                       </v-card-subtitle>
                     </v-card>
                   </v-col>
@@ -122,9 +151,7 @@ export default defineComponent({
           store.commit('panel/back', '/settings/modules');
         });
       }
-    }, {
-      immediate: true,
-    });
+    }, { immediate: true });
 
     watch(drawer, (val) => {
       if (!val) {
@@ -144,14 +171,14 @@ export default defineComponent({
 
     onMounted(() => {
       for (const type of Object.keys(menu.value)) {
-        getSocket('/').emit(type, (err: string | null, systems: systemFromIO[]) => {
+        getSocket('/').emit('populateListOf', type as keyof typeof menu.value, (err, systems) => {
           if (err) {
             error(err);
             return;
           }
           menu.value[type as keyof typeof menu.value] = systems.sort((a, b) => {
             return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
-          });
+          }) as any;
           isLoading.value = false;
         });
       }
@@ -159,9 +186,7 @@ export default defineComponent({
 
     const update = (item: systemFromIO) => {
       const enabled = item.enabled;
-      getSocket(`/${item.type}/${item.name}`).emit('settings.update', {
-        enabled,
-      }, (err: string | null) => {
+      getSocket(`/${item.type}/${item.name}` as any).emit('settings.update', { enabled }, (err: string | null) => {
         if (err) {
           return error(err);
         } else {
