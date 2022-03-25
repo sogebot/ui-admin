@@ -186,7 +186,7 @@ export default defineComponent({
 
     const refresh = () => {
       state.value.loading = true;
-      getSocket('/systems/ranks').emit('generic::getAll', (err: string | null, itemsGetAll: RankInterface[]) => {
+      getSocket('/systems/ranks').emit('generic::getAll', (err, itemsGetAll: RankInterface[]) => {
         if (err) {
           return error(err);
         }
@@ -209,7 +209,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/ranks').emit('ranks::remove', item.id, (err: string | null) => {
+            getSocket('/systems/ranks').emit('ranks::remove', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

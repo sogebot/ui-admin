@@ -250,7 +250,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      getSocket('/systems/customcommands').emit('generic::getAll', (err: string | null, commands: Required<CommandsInterface>[], countArg: { command: string; count: number }[]) => {
+      getSocket('/systems/customcommands').emit('generic::getAll', (err, commands: Required<CommandsInterface>[], countArg: { command: string; count: number }[]) => {
         if (err) {
           return error(err);
         }
@@ -286,7 +286,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/customcommands').emit('generic::deleteById', item.id, (err: string | null) => {
+            getSocket('/systems/customcommands').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

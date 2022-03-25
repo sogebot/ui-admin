@@ -477,7 +477,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/overlays/gallery').emit('generic::getAll', (err: string | null, _items: GalleryInterface[]) => {
+      getSocket('/overlays/gallery').emit('generic::getAll', (err, _items: GalleryInterface[]) => {
         if (err) {
           error(err);
           return;
@@ -518,7 +518,7 @@ export default defineComponent({
               getSocket('/overlays/gallery').emit('gallery::upload', [filesUpload[i].name, {
                 id,
                 b64data: chunks[j],
-              }], (err: string | null) => {
+              }], (err) => {
                 if (err) {
                   return error(err);
                 }
@@ -528,7 +528,7 @@ export default defineComponent({
             });
           }
           uploadedFiles.value++;
-          getSocket('/overlays/gallery').emit('generic::getOne', id, (err: string | null, _item: GalleryInterface) => {
+          getSocket('/overlays/gallery').emit('generic::getOne', id, (err, _item: GalleryInterface) => {
             if (err) {
               error(err);
               return;
@@ -591,7 +591,7 @@ export default defineComponent({
         toDelete.map((_id) => {
           return new Promise((resolve, reject) => {
             console.log('Deleting', _id);
-            getSocket('/overlays/gallery').emit('generic::deleteById', _id, (err: string | null) => {
+            getSocket('/overlays/gallery').emit('generic::deleteById', _id, (err) => {
               if (err) {
                 reject(error(err));
               }
@@ -643,7 +643,7 @@ export default defineComponent({
               item: {
                 folder: newFolder.value,
               },
-            }, (err: string | null) => {
+            }, (err) => {
               if (err) {
                 reject(error(err));
               }

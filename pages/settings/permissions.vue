@@ -70,6 +70,7 @@
 </template>
 
 <script lang="ts">
+import type { PermissionsInterface } from '@entity/permissions';
 import {
   defineComponent, onMounted, ref, useRoute, useRouter, watch,
 } from '@nuxtjs/composition-api';
@@ -81,7 +82,6 @@ import { cloneDeep, sortBy } from 'lodash';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
 
-import type { PermissionsInterface } from '@entity/permissions';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
@@ -157,7 +157,7 @@ function handleDragStart (e: DragEvent) {
         EventBus.$emit(`permissions::dragdrop`);
       } catch (err) {
         // we need to return it back to same place
-        error(err);
+        error(err as Error);
       }
     } else {
       afterElement?.parentNode?.insertBefore(element, afterElement);
@@ -210,9 +210,7 @@ export default defineComponent({
     const permissions = ref([] as PermissionsInterface[]);
     const tabsRef = ref(null as any);
 
-    const state = ref({
-      dragging: false, saving: false,
-    } as {
+    const state = ref({ dragging: false, saving: false } as {
       dragging: boolean;
       saving: boolean;
     });
@@ -271,9 +269,7 @@ export default defineComponent({
 
       permissions.value.forEach((permission) => {
         const { id, ...data } = permission;
-        updateMutation({
-          id, data,
-        });
+        updateMutation({ id, data });
       });
     };
 

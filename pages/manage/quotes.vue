@@ -205,7 +205,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/quotes').emit('quotes:getAll', {}, (err: string | null, data: QuotesInterface[]) => {
+      getSocket('/systems/quotes').emit('quotes:getAll', {}, (err, data: QuotesInterface[]) => {
         if (err) {
           error(err);
           return;
@@ -262,7 +262,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/quotes').emit('generic::deleteById', item.id, (err: string | null) => {
+            getSocket('/systems/quotes').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

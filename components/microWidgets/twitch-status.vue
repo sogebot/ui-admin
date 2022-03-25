@@ -130,7 +130,7 @@ export default defineComponent({
 
     const loadCustomVariableValue = (variable: string) => {
       return new Promise<string>((resolve) => {
-        getSocket('/').emit('custom.variable.value', variable, (err: string | null, value: string) => {
+        getSocket('/').emit('custom.variable.value', variable, (err, value: string) => {
           if (err) {
             error(err);
           }

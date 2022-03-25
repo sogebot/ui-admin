@@ -66,7 +66,7 @@ export default defineComponent({
     const refreshRedeemedRewards = () => {
       progress.value.redeemRewards = ButtonStates.progress;
       return new Promise<void>((resolve) => {
-        getSocket('/core/events').emit('events::getRedeemedRewards', (err: string | null, redeems: string[]) => {
+        getSocket('/core/events').emit('events::getRedeemedRewards', (err, redeems: string[]) => {
           if (err) {
             return error(err);
           }

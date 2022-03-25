@@ -354,7 +354,7 @@ export default defineComponent({
       refresh();
     });
     const refresh = () => {
-      getSocket('/systems/howlongtobeat').emit('generic::getAll', (err: string | null, _games: HowLongToBeatGameInterface[], _streams: HowLongToBeatGameItemInterface[]) => {
+      getSocket('/systems/howlongtobeat').emit('generic::getAll', (err, _games: HowLongToBeatGameInterface[], _streams: HowLongToBeatGameItemInterface[]) => {
         if (err) {
           return error(err);
         }
@@ -435,7 +435,7 @@ export default defineComponent({
             || oldStream.isCompletionistCounted !== stream.isCompletionistCounted
             || oldStream.isExtraCounted !== stream.isExtraCounted
             || oldStream.offset !== stream.offset)) {
-          getSocket('/systems/howlongtobeat').emit('hltb::saveStreamChange', stream, (err: string | null) => {
+          getSocket('/systems/howlongtobeat').emit('hltb::saveStreamChange', stream, (err) => {
             if (err) {
               error(err);
             }
@@ -451,7 +451,7 @@ export default defineComponent({
     watch(search, debounce((value: string | null) => {
       if (value && value.trim().length !== 0) {
         state.value.search = ButtonStates.progress;
-        getSocket('/systems/howlongtobeat').emit('hltb::getGamesFromHLTB', value, (err: string | null, val: string[]) => {
+        getSocket('/systems/howlongtobeat').emit('hltb::getGamesFromHLTB', value, (err, val: string[]) => {
           if (err) {
             return error(err);
           }
@@ -470,7 +470,7 @@ export default defineComponent({
       }
       if (state.value.add === 0) {
         state.value.add = 1;
-        getSocket('/systems/howlongtobeat').emit('hltb::addNewGame', gameToAdd.value, (err: string | null) => {
+        getSocket('/systems/howlongtobeat').emit('hltb::addNewGame', gameToAdd.value, (err) => {
           if (err) {
             gameToAdd.value = '';
             state.value.add = 0;
@@ -490,7 +490,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/howlongtobeat').emit('generic::deleteById', item.id, (err: string | null) => {
+            getSocket('/systems/howlongtobeat').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

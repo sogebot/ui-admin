@@ -280,7 +280,7 @@ export default defineComponent({
     const showcase = ref([] as string[]);
 
     const showcaseRecalc = () => {
-      getSocket(`/systems/levels`).emit('getLevelsExample', (err: string | null, _data: string[]) => {
+      getSocket(`/systems/levels`).emit('getLevelsExample', (err, _data: string[]) => {
         if (err) {
           console.error(err);
         } else {
@@ -310,7 +310,7 @@ export default defineComponent({
 
     onMounted(() => {
       getSocket(`/systems/levels`)
-        .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
+        .emit('settings', (err, _settings, _ui) => {
           if (err) {
             error(err);
             return;

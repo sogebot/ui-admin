@@ -75,7 +75,7 @@ export default defineComponent({
 
     onMounted(() => {
       getSocket(`/integrations/donationalerts`)
-        .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
+        .emit('settings', (err, _settings, _ui) => {
           if (err) {
             error(err);
             return;
@@ -94,7 +94,7 @@ export default defineComponent({
       }
       isValidating.value = true;
       console.log({ token: settings.value.access_token[0] });
-      getSocket('/integrations/donationalerts').emit('donationalerts::validate', settings.value.access_token[0], (err: null | Error) => {
+      getSocket('/integrations/donationalerts').emit('donationalerts::validate', settings.value.access_token[0], (err) => {
         if (err) {
           EventBus.$emit('snack', 'error', 'Invalid Access Token, please recheck if you copied your token correctly');
         } else {

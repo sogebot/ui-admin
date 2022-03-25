@@ -197,7 +197,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/cooldown').emit('generic::getAll', (err: string | null, itemsGetAll: CooldownInterfaceUI[]) => {
+      getSocket('/systems/cooldown').emit('generic::getAll', (err, itemsGetAll: CooldownInterfaceUI[]) => {
         if (err) {
           return error(err);
         }
@@ -260,7 +260,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/cooldown').emit('generic::deleteById', item.id, (err: string | null) => {
+            getSocket('/systems/cooldown').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

@@ -412,7 +412,7 @@ export default defineComponent({
     watch(expanded, (expandedItems) => {
       if (expandedItems.length > 0) {
         state.value.history = ButtonStates.progress;
-        getSocket('/overlays/eventlist').emit('eventlist::getUserEvents', expandedItems[0].userId, (err: string | null, events: Required<EventListInterface>[]) => {
+        getSocket('/overlays/eventlist').emit('eventlist::getUserEvents', expandedItems[0].userId, (err, events: Required<EventListInterface>[]) => {
           if (err) {
             return console.error(err);
           }
@@ -536,7 +536,7 @@ export default defineComponent({
         },
         filter: filter.value,
         search: search.value.length > 0 ? search.value : undefined,
-      }, (err: string | null, items_: Required<UserInterface>[], count_: number) => {
+      }, (err, items_: Required<UserInterface>[], count_: number) => {
         if (err) {
           return console.error(err);
         }
@@ -608,7 +608,7 @@ export default defineComponent({
               toUpdate,
             });
 
-            getSocket('/core/users').emit('viewers::update', [itemToUpdate.userId, toUpdate], (err: string | null) => {
+            getSocket('/core/users').emit('viewers::update', [itemToUpdate.userId, toUpdate], (err) => {
               if (err) {
                 console.error(err);
               }
@@ -623,7 +623,7 @@ export default defineComponent({
 
     const forceCheckFollowedAt = (item: UserInterface) => {
       state.value.forceCheckFollowedAt = ButtonStates.progress;
-      getSocket('/core/users').emit('viewers::followedAt', item.userId, (err: string | null, followedAt: string) => {
+      getSocket('/core/users').emit('viewers::followedAt', item.userId, (err, followedAt: string) => {
         state.value.forceCheckFollowedAt = ButtonStates.idle;
         if (err) {
           if (err.includes('Not a follower') && item) {
@@ -677,7 +677,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/core/users').emit('viewers::remove', item, (err: string | null) => {
+            getSocket('/core/users').emit('viewers::remove', item, (err) => {
               if (err) {
                 reject(error(err));
               }

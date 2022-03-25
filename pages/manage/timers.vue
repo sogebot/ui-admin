@@ -303,7 +303,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      getSocket('/systems/timers').emit('generic::getAll', (err: string | null, _items: Required<TimerInterface>[]) => {
+      getSocket('/systems/timers').emit('generic::getAll', (err, _items: Required<TimerInterface>[]) => {
         if (err) {
           error(err);
           return;
@@ -342,7 +342,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/timers').emit('generic::deleteById', item.id, (err: string | null) => {
+            getSocket('/systems/timers').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

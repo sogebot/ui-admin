@@ -199,7 +199,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/registries/text').emit('generic::getAll', (err: string | null, itemsGetAll: TextInterface[]) => {
+      getSocket('/registries/text').emit('generic::getAll', (err, itemsGetAll: TextInterface[]) => {
         if (err) {
           return error(err);
         }
@@ -266,7 +266,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/registries/text').emit('text::remove', item, (err: string | null) => {
+            getSocket('/registries/text').emit('text::remove', item, (err) => {
               if (err) {
                 reject(error(err));
               }
@@ -284,7 +284,7 @@ export default defineComponent({
     const clone = (item: TextInterface) => {
       getSocket('/registries/text').emit('text::save', {
         ...item, id: v4(), name: item.name + ' (clone)',
-      }, (err: string | null) => {
+      }, (err) => {
         if (err) {
           console.error(err);
         } else {

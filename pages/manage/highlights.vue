@@ -134,7 +134,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/highlights').emit('generic::getAll', (err: string | null, _items: HighlightInterface[]) => {
+      getSocket('/systems/highlights').emit('generic::getAll', (err, _items: HighlightInterface[]) => {
         if (err) {
           return error(err);
         }
@@ -158,7 +158,7 @@ export default defineComponent({
         items.value.filter(o => o.expired).map((item) => {
           console.debug('Deleting', item);
           return new Promise((resolve, reject) => {
-            getSocket('/systems/highlights').emit('generic::deleteById', item.id, (err: string | null) => {
+            getSocket('/systems/highlights').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

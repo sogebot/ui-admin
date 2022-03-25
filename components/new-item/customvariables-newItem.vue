@@ -406,7 +406,7 @@ export default defineComponent({
       states.value.isUnique = ButtonStates.progress;
       getSocket('/core/customvariables').emit('customvariables::isUnique', {
         variable: val, id: id.value,
-      }, (err: string | null, isUnique: boolean) => {
+      }, (err, isUnique: boolean) => {
         if (err) {
           EventBus.$emit('snack', 'error', err);
           return;
@@ -556,7 +556,7 @@ export default defineComponent({
       states.value.test = ButtonStates.progress;
       getSocket('/core/customvariables').emit('customvariables::testScript', {
         evalValue: evalValue.value, currentValue: currentValue.value,
-      }, (err: string | null, response: string) => {
+      }, (err, response: string) => {
         states.value.test = ButtonStates.idle;
         if (err) {
           EventBus.$emit('snack', 'error', err);

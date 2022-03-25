@@ -172,7 +172,7 @@ export default defineComponent({
     const refresh = () => {
       state.value.loading = ButtonStates.progress;
       getSocket('/integrations/spotify').emit('spotify::getAllBanned', {
-      }, (_err: string | null, _items: SpotifySongBanInterface[]) => {
+      }, (_err, _items: SpotifySongBanInterface[]) => {
         items.value = _items;
         state.value.loading = ButtonStates.success;
       });
@@ -185,7 +185,7 @@ export default defineComponent({
       }
       if (state.value.import === 0) {
         state.value.import = 1;
-        getSocket('/integrations/spotify').emit('spotify::addBan', search.value, (err: string | null) => {
+        getSocket('/integrations/spotify').emit('spotify::addBan', search.value, (err) => {
           if (err) {
             setTimeout(() => {
               search.value = '';

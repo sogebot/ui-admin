@@ -136,7 +136,7 @@ export default defineComponent({
 
     onMounted(() => {
       getSocket(`/services/google`)
-        .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
+        .emit('settings', (err, _settings, _ui) => {
           if (err) {
             console.error(err);
             return;

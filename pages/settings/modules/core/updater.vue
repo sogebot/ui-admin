@@ -92,7 +92,7 @@ export default defineComponent({
     const update = (pkg: string) => {
       if (settings.value) {
         Vue.set(updating, pkg, true);
-        getSocket(`/core/updater`).emit('updater::trigger', { pkg, version: settings.value.versionsAvailable[0][pkg] }, (err: string | null) => {
+        getSocket(`/core/updater`).emit('updater::trigger', { pkg, version: settings.value.versionsAvailable[0][pkg] }, (err) => {
           if (err) {
             EventBus.$emit('snack', 'orange', `Package ${pkg} was not successfuly updated.`);
           } else {
@@ -119,7 +119,7 @@ export default defineComponent({
 
     const refresh = () => {
       getSocket(`/core/updater`)
-        .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
+        .emit('settings', (err, _settings, _ui) => {
           if (err) {
             error(err);
             return;

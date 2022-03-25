@@ -77,7 +77,7 @@ export default defineComponent({
       } else {
         getSocket('/core/permissions').emit('test.user', {
           pid: props.permission, value: testUsername.value, state,
-        }, (err: string | null, r: { state: string; partial: { access: boolean }; status: { access: boolean } }) => {
+        }, (err, r: { state: string; partial: { access: boolean }; status: { access: boolean } }) => {
           if (err) {
             error.value = err;
             isTesting.value = false;

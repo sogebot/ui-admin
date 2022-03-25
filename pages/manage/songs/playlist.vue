@@ -235,7 +235,7 @@ export default defineComponent({
     const refresh = async () => {
       await Promise.all([
         new Promise<void>((resolve, reject) => {
-          getSocket('/systems/songs').emit('current.playlist.tag', (err: string | null, tag: string) => {
+          getSocket('/systems/songs').emit('current.playlist.tag', (err, tag: string) => {
             if (err) {
               error(err);
               reject(err);
@@ -245,7 +245,7 @@ export default defineComponent({
           });
         }),
         new Promise<void>((resolve, reject) => {
-          getSocket('/systems/songs').emit('get.playlist.tags', (err: string | null, _tags: string[]) => {
+          getSocket('/systems/songs').emit('get.playlist.tags', (err, _tags: string[]) => {
             if (err) {
               error(err);
               reject(err);
@@ -257,7 +257,7 @@ export default defineComponent({
         new Promise<void>((resolve, reject) => {
           getSocket('/systems/songs').emit('find.playlist', {
             page: (currentPage.value - 1), search: search.value, tag: showTag.value, perPage: perPage.value,
-          }, (err: string | null, _items: SongPlaylistInterface[], _count: number) => {
+          }, (err, _items: SongPlaylistInterface[], _count: number) => {
             if (err) {
               error(err);
               reject(err);
@@ -291,7 +291,7 @@ export default defineComponent({
         state.value.import = 1;
         getSocket('/systems/songs').emit(search.value.includes('playlist') ? 'import.playlist' : 'import.video', {
           playlist: search.value, forcedTag: showTag.value,
-        }, (err: string | null) => {
+        }, (err) => {
           if (err) {
             search.value = '';
             state.value.import = 0;
@@ -311,7 +311,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/songs').emit('delete.playlist', item.videoId, (err: string | null) => {
+            getSocket('/systems/songs').emit('delete.playlist', item.videoId, (err) => {
               if (err) {
                 reject(error(err));
               }

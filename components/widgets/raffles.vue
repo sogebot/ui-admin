@@ -329,7 +329,7 @@ export default defineComponent({
     });
 
     function refresh () {
-      getSocket('/systems/raffles').emit('raffle:getLatest', (err: string | null, raffle: RaffleInterface) => {
+      getSocket('/systems/raffles').emit('raffle:getLatest', (err, raffle: RaffleInterface) => {
         console.groupCollapsed('raffle:getLatest');
         console.log({ err, raffle });
         console.groupEnd();

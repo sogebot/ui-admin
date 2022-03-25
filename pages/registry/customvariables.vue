@@ -405,7 +405,7 @@ export default defineComponent({
     const refresh = async () => {
       await Promise.all([
         new Promise<void>((resolve, reject) => {
-          getSocket('/core/customvariables').emit('customvariables::list', (err: string | null, itemsGetAll: VariableInterface[]) => {
+          getSocket('/core/customvariables').emit('customvariables::list', (err, itemsGetAll: VariableInterface[]) => {
             if (err) {
               reject(err);
               return error(err);
@@ -438,7 +438,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/core/customvariables').emit('customvariables::delete', item.id, (err: string | null) => {
+            getSocket('/core/customvariables').emit('customvariables::delete', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }
@@ -456,7 +456,7 @@ export default defineComponent({
     const clone = (item: VariableInterface) => {
       getSocket('/core/customvariables').emit('customvariables::save', {
         ...item, history: [], urls: [], id: v4(), description: '(clone) of ' + item.variableName, variableName: `$_${Math.random().toString(36).substr(2, 5)}`,
-      }, (err: string | null) => {
+      }, (err) => {
         if (err) {
           console.error(err);
         } else {
@@ -476,7 +476,7 @@ export default defineComponent({
       }
       runningScripts.value.push(id);
       EventBus.$emit('snack', 'success', 'Script triggered.');
-      getSocket('/core/customvariables').emit('customvariables::runScript', id, (err: string | null) => {
+      getSocket('/core/customvariables').emit('customvariables::runScript', id, (err) => {
         if (err) {
           EventBus.$emit('snack', 'error', 'Script error. ' + err);
         } else {

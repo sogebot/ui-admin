@@ -201,7 +201,7 @@ export default defineComponent({
         refresh();
       }, 60000);
 
-      getSocket('/widgets/chat').emit('room', (err: string | null, val: string) => {
+      getSocket('/widgets/chat').emit('room', (err, val: string) => {
         if (err) {
           return error(err);
         }
@@ -235,7 +235,7 @@ export default defineComponent({
 
     const refresh = () => {
       if (room.value.length > 0) {
-        getSocket('/widgets/chat').emit('viewers', (err: string | null, data: any) => {
+        getSocket('/widgets/chat').emit('viewers', (err, data: any) => {
           if (err) {
             return console.error('Server error', err);
           }

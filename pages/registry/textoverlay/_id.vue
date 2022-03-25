@@ -225,7 +225,7 @@ export default defineComponent({
     const save = () => {
       isSaving.value = true;
       console.log('Saving', item.value);
-      getSocket('/registries/text').emit('text::save', item.value, (err: string | null) => {
+      getSocket('/registries/text').emit('text::save', item.value, (err) => {
         if (err) {
           return error(err);
         }
@@ -242,7 +242,7 @@ export default defineComponent({
     onMounted(() => {
       store.commit('panel/back', '/registry/textoverlay');
 
-      getSocket('/registries/text').emit('text::presets', [], (err: string | null, presetList: string[]) => {
+      getSocket('/registries/text').emit('text::presets', [], (err, presetList: string[]) => {
         if (err) {
           return error(err);
         }
@@ -254,7 +254,7 @@ export default defineComponent({
         isLoading.value = true;
         getSocket('/registries/text').emit('generic::getOne', {
           id: route.value.params.id, parseText: false,
-        }, (err: string | null, data: TextInterface) => {
+        }, (err, data: TextInterface) => {
           if (err) {
             return error(err);
           }

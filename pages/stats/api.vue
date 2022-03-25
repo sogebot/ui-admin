@@ -171,7 +171,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      getSocket('/').off('api.stats').on('api.stats', (c: { code: number, remaining: number | string, data: string}) => {
+      getSocket('/').off('api.stats').on('api.stats', (c) => {
         c.code = get(c, 'code', 200); // set default to 200
         c.data = !isNil(c.data) ? JSON.stringify(c.data) : 'n/a';
         c.remaining = !isNil(c.remaining) ? c.remaining : 'n/a';

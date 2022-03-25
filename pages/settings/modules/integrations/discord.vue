@@ -176,7 +176,7 @@ export default defineComponent({
 
     onMounted(() => {
       getSocket(`/integrations/discord`)
-        .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
+        .emit('settings', (err, _settings, _ui) => {
           if (err) {
             error(err);
             return;
@@ -235,7 +235,7 @@ export default defineComponent({
     });
 
     const authorize = () => {
-      getSocket('/integrations/discord').emit('discord::authorize', (err: string | null, op: any) => {
+      getSocket('/integrations/discord').emit('discord::authorize', (err, op: any) => {
         if (err) {
           error(err);
         } else {

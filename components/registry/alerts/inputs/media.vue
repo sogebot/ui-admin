@@ -261,7 +261,7 @@ export default defineComponent({
 
     const refresh = () => {
       loading.value = true;
-      getSocket('/overlays/gallery').emit('generic::getAll', (err: string | null, _items: GalleryInterface[]) => {
+      getSocket('/overlays/gallery').emit('generic::getAll', (err, _items: GalleryInterface[]) => {
         if (err) {
           error(err);
           return;
@@ -505,7 +505,7 @@ export default defineComponent({
             });
           }
           uploadedFiles.value++;
-          getSocket('/overlays/gallery').emit('generic::getOne', id, (err: string | null, _item: GalleryInterface) => {
+          getSocket('/overlays/gallery').emit('generic::getOne', id, (err, _item: GalleryInterface) => {
             if (err) {
               error(err);
               return;

@@ -199,21 +199,21 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      setInterval(() => getSocket('/systems/queue').emit('queue::getAllPicked', (err: string | null, users2: QueueInterface[]) => {
+      setInterval(() => getSocket('/systems/queue').emit('queue::getAllPicked', (err, users2: QueueInterface[]) => {
         if (err) {
           return error(err);
         }
         picked.value = users2;
       }), 1000);
 
-      setInterval(() => getSocket('/systems/queue').emit('generic::getAll', (err: string | null, usersGetAll: QueueInterface[]) => {
+      setInterval(() => getSocket('/systems/queue').emit('generic::getAll', (err, usersGetAll: QueueInterface[]) => {
         if (err) {
           return error(err);
         }
         users.value = usersGetAll;
       }), 1000);
 
-      getSocket('/systems/queue').emit('settings', (err: string | null, data: any) => {
+      getSocket('/systems/queue').emit('settings', (err, data: any) => {
         if (err) {
           return error(err);
         }
@@ -227,7 +227,7 @@ export default defineComponent({
           eligibility.value.push(2);
         }
       });
-      getSocket('/systems/queue').emit('get.value', 'locked', (err: string | null, locked2: boolean) => {
+      getSocket('/systems/queue').emit('get.value', 'locked', (err, locked2: boolean) => {
         if (err) {
           return error(err);
         }
@@ -293,7 +293,7 @@ export default defineComponent({
         random,
         count: selectCount.value,
       };
-      getSocket('/systems/queue').emit('queue::pick', data, (err: string | null, users2: QueueInterface[]) => {
+      getSocket('/systems/queue').emit('queue::pick', data, (err, users2: QueueInterface[]) => {
         if (err) {
           return error(err);
         }
@@ -306,7 +306,7 @@ export default defineComponent({
       const data = {
         username: selectedUsers.value.map(idx => fUsers.value[idx].username),
       };
-      getSocket('/systems/queue').emit('queue::pick', data, (err: string | null, users2: QueueInterface[]) => {
+      getSocket('/systems/queue').emit('queue::pick', data, (err, users2: QueueInterface[]) => {
         if (err) {
           return error(err);
         }
