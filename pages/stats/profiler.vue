@@ -54,8 +54,6 @@ import { getPermissionName } from '~/functions/getPermissionName';
 
 Vue.use(Chartkick.use(Chart));
 
-type profilerItem = [function: string, times: number[]];
-
 export default defineComponent({
   setup () {
     const showChartFunctions = ref([] as string[]);
@@ -65,28 +63,16 @@ export default defineComponent({
     const items = ref([] as {
       function: string, min: number, max: number, avg: number, samples: number, times: number[],
     }[]);
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
     const headers = [
-      {
-        value: 'function', text: capitalize('function'),
-      },
-      {
-        value: 'samples', text: capitalize('samples'),
-      },
-      {
-        value: 'min', text: capitalize('min time'),
-      },
-      {
-        value: 'max', text: capitalize('max time'),
-      },
-      {
-        value: 'avg', text: capitalize('average time'),
-      },
+      { value: 'function', text: capitalize('function') },
+      { value: 'samples', text: capitalize('samples') },
+      { value: 'min', text: capitalize('min time') },
+      { value: 'max', text: capitalize('max time') },
+      { value: 'avg', text: capitalize('average time') },
       {
         value: 'button', text: '', sortable: false,
       },
@@ -95,7 +81,7 @@ export default defineComponent({
     const refresh = () => {
       showChartFunctions.value = JSON.parse(localStorage.getItem('/stats/profiler/showChartFunctions') || '[]');
 
-      getSocket('/stats/profiler').emit('profiler::load', (err: string | null, val: profilerItem[]) => {
+      getSocket('/stats/profiler').emit('profiler::load', (err, val) => {
         if (err) {
           return console.error(err);
         }
@@ -144,9 +130,7 @@ export default defineComponent({
         if (showChartFunctions.value.includes(item.function)) {
           generatedData.push({
             name: item.function,
-            data: {
-              ...item.times,
-            },
+            data: { ...item.times },
           });
         }
       }

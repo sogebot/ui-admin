@@ -1,5 +1,5 @@
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import { Context } from '@nuxt/types';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 
 export default function ({ app }: Context) {
   getSocket('/').emit('version', async (version: string) => {

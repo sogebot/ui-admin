@@ -115,7 +115,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      getSocket('/stats/tips').emit('generic::getAll', (err: string | null, val: Required<UserTipInterface & { username: string }>[]) => {
+      getSocket('/stats/tips').emit('generic::getAll', (err, val) => {
         if (err) {
           return console.error(err);
         }

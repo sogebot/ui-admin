@@ -54,6 +54,7 @@
 </template>
 
 <script lang="ts">
+import type { UserBitInterface } from '@entity/user';
 import {
   computed,
   defineComponent, onMounted, ref,
@@ -67,7 +68,6 @@ import { capitalize, orderBy } from 'lodash';
 import Vue from 'vue';
 import Chartkick from 'vue-chartkick';
 
-import type { UserBitInterface } from '@entity/user';
 import { getPermissionName } from '~/functions/getPermissionName';
 
 Vue.use(Chartkick.use(Chart));
@@ -90,29 +90,21 @@ export default defineComponent({
       }
     });
 
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
     const headers = [
-      {
-        value: 'cheeredAt', text: capitalize(translate('date')),
-      },
-      {
-        value: 'amount', text: capitalize(translate('responses.variable.amount')),
-      },
+      { value: 'cheeredAt', text: capitalize(translate('date')) },
+      { value: 'amount', text: capitalize(translate('responses.variable.amount')) },
       {
         value: 'message', text: capitalize(translate('message')), sortable: false,
       },
-      {
-        value: 'user', text: capitalize(translate('user')),
-      },
+      { value: 'user', text: capitalize(translate('user')) },
     ];
 
     const refresh = () => {
-      getSocket('/stats/bits').emit('generic::getAll', (err: string | null, val: Required<UserBitInterface & { username: string }>[]) => {
+      getSocket('/stats/bits').emit('generic::getAll', (err, val) => {
         if (err) {
           return console.error(err);
         }
@@ -129,9 +121,7 @@ export default defineComponent({
       return Object.keys(bitsByYear.value);
     });
     const bitsByYear = computed(() => {
-      const d: { [year: number]: Required<UserBitInterface>[] } = {
-        [new Date().getFullYear()]: [],
-      };
+      const d: { [year: number]: Required<UserBitInterface>[] } = { [new Date().getFullYear()]: [] };
       for (const bit of items.value) {
         const year = new Date(bit.cheeredAt).getFullYear();
         if (d[year]) {

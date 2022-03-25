@@ -46,6 +46,7 @@
 </template>
 
 <script lang="ts">
+import { CommandsCountInterface } from '@entity/commands';
 import {
   computed, defineComponent,
   onMounted, ref, watch,
@@ -101,43 +102,27 @@ export default defineComponent({
     const commands = computed(() => {
       return [...new Set(items.value.map(o => o.command))];
     });
-    const commandsUsage = ref([] as { command: string, timestamp: number, _id: string }[]);
+    const commandsUsage = ref([] as CommandsCountInterface[]);
 
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
     const headers = [
-      {
-        value: 'command', text: capitalize(translate('command')),
-      },
-      {
-        value: 'hour', text: capitalize(translate('stats.commandcount.hour')),
-      },
-      {
-        value: 'day', text: capitalize(translate('stats.commandcount.day')),
-      },
-      {
-        value: 'week', text: capitalize(translate('stats.commandcount.week')),
-      },
-      {
-        value: 'month', text: capitalize(translate('stats.commandcount.month')),
-      },
-      {
-        value: 'year', text: capitalize(translate('stats.commandcount.year')),
-      },
-      {
-        value: 'total', text: capitalize(translate('stats.commandcount.total')),
-      },
+      { value: 'command', text: capitalize(translate('command')) },
+      { value: 'hour', text: capitalize(translate('stats.commandcount.hour')) },
+      { value: 'day', text: capitalize(translate('stats.commandcount.day')) },
+      { value: 'week', text: capitalize(translate('stats.commandcount.week')) },
+      { value: 'month', text: capitalize(translate('stats.commandcount.month')) },
+      { value: 'year', text: capitalize(translate('stats.commandcount.year')) },
+      { value: 'total', text: capitalize(translate('stats.commandcount.total')) },
       {
         value: 'button', text: '', sortable: false,
       },
     ];
 
     const refresh = () => {
-      getSocket('/stats/commandcount').emit('commands::count', (err: string | null, val: { command: string, timestamp: number, _id: string }[]) => {
+      getSocket('/stats/commandcount').emit('commands::count', (err, val) => {
         if (err) {
           return console.error(err);
         }
@@ -172,14 +157,14 @@ export default defineComponent({
       refresh();
     });
 
-    const totalInInterval = (command: string, interval: number, values: { command: string, timestamp: number, _id: string }[]): number => {
+    const totalInInterval = (command: string, interval: number, values: CommandsCountInterface[]): number => {
       return values.filter((o) => {
         const isCorrectCommand = o.command === command;
         const isInInterval = Date.now() - interval <= o.timestamp;
         return isCorrectCommand && isInInterval;
       }).length;
     };
-    const total = (command: string, values: { command: string, timestamp: number, _id: string }[]): number => {
+    const total = (command: string, values: CommandsCountInterface[]): number => {
       return values.filter(o => o.command === command).length;
     };
     const toggleCommandChart = (command: string) => {
@@ -289,8 +274,7 @@ export default defineComponent({
             countByTimestamps[t] = 0;
           }
         }
-        const countByTimestampsOrdered: any = {
-        };
+        const countByTimestampsOrdered: any = {};
         for (const k of Object.keys(countByTimestamps).sort()) {
           countByTimestampsOrdered[new Date(Number(k)).toLocaleString()] = countByTimestamps[k];
         }
