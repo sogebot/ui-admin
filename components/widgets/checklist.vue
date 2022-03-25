@@ -36,12 +36,8 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
-import type { ChecklistInterface } from '@entity/checklist';
-
 export default defineComponent({
-  props: {
-    height: Number,
-  },
+  props: { height: Number },
   setup () {
     const id = v4();
 
@@ -64,7 +60,7 @@ export default defineComponent({
     });
 
     const update = () => {
-      getSocket('/systems/checklist').emit('generic::getAll', (err: Error | null, itemsFromSocket: string[], checkedItemsFromSocket: ChecklistInterface[]) => {
+      getSocket('/systems/checklist').emit('generic::getAll', (err, itemsFromSocket, checkedItemsFromSocket) => {
         if (err) {
           return console.error(err);
         }
