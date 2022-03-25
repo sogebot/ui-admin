@@ -142,7 +142,7 @@ export default defineComponent({
 
         console.log('Updating', item.value);
         saving.value = true;
-        getSocket('/systems/ranks').emit('ranks::save', { id, ...item.value }, (err: string | null) => {
+        getSocket('/systems/ranks').emit('ranks::save', { id, ...item.value }, (err) => {
           saving.value = false;
           if (err) {
             if (err.includes('UNIQUE constraint failed')) {

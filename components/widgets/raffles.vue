@@ -344,7 +344,7 @@ export default defineComponent({
           if (!raffle.winner) {
             winner.value = null;
           } else if (winner.value === null || winner.value.userName !== raffle.winner) {
-            getSocket('/systems/raffles').emit('raffle::getWinner', raffle.winner, (err2: string | null, user: UserInterface) => {
+            getSocket('/systems/raffles').emit('raffle::getWinner', raffle.winner, (err2, user: UserInterface) => {
               if (err2) {
                 error(err2);
               }
@@ -377,7 +377,7 @@ export default defineComponent({
 
     function toggleEligibility (participant: typeof participants.value[number]) {
       participant.isEligible = !participant.isEligible;
-      getSocket('/systems/raffles').emit('raffle::setEligibility', { id: participant.id, isEligible: participant.isEligible }, (err: string | null) => {
+      getSocket('/systems/raffles').emit('raffle::setEligibility', { id: participant.id, isEligible: participant.isEligible }, (err) => {
         if (err) {
           return error(err);
         }

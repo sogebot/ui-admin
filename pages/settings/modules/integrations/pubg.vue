@@ -122,7 +122,7 @@ export default defineComponent({
         apiKey:     settings.value?.apiKey[0],
         platform:   settings.value?.player.platform[0],
         playerName: settings.value?.player.playerName[0],
-      }, (err: null | string, data: any) => {
+      }, (err, data: any) => {
         isSearching.value = false;
         if (err) {
           error(err);

@@ -495,7 +495,7 @@ export default defineComponent({
                 id,
                 folder:  '/alerts',
                 b64data: chunks[j],
-              }], (err: string | null) => {
+              }], (err) => {
                 if (err) {
                   return error(err);
                 }

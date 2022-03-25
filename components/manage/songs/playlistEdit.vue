@@ -248,7 +248,7 @@ export default defineComponent({
         item.value.volume = Number(item.value.volume);
         item.value.startTime = Number(item.value.startTime);
         item.value.endTime = Number(item.value.endTime);
-        getSocket('/systems/songs').emit('songs::save', item.value, (err: string | null) => {
+        getSocket('/systems/songs').emit('songs::save', item.value, (err) => {
           if (err) {
             console.error(err);
             saving.value = false;

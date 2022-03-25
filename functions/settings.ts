@@ -1,3 +1,4 @@
+import type { ClientToServerEventsWithNamespace } from '@sogebot/backend/d.ts/src/helpers/socket';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { cloneDeep } from 'lodash';
 import type { Store } from 'vuex';
@@ -7,7 +8,7 @@ import { EventBus } from './event-bus';
 
 import { flatten, unflatten } from '~/functions/flatten';
 
-export const saveSettings = (endpoint: string, store: Store<any>, settings: Record<string, any>) => {
+export const saveSettings = (endpoint: keyof ClientToServerEventsWithNamespace, store: Store<any>, settings: Record<string, any>) => {
   let clonedSettings = cloneDeep(settings);
 
   if (clonedSettings.settings) {
@@ -59,7 +60,7 @@ export const saveSettings = (endpoint: string, store: Store<any>, settings: Reco
 
   console.log({ clonedSettings });
 
-  getSocket(endpoint).emit('settings.update', clonedSettings, (err: string | null) => {
+  getSocket(endpoint).emit('settings.update', clonedSettings, (err) => {
     store.commit('settings/save', false);
     store.commit('settings/pending', false);
     if (err) {

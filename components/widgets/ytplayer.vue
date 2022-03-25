@@ -190,13 +190,13 @@ export default defineComponent({
     });
 
     const refreshPlaylist = () => {
-      getSocket('/systems/songs').emit('current.playlist.tag', (err: null | string, tag: string) => {
+      getSocket('/systems/songs').emit('current.playlist.tag', (err, tag: string) => {
         if (err) {
           return error(err);
         }
         currentTag.value = tag;
       });
-      getSocket('/systems/songs').emit('get.playlist.tags', (err: null | string, tags: string[]) => {
+      getSocket('/systems/songs').emit('get.playlist.tags', (err, tags: string[]) => {
         if (err) {
           return error(err);
         }
@@ -336,7 +336,7 @@ export default defineComponent({
 
       intervals.push(window.setInterval(() => {
         if (autoplay.value) {
-          getSocket('/systems/songs').emit('songs::currentSong', (err: null | string, botCurrentSong: currentSongType) => {
+          getSocket('/systems/songs').emit('songs::currentSong', (err, botCurrentSong: currentSongType) => {
             if (err) {
               return error(err);
             }

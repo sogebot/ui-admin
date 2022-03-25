@@ -272,7 +272,7 @@ export default defineComponent({
       store.commit('setCurrentTitle', emit.title);
       store.commit('setCurrentTags', emit.tags);
 
-      getSocket('/').emit('updateGameAndTitle', emit, (err: string | null) => {
+      getSocket('/').emit('updateGameAndTitle', emit, (err) => {
         isSaving.value = false;
         if (err) {
           error(err);

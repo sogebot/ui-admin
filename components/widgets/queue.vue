@@ -282,7 +282,7 @@ export default defineComponent({
     });
 
     function clear () {
-      getSocket('/systems/queue').emit('queue::clear', (err: string | null) => {
+      getSocket('/systems/queue').emit('queue::clear', (err) => {
         if (err) {
           return error(err);
         }

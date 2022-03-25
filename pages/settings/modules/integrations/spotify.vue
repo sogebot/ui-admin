@@ -141,7 +141,7 @@ export default defineComponent({
 
     const setActive = () => {
       gettingActive.value = true;
-      getSocket(`/integrations/spotify`).emit('get.value', 'lastActiveDeviceId', (err: null | string, value: string) => {
+      getSocket(`/integrations/spotify`).emit('get.value', 'lastActiveDeviceId', (err, value: string) => {
         if (err) {
           error(err);
         } else if (settings.value) {
