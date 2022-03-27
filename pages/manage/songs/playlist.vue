@@ -23,8 +23,14 @@
                     </v-card-title>
 
                     <v-card-text>
-                      <v-data-table dense :items="selected" :headers="headersDelete" :items-per-page="-1"
-                        hide-default-header hide-default-footer />
+                      <v-data-table
+                        dense
+                        :items="selected"
+                        :headers="headersDelete"
+                        :items-per-page="-1"
+                        hide-default-header
+                        hide-default-footer
+                      />
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
@@ -46,13 +52,28 @@
 
     <alert-disabled system="songs" />
 
-    <v-data-table v-model="selected" calculate-widths show-select :loading="state.loading !== ButtonStates.success"
-      :headers="headers" :items-per-page.sync="perPage" :items="fItems" item-key="videoId"
-      @current-items="saveCurrentItems" :page.sync="currentPage" :server-items-length.sync="count" hide-default-header>
+    <v-data-table
+      v-model="selected"
+      calculate-widths
+      show-select
+      :loading="state.loading !== ButtonStates.success"
+      :headers="headers"
+      :items-per-page.sync="perPage"
+      :items="fItems"
+      item-key="videoId"
+      :page.sync="currentPage"
+      :server-items-length.sync="count"
+      hide-default-header
+      @current-items="saveCurrentItems"
+    >
       <template #top>
         <search-bar :search.sync="search" label="Search or add by link/id">
-          <v-btn color="primary" :disabled="search.length === 0" :loading="state.import === 1"
-            @click="addSongOrPlaylist">
+          <v-btn
+            color="primary"
+            :disabled="search.length === 0"
+            :loading="state.import === 1"
+            @click="addSongOrPlaylist"
+          >
             New Item
           </v-btn>
         </search-bar>
@@ -60,18 +81,18 @@
 
       <template #[`body.prepend`]="{}">
         <tr>
-          <td colspan="5" v-if="!$vuetify.breakpoint.mobile" />
+          <td v-if="!$vuetify.breakpoint.mobile" colspan="5" />
           <td :class="{'v-data-table__mobile-row': $vuetify.breakpoint.mobile}">
             <v-select v-model="showTag" :items="tagsItems" clearable />
           </td>
-          <td colspan="1" v-if="!$vuetify.breakpoint.mobile" />
+          <td v-if="!$vuetify.breakpoint.mobile" colspan="1" />
         </tr>
       </template>
 
       <template #[`item`]="{ item }">
-        <table-mobile :headers="headers" :selected="selected" :item="item" :addToSelectedItem="addToSelectedItem" item-key="videoId">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem" item-key="videoId">
           <template #actions>
-            <playlist-edit :rules="rules" :value="item" @save="refresh()" :tagsItems="tagsItems" />
+            <playlist-edit :rules="rules" :value="item" :tags-items="tagsItems" @save="refresh()" />
             <v-btn class="primary-hover" :href="'http://youtu.be/' + item.videoId" target="_blank" icon>
               <v-icon>
                 mdi-link
@@ -95,8 +116,14 @@
 
           <template #tags>
             <v-chip-group class="d-inline-block">
-              <v-chip v-for="tag of item.tags" :key="tag" :color="showTag === tag ? 'primary' : 'secondary'"
-                @click="showTag=tag" label class="mr-2">
+              <v-chip
+                v-for="tag of item.tags"
+                :key="tag"
+                :color="showTag === tag ? 'primary' : 'secondary'"
+                label
+                class="mr-2"
+                @click="showTag=tag"
+              >
                 {{ tag }}
               </v-chip>
             </v-chip-group>
@@ -112,6 +139,7 @@
 </template>
 
 <script lang="ts">
+import type { SongPlaylistInterface } from '@entity/song';
 import {
   computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -120,7 +148,6 @@ import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { SongPlaylistInterface } from '@entity/song';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -169,9 +196,7 @@ export default defineComponent({
     const currentTag = ref('general');
     const tags = ref([] as string[]);
     const tagsItems = computed(() => {
-      return [{
-        text: 'All playlists', value: null,
-      }, ...tags.value.map(item => ({
+      return [{ text: 'All playlists', value: null }, ...tags.value.map(item => ({
         text:     currentTag.value === item ? `${item} (current)` : item,
         value:    item,
         disabled: false,
@@ -188,30 +213,16 @@ export default defineComponent({
       {
         value: 'thumbnail', text: 'Thumbnail', align: 'left',
       },
-      {
-        value: 'videoId', text: 'Video ID',
-      },
-      {
-        value: 'title', text: 'Title',
-      },
-      {
-        value: 'data', text: '',
-      },
-      {
-        value: 'tags', text: 'Playlist',
-      },
-      {
-        value: 'actions', sortable: false,
-      },
+      { value: 'videoId', text: 'Video ID' },
+      { value: 'title', text: 'Title' },
+      { value: 'data', text: '' },
+      { value: 'tags', text: 'Playlist' },
+      { value: 'actions', sortable: false },
     ];
 
     const headersDelete = [
-      {
-        value: 'videoId', text: '',
-      },
-      {
-        value: 'title', text: '',
-      },
+      { value: 'videoId', text: '' },
+      { value: 'title', text: '' },
     ];
 
     const currentPage = ref(1);
@@ -245,7 +256,7 @@ export default defineComponent({
           });
         }),
         new Promise<void>((resolve, reject) => {
-          getSocket('/systems/songs').emit('get.playlist.tags', (err, _tags: string[]) => {
+          getSocket('/systems/songs').emit('get.playlist.tags', (err, _tags) => {
             if (err) {
               error(err);
               reject(err);
@@ -257,7 +268,7 @@ export default defineComponent({
         new Promise<void>((resolve, reject) => {
           getSocket('/systems/songs').emit('find.playlist', {
             page: (currentPage.value - 1), search: search.value, tag: showTag.value, perPage: perPage.value,
-          }, (err, _items: SongPlaylistInterface[], _count: number) => {
+          }, (err, _items, _count) => {
             if (err) {
               error(err);
               reject(err);
@@ -289,9 +300,7 @@ export default defineComponent({
       }
       if (state.value.import === 0) {
         state.value.import = 1;
-        getSocket('/systems/songs').emit(search.value.includes('playlist') ? 'import.playlist' : 'import.video', {
-          playlist: search.value, forcedTag: showTag.value,
-        }, (err) => {
+        getSocket('/systems/songs').emit(search.value.includes('playlist') ? 'import.playlist' : 'import.video', { playlist: search.value, forcedTag: showTag.value }, (err) => {
           if (err) {
             search.value = '';
             state.value.import = 0;

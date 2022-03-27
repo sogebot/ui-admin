@@ -201,7 +201,7 @@ export default defineComponent({
         refresh();
       }, 60000);
 
-      getSocket('/widgets/chat').emit('room', (err, val: string) => {
+      getSocket('/widgets/chat').emit('room', (err, val) => {
         if (err) {
           return error(err);
         }

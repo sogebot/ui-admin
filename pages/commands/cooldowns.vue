@@ -260,6 +260,10 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
+            if (!item.id) {
+              reject(error('Missing item id'));
+              return;
+            }
             getSocket('/systems/cooldown').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
