@@ -114,6 +114,7 @@
 </template>
 
 <script lang="ts">
+import type { currentSongType, SongRequestInterface } from '@entity/song';
 import {
   computed,
   defineComponent, nextTick, onMounted, onUnmounted, ref, watch,
@@ -127,22 +128,16 @@ import Vue from 'vue';
 // Workaround is to load css in head https://github.com/skjnldsv/vue-plyr/issues/28
 // import '@skjnldsv/vue-plyr/dist/dist/vue-plyr.css';
 
-import type { currentSongType, SongRequestInterface } from '@entity/song';
 import { error } from '~/functions/error';
 
-Vue.use(VuePlyr, {
-  plyr: {
-  },
-});
+Vue.use(VuePlyr, { plyr: {} });
 
 const emptyCurrentSong = {
   videoId: null, title: '', type: '', username: '', volume: 0, loudness: 0, forceVolume: false, startTime: 0, endTime: Number.MAX_SAFE_INTEGER,
 };
 
 export default defineComponent({
-  props: {
-    height: Number,
-  },
+  props: { height: Number },
   setup () {
     const isPopout = computed(() => location.href.includes('popout'));
 
@@ -160,9 +155,7 @@ export default defineComponent({
 
     watch(currentSong, () => {
       playThisSong(0);
-    }, {
-      deep: true,
-    });
+    }, { deep: true });
     watch(currentTag, val => getSocket('/systems/songs').emit('set.playlist.tag', val));
     watch(autoplay, async (val) => {
       await waitForPlayerReady();
@@ -230,8 +223,10 @@ export default defineComponent({
     };
 
     const nextAndRemoveFromPlaylist = () => {
-      if (currentSong.value) {
-        getSocket('/systems/songs').emit('delete.playlist', currentSong.value.videoId);
+      if (currentSong.value && currentSong.value.videoId) {
+        getSocket('/systems/songs').emit('delete.playlist', currentSong.value.videoId, () => {
+          return true;
+        });
         next();
       }
     };
@@ -345,8 +340,7 @@ export default defineComponent({
             }
           });
         }
-        getSocket('/systems/songs').emit('songs::getAllRequests', {
-        }, (err: any, items: SongRequestInterface[]) => {
+        getSocket('/systems/songs').emit('songs::getAllRequests', {}, (err, items) => {
           if (err) {
             error(err);
           }

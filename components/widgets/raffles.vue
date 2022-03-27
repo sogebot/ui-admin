@@ -329,7 +329,7 @@ export default defineComponent({
     });
 
     function refresh () {
-      getSocket('/systems/raffles').emit('raffle:getLatest', (err, raffle: RaffleInterface) => {
+      getSocket('/systems/raffles').emit('raffle:getLatest', (err, raffle) => {
         console.groupCollapsed('raffle:getLatest');
         console.log({ err, raffle });
         console.groupEnd();
@@ -344,11 +344,13 @@ export default defineComponent({
           if (!raffle.winner) {
             winner.value = null;
           } else if (winner.value === null || winner.value.userName !== raffle.winner) {
-            getSocket('/systems/raffles').emit('raffle::getWinner', raffle.winner, (err2, user: UserInterface) => {
+            getSocket('/systems/raffles').emit('raffle::getWinner', raffle.winner, (err2, user) => {
               if (err2) {
                 error(err2);
               }
-              winner.value = user;
+              if (user) {
+                winner.value = user;
+              }
             });
           }
 
@@ -377,7 +379,7 @@ export default defineComponent({
 
     function toggleEligibility (participant: typeof participants.value[number]) {
       participant.isEligible = !participant.isEligible;
-      getSocket('/systems/raffles').emit('raffle::setEligibility', { id: participant.id, isEligible: participant.isEligible }, (err) => {
+      getSocket('/systems/raffles').emit('raffle::setEligibility', { id: participant.id as string, isEligible: participant.isEligible }, (err) => {
         if (err) {
           return error(err);
         }
