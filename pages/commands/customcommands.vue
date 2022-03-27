@@ -1,6 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <alert-disabled system="customcommands"/>
+    <alert-disabled system="customcommands" />
 
     <v-expand-transition>
       <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>
@@ -110,7 +110,7 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <table-mobile :headers="headers" :selected="selected" :item="item" :addToSelectedItem="addToSelectedItem">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem">
           <template #actions>
             <command-edit
               :rules="rules"
@@ -144,6 +144,8 @@
 </template>
 
 <script lang="ts">
+import type { CommandsGroupInterface, CommandsInterface } from '@entity/commands';
+import type { PermissionsInterface } from '@entity/permissions';
 import {
   computed,
   defineAsyncComponent, defineComponent, onMounted, ref,
@@ -159,8 +161,6 @@ import {
   capitalize, isEqual, orderBy,
 } from 'lodash';
 
-import type { CommandsGroupInterface, CommandsInterface } from '@entity/commands';
-import type { PermissionsInterface } from '@entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -180,12 +180,10 @@ export default defineComponent({
   components: {
     'command-edit':  defineAsyncComponent(() => import('~/components/manage/commands/commandsEdit.vue')),
     'command-batch': defineAsyncComponent(() => import('~/components/manage/commands/commandsBatch.vue')),
-    responses:       defineAsyncComponent({
-      loader: () => import('~/components/responses.vue'),
-    }),
-    'group-config': defineAsyncComponent(() => import('~/components/manage/alias/groupConfig.vue')),
-    'group-header': defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
-    'search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    responses:       defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
+    'group-config':  defineAsyncComponent(() => import('~/components/manage/alias/groupConfig.vue')),
+    'group-header':  defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
+    'search-bar':    defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
   },
   setup () {
     const { result, loading } = useQuery(GET_ALL);
@@ -238,26 +236,20 @@ export default defineComponent({
       {
         value: 'count', text: capitalize(translate('count')), align: 'right',
       },
-      {
-        value: 'actions', sortable: false,
-      },
+      { value: 'actions', sortable: false },
     ];
 
     const headersDelete = [
-      {
-        value: 'command', text: translate('command'),
-      },
+      { value: 'command', text: translate('command') },
     ];
 
     const refresh = () => {
-      getSocket('/systems/customcommands').emit('generic::getAll', (err, commands: Required<CommandsInterface>[], countArg: { command: string; count: number }[]) => {
+      getSocket('/systems/customcommands').emit('generic::getAll', (err, commands, countArg) => {
         if (err) {
           return error(err);
         }
-        console.debug({
-          commands, count,
-        });
-        count = countArg;
+        console.debug({ commands, count });
+        count = countArg || [];
         items.value.length = 0;
         for (const command of commands) {
           items.value.push({
@@ -379,9 +371,7 @@ export default defineComponent({
               (item as any)[key] = value[key];
             }
           }
-          console.log('Updating', {
-            item,
-          });
+          console.log('Updating', { item });
           getSocket('/systems/customcommands').emit('generic::setById', {
             id: item.id,
             item,
@@ -394,8 +384,7 @@ export default defineComponent({
     const getGroup = computed<{ [name: string]: CommandsGroupInterface }>({
       get () {
         // set empty groups from aliases
-        const returnGroups: { [name: string]: CommandsGroupInterface } = {
-        };
+        const returnGroups: { [name: string]: CommandsGroupInterface } = {};
         for (const item of items.value) {
           if (item.group && !returnGroups[item.group]) {
             const group = groups.value.find(o => o.name === item.group);
@@ -417,11 +406,7 @@ export default defineComponent({
             updateGroupMutation({
               name: groupName,
               data: JSON.stringify(value[groupName].options),
-            }, {
-              refetchQueries: [{
-                query: GET_ALL,
-              }],
-            });
+            }, { refetchQueries: [{ query: GET_ALL }] });
           }
         }
         return true;

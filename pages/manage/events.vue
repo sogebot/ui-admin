@@ -414,7 +414,11 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/core/events').emit('events::remove', item, (err) => {
+            if (!item.id) {
+              reject(error('Missing item id'));
+              return;
+            }
+            getSocket('/core/events').emit('events::remove', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

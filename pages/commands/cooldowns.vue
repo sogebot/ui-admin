@@ -1,6 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <alert-disabled system="cooldown"/>
+    <alert-disabled system="cooldown" />
 
     <v-expand-transition>
       <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>
@@ -76,7 +76,7 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <table-mobile :headers="headers" :selected="selected" :item="item" :addToSelectedItem="addToSelectedItem">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem">
           <template #actions>
             <cooldowns-edit :rules="rules" :value="item" :type-items="typeItems" @save="refresh()" />
             <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
@@ -88,9 +88,13 @@
 
           <template #name>
             {{ item.name }}
-            <div class="grey--text">{{ item.type }}</div>
+            <div class="grey--text">
+              {{ item.type }}
+            </div>
           </template>
-          <template #count>{{ item.count }}s</template>
+          <template #count>
+            {{ item.miliseconds / 1000 }}s
+          </template>
         </table-mobile>
       </template>
     </v-data-table>
@@ -98,6 +102,7 @@
 </template>
 
 <script lang="ts">
+import type { CooldownInterface } from '@entity/cooldown';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
@@ -106,15 +111,12 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash';
 
-import type { CooldownInterface } from '@entity/cooldown';
 import { error } from '~/functions//error';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
 import {
   minLength, minValue, required,
 } from '~/functions/validators';
-
-export type CooldownInterfaceUI = CooldownInterface & { count: number; __typename: string };
 
 export default defineComponent({
   components: {
@@ -124,11 +126,9 @@ export default defineComponent({
     'table-mobile':    defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
   },
   setup () {
-    const rules = {
-      name: [required, minLength(2)], count: [required, minValue(1)],
-    };
+    const rules = { name: [required, minLength(2)], count: [required, minValue(1)] };
 
-    const items = ref([] as CooldownInterfaceUI[]);
+    const items = ref([] as CooldownInterface[]);
     const typeItems = [
       {
         text:     translate('global'),
@@ -142,24 +142,20 @@ export default defineComponent({
     ];
     const search = ref('');
 
-    const selected = ref([] as CooldownInterfaceUI[]);
+    const selected = ref([] as CooldownInterface[]);
     const deleteDialog = ref(false);
 
-    const currentItems = ref([] as CooldownInterfaceUI[]);
-    const saveCurrentItems = (value: CooldownInterfaceUI[]) => {
+    const currentItems = ref([] as CooldownInterface[]);
+    const saveCurrentItems = (value: CooldownInterface[]) => {
       currentItems.value = value;
     };
 
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
     const headers = [
-      {
-        value: 'name', text: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group'),
-      },
+      { value: 'name', text: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group') },
       {
         value: 'count', text: translate('cooldown'), align: 'right',
       },
@@ -181,15 +177,11 @@ export default defineComponent({
       {
         value: 'isFollowerAffected', text: capitalize(translate('core.permissions.followers')), align: 'center',
       },
-      {
-        value: 'actions', sortable: false,
-      },
+      { value: 'actions', sortable: false },
     ];
 
     const headersDelete = [
-      {
-        value: 'name', text: '',
-      },
+      { value: 'name', text: '' },
     ];
 
     onMounted(() => {
@@ -197,15 +189,12 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/cooldown').emit('generic::getAll', (err, itemsGetAll: CooldownInterfaceUI[]) => {
+      getSocket('/systems/cooldown').emit('generic::getAll', (err, itemsGetAll) => {
         if (err) {
           return error(err);
         }
         console.debug('Loaded', itemsGetAll);
-        items.value = itemsGetAll;
-        for (const item of items.value) {
-          item.count = item.miliseconds / 1000;
-        }
+        items.value = { ...itemsGetAll };
         // we also need to reset selection values
         if (selected.value.length > 0) {
           selected.value.forEach((selectedItem, index) => {
@@ -243,9 +232,7 @@ export default defineComponent({
               (item as any)[key] = value[key];
             }
           }
-          console.log('Updating', {
-            item,
-          });
+          console.log('Updating', { item });
 
           getSocket('/systems/cooldown').emit('cooldown::save', item, () => {
             EventBus.$emit('snack', 'success', 'Data updated.');
