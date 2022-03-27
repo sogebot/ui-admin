@@ -186,7 +186,7 @@ export default defineComponent({
 
     const update = (item: systemFromIO) => {
       const enabled = item.enabled;
-      getSocket(`/${item.type}/${item.name}` as any).emit('settings.update', { enabled }, (err) => {
+      getSocket(`/${item.type}/${item.name}` as any).emit('settings.update', { enabled }, (err: Error | null) => {
         if (err) {
           return error(err);
         } else {

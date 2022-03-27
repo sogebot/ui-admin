@@ -1,6 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <alert-disabled system="timers"/>
+    <alert-disabled system="timers" />
 
     <h2 v-if="!$vuetify.breakpoint.mobile">
       {{ translate('menu.timers') }}
@@ -215,6 +215,7 @@
 </template>
 
 <script lang="ts">
+import type { TimerInterface } from '@entity/timer';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -223,7 +224,6 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash';
 
-import type { TimerInterface } from '@entity/timer';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -233,12 +233,8 @@ import {
 
 export default defineComponent({
   components: {
-    'new-item': defineAsyncComponent({
-      loader: () => import('~/components/new-item/timers-newItem.vue'),
-    }),
-    responses: defineAsyncComponent({
-      loader: () => import('~/components/timers-responses.vue'),
-    }),
+    'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/timers-newItem.vue') }),
+    responses:  defineAsyncComponent({ loader: () => import('~/components/timers-responses.vue') }),
   },
   setup () {
     const rules = {
@@ -264,9 +260,7 @@ export default defineComponent({
       }
     });
 
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
@@ -275,9 +269,7 @@ export default defineComponent({
     });
 
     const headers = [
-      {
-        value: 'name', text: translate('timers.dialog.name'),
-      },
+      { value: 'name', text: translate('timers.dialog.name') },
       {
         value: 'tickOffline', text: translate('timers.dialog.tickOffline'), align: 'center',
       },
@@ -285,21 +277,13 @@ export default defineComponent({
         value: 'isEnabled', text: translate('enabled'), align: 'center',
       },
       // virtual attributes
-      {
-        value: 'triggerEveryMessage', text: translate('messages'),
-      },
-      {
-        value: 'triggerEverySecond', text: capitalize(translate('seconds')),
-      },
-      {
-        value: 'messages', text: translate('timers.dialog.responses'),
-      },
+      { value: 'triggerEveryMessage', text: translate('messages') },
+      { value: 'triggerEverySecond', text: capitalize(translate('seconds')) },
+      { value: 'messages', text: translate('timers.dialog.responses') },
     ];
 
     const headersDelete = [
-      {
-        value: 'name', text: translate('timers.dialog.name'),
-      },
+      { value: 'name', text: translate('timers.dialog.name') },
     ];
 
     const refresh = () => {
@@ -342,6 +326,10 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
+            if (!item.id) {
+              reject(error('Missing item id'));
+              return;
+            }
             getSocket('/systems/timers').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
@@ -384,20 +372,18 @@ export default defineComponent({
                 item[attr][i].timestamp = i;
               }
             }
-            console.log('Updating', {
-              itemToUpdate,
-            }, {
-              attr, value: item[attr],
-            });
-            getSocket('/systems/timers').emit('generic::setById', {
-              id:   itemToUpdate.id,
-              item: {
-                ...itemToUpdate,
-                [attr]: item[attr], // save new value for all selected items
-              },
-            }, () => {
-              resolve(true);
-            });
+            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+            if (itemToUpdate.id) {
+              getSocket('/systems/timers').emit('generic::setById', {
+                id:   itemToUpdate.id,
+                item: {
+                  ...itemToUpdate,
+                  [attr]: item[attr], // save new value for all selected items
+                },
+              }, () => {
+                resolve(true);
+              });
+            }
           });
         }),
       );

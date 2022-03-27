@@ -126,7 +126,7 @@
                 hide-details="auto"
               >
                 <template #append-outer>
-                  <v-btn @click="applyPreset" :loading="presetLoading">
+                  <v-btn :loading="presetLoading" @click="applyPreset">
                     Apply
                   </v-btn>
                 </template>
@@ -168,6 +168,7 @@
 </template>
 
 <script lang="ts">
+import type { TextInterface } from '@entity/text';
 import {
   defineComponent, onMounted, ref, useRoute, useRouter, useStore,
 } from '@nuxtjs/composition-api';
@@ -175,7 +176,6 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
-import type { TextInterface } from '@entity/text';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import {
@@ -184,9 +184,7 @@ import {
 import { required } from '~/functions/validators';
 
 export default defineComponent({
-  components: {
-    PrismEditor,
-  },
+  components: { PrismEditor },
   setup () {
     const e1 = ref(1);
     const store = useStore();
@@ -199,9 +197,7 @@ export default defineComponent({
 
     const isSaving = ref(false);
     const isLoading = ref(true);
-    const rules = {
-      name: [required],
-    };
+    const rules = { name: [required] };
 
     const item = ref({
       id:       v4(),
@@ -230,11 +226,7 @@ export default defineComponent({
           return error(err);
         }
         isSaving.value = false;
-        router.push({
-          params: {
-            id: item.value.id ?? '',
-          },
-        });
+        router.push({ params: { id: item.value.id ?? '' } });
         EventBus.$emit('snack', 'success', 'Data saved.');
       });
     };
@@ -242,19 +234,19 @@ export default defineComponent({
     onMounted(() => {
       store.commit('panel/back', '/registry/textoverlay');
 
-      getSocket('/registries/text').emit('text::presets', [], (err, presetList: string[]) => {
+      getSocket('/registries/text').emit('text::presets', [], (err, presetList) => {
         if (err) {
           return error(err);
         }
-        presets.value = presetList;
+        if (presetList) {
+          presets.value = presetList;
+        }
       });
 
       if (route.value.params.id && route.value.params.id !== 'new') {
         // load initial item
         isLoading.value = true;
-        getSocket('/registries/text').emit('generic::getOne', {
-          id: route.value.params.id, parseText: false,
-        }, (err, data: TextInterface) => {
+        getSocket('/registries/text').emit('generic::getOne', { id: route.value.params.id, parseText: false }, (err, data) => {
           if (err) {
             return error(err);
           }

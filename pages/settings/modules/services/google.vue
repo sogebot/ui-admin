@@ -169,7 +169,9 @@ export default defineComponent({
           store.commit('settings/pending', true);
         } catch (e) {
           console.error(e);
-          error(e.message);
+          if (e instanceof Error) {
+            error(e.message);
+          }
         }
       }
       uploading.value = ButtonStates.idle;

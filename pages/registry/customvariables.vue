@@ -3,7 +3,6 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
-
     <v-data-table
       v-model="selected"
       :single-expand="true"
@@ -271,6 +270,8 @@
 </template>
 
 <script lang="ts">
+import type { PermissionsInterface } from '@entity/permissions';
+import type { VariableInterface } from '@entity/variable';
 import {
   computed,
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
@@ -283,8 +284,6 @@ import { useQuery, useResult } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
-import type { PermissionsInterface } from '@entity/permissions';
-import type { VariableInterface } from '@entity/variable';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -294,11 +293,7 @@ import {
 } from '~/functions/validators';
 
 export default defineComponent({
-  components: {
-    'new-item': defineAsyncComponent({
-      loader: () => import('~/components/new-item/customvariables-newItem.vue'),
-    }),
-  },
+  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/customvariables-newItem.vue') }) },
   setup () {
     const { result, loading } = useQuery(gql`
       query {
@@ -306,9 +301,7 @@ export default defineComponent({
       }
     `);
     const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
-    const rules = {
-      variableName: [required, startsWith(['$_']), minLength(3), restrictedChars([' '])],
-    };
+    const rules = { variableName: [required, startsWith(['$_']), minLength(3), restrictedChars([' '])] };
 
     const items = ref([] as VariableInterface[]);
     const editItem = ref(null as null | VariableInterface);
@@ -347,55 +340,35 @@ export default defineComponent({
       timestamp.value = Date.now();
     });
 
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
     const headers = [
-      {
-        value: 'variableName', text: '$_',
-      },
-      {
-        value: 'description', text: translate('registry.customvariables.description.name'),
-      },
+      { value: 'variableName', text: '$_' },
+      { value: 'description', text: translate('registry.customvariables.description.name') },
       {
         value: 'type', sortable: true, text: translate('registry.customvariables.type.name'),
       },
       {
         value: 'additionalInfo', text: translate('registry.customvariables.additional-info'), sortable: false,
       },
-      {
-        value: 'currentValue', text: translate('registry.customvariables.currentValue.name'),
-      },
+      { value: 'currentValue', text: translate('registry.customvariables.currentValue.name') },
       {
         value: 'actions', text: '', sortable: false,
       },
-      {
-        text: '', value: 'data-table-expand',
-      },
+      { text: '', value: 'data-table-expand' },
     ];
 
     const headersDelete = [
-      {
-        value: 'variableName', text: '',
-      },
-      {
-        value: 'type', text: '',
-      },
+      { value: 'variableName', text: '' },
+      { value: 'type', text: '' },
     ];
 
     const headersHistory = [
-      {
-        value: 'changedAt', text: '',
-      },
-      {
-        value: 'value', text: '',
-      },
-      {
-        value: 'username', text: '',
-      },
+      { value: 'changedAt', text: '' },
+      { value: 'value', text: '' },
+      { value: 'username', text: '' },
     ];
 
     onMounted(() => {
@@ -438,12 +411,16 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/core/customvariables').emit('customvariables::delete', item.id, (err) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
+            if (item.id === undefined) {
+              reject(error('Item ID is missing'));
+            } else {
+              getSocket('/core/customvariables').emit('customvariables::delete', item.id, (err) => {
+                if (err) {
+                  reject(error(err));
+                }
+                resolve(true);
+              });
+            }
           });
         }),
       );

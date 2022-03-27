@@ -3,7 +3,6 @@
     fluid
     :class="{ 'pa-4': !$vuetify.breakpoint.mobile }"
   >
-
     <v-sheet
       flat
       color="dark"
@@ -335,6 +334,7 @@
 <script lang="ts">
 import { normalize } from 'path';
 
+import type { GalleryInterface } from '@entity/gallery';
 import {
   computed,
   defineComponent, onMounted, ref, watch,
@@ -345,7 +345,6 @@ import translate from '@sogebot/ui-helpers/translate';
 import { uniq } from 'lodash';
 import shortid from 'shortid';
 
-import type { GalleryInterface } from '@entity/gallery';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
@@ -464,9 +463,7 @@ export default defineComponent({
       imageWidth.value = 0;
       imageHeight.value = 0;
       duration.value = 0;
-    }, {
-      deep: true,
-    });
+    }, { deep: true });
 
     watch(uploadedFiles, (val: number) => {
       if (isUploadingNum.value === val) {
@@ -528,13 +525,15 @@ export default defineComponent({
             });
           }
           uploadedFiles.value++;
-          getSocket('/overlays/gallery').emit('generic::getOne', id, (err, _item: GalleryInterface) => {
+          getSocket('/overlays/gallery').emit('generic::getOne', id, (err, _item) => {
             if (err) {
               error(err);
               return;
             }
-            console.debug('Uploaded', _item);
-            items.value.push(_item);
+            if (_item) {
+              console.debug('Uploaded', _item);
+              items.value.push(_item);
+            }
           });
         };
         reader.readAsDataURL(filesUpload[i]);
@@ -640,9 +639,7 @@ export default defineComponent({
           return new Promise((resolve, reject) => {
             getSocket('/overlays/gallery').emit('generic::setById', {
               id:   _id,
-              item: {
-                folder: newFolder.value,
-              },
+              item: { folder: newFolder.value },
             }, (err) => {
               if (err) {
                 reject(error(err));

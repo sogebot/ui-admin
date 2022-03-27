@@ -105,7 +105,8 @@
           <v-btn
             icon
             :color="hover ? 'primary' : 'secondary lighten-3'"
-            nuxt :to='"/registry/textoverlay/" + item.id'
+            nuxt
+            :to="'/registry/textoverlay/' + item.id"
           >
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
@@ -134,6 +135,7 @@
 </template>
 
 <script lang="ts">
+import type { TextInterface } from '@entity/text';
 import {
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -142,7 +144,6 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
-import type { TextInterface } from '@entity/text';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -150,9 +151,7 @@ import { required } from '~/functions/validators';
 
 export default defineComponent({
   setup () {
-    const rules = {
-      name: [required],
-    };
+    const rules = { name: [required] };
 
     const items = ref([] as TextInterface[]);
     const search = ref('');
@@ -170,16 +169,12 @@ export default defineComponent({
       }
     });
 
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
     const headers = [
-      {
-        value: 'name', text: translate('name'),
-      },
+      { value: 'name', text: translate('name') },
       {
         value:    'actions',
         text:     '',
@@ -189,9 +184,7 @@ export default defineComponent({
     ];
 
     const headersDelete = [
-      {
-        value: 'name', text: '',
-      },
+      { value: 'name', text: '' },
     ];
 
     onMounted(() => {
@@ -243,11 +236,7 @@ export default defineComponent({
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
-            console.log('Updating', {
-              itemToUpdate,
-            }, {
-              attr, value: item[attr],
-            });
+            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
             getSocket('/registries/text').emit('text::save', {
               ...itemToUpdate,
               [attr]: item[attr], // save new value for all selected items
