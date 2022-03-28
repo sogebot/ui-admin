@@ -47,6 +47,14 @@
                         {{ data.item.name }}&nbsp;<small>{{ data.item.id }}</small>
                       </template>
                     </v-select>
+                    <v-select
+                      v-else-if="defKey === 'timeoutType' && o.name === 'run-command'"
+                      :items="['normal', 'add', 'reset']"
+                      persistent-hint
+                      :label="translate(`events.definitions.${defKey}.label`)"
+                      hint="NORMAL - trigger command after every event | ADD - add timeout to previous event | RESET - reset timeout"
+                      v-model="o.definitions[defKey]"
+                    />
                     <v-text-field
                       v-else-if="typeof o.definitions[defKey] === 'string'"
                       v-model="o.definitions[defKey]"
