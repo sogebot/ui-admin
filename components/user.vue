@@ -213,7 +213,7 @@ export default defineComponent({
         return;
       }
       const socket = getSocket('/core/users', true);
-      socket.emit('viewers::findOne', (context.root as any).$store.state.loggedUser.id, (err: string| number, recvViewer: Readonly<Required<UserInterface>> & { aggregatedTips: number; aggregatedBits: number; permission: PermissionsInterface }) => {
+      socket.emit('viewers::findOne', (context.root as any).$store.state.loggedUser.id, (err, recvViewer) => {
         if (err) {
           return console.error(err);
         }
@@ -228,12 +228,10 @@ export default defineComponent({
     };
 
     const joinBot = () => {
-      const socket = getSocket('/core/users', true);
-      socket.emit('joinBot');
+      getSocket('/', true).emit('joinBot');
     };
     const leaveBot = () => {
-      const socket = getSocket('/core/users', true);
-      socket.emit('leaveBot');
+      getSocket('/', true).emit('leaveBot');
     };
 
     return {

@@ -128,6 +128,7 @@
 </template>
 
 <script lang="ts">
+import type { UserBitInterface, UserInterface } from '@entity/user';
 import {
   defineAsyncComponent,
   defineComponent, ref, watch,
@@ -138,57 +139,40 @@ import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import type { UserBitInterface, UserInterface } from '@entity/user';
 import { minValue, required } from '~/functions/validators';
 
-const socket = {
-  users: getSocket('/core/users'),
-} as const;
+const socket = { users: getSocket('/core/users') } as const;
 export default defineComponent({
-  components: {
-    datetime: defineAsyncComponent({
-      loader: () => import('~/components/datetime.vue'),
-    }),
-  },
-  props: {
-    sum: Number, userId: String,
-  },
+  components: { datetime: defineAsyncComponent({ loader: () => import('~/components/datetime.vue') }) },
+  props:      { sum: Number, userId: String },
   setup (props, ctx) {
     const bits = ref([] as UserBitInterface[]);
     const username = ref('');
     const dialog = ref(false);
     const timestamp = ref(Date.now());
     const currencyBackup = ref('USD');
-    const rules = {
-      amount: [required, minValue(0)],
-    };
+    const rules = { amount: [required, minValue(0)] };
 
     const headers = [
-      {
-        value: 'cheeredAt', text: '',
-      },
-      {
-        value: 'amount', text: '',
-      },
-      {
-        value: 'message', text: '',
-      },
-      {
-        value: 'button', text: '',
-      },
+      { value: 'cheeredAt', text: '' },
+      { value: 'amount', text: '' },
+      { value: 'message', text: '' },
+      { value: 'button', text: '' },
     ];
 
     watch(dialog, (val) => {
       if (val) {
-        socket.users.emit('viewers::findOne', props.userId, (error: null | string, viewer: UserInterface & { bits: UserBitInterface[] }) => {
-          if (error) {
-            console.error(error);
-            return;
-          }
-          console.log('User loaded', viewer);
-          username.value = viewer.userName;
-          bits.value = viewer.bits;
-        });
+        if (props.userId) {
+          socket.users.emit('viewers::findOne', props.userId, (error, viewer) => {
+            if (error) {
+              console.error(error);
+              return;
+            }
+            console.log('User loaded', viewer);
+            username.value = viewer.userName;
+            bits.value = viewer.bits;
+          });
+        }
       }
     });
 
@@ -203,9 +187,7 @@ export default defineComponent({
     };
 
     const remove = (item: UserBitInterface) => {
-      console.log({
-        item,
-      });
+      console.log({ item });
       bits.value.splice(bits.value.findIndex(o => o.id === item.id), 1);
     };
 

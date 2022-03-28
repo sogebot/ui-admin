@@ -7,8 +7,15 @@
           <v-tab>{{ translate('widget-title-monitor') }}</v-tab>
         </v-tabs>
 
-        <v-speed-dial absolute v-model="fab" right style="right: 2px; top: -15px;" direction="bottom" top>
-          <template v-slot:activator>
+        <v-speed-dial
+          v-model="fab"
+          absolute
+          right
+          style="right: 2px; top: -15px;"
+          direction="bottom"
+          top
+        >
+          <template #activator>
             <v-btn v-model="fab" color="blue-grey darken-2" dark fab x-small>
               <v-icon v-if="fab">
                 mdi-close
@@ -19,59 +26,107 @@
             </v-btn>
           </template>
 
-          <v-tooltip left v-if="!isPopout">
+          <v-tooltip v-if="!isPopout" left>
             <template #activator="{ on, attrs }">
-              <v-btn fab x-small color='secondary' @click="timestamp = Date.now()" v-bind="attrs" v-on="on">
+              <v-btn
+                fab
+                x-small
+                color="secondary"
+                v-bind="attrs"
+                @click="timestamp = Date.now()"
+                v-on="on"
+              >
                 <v-icon>mdi-refresh</v-icon>
               </v-btn>
             </template>
             <span>Refresh Widget</span>
           </v-tooltip>
-          <v-tooltip left v-if="!isPopout">
+          <v-tooltip v-if="!isPopout" left>
             <template #activator="{ on, attrs }">
-              <v-btn fab x-small :color="showJoins ? 'green lighten-1' : 'red lighten-1'"
-                @click.stop="showJoins = !showJoins" v-bind="attrs" v-on="on">
+              <v-btn
+                fab
+                x-small
+                :color="showJoins ? 'green lighten-1' : 'red lighten-1'"
+                v-bind="attrs"
+                @click.stop="showJoins = !showJoins"
+                v-on="on"
+              >
                 <v-icon>mdi-account-plus</v-icon>
               </v-btn>
             </template>
             <span>Show JOINs</span>
           </v-tooltip>
-          <v-tooltip left v-if="!isPopout">
+          <v-tooltip v-if="!isPopout" left>
             <template #activator="{ on, attrs }">
-              <v-btn fab x-small :color="showParts ? 'green lighten-1' : 'red lighten-1'"
-                @click.stop="showParts = !showParts" v-bind="attrs" v-on="on">
+              <v-btn
+                fab
+                x-small
+                :color="showParts ? 'green lighten-1' : 'red lighten-1'"
+                v-bind="attrs"
+                @click.stop="showParts = !showParts"
+                v-on="on"
+              >
                 <v-icon>mdi-account-minus</v-icon>
               </v-btn>
             </template>
             <span>Show PARTs</span>
           </v-tooltip>
-          <v-tooltip left v-if="!isPopout">
+          <v-tooltip v-if="!isPopout" left>
             <template #activator="{ on, attrs }">
-              <v-btn fab x-small color='secondary' @click="dialog = true" v-bind="attrs" v-on="on">
+              <v-btn
+                fab
+                x-small
+                color="secondary"
+                v-bind="attrs"
+                @click="dialog = true"
+                v-on="on"
+              >
                 <v-icon>mdi-comment-plus</v-icon>
               </v-btn>
             </template>
             <span>Send bot message</span>
           </v-tooltip>
-          <v-tooltip left v-if="!isPopout">
+          <v-tooltip v-if="!isPopout" left>
             <template #activator="{ on, attrs }">
-              <v-btn fab x-small color='orange darken-3' @click="joinChat" v-bind="attrs" v-on="on">
+              <v-btn
+                fab
+                x-small
+                color="orange darken-3"
+                v-bind="attrs"
+                @click="joinChat"
+                v-on="on"
+              >
                 <v-icon>mdi-login</v-icon>
               </v-btn>
             </template>
             <span>Join chat</span>
           </v-tooltip>
-          <v-tooltip left v-if="!isPopout">
+          <v-tooltip v-if="!isPopout" left>
             <template #activator="{ on, attrs }">
-              <v-btn fab x-small color='orange darken-3' @click="leaveChat" v-bind="attrs" v-on="on">
+              <v-btn
+                fab
+                x-small
+                color="orange darken-3"
+                v-bind="attrs"
+                @click="leaveChat"
+                v-on="on"
+              >
                 <v-icon>mdi-logout</v-icon>
               </v-btn>
             </template>
             <span>Leave chat</span>
           </v-tooltip>
-          <v-tooltip left v-if="!isPopout">
+          <v-tooltip v-if="!isPopout" left>
             <template #activator="{ on, attrs }">
-              <v-btn color="secondary" fab x-small href="#/popout/monitor" target="_blank" v-bind="attrs" v-on="on">
+              <v-btn
+                color="secondary"
+                fab
+                x-small
+                href="#/popout/monitor"
+                target="_blank"
+                v-bind="attrs"
+                v-on="on"
+              >
                 <v-icon>mdi-open-in-new</v-icon>
               </v-btn>
             </template>
@@ -80,18 +135,37 @@
         </v-speed-dial>
       </v-col>
     </v-row>
-    <v-alert v-if="!isHttps" border="left" color="red" icon="mdi-exclamation-thick" text type="success">
+    <v-alert
+      v-if="!isHttps"
+      border="left"
+      color="red"
+      icon="mdi-exclamation-thick"
+      text
+      type="success"
+    >
       You need to run bot on HTTPS on port 443 with valid certificate for this embed to be working
     </v-alert>
 
-    <v-tabs-items v-model="tab" v-else>
+    <v-tabs-items v-else v-model="tab">
       <v-tab-item eager>
-        <iframe class="enable-transition" frameborder="0" scrolling="no" :src="chatUrl" width="100%"
-          :height="height + 'px'" />
+        <iframe
+          class="enable-transition"
+          frameborder="0"
+          scrolling="no"
+          :src="chatUrl"
+          width="100%"
+          :height="height + 'px'"
+        />
       </v-tab-item>
       <v-tab-item eager>
-        <iframe class="enable-transition" frameborder="0" scrolling="no" :src="videoUrl" width="100%"
-          :height="height + 'px'" />
+        <iframe
+          class="enable-transition"
+          frameborder="0"
+          scrolling="no"
+          :src="videoUrl"
+          width="100%"
+          :height="height + 'px'"
+        />
       </v-tab-item>
     </v-tabs-items>
 
@@ -101,7 +175,10 @@
           <small class="text-button">Chat Events</small>
         </v-toolbar>
 
-        <v-card-text style="height: 173px; max-height: 173px; overflow: auto;" class="pa-2" v-html="
+        <v-card-text
+          style="height: 173px; max-height: 173px; overflow: auto;"
+          class="pa-2"
+          v-html="
             list.filter(o => {
               if (showJoins && showParts) {
                 return true;
@@ -111,7 +188,8 @@
                 return o.username.startsWith('-');
               }
             }).map(o => `<span class='${o.username.startsWith('+') ? 'green--text' : 'red--text'} text--lighten-2'>${o.username.substring(1)}</span>`).join(', ')
-          "/>
+          "
+        />
       </v-card>
     </v-expand-transition>
 
@@ -209,12 +287,10 @@ export default defineComponent({
         refresh();
       });
 
-      getSocket('/widgets/joinpart').on('joinpart', (data: { users: string[], type: 'join' | 'part' }) => {
+      getSocket('/widgets/joinpart').on('joinpart', (data) => {
         for (const [index, username] of Object.entries(data.users)) {
           if (!list.value.find(o => o.username === username)) {
-            list.value.push({
-              username: (data.type === 'join' ? '+' : '-') + username, timestamp: Date.now() + Number(index),
-            });
+            list.value.push({ username: (data.type === 'join' ? '+' : '-') + username, timestamp: Date.now() + Number(index) });
           }
         }
         list.value = chunk(list.value.sort((a, b) => {

@@ -295,8 +295,8 @@
           </v-hover>
 
           <v-divider
-            :key="item.id + 'divider'"
             v-if="index < events.length - 1 && filter(item)"
+            :key="item.id + 'divider'"
           />
         </template>
       </v-list-item-group>
@@ -305,6 +305,7 @@
 </template>
 
 <script lang="ts">
+import type { EventListInterface } from '@entity/eventList';
 import {
   computed,
   defineComponent, onMounted, ref, useStore, watch,
@@ -317,14 +318,11 @@ import {
 } from '@vue/apollo-composable';
 import { get } from 'lodash';
 
-import type { EventListInterface } from '@entity/eventList';
 import GET_CFG from '~/queries/alert/getCfg.gql';
 import SET_CFG from '~/queries/alert/setCfg.gql';
 
 export default defineComponent({
-  props: {
-    height: Number,
-  },
+  props: { height: Number },
   setup () {
     const store = useStore<any>();
 
@@ -346,9 +344,7 @@ export default defineComponent({
       areAlertsMuted.value = value.areAlertsMuted;
       isTTSMuted.value = value.isTTSMuted;
       isSoundMuted.value = value.isSoundMuted;
-    }, {
-      immediate: true, deep: true,
-    });
+    }, { immediate: true, deep: true });
     const { mutate: saveMutation } = useMutation(SET_CFG);
 
     const isLoading = ref(true);
@@ -450,15 +446,9 @@ export default defineComponent({
     }
 
     watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
-      saveMutation({
-        name: 'areAlertsMuted', value: val[0],
-      });
-      saveMutation({
-        name: 'isTTSMuted', value: val[1],
-      });
-      saveMutation({
-        name: 'isSoundMuted', value: val[2],
-      });
+      saveMutation({ name: 'areAlertsMuted', value: val[0] });
+      saveMutation({ name: 'isTTSMuted', value: val[1] });
+      saveMutation({ name: 'isSoundMuted', value: val[2] });
     });
 
     function resendAlert (id: string) {
@@ -475,9 +465,7 @@ export default defineComponent({
       let t = translate(`eventlist-events.${event.event}`);
 
       const values = JSON.parse(event.values_json);
-      const formattedAmount = Intl.NumberFormat(store.state.configuration.lang, {
-        style: 'currency', currency: get(values, 'currency', 'USD'),
-      }).format(get(values, 'amount', '0'));
+      const formattedAmount = Intl.NumberFormat(store.state.configuration.lang, { style: 'currency', currency: get(values, 'currency', 'USD') }).format(get(values, 'amount', '0'));
       t = t.replace('$formatted_amount', '<strong style="font-size: 1rem">' + formattedAmount + '</strong>');
       t = t.replace('$viewers', '<strong style="font-size: 1rem">' + get(values, 'viewers', '0') + '</strong>');
       t = t.replace('$tier', `${translate('tier')} <strong style="font-size: 1rem">${get(values, 'tier', 'n/a')}</strong>`);
@@ -516,11 +504,13 @@ export default defineComponent({
       });
       for (const idx of selected.value) {
         const id = filteredEvents[idx].id;
-        getSocket('/widgets/eventlist').emit('eventlist::removeById', id, () => {
-          return true;
-        });
+        if (id) {
+          getSocket('/widgets/eventlist').emit('eventlist::removeById', id, () => {
+            return true;
+          });
 
-        events.value.splice(events.value.findIndex(o => o.id === id), 1);
+          events.value.splice(events.value.findIndex(o => o.id === id), 1);
+        }
       }
       selected.value = [];
     }

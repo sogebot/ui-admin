@@ -115,7 +115,9 @@
                       <code v-if="user.isSubscriber">SUBSCRIBER</code>
                     </v-col>
                     <v-col>
-                      <div v-if="user.message">{{user.message}}</div>
+                      <div v-if="user.message">
+                        {{ user.message }}
+                      </div>
                     </v-col>
                   </v-row>
                   <v-row no-gutters>
@@ -151,7 +153,9 @@
                     <code v-if="user.isSubscriber">SUBSCRIBER</code>
                   </v-col>
                   <v-col>
-                    <div v-if="user.message">{{user.message}}</div>
+                    <div v-if="user.message">
+                      {{ user.message }}
+                    </div>
                   </v-col>
                 </v-row>
               </v-container>
@@ -164,6 +168,7 @@
 </template>
 
 <script lang="ts">
+import { QueueInterface } from '@entity/queue';
 import {
   computed,
   defineComponent, onMounted, ref, watch,
@@ -173,13 +178,10 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { debounce } from 'lodash';
 
-import { QueueInterface } from '@entity/queue';
 import { error } from '~/functions/error';
 
 export default defineComponent({
-  props: {
-    height: Number,
-  },
+  props: { height: Number },
   setup () {
     const isPopout = computed(() => location.href.includes('popout'));
 
@@ -258,9 +260,7 @@ export default defineComponent({
       getSocket('/systems/queue').emit('settings.update', data, () => {
         return true;
       });
-      getSocket('/systems/queue').emit('set.value', {
-        variable: 'locked', value: locked.value,
-      }, () => {
+      getSocket('/systems/queue').emit('set.value', { variable: 'locked', value: locked.value }, () => {
         return true;
       });
     }, 500));
@@ -293,7 +293,7 @@ export default defineComponent({
         random,
         count: selectCount.value,
       };
-      getSocket('/systems/queue').emit('queue::pick', data, (err, users2: QueueInterface[]) => {
+      getSocket('/systems/queue').emit('queue::pick', data, (err, users2) => {
         if (err) {
           return error(err);
         }
@@ -305,8 +305,10 @@ export default defineComponent({
     function pickSelected () {
       const data = {
         username: selectedUsers.value.map(idx => fUsers.value[idx].username),
+        random:   false,
+        count:    0,
       };
-      getSocket('/systems/queue').emit('queue::pick', data, (err, users2: QueueInterface[]) => {
+      getSocket('/systems/queue').emit('queue::pick', data, (err, users2) => {
         if (err) {
           return error(err);
         }

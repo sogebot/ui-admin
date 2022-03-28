@@ -167,7 +167,7 @@ export default defineComponent({
         tick.value = Date.now();
         // get actual status of opened overlay
         if (marathon.value && !showMenu.value) {
-          getSocket('/overlays/marathon').emit('marathon::check', marathon.value.id, (_err: null, data?: OverlayMapperMarathon) => {
+          getSocket('/overlays/marathon').emit('marathon::check', marathon.value.id, (_err, data) => {
             if (data && data.opts && marathon.value) {
               timestamp.value = Math.max(data.opts.endTime, Date.now());
             }
