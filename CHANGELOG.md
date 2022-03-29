@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [42.1.0](https://github.com/sogebot/ui-admin/compare/v42.0.1...v42.1.0) (2022-03-29)
+
+
+### Features
+
+* **events:** add readonly field for response filter ([c4e899d](https://github.com/sogebot/ui-admin/commit/c4e899d94b8a35a3784eb24208d9479f2f56ace3))
+
 ### [42.0.1](https://github.com/sogebot/ui-admin/compare/v42.0.0...v42.0.1) (2022-03-29)
 
 
