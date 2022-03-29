@@ -136,7 +136,7 @@
 </template>
 
 <script lang="ts">
-import type { UserInterface, UserTipInterface } from '@entity/user';
+import type { UserTipInterface } from '@entity/user';
 import {
   defineAsyncComponent,
   defineComponent, ref, watch,

@@ -297,9 +297,11 @@ export default defineComponent({
         if (err) {
           return error(err);
         }
-        picked.value = users2;
-        selectedUsers.value = [];
-        tab.value = 1;
+        if (users2) {
+          picked.value = users2;
+          selectedUsers.value = [];
+          tab.value = 1;
+        }
       });
     }
     function pickSelected () {
@@ -312,9 +314,11 @@ export default defineComponent({
         if (err) {
           return error(err);
         }
-        picked.value = users2;
-        selectedUsers.value = [];
-        tab.value = 1;
+        if (users2) {
+          picked.value = users2;
+          selectedUsers.value = [];
+          tab.value = 1;
+        }
       });
     }
 

@@ -218,7 +218,7 @@ export default defineComponent({
                 // Google TTS
                 getSocket('/core/tts').emit('google::speak', {
                   rate: model.value.rate, pitch: model.value.pitch, volume: model.value.volume, voice: model.value.voice, text: text.value,
-                }, (err: Error | null, b64mp3: string) => {
+                }, (err, b64mp3) => {
                   if (err) {
                     console.error(err);
                   }

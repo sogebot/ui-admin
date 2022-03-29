@@ -39,14 +39,14 @@
                   :key="tag.name"
                   :class="{ 'grey--text': tag.is_auto }"
                 >
-                  {{ tag.name }}<span class="white--text" v-if="(idx + 1) < tags.length">,&nbsp;</span>
+                  {{ tag.name }}<span v-if="(idx + 1) < tags.length" class="white--text">,&nbsp;</span>
                 </small>
                 <span
                   v-for="(tag, idx) of filterTags(false)"
                   :key="tag.name"
                   :class="{ 'grey--text': tag.is_auto }"
                 >
-                  {{ tag.name }}<span class="white--text" v-if="(idx + 1 + filterTags(true).length) < tags.length">,&nbsp;</span>
+                  {{ tag.name }}<span v-if="(idx + 1 + filterTags(true).length) < tags.length" class="white--text">,&nbsp;</span>
                 </span>
               </v-card-title>
               <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
@@ -86,14 +86,8 @@ import { capitalize, isNil } from 'lodash';
 import { error } from '~/functions/error';
 
 export default defineComponent({
-  props: {
-    timestamp: Number,
-  },
-  components: {
-    changeGameDialog: defineAsyncComponent({
-      loader: () => import('./commons/change-game-dialog.vue'),
-    }),
-  },
+  props:      { timestamp: Number },
+  components: { changeGameDialog: defineAsyncComponent({ loader: () => import('./commons/change-game-dialog.vue') }) },
   setup () {
     const dialog = ref(false);
     const game = ref(null as null | string);
@@ -106,22 +100,12 @@ export default defineComponent({
     const filterTags = (is_auto: boolean) => {
       return tags.value.filter(o => !!o.is_auto === is_auto).map((o) => {
         const key = Object.keys(o.localization_names).find(key2 => key2.includes(store.state.configuration.lang));
-        return {
-          name: o.localization_names[key || 'en-us'], is_auto: !!o.is_auto,
-        };
+        return { name: o.localization_names[key || 'en-us'], is_auto: !!o.is_auto };
       }).sort((a, b) => {
-        if ((a || {
-          name: '',
-        }).name < (b || {
-          name: '',
-        }).name) { // sort string ascending
+        if ((a || { name: '' }).name < (b || { name: '' }).name) { // sort string ascending
           return -1;
         }
-        if ((a || {
-          name: '',
-        }).name > (b || {
-          name: '',
-        }).name) {
+        if ((a || { name: '' }).name > (b || { name: '' }).name) {
           return 1;
         }
         return 0; // default return value (no sorting)
@@ -130,7 +114,7 @@ export default defineComponent({
 
     const loadCustomVariableValue = (variable: string) => {
       return new Promise<string>((resolve) => {
-        getSocket('/').emit('custom.variable.value', variable, (err, value: string) => {
+        getSocket('/').emit('custom.variable.value', variable, (err, value) => {
           if (err) {
             error(err);
           }

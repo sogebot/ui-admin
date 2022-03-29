@@ -112,13 +112,15 @@ export default defineComponent({
     });
 
     const setDebug = () => {
-      getSocket('/').emit('debug::get', (err: null | string, debugEnv: string) => {
+      getSocket('/').emit('debug::get', (err, debugEnv) => {
         if (err) {
           error(err);
         }
         const debug = prompt('Set debug', debugEnv);
         if (debug !== null) {
-          getSocket('/').emit('debug::set', debug);
+          getSocket('/').emit('debug::set', debug, () => {
+            return true;
+          });
         }
       });
     };

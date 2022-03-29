@@ -40,11 +40,13 @@ export default defineComponent({
       Promise.allSettled(
         model.value.map((userId) => {
           return new Promise((resolve) => {
-            getSocket('/core/users').emit('getNameById', userId, (err, userName: string) => {
+            getSocket('/core/users').emit('getNameById', userId, (err, userName) => {
               if (err) {
                 return console.error(err);
               }
-              searchItems.value.push({ userId, userName });
+              if (userName) {
+                searchItems.value.push({ userId, userName });
+              }
               resolve(true);
             });
           });
@@ -65,7 +67,7 @@ export default defineComponent({
       } else {
         getSocket('/core/users').emit('find.viewers', {
           search: val, state, exactUsernameFromTwitch: true,
-        }, (err, r: UserInterface[], _count: any, state2: string) => {
+        }, (err, r, _count, state2) => {
           if (err) {
             return console.error(err);
           }

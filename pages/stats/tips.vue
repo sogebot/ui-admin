@@ -57,6 +57,7 @@
 </template>
 
 <script lang="ts">
+import type { UserTipInterface } from '@entity/user';
 import {
   computed,
   defineComponent, onMounted, ref,
@@ -70,7 +71,6 @@ import { capitalize, orderBy } from 'lodash';
 import Vue from 'vue';
 import Chartkick from 'vue-chartkick';
 
-import type { UserTipInterface } from '@entity/user';
 import { getPermissionName } from '~/functions/getPermissionName';
 
 Vue.use(Chartkick.use(Chart));
@@ -93,25 +93,17 @@ export default defineComponent({
       }
     });
 
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
     const headers = [
-      {
-        value: 'tippedAt', text: capitalize(translate('date')),
-      },
-      {
-        value: 'sortAmount', text: capitalize(translate('responses.variable.amount')),
-      },
+      { value: 'tippedAt', text: capitalize(translate('date')) },
+      { value: 'sortAmount', text: capitalize(translate('responses.variable.amount')) },
       {
         value: 'message', text: capitalize(translate('message')), sortable: false,
       },
-      {
-        value: 'user', text: capitalize(translate('user')),
-      },
+      { value: 'user', text: capitalize(translate('user')) },
     ];
 
     const refresh = () => {
@@ -132,9 +124,7 @@ export default defineComponent({
       return Object.keys(tipsByYear.value);
     });
     const tipsByYear = computed(() => {
-      const d: { [year: number]: Required<UserTipInterface>[] } = {
-        [new Date().getFullYear()]: [],
-      };
+      const d: { [year: number]: Required<UserTipInterface>[] } = { [new Date().getFullYear()]: [] };
       for (const tip of items.value) {
         const year = new Date(tip.tippedAt).getFullYear();
         if (d[year]) {

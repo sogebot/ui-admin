@@ -145,7 +145,7 @@ export default defineComponent({
         getSocket('/systems/ranks').emit('ranks::save', { id, ...item.value }, (err) => {
           saving.value = false;
           if (err) {
-            if (err.includes('UNIQUE constraint failed')) {
+            if (typeof err === 'string' && err.includes('UNIQUE constraint failed')) {
               EventBus.$emit('snack', 'error', 'Type and hours/months must be unique.');
             }
           } else {

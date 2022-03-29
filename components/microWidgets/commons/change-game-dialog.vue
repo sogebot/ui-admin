@@ -21,7 +21,9 @@
           :loading="isSaving"
           @click="save"
         >
-          <v-icon class="d-flex d-sm-none">mdi-floppy</v-icon>
+          <v-icon class="d-flex d-sm-none">
+            mdi-floppy
+          </v-icon>
           <span class="d-none d-sm-flex">{{ $t('dialog.buttons.saveChanges.idle') }}</span>
         </v-btn>
       </v-toolbar>
@@ -100,12 +102,20 @@
           Last used titles for {{ selectedGame }}
         </v-subheader>
 
-        <v-list id="list" :key="JSON.stringify(lastTitles)" flat dense :max-height="maxHeight" style="overflow: overlay;" class="pa-0">
+        <v-list
+          id="list"
+          :key="JSON.stringify(lastTitles)"
+          flat
+          dense
+          :max-height="maxHeight"
+          style="overflow: overlay;"
+          class="pa-0"
+        >
           <v-list-item-group>
             <v-list-item
-              dense
               v-for="(item, i) in lastTitles"
               :key="item + i"
+              dense
               @click="title = item"
             >
               <v-list-item-content>
@@ -120,6 +130,7 @@
 </template>
 
 <script lang="ts">
+import type { CacheTitlesInterface } from '@entity/cacheTitles';
 import {
   computed,
   defineComponent, ref, useStore, watch,
@@ -127,13 +138,10 @@ import {
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { debounce, orderBy } from 'lodash';
 
-import type { CacheTitlesInterface } from '@entity/cacheTitles';
 import { error } from '~/functions/error';
 
 export default defineComponent({
-  props: {
-    dialog: Boolean,
-  },
+  props: { dialog: Boolean },
   setup (props, ctx) {
     const cachedSearch = new Map<string, string[]>();
     const store = useStore<any>();
@@ -227,7 +235,7 @@ export default defineComponent({
       title.value = store.state.currentTitle;
       setGame(store.state.currentGame);
       isLoading.value = true;
-      getSocket('/').emit('getUserTwitchGames', (values: CacheTitlesInterface[]) => {
+      getSocket('/').emit('getUserTwitchGames', (values) => {
         console.groupCollapsed('panel::stats::getUserTwitchGames');
         console.log(values);
         console.groupEnd();
@@ -250,7 +258,7 @@ export default defineComponent({
           gamesFromTwitch.value = cachedSearch.get(val) ?? [];
           isSearching.value = false;
         } else {
-          getSocket('/').emit('getGameFromTwitch', val, (values: string[]) => {
+          getSocket('/').emit('getGameFromTwitch', val, (values) => {
             cachedSearch.set(val, values.sort());
             gamesFromTwitch.value = values.sort();
             isSearching.value = false;

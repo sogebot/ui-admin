@@ -505,13 +505,15 @@ export default defineComponent({
             });
           }
           uploadedFiles.value++;
-          getSocket('/overlays/gallery').emit('generic::getOne', id, (err, _item: GalleryInterface) => {
+          getSocket('/overlays/gallery').emit('generic::getOne', id, (err, _item) => {
             if (err) {
               error(err);
               return;
             }
-            console.debug('Uploaded', _item);
-            items.value.push(_item);
+            if (_item) {
+              console.debug('Uploaded', _item);
+              items.value.push(_item);
+            }
           });
         };
         reader.readAsDataURL(filesUpload[i]);

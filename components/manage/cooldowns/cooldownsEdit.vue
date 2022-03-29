@@ -8,7 +8,7 @@
       :fullscreen="$vuetify.breakpoint.mobile"
     >
       <template #activator="{ on, attrs }">
-        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" v-on="on" class="primary-hover">
+        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" class="primary-hover" v-on="on">
           <v-icon>
             mdi-pencil
           </v-icon>
@@ -33,7 +33,8 @@
             />
 
             <v-text-field
-              v-model.number="item.count"
+              v-value="item.miliseconds / 1000"
+              @input="item.miliseconds = $event * 1000"
               :label="translate('cooldown')"
               hide-details="auto"
               type="number"
@@ -45,10 +46,10 @@
             </v-text-field>
 
             <v-select
+              v-model="item.type"
               :label="translate('type')"
               hide-details="auto"
               persistent-hint
-              v-model="item.type"
               :items="typeItems"
               :hint="`${item.type === 'global' ? 'Cooldown will be shared among users.' : 'Each user will have own cooldown'}`"
             />
@@ -147,6 +148,7 @@
 <script lang="ts">
 import { nextTick } from 'process';
 
+import type { CooldownInterface } from '@entity/cooldown';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
@@ -157,10 +159,9 @@ import cloneDeep from 'lodash/cloneDeep';
 import { v4 } from 'uuid';
 
 import { EventBus } from '~/functions/event-bus';
-import type { CooldownInterfaceUI } from '~/pages/commands/cooldowns.vue';
 
 type Props = {
-  value: CooldownInterfaceUI;
+  value: CooldownInterface;
   rules: [];
 };
 
@@ -229,16 +230,13 @@ export default defineComponent({
             }
           }
         }
-        const { __typename, id, count, ...data } = item.value;
-        console.log('Updating', {
-          data,
-        });
+        const { id, ...data } = item.value;
+        console.log('Updating', { data });
 
         saving.value = true;
         getSocket('/systems/cooldown').emit('cooldown::save', {
           ...data,
-          id:          id || v4(),
-          miliseconds: count * 1000,
+          id: id || v4(),
         }, () => {
           saving.value = false;
           menu.value = false;

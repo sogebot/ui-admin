@@ -59,7 +59,7 @@ export default defineComponent({
     const status = ref({} as Record<string, any>);
     const partialStatus = ref({} as Record<string, any>);
     const testUsername = ref('');
-    const error = ref('');
+    const error = ref('' as string | Error);
 
     const empty = () => {
       status.value = {};
@@ -77,14 +77,14 @@ export default defineComponent({
       } else {
         getSocket('/core/permissions').emit('test.user', {
           pid: props.permission, value: testUsername.value, state,
-        }, (err, r: { state: string; partial: { access: boolean }; status: { access: boolean } }) => {
+        }, (err, r) => {
           if (err) {
             error.value = err;
             isTesting.value = false;
             return console.error(translate('core.permissions.' + err));
           }
           error.value = '';
-          if (r.state === state) {
+          if (r && r.state === state) {
             // expecting this data
             status.value = r.status;
             partialStatus.value = r.partial;

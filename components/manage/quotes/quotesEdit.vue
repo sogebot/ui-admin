@@ -159,7 +159,7 @@ export default defineComponent({
 
         saving.value = true;
         console.log('Updating', item.value);
-        getSocket('/systems/quotes').emit('generic::setById', { id: item.value.id, item: item.value }, (err?: Error) => {
+        getSocket('/systems/quotes').emit('generic::setById', { id: item.value.id, item: item.value }, (err) => {
           saving.value = false;
           if (err) {
             EventBus.$emit('snack', 'error', err);
