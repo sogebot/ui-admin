@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [42.0.1](https://github.com/sogebot/ui-admin/compare/v42.0.0...v42.0.1) (2022-03-29)
+
+
+### Bug Fixes
+
+* **events:** use vCustomTime for timeout ([edf86ca](https://github.com/sogebot/ui-admin/commit/edf86ca16c7dc545fe66271131b3a79baf8c343c))
+
 ## [42.0.0](https://github.com/sogebot/ui-admin/compare/v41.3.2...v42.0.0) (2022-03-29)
 
 
