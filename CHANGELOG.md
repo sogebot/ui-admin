@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [42.0.0](https://github.com/sogebot/ui-admin/compare/v41.3.2...v42.0.0) (2022-03-29)
+
+
+### Features
+
+* **operations:** add timeoutType support ([964ab02](https://github.com/sogebot/ui-admin/commit/964ab02567712f535394dc976b00a1c2afb8e6c5))
+
 ### [41.3.2](https://github.com/sogebot/ui-admin/compare/v41.3.1...v41.3.2) (2022-03-20)
 
 
