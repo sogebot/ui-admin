@@ -305,6 +305,8 @@
 </template>
 
 <script lang="ts">
+import type { PermissionsInterface } from '@entity/permissions';
+import type { VariableInterface } from '@entity/variable';
 import {
   computed,
   defineComponent, onMounted, ref, watch,
@@ -317,8 +319,6 @@ import { useQuery, useResult } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
-import type { VariableInterface } from '@entity/variable';
-import type { PermissionsInterface } from '@entity/permissions';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { origin } from '~/functions/origin';
@@ -331,12 +331,8 @@ type Props = {
 };
 
 export default defineComponent({
-  components: {
-    PrismEditor,
-  },
-  props: {
-    rules: Object, item: Object,
-  },
+  components: { PrismEditor },
+  props:      { rules: Object, item: Object },
   setup (props: Props, ctx) {
     const { result } = useQuery(gql`
       query {
@@ -395,18 +391,14 @@ export default defineComponent({
 
     const optionSearch = ref('');
 
-    const states = ref({
-      test: ButtonStates.idle as number, isUnique: ButtonStates.success as number,
-    });
+    const states = ref({ test: ButtonStates.idle as number, isUnique: ButtonStates.success as number });
 
     const form2 = ref(null);
     const valid2 = ref(true);
 
     watch(variableName, (val) => {
       states.value.isUnique = ButtonStates.progress;
-      getSocket('/core/customvariables').emit('customvariables::isUnique', {
-        variable: val, id: id.value,
-      }, (err: string | null, isUnique: boolean) => {
+      getSocket('/core/customvariables').emit('customvariables::isUnique', { variable: val, id: id.value ?? '' }, (err, isUnique: boolean) => {
         if (err) {
           EventBus.$emit('snack', 'error', err);
           return;
@@ -500,9 +492,7 @@ export default defineComponent({
               return Number(runEveryX.value * value);
             })(),
           };
-          console.log('Saving', {
-            item,
-          });
+          console.log('Saving', { item });
           getSocket('/core/customvariables').emit('customvariables::save', item, () => {
             ctx.emit('save');
             newItemSaving.value = false;
@@ -554,9 +544,7 @@ export default defineComponent({
 
     const testScript = () => {
       states.value.test = ButtonStates.progress;
-      getSocket('/core/customvariables').emit('customvariables::testScript', {
-        evalValue: evalValue.value, currentValue: currentValue.value,
-      }, (err: string | null, response: string) => {
+      getSocket('/core/customvariables').emit('customvariables::testScript', { evalValue: evalValue.value, currentValue: currentValue.value }, (err, response: string) => {
         states.value.test = ButtonStates.idle;
         if (err) {
           EventBus.$emit('snack', 'error', err);
@@ -567,17 +555,7 @@ export default defineComponent({
     };
 
     const urlsHeaders = [
-      {
-        value: 'GET', text: 'GET',
-      }, {
-        value: 'POST', text: 'POST',
-      }, {
-        value: 'showResponse', text: translate('registry.customvariables.response.show'),
-      }, {
-        value: 'link', text: '',
-      }, {
-        value: 'actions', text: '',
-      },
+      { value: 'GET', text: 'GET' }, { value: 'POST', text: 'POST' }, { value: 'showResponse', text: translate('registry.customvariables.response.show') }, { value: 'link', text: '' }, { value: 'actions', text: '' },
     ];
 
     const generateURL = () => {

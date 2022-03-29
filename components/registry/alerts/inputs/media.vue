@@ -261,7 +261,7 @@ export default defineComponent({
 
     const refresh = () => {
       loading.value = true;
-      getSocket('/overlays/gallery').emit('generic::getAll', (err: string | null, _items: GalleryInterface[]) => {
+      getSocket('/overlays/gallery').emit('generic::getAll', (err, _items: GalleryInterface[]) => {
         if (err) {
           error(err);
           return;
@@ -495,7 +495,7 @@ export default defineComponent({
                 id,
                 folder:  '/alerts',
                 b64data: chunks[j],
-              }], (err: string | null) => {
+              }], (err) => {
                 if (err) {
                   return error(err);
                 }
@@ -505,13 +505,15 @@ export default defineComponent({
             });
           }
           uploadedFiles.value++;
-          getSocket('/overlays/gallery').emit('generic::getOne', id, (err: string | null, _item: GalleryInterface) => {
+          getSocket('/overlays/gallery').emit('generic::getOne', id, (err, _item) => {
             if (err) {
               error(err);
               return;
             }
-            console.debug('Uploaded', _item);
-            items.value.push(_item);
+            if (_item) {
+              console.debug('Uploaded', _item);
+              items.value.push(_item);
+            }
           });
         };
         reader.readAsDataURL(filesUpload[i]);

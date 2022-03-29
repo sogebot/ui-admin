@@ -122,7 +122,7 @@ export default defineComponent({
         apiKey:     settings.value?.apiKey[0],
         platform:   settings.value?.player.platform[0],
         playerName: settings.value?.player.playerName[0],
-      }, (err: null | string, data: any) => {
+      }, (err, data: any) => {
         isSearching.value = false;
         if (err) {
           error(err);
@@ -160,7 +160,7 @@ export default defineComponent({
       for (const key of Object.keys(flatten(dataset))) {
         text = text.replace(new RegExp(escapeRegExp(`$${key}`), 'gi'), flatten(dataset)[key]);
       }
-      getSocket(`/integrations/pubg`).emit('pubg::exampleParse', { text }, (err: string | null, data: any) => {
+      getSocket(`/integrations/pubg`).emit('pubg::exampleParse', { text }, (err, data: any) => {
         if (err) {
           error(err);
         } else if (statsType === 'rankedGameModeStats') {
@@ -173,7 +173,7 @@ export default defineComponent({
 
     onMounted(() => {
       getSocket(`/integrations/pubg`)
-        .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
+        .emit('settings', (err, _settings, _ui) => {
           if (err) {
             error(err);
             return;

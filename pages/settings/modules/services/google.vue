@@ -136,7 +136,7 @@ export default defineComponent({
 
     onMounted(() => {
       getSocket(`/services/google`)
-        .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
+        .emit('settings', (err, _settings, _ui) => {
           if (err) {
             console.error(err);
             return;
@@ -169,7 +169,9 @@ export default defineComponent({
           store.commit('settings/pending', true);
         } catch (e) {
           console.error(e);
-          error(e.message);
+          if (e instanceof Error) {
+            error(e.message);
+          }
         }
       }
       uploading.value = ButtonStates.idle;

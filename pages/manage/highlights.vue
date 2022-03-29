@@ -1,6 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <alert-disabled system="highlights"/>
+    <alert-disabled system="highlights" />
 
     <v-data-table
       calculate-widths
@@ -27,7 +27,7 @@
       <template #[`item`]="{ item }">
         <table-mobile :headers="headers" :item="item">
           <template #actions>
-            <v-btn class="primary-hover" :href="'https://www.twitch.tv/videos/' + item.videoId + '?t=' + timestampToString(item.timestamp)" target="_blank" icon v-if="!item.expired">
+            <v-btn v-if="!item.expired" class="primary-hover" :href="'https://www.twitch.tv/videos/' + item.videoId + '?t=' + timestampToString(item.timestamp)" target="_blank" icon>
               <v-icon>
                 mdi-link
               </v-icon>
@@ -58,6 +58,7 @@
 </template>
 
 <script lang="ts">
+import type { HighlightInterface } from '@entity/highlight';
 import {
   computed, defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
@@ -67,14 +68,11 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { escapeRegExp, isNil } from 'lodash';
 
-import type { HighlightInterface } from '@entity/highlight';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
-  components: {
-    'search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
-  },
+  components: { 'search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')) },
   setup () {
     const items = ref([] as HighlightInterface[]);
     const search = ref('');
@@ -90,9 +88,7 @@ export default defineComponent({
       });
     });
 
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
@@ -100,33 +96,17 @@ export default defineComponent({
       {
         value: 'thumbnail', text: '', align: 'left',
       },
-      {
-        value: 'game', text: '',
-      },
-      {
-        value: 'title', text: '',
-      },
-      {
-        value: 'createdAt', text: '',
-      },
-      {
-        value: 'timestamp', text: '',
-      },
+      { value: 'game', text: '' },
+      { value: 'title', text: '' },
+      { value: 'createdAt', text: '' },
+      { value: 'timestamp', text: '' },
     ];
 
     const headersDelete = [
-      {
-        value: 'game', text: '',
-      },
-      {
-        value: 'timestamp', text: '',
-      },
-      {
-        value: 'createdAt', text: '',
-      },
-      {
-        value: 'title', text: '',
-      },
+      { value: 'game', text: '' },
+      { value: 'timestamp', text: '' },
+      { value: 'createdAt', text: '' },
+      { value: 'title', text: '' },
     ];
 
     onMounted(() => {
@@ -134,13 +114,11 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/highlights').emit('generic::getAll', (err: string | null, _items: HighlightInterface[]) => {
+      getSocket('/systems/highlights').emit('generic::getAll', (err, _items) => {
         if (err) {
           return error(err);
         }
-        console.debug({
-          _items,
-        });
+        console.debug({ _items });
         items.value = _items;
         state.value.loading = ButtonStates.success;
       });
@@ -158,7 +136,11 @@ export default defineComponent({
         items.value.filter(o => o.expired).map((item) => {
           console.debug('Deleting', item);
           return new Promise((resolve, reject) => {
-            getSocket('/systems/highlights').emit('generic::deleteById', item.id, (err: string | null) => {
+            if (!item.id) {
+              reject(error('Missing item id'));
+              return;
+            }
+            getSocket('/systems/highlights').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

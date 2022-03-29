@@ -161,7 +161,7 @@ export default defineComponent({
 
     const refresh = () => {
       getSocket('/systems/songs').emit('songs::getAllBanned', {
-      }, (err: string | null, getAllBanned: SongBanInterface[]) => {
+      }, (err, getAllBanned: SongBanInterface[]) => {
         if (err) {
           error(err);
           return;
@@ -182,7 +182,7 @@ export default defineComponent({
       }
       if (state.value.import === 0) {
         state.value.import = 1;
-        getSocket('/systems/songs').emit('import.ban', search.value, (err: string | null) => {
+        getSocket('/systems/songs').emit('import.ban', search.value, (err) => {
           if (err) {
             search.value = '';
             state.value.import = 0;
@@ -201,7 +201,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/songs').emit('delete.ban', item.videoId, (err: string | null) => {
+            getSocket('/systems/songs').emit('delete.ban', item.videoId, (err) => {
               if (err) {
                 reject(error(err));
               }

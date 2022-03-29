@@ -165,7 +165,7 @@ export default defineComponent({
       setInterval(() => {
         // get actual status of opened overlay
         if (countdown.value && !showMenu.value) {
-          getSocket('/overlays/countdown').emit('countdown::check', countdown.value.id, (_err: null, data?: { isEnabled: boolean, timestamp: number, time: number }) => {
+          getSocket('/overlays/countdown').emit('countdown::check', countdown.value.id, (_err, data) => {
             if (data && countdown.value) {
               isStarted.value = data.isEnabled;
               timestamp.value = data.time;

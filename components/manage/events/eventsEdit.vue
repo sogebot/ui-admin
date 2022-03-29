@@ -201,7 +201,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      getSocket('/core/events').emit('list.supported.events', (err: string | null, data: Events.SupportedEvent[]) => {
+      getSocket('/core/events').emit('list.supported.events', (err, data: Events.SupportedEvent[]) => {
         if (err) {
           error(err);
           return;

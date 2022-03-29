@@ -151,6 +151,7 @@
 </template>
 
 <script lang="ts">
+import type { EmitData } from '@entity/alert';
 import {
   computed, defineAsyncComponent, defineComponent, ref, useStore,
 } from '@nuxtjs/composition-api';
@@ -159,14 +160,8 @@ import { generateUsername } from '@sogebot/ui-helpers/generateUsername';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { EmitData } from '@entity/alert';
-
 export default defineComponent({
-  components: {
-    rewards: defineAsyncComponent({
-      loader: () => import('~/components/rewards.vue'),
-    }),
-  },
+  components: { rewards: defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }) },
   setup () {
     const store = useStore<any>();
     const events = ['follows', 'cheers', 'tips', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'hosts', 'raids', 'cmdredeems', 'rewardredeems'] as const;
@@ -250,9 +245,7 @@ export default defineComponent({
     };
 
     const eventItems = computed(() => {
-      return events.map(o => ({
-        value: o, text: translate('registry.alerts.event.' + o),
-      }));
+      return events.map(o => ({ value: o, text: translate('registry.alerts.event.' + o) }));
     });
 
     return {

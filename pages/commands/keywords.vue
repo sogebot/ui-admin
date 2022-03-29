@@ -196,7 +196,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      getSocket('/systems/keywords').emit('generic::getAll', (err: string | null, keywordsGetAll: Required<KeywordInterface>[]) => {
+      getSocket('/systems/keywords').emit('generic::getAll', (err, keywordsGetAll: Required<KeywordInterface>[]) => {
         if (err) {
           return error(err);
         }
@@ -232,7 +232,11 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/keywords').emit('generic::deleteById', item.id, (err: string | null) => {
+            if (!item.id) {
+              reject(error('Missing item id'));
+              return;
+            }
+            getSocket('/systems/keywords').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

@@ -164,7 +164,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/price').emit('generic::getAll', (err: string | null, itemsGetAll: PriceInterface[]) => {
+      getSocket('/systems/price').emit('generic::getAll', (err, itemsGetAll: PriceInterface[]) => {
         if (err) {
           return error(err);
         }
@@ -190,7 +190,11 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/price').emit('generic::deleteById', item.id, (err: string | null) => {
+            if (!item.id) {
+              reject(error('Missing item id'));
+              return;
+            }
+            getSocket('/systems/price').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

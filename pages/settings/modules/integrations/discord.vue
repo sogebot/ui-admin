@@ -176,7 +176,7 @@ export default defineComponent({
 
     onMounted(() => {
       getSocket(`/integrations/discord`)
-        .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
+        .emit('settings', (err, _settings, _ui) => {
           if (err) {
             error(err);
             return;
@@ -191,7 +191,7 @@ export default defineComponent({
           settings.value = _settings;
           nextTick(() => { store.commit('settings/pending', false); });
 
-          getSocket(`/integrations/discord`).emit('discord::getGuilds', (err2: string | null, guilds2: Guild[]) => {
+          getSocket(`/integrations/discord`).emit('discord::getGuilds', (err2, guilds2: Guild[]) => {
             console.groupCollapsed('discord::getGuilds');
             console.log({ guilds2 });
             console.groupEnd();
@@ -205,7 +205,7 @@ export default defineComponent({
             }
             guilds.value = [{ value: '', text: `-- ${translate('integrations.discord.settings.noGuildSelected')} --` }, ...guilds2];
           });
-          getSocket(`/integrations/discord`).emit('discord::getRoles', (err2: string | null, roles2: Guild[]) => {
+          getSocket(`/integrations/discord`).emit('discord::getRoles', (err2, roles2: Guild[]) => {
             if (err2) {
               return;
             }
@@ -214,7 +214,7 @@ export default defineComponent({
             console.groupEnd();
             roles.value = roles2;
           });
-          getSocket(`/integrations/discord`).emit('discord::getChannels', (err2: string | null, channels2: Channel[]) => {
+          getSocket(`/integrations/discord`).emit('discord::getChannels', (err2, channels2: Channel[]) => {
             console.groupCollapsed('discord::getChannels');
             console.log({ channels2 });
             console.groupEnd();
@@ -235,7 +235,7 @@ export default defineComponent({
     });
 
     const authorize = () => {
-      getSocket('/integrations/discord').emit('discord::authorize', (err: string | null, op: any) => {
+      getSocket('/integrations/discord').emit('discord::authorize', (err, op: any) => {
         if (err) {
           error(err);
         } else {

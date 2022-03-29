@@ -71,9 +71,7 @@ export default defineComponent({
     const items = ref([] as { name: string; current: string; default: string; }[]);
 
     const search = ref('');
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
@@ -82,16 +80,12 @@ export default defineComponent({
     });
 
     const headers = [
-      {
-        value: 'name', text: 'Key',
-      },
-      {
-        value: 'current', text: 'Value',
-      },
+      { value: 'name', text: 'Key' },
+      { value: 'current', text: 'Value' },
     ];
 
     const refresh = () => {
-      getSocket('/').emit('responses.get', null, (data: { default: string; current: string }) => {
+      getSocket('/').emit('responses.get', null, (data) => {
         console.groupCollapsed('translations::responses.get');
         console.log(data);
         console.groupEnd();
@@ -127,15 +121,11 @@ export default defineComponent({
 
     const update = (name: string, value: string, defaultValue: string) => {
       if (value === defaultValue) {
-        getSocket('/').emit('responses.revert', {
-          name,
-        }, () => {
+        getSocket('/').emit('responses.revert', { name }, () => {
           EventBus.$emit('snack', 'success', 'Translation updated.');
         });
       } else {
-        getSocket('/').emit('responses.set', {
-          name, value,
-        });
+        getSocket('/').emit('responses.set', { name, value });
         EventBus.$emit('snack', 'success', 'Translation updated.');
       }
     };

@@ -1,10 +1,23 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <v-data-table v-model="selected" :expanded.sync="expanded" :show-select="selectable"
-      :loading="state.loading !== ButtonStates.success" :headers="headers" :items-per-page.sync="perPage"
-      :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="fItems" item-key="userId" :page.sync="currentPage"
-      :server-items-length.sync="count" show-expand :single-expand="true" @current-items="saveCurrentItems"
-      @click:row="addToSelectedItem">
+    <v-data-table
+      v-model="selected"
+      :expanded.sync="expanded"
+      :show-select="selectable"
+      :loading="state.loading !== ButtonStates.success"
+      :headers="headers"
+      :items-per-page.sync="perPage"
+      :sort-by.sync="sortBy"
+      :sort-desc.sync="sortDesc"
+      :items="fItems"
+      item-key="userId"
+      :page.sync="currentPage"
+      :server-items-length.sync="count"
+      show-expand
+      :single-expand="true"
+      @current-items="saveCurrentItems"
+      @click:row="addToSelectedItem"
+    >
       <template #top>
         <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
           <v-row class="px-2" no-gutters>
@@ -16,7 +29,7 @@
               </v-btn>
 
               <v-menu absolute offset-y style="max-width: 600px">
-                <template v-slot:activator="{ on, attrs }">
+                <template #activator="{ on, attrs }">
                   <v-btn color="dark" v-bind="attrs" v-on="on">
                     {{ translate('commons.reset') }}
                   </v-btn>
@@ -42,12 +55,17 @@
                     <v-list-item-title>{{ translate('subgifts') }}</v-list-item-title>
                   </v-list-item>
                 </v-list>
-
               </v-menu>
             </v-col>
             <v-col align-self="center">
-              <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
-                class="pa-0 ma-2" />
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+                class="pa-0 ma-2"
+              />
             </v-col>
             <v-col cols="auto" align-self="center">
               <filter-button :value="filter.followers" @save="value=>filter.followers=value">
@@ -77,8 +95,14 @@
                     </v-card-title>
 
                     <v-card-text>
-                      <v-data-table dense :items="selected" :headers="headersDelete" :items-per-page="-1"
-                        hide-default-header hide-default-footer />
+                      <v-data-table
+                        dense
+                        :items="selected"
+                        :headers="headersDelete"
+                        :items-per-page="-1"
+                        hide-default-header
+                        hide-default-footer
+                      />
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
@@ -107,14 +131,20 @@
             VIP
           </v-chip>
           <div class="d-inline-flex">
-            <followers-chip :key="item.userId + 'follow' + timestamp" :item="item"
+            <followers-chip
+              :key="item.userId + 'follow' + timestamp"
+              :item="item"
               @save="item.isFollower = $event.isFollower; item.haveFollowerLock = $event.haveFollowerLock; update(item, true, 'isFollower')"
-              @close="timestamp = Date.now()" />
+              @close="timestamp = Date.now()"
+            />
           </div>
           <div class="d-inline-flex">
-            <subscribers-chip :key="item.userId + 'sub' + timestamp" :item="item"
+            <subscribers-chip
+              :key="item.userId + 'sub' + timestamp"
+              :item="item"
               @save="item.isSubscriber = $event.isSubscriber; item.haveSubscriberLock = $event.haveSubscriberLock; update(item, true, 'isSubscriber')"
-              @close="timestamp = Date.now()" />
+              @close="timestamp = Date.now()"
+            />
           </div>
         </div>
       </template>
@@ -138,44 +168,77 @@
       </template>
 
       <template #[`item.sumTips`]="{ item }">
-        <tips :sum="item.sumTips" :user-id="item.userId"
-          @save="value=>{ item.tips = value; update(item, false, 'tips'); }" />
+        <tips
+          :sum="item.sumTips"
+          :user-id="item.userId"
+          @save="value=>{ item.tips = value; update(item, false, 'tips'); }"
+        />
       </template>
 
       <template #[`item.sumBits`]="{ item }">
-        <bits :sum="item.sumBits" :user-id="item.userId"
-          @save="value=>{ item.bits = value; update(item, false, 'bits'); }" />
+        <bits
+          :sum="item.sumBits"
+          :user-id="item.userId"
+          @save="value=>{ item.bits = value; update(item, false, 'bits'); }"
+        />
       </template>
 
       <template #[`item.subscribeCumulativeMonths`]="{ item }">
-        <v-edit-dialog persistent large :return-value.sync="item.subscribeCumulativeMonths"
-          @save="update(item, true, 'subscribeCumulativeMonths')">
+        <v-edit-dialog
+          persistent
+          large
+          :return-value.sync="item.subscribeCumulativeMonths"
+          @save="update(item, true, 'subscribeCumulativeMonths')"
+        >
           {{ item.subscribeCumulativeMonths }}
           <template #input>
-            <v-text-field v-model="item.subscribeCumulativeMonths" type="number" min="0"
-              :rules="rules.subscribeCumulativeMonths" single-line />
+            <v-text-field
+              v-model="item.subscribeCumulativeMonths"
+              type="number"
+              min="0"
+              :rules="rules.subscribeCumulativeMonths"
+              single-line
+            />
           </template>
         </v-edit-dialog>
       </template>
 
       <template #[`item.subscribeStreak`]="{ item }">
-        <v-edit-dialog persistent large :return-value.sync="item.subscribeStreak"
-          @save="update(item, true, 'subscribeStreak')">
+        <v-edit-dialog
+          persistent
+          large
+          :return-value.sync="item.subscribeStreak"
+          @save="update(item, true, 'subscribeStreak')"
+        >
           {{ item.subscribeStreak }}
           <template #input>
-            <v-text-field v-model="item.subscribeStreak" type="number" min="0" :rules="rules.subscribeStreak"
-              single-line />
+            <v-text-field
+              v-model="item.subscribeStreak"
+              type="number"
+              min="0"
+              :rules="rules.subscribeStreak"
+              single-line
+            />
           </template>
         </v-edit-dialog>
       </template>
 
       <template #[`item.giftedSubscribes`]="{ item }">
-        <v-edit-dialog persistent large :return-value.sync="item.giftedSubscribes"
-          @save="update(item, true, 'giftedSubscribes')">
+        <v-edit-dialog
+          persistent
+          large
+          :return-value.sync="item.giftedSubscribes"
+          @save="update(item, true, 'giftedSubscribes')"
+        >
           {{ item.giftedSubscribes }}
           <template #input>
-            <v-text-field v-model="item.giftedSubscribes" type="number" min="0" :rules="rules.giftedSubscribes"
-              single-line />
+            <v-text-field
+              v-model="item.giftedSubscribes"
+              type="number"
+              min="0"
+              :rules="rules.giftedSubscribes"
+              single-line
+            />
           </template>
         </v-edit-dialog>
       </template>
@@ -184,8 +247,16 @@
         <v-edit-dialog persistent large :return-value.sync="item.watchedTime" @save="update(item, true, 'watchedTime')">
           {{ Intl.NumberFormat($store.state.configuration.lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(item.watchedTime / 1000 / 60 / 60) }}h
           <template #input>
-            <v-text-field :value="watchedTimeFormat(item.watchedTime)" type="number" min="0" step="0.5"
-              :rules="rules.watchedTime" single-line suffix="h" @blur="setWatchedTime(item, $event.target._value)" />
+            <v-text-field
+              :value="watchedTimeFormat(item.watchedTime)"
+              type="number"
+              min="0"
+              step="0.5"
+              :rules="rules.watchedTime"
+              single-line
+              suffix="h"
+              @blur="setWatchedTime(item, $event.target._value)"
+            />
           </template>
         </v-edit-dialog>
       </template>
@@ -200,7 +271,8 @@
 
             <template #input>
               <v-text-field
-                type="datetime-local"  step="1"
+                type="datetime-local"
+                step="1"
                 clearable
                 :value="item.seenAt ? dayjs(item.seenAt).format('YYYY-MM-DDTHH:mm') : null"
                 @input="item.seenAt = $event ? dayjs($event).toISOString() : null"
@@ -212,9 +284,14 @@
 
       <template #[`item.followedAt`]="{ item }">
         <div class="dividerEdit">
-          <v-edit-dialog persistent large :return-value.sync="item.followedAt"
-            @open="lockBackup = item.haveFollowedAtLock" @close="item.haveFollowedAtLock = lockBackup"
-            @save="update(item, true, 'followedAt')">
+          <v-edit-dialog
+            persistent
+            large
+            :return-value.sync="item.followedAt"
+            @open="lockBackup = item.haveFollowedAtLock"
+            @close="item.haveFollowedAtLock = lockBackup"
+            @save="update(item, true, 'followedAt')"
+          >
             <template v-if="item.followedAt">
               <v-icon v-if="item.haveFollowedAtLock" x-small>
                 mdi-lock
@@ -225,15 +302,18 @@
 
             <template #input>
               <v-text-field
-                type="datetime-local"  step="1"
+                type="datetime-local"
+                step="1"
                 clearable
                 :value="item.followedAt ? dayjs(item.followedAt).format('YYYY-MM-DDTHH:mm') : null"
                 @input="item.followedAt = $event ? dayjs($event).toISOString() : null"
-                >
+              >
                 <template #prepend>
                   <v-btn
-                    :color="item.haveFollowedAtLock ? 'success' : 'error'" icon
-                    @click="item.haveFollowedAtLock = !item.haveFollowedAtLock">
+                    :color="item.haveFollowedAtLock ? 'success' : 'error'"
+                    icon
+                    @click="item.haveFollowedAtLock = !item.haveFollowedAtLock"
+                  >
                     <v-icon>{{ item.haveFollowedAtLock ? 'mdi-lock' : 'mdi-lock-off' }}</v-icon>
                   </v-btn>
                   <v-btn icon :disabled="state.forceCheckFollowedAt !== ButtonStates.idle" @click="forceCheckFollowedAt(item)">
@@ -251,9 +331,14 @@
 
       <template #[`item.subscribedAt`]="{ item }">
         <div class="dividerEdit">
-          <v-edit-dialog persistent large :return-value.sync="item.subscribedAt"
-            @open="lockBackup = item.haveSubscribedAtLock" @close="item.haveSubscribedAtLock = lockBackup"
-            @save="update(item, true, 'subscribedAt')">
+          <v-edit-dialog
+            persistent
+            large
+            :return-value.sync="item.subscribedAt"
+            @open="lockBackup = item.haveSubscribedAtLock"
+            @close="item.haveSubscribedAtLock = lockBackup"
+            @save="update(item, true, 'subscribedAt')"
+          >
             <template v-if="item.subscribedAt">
               <v-icon v-if="item.haveSubscribedAtLock" x-small>
                 mdi-lock
@@ -264,15 +349,18 @@
 
             <template #input>
               <v-text-field
-                type="datetime-local"  step="1"
+                type="datetime-local"
+                step="1"
                 clearable
                 :value="item.subscribedAt ? dayjs(item.subscribedAt).format('YYYY-MM-DDTHH:mm') : null"
                 @input="item.subscribedAt = $event ? dayjs($event).toISOString() : null"
-                >
+              >
                 <template #prepend>
                   <v-btn
-                    :color="item.havesubscribedAtLock ? 'success' : 'error'" icon
-                    @click="item.havesubscribedAtLock = !item.havesubscribedAtLock">
+                    :color="item.havesubscribedAtLock ? 'success' : 'error'"
+                    icon
+                    @click="item.havesubscribedAtLock = !item.havesubscribedAtLock"
+                  >
                     <v-icon>{{ item.havesubscribedAtLock ? 'mdi-lock' : 'mdi-lock-off' }}</v-icon>
                   </v-btn>
                 </template>
@@ -285,8 +373,16 @@
       <template #expanded-item="{ headers, item: parentItem }">
         <td :colspan="headers.length" class="pa-2">
           <v-container>
-            <v-data-table dense :items="history" :loading="state.history !== ButtonStates.success" hide-default-header
-              :headers="headersHistory" :sort-desc="true" sort-by="timestamp" :items-per-page="10">
+            <v-data-table
+              dense
+              :items="history"
+              :loading="state.history !== ButtonStates.success"
+              hide-default-header
+              :headers="headersHistory"
+              :sort-desc="true"
+              sort-by="timestamp"
+              :items-per-page="10"
+            >
               <template #top>
                 <h3>History</h3>
               </template>
@@ -301,10 +397,14 @@
                   <strong>{{ item.event }} - {{ JSON.parse(item.values_json).count }}</strong>
                 </template>
                 <template v-else-if="item.event === 'subgift'">
-                  <div v-if="item.userName === parentItem.userName"
-                    v-html="translate('managers.viewers.receivedSubscribeFrom').replace('$value', JSON.parse(item.values_json).fromId)" />
-                  <div v-else
-                    v-html="translate('managers.viewers.giftedSubscribeTo').replace('$value', item.userName)" />
+                  <div
+                    v-if="item.userName === parentItem.userName"
+                    v-html="translate('managers.viewers.receivedSubscribeFrom').replace('$value', JSON.parse(item.values_json).fromId)"
+                  />
+                  <div
+                    v-else
+                    v-html="translate('managers.viewers.giftedSubscribeTo').replace('$value', item.userName)"
+                  />
                 </template>
               </template>
             </v-data-table>
@@ -316,6 +416,8 @@
 </template>
 
 <script lang="ts">
+import type { EventListInterface } from '@entity/eventList';
+import type { UserInterface } from '@entity/user';
 import {
   computed,
   defineAsyncComponent,
@@ -327,9 +429,8 @@ import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash';
+import { v4 } from 'uuid';
 
-import type { EventListInterface } from '@entity/eventList';
-import type { UserInterface } from '@entity/user';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -348,21 +449,11 @@ export default defineComponent({
     timeToTime,
   },
   components: {
-    followersChip: defineAsyncComponent({
-      loader: () => import('~/components/viewers/followersChip.vue'),
-    }),
-    subscribersChip: defineAsyncComponent({
-      loader: () => import('~/components/viewers/subscribersChip.vue'),
-    }),
-    tips: defineAsyncComponent({
-      loader: () => import('~/components/viewers/tips.vue'),
-    }),
-    bits: defineAsyncComponent({
-      loader: () => import('~/components/viewers/bits.vue'),
-    }),
-    FilterButton: defineAsyncComponent({
-      loader: () => import('~/components/viewers/filterButton.vue'),
-    }),
+    followersChip:   defineAsyncComponent({ loader: () => import('~/components/viewers/followersChip.vue') }),
+    subscribersChip: defineAsyncComponent({ loader: () => import('~/components/viewers/subscribersChip.vue') }),
+    tips:            defineAsyncComponent({ loader: () => import('~/components/viewers/tips.vue') }),
+    bits:            defineAsyncComponent({ loader: () => import('~/components/viewers/bits.vue') }),
+    FilterButton:    defineAsyncComponent({ loader: () => import('~/components/viewers/filterButton.vue') }),
   },
   setup () {
     const rules = {
@@ -412,7 +503,7 @@ export default defineComponent({
     watch(expanded, (expandedItems) => {
       if (expandedItems.length > 0) {
         state.value.history = ButtonStates.progress;
-        getSocket('/overlays/eventlist').emit('eventlist::getUserEvents', expandedItems[0].userId, (err: string | null, events: Required<EventListInterface>[]) => {
+        getSocket('/overlays/eventlist').emit('eventlist::getUserEvents', expandedItems[0].userId, (err, events) => {
           if (err) {
             return console.error(err);
           }
@@ -420,9 +511,7 @@ export default defineComponent({
           state.value.history = ButtonStates.success;
         });
       }
-    }, {
-      deep: true,
-    });
+    }, { deep: true });
 
     watch([sortBy, sortDesc], () => {
       if (!sortBy.value) {
@@ -455,74 +544,34 @@ export default defineComponent({
 
     watch([currentPage, sortBy, sortDesc, filter, search, perPage], () => {
       refresh();
-    }, {
-      deep: true,
-    });
+    }, { deep: true });
 
     const headersDelete = [
-      {
-        value: 'userId', text: '',
-      },
-      {
-        value: 'userName', text: '',
-      },
+      { value: 'userId', text: '' },
+      { value: 'userName', text: '' },
     ];
 
     const headersHistory = [
-      {
-        value: 'timestamp', text: '',
-      },
-      {
-        value: 'event', text: '',
-      },
-      {
-        value: 'info', text: '',
-      },
+      { value: 'timestamp', text: '' },
+      { value: 'event', text: '' },
+      { value: 'info', text: '' },
     ];
 
     const headers = [
-      {
-        value: 'userName', text: capitalize(translate('username')),
-      },
-      {
-        value: 'messages', text: capitalize(translate('messages')),
-      },
-      {
-        value: 'level', text: capitalize(translate('level')),
-      },
-      {
-        value: 'points', text: capitalize(translate('points')),
-      },
-      {
-        value: 'watchedTime', text: capitalize(translate('watched-time')),
-      },
-      {
-        value: 'seenAt', text: capitalize(translate('last-seen')),
-      },
-      {
-        value: 'followedAt', text: capitalize(translate('followed-since')),
-      },
-      {
-        value: 'subscribedAt', text: capitalize(translate('subscribed-since')),
-      },
-      {
-        value: 'sumTips', text: capitalize(translate('tips')),
-      },
-      {
-        value: 'sumBits', text: capitalize(translate('bits')),
-      },
-      {
-        value: 'giftedSubscribes', text: capitalize(translate('subgifts')),
-      },
-      {
-        value: 'subscribeCumulativeMonths', text: capitalize(translate('subCumulativeMonths')),
-      },
-      {
-        value: 'subscribeStreak', text: capitalize(translate('subStreak')),
-      },
-      {
-        text: '', value: 'data-table-expand',
-      },
+      { value: 'userName', text: capitalize(translate('username')) },
+      { value: 'messages', text: capitalize(translate('messages')) },
+      { value: 'level', text: capitalize(translate('level')) },
+      { value: 'points', text: capitalize(translate('points')) },
+      { value: 'watchedTime', text: capitalize(translate('watched-time')) },
+      { value: 'seenAt', text: capitalize(translate('last-seen')) },
+      { value: 'followedAt', text: capitalize(translate('followed-since')) },
+      { value: 'subscribedAt', text: capitalize(translate('subscribed-since')) },
+      { value: 'sumTips', text: capitalize(translate('tips')) },
+      { value: 'sumBits', text: capitalize(translate('bits')) },
+      { value: 'giftedSubscribes', text: capitalize(translate('subgifts')) },
+      { value: 'subscribeCumulativeMonths', text: capitalize(translate('subCumulativeMonths')) },
+      { value: 'subscribeStreak', text: capitalize(translate('subStreak')) },
+      { text: '', value: 'data-table-expand' },
     ];
 
     const refresh = () => {
@@ -531,12 +580,11 @@ export default defineComponent({
       getSocket('/core/users').emit('find.viewers', {
         perPage: perPage.value,
         page:    (currentPage.value - 1),
-        order:   {
-          orderBy: sortBy.value, sortOrder: sortDesc.value ? 'DESC' : 'ASC',
-        },
-        filter: filter.value,
-        search: search.value.length > 0 ? search.value : undefined,
-      }, (err: string | null, items_: Required<UserInterface>[], count_: number) => {
+        order:   { orderBy: sortBy.value, sortOrder: sortDesc.value ? 'DESC' : 'ASC' },
+        filter:  filter.value,
+        search:  search.value.length > 0 ? search.value : undefined,
+        state:   v4(),
+      }, (err, items_, count_) => {
         if (err) {
           return console.error(err);
         }
@@ -587,8 +635,7 @@ export default defineComponent({
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
-            const toUpdate: Record<string, any> = {
-            };
+            const toUpdate: Partial<UserInterface> = { [attr]: item[attr] };
             if (attr === 'isFollower') {
               toUpdate.isFollower = item.isFollower;
               toUpdate.haveFollowerLock = item.haveFollowerLock;
@@ -601,14 +648,10 @@ export default defineComponent({
             } else if (attr === 'subscribedAt') {
               toUpdate.subscribedAt = item.subscribedAt;
               toUpdate.haveSubscribedAtLock = item.haveSubscribedAtLock;
-            } else {
-              toUpdate[attr] = item[attr];
             }
-            console.log('Updating', itemToUpdate.userId, {
-              toUpdate,
-            });
+            console.log('Updating', itemToUpdate.userId, toUpdate);
 
-            getSocket('/core/users').emit('viewers::update', [itemToUpdate.userId, toUpdate], (err: string | null) => {
+            getSocket('/core/users').emit('viewers::update', [itemToUpdate.userId, toUpdate], (err) => {
               if (err) {
                 console.error(err);
               }
@@ -623,10 +666,10 @@ export default defineComponent({
 
     const forceCheckFollowedAt = (item: UserInterface) => {
       state.value.forceCheckFollowedAt = ButtonStates.progress;
-      getSocket('/core/users').emit('viewers::followedAt', item.userId, (err: string | null, followedAt: string) => {
+      getSocket('/core/users').emit('viewers::followedAt', item.userId, (err, followedAt) => {
         state.value.forceCheckFollowedAt = ButtonStates.idle;
         if (err) {
-          if (err.includes('Not a follower') && item) {
+          if (typeof err === 'string' && err.includes('Not a follower') && item) {
             (item.followedAt as any) = null;
           }
           return console.error(err);
@@ -677,7 +720,7 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/core/users').emit('viewers::remove', item, (err: string | null) => {
+            getSocket('/core/users').emit('viewers::remove', item.userId, (err) => {
               if (err) {
                 reject(error(err));
               }

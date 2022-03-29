@@ -48,7 +48,7 @@
               :return-value.sync="item.tippedAt"
             >
               <template #input>
-                {{ item.tippedAt}}
+                {{ item.tippedAt }}
                 <datetime :key="userId + 'tippedAt'" @input="item.tippedAt = $event" />
               </template>
             </v-edit-dialog>
@@ -136,6 +136,7 @@
 </template>
 
 <script lang="ts">
+import type { UserTipInterface } from '@entity/user';
 import {
   defineAsyncComponent,
   defineComponent, ref, watch,
@@ -146,157 +147,76 @@ import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import type { UserInterface, UserTipInterface } from '@entity/user';
 import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
-  components: {
-    datetime: defineAsyncComponent({
-      loader: () => import('~/components/datetime.vue'),
-    }),
-  },
-  props: {
-    sum: Number, userId: String,
-  },
+  components: { datetime: defineAsyncComponent({ loader: () => import('~/components/datetime.vue') }) },
+  props:      { sum: Number, userId: String },
   setup (props, ctx) {
     const tips = ref([] as UserTipInterface[]);
     const username = ref('');
     const dialog = ref(false);
     const timestamp = ref(Date.now());
     const currencyBackup = ref('USD');
-    const rules = {
-      amount: [required, minValue(0)],
-    };
+    const rules = { amount: [required, minValue(0)] };
 
     const headers = [
-      {
-        value: 'tippedAt', text: '',
-      },
-      {
-        value: 'amount', text: '',
-      },
-      {
-        value: 'message', text: '',
-      },
-      {
-        value: 'button', text: '',
-      },
+      { value: 'tippedAt', text: '' },
+      { value: 'amount', text: '' },
+      { value: 'message', text: '' },
+      { value: 'button', text: '' },
     ];
 
     const currencyItems = [
-      {
-        value: 'USD', text: 'USD',
-      },
-      {
-        value: 'AUD', text: 'AUD',
-      },
-      {
-        value: 'BGN', text: 'BGN',
-      },
-      {
-        value: 'BRL', text: 'BRL',
-      },
-      {
-        value: 'CAD', text: 'CAD',
-      },
-      {
-        value: 'CHF', text: 'CHF',
-      },
-      {
-        value: 'CNY', text: 'CNY',
-      },
-      {
-        value: 'CZK', text: 'CZK',
-      },
-      {
-        value: 'DKK', text: 'DKK',
-      },
-      {
-        value: 'EUR', text: 'EUR',
-      },
-      {
-        value: 'GBP', text: 'GBP',
-      },
-      {
-        value: 'HKD', text: 'HKD',
-      },
-      {
-        value: 'HRK', text: 'HRK',
-      },
-      {
-        value: 'HUF', text: 'HUF',
-      },
-      {
-        value: 'IDR', text: 'IDR',
-      },
-      {
-        value: 'ILS', text: 'ILS',
-      },
-      {
-        value: 'INR', text: 'INR',
-      },
-      {
-        value: 'ISK', text: 'ISK',
-      },
-      {
-        value: 'JPY', text: 'JPY',
-      },
-      {
-        value: 'KRW', text: 'KRW',
-      },
-      {
-        value: 'MXN', text: 'MXN',
-      },
-      {
-        value: 'MYR', text: 'MYR',
-      },
-      {
-        value: 'NOK', text: 'NOK',
-      },
-      {
-        value: 'NZD', text: 'NZD',
-      },
-      {
-        value: 'PHP', text: 'PHP',
-      },
-      {
-        value: 'PLN', text: 'PLN',
-      },
-      {
-        value: 'RON', text: 'RON',
-      },
-      {
-        value: 'RUB', text: 'RUB',
-      },
-      {
-        value: 'SEK', text: 'SEK',
-      },
-      {
-        value: 'SGD', text: 'SGD',
-      },
-      {
-        value: 'THB', text: 'THB',
-      },
-      {
-        value: 'TRY', text: 'TRY',
-      },
-      {
-        value: 'ZAR', text: 'ZAR',
-      },
+      { value: 'USD', text: 'USD' },
+      { value: 'AUD', text: 'AUD' },
+      { value: 'BGN', text: 'BGN' },
+      { value: 'BRL', text: 'BRL' },
+      { value: 'CAD', text: 'CAD' },
+      { value: 'CHF', text: 'CHF' },
+      { value: 'CNY', text: 'CNY' },
+      { value: 'CZK', text: 'CZK' },
+      { value: 'DKK', text: 'DKK' },
+      { value: 'EUR', text: 'EUR' },
+      { value: 'GBP', text: 'GBP' },
+      { value: 'HKD', text: 'HKD' },
+      { value: 'HRK', text: 'HRK' },
+      { value: 'HUF', text: 'HUF' },
+      { value: 'IDR', text: 'IDR' },
+      { value: 'ILS', text: 'ILS' },
+      { value: 'INR', text: 'INR' },
+      { value: 'ISK', text: 'ISK' },
+      { value: 'JPY', text: 'JPY' },
+      { value: 'KRW', text: 'KRW' },
+      { value: 'MXN', text: 'MXN' },
+      { value: 'MYR', text: 'MYR' },
+      { value: 'NOK', text: 'NOK' },
+      { value: 'NZD', text: 'NZD' },
+      { value: 'PHP', text: 'PHP' },
+      { value: 'PLN', text: 'PLN' },
+      { value: 'RON', text: 'RON' },
+      { value: 'RUB', text: 'RUB' },
+      { value: 'SEK', text: 'SEK' },
+      { value: 'SGD', text: 'SGD' },
+      { value: 'THB', text: 'THB' },
+      { value: 'TRY', text: 'TRY' },
+      { value: 'ZAR', text: 'ZAR' },
     ];
 
     watch(dialog, (val) => {
       if (val) {
         // load tips
-        getSocket('/core/users').emit('viewers::findOne', props.userId, (error: null | string, viewer: UserInterface & { tips: UserTipInterface[] }) => {
-          if (error) {
-            console.error(error);
-            return;
-          }
-          console.log('User loaded', viewer);
-          username.value = viewer.userName;
-          tips.value = viewer.tips;
-        });
+        if (props.userId) {
+          getSocket('/core/users').emit('viewers::findOne', props.userId, (error, viewer) => {
+            if (error) {
+              console.error(error);
+              return;
+            }
+            console.log('User loaded', viewer);
+            username.value = viewer.userName;
+            tips.value = viewer.tips;
+          });
+        }
       }
     });
 

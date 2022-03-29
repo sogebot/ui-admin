@@ -8,7 +8,7 @@
       :fullscreen="$vuetify.breakpoint.mobile"
     >
       <template #activator="{ on, attrs }">
-        <v-btn v-bind="attrs" class="primary-hover" v-on="on" icon>
+        <v-btn v-bind="attrs" class="primary-hover" icon v-on="on">
           <v-icon>
             mdi-pencil
           </v-icon>
@@ -67,10 +67,9 @@ import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { EventBus } from '~/functions/event-bus';
-import type { AliasInterfaceUI } from '~/pages/commands/alias.vue';
 
 type Props = {
-  value: AliasInterfaceUI;
+  value: import('@sogebot/backend/d.ts/src/general').Command;
   rules: [];
 };
 
@@ -133,9 +132,7 @@ export default defineComponent({
           }
         }
         const data = item.value;
-        console.log('Updating', {
-          data,
-        });
+        console.log('Updating', { data });
 
         saving.value = true;
         getSocket('/core/general').emit('generic::setCoreCommand', item.value, () => {

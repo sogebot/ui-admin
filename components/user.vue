@@ -158,6 +158,8 @@
 </template>
 
 <script lang="ts">
+import type { PermissionsInterface } from '@entity/permissions';
+import type { UserInterface } from '@entity/user';
 import {
   computed, defineComponent, onMounted, onUnmounted, ref,
 } from '@nuxtjs/composition-api';
@@ -165,16 +167,13 @@ import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermi
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { PermissionsInterface } from '@entity/permissions';
-import type { UserInterface } from '@entity/user';
-
 let interval = 0;
 
 export default defineComponent({
   setup (_props, context) {
     const menu = ref(false);
     const isViewerLoaded = ref(false);
-    const viewer = ref(null as (Required<UserInterface> & { aggregatedTips: number; aggregatedBits: number; permission: PermissionsInterface }) | null);
+    const viewer = ref(null as import('@sogebot/backend/d.ts/src/helpers/socket').ViewerReturnType | null);
     const viewerIs = computed(() => {
       const status: string[] = [];
       const isArray = ['isFollower', 'isSubscriber', 'isVIP'] as const;
@@ -213,7 +212,7 @@ export default defineComponent({
         return;
       }
       const socket = getSocket('/core/users', true);
-      socket.emit('viewers::findOne', (context.root as any).$store.state.loggedUser.id, (err: string| number, recvViewer: Readonly<Required<UserInterface>> & { aggregatedTips: number; aggregatedBits: number; permission: PermissionsInterface }) => {
+      socket.emit('viewers::findOne', (context.root as any).$store.state.loggedUser.id, (err, recvViewer) => {
         if (err) {
           return console.error(err);
         }
@@ -228,12 +227,10 @@ export default defineComponent({
     };
 
     const joinBot = () => {
-      const socket = getSocket('/core/users', true);
-      socket.emit('joinBot');
+      getSocket('/', true).emit('joinBot');
     };
     const leaveBot = () => {
-      const socket = getSocket('/core/users', true);
-      socket.emit('leaveBot');
+      getSocket('/', true).emit('leaveBot');
     };
 
     return {

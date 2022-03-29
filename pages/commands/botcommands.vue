@@ -135,7 +135,7 @@ export default defineComponent({
     ];
 
     const refresh = () => {
-      getSocket('/core/general').emit('generic::getCoreCommands', (err: string | null, commands: Required<CommandsInterface>[]) => {
+      getSocket('/core/general').emit('generic::getCoreCommands', (err, commands: Required<CommandsInterface>[]) => {
         if (err) {
           return error(err);
         }

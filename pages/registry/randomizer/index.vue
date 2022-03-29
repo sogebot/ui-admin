@@ -124,6 +124,8 @@
 </template>
 
 <script lang="ts">
+import { PermissionsInterface } from '@entity/permissions';
+import type { RandomizerInterface } from '@entity/randomizer';
 import {
   defineComponent, onMounted, ref,
   watch,
@@ -137,8 +139,6 @@ import gql from 'graphql-tag';
 import { orderBy } from 'lodash';
 import { v4 } from 'uuid';
 
-import type { RandomizerInterface } from '@entity/randomizer';
-import { PermissionsInterface } from '@entity/permissions';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -161,21 +161,15 @@ export default defineComponent({
       return data.randomizers;
     });
 
-    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, {
-      refetchQueries: ['randomizerGetAll'],
-    });
+    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, { refetchQueries: ['randomizerGetAll'] });
     onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
     onErrorRemove(error);
 
-    const { mutate: saveMutation, onError: onErrorSave, onDone: onDoneSave } = useMutation(SAVE, {
-      refetchQueries: ['randomizerGetAll'],
-    });
+    const { mutate: saveMutation, onError: onErrorSave, onDone: onDoneSave } = useMutation(SAVE, { refetchQueries: ['randomizerGetAll'] });
     onDoneSave(() => EventBus.$emit('snack', 'success', 'Data saved.'));
     onErrorSave(error);
 
-    const { mutate: hideMutation, onError: onErrorHide, onDone: onDoneHide } = useMutation(gql`mutation randomizerSetVisibility($id: String!, $value: Boolean!) { randomizerSetVisibility(id: $id, value: $value) }`, {
-      refetchQueries: ['randomizerGetAll'],
-    });
+    const { mutate: hideMutation, onError: onErrorHide, onDone: onDoneHide } = useMutation(gql`mutation randomizerSetVisibility($id: String!, $value: Boolean!) { randomizerSetVisibility(id: $id, value: $value) }`, { refetchQueries: ['randomizerGetAll'] });
     onDoneHide(() => EventBus.$emit('snack', 'success', 'Visibility changed.'));
     onErrorHide(error);
 
@@ -196,36 +190,22 @@ export default defineComponent({
     });
 
     const headers = [
-      {
-        value: 'name', text: translate('timers.dialog.name'),
-      },
-      {
-        value: 'command', text: translate('registry.randomizer.form.command'),
-      },
-      {
-        value: 'permissionId', text: translate('registry.randomizer.form.permission'),
-      },
+      { value: 'name', text: translate('timers.dialog.name') },
+      { value: 'command', text: translate('registry.randomizer.form.command') },
+      { value: 'permissionId', text: translate('registry.randomizer.form.permission') },
       {
         value: 'items', text: translate('registry.randomizer.form.options'), sortable: false,
       },
       {
         value: 'actions', text: '', sortable: false,
       },
-      {
-        text: '', value: 'data-table-expand',
-      },
+      { text: '', value: 'data-table-expand' },
     ];
 
     const headersDelete = [
-      {
-        value: 'name', text: translate('timers.dialog.name'),
-      },
-      {
-        value: 'command', text: translate('registry.randomizer.form.command'),
-      },
-      {
-        value: 'items', text: 'Items',
-      },
+      { value: 'name', text: translate('timers.dialog.name') },
+      { value: 'command', text: translate('registry.randomizer.form.command') },
+      { value: 'items', text: 'Items' },
     ];
 
     onMounted(() => {
@@ -233,9 +213,7 @@ export default defineComponent({
     });
 
     const deleteSelected = () => {
-      selected.value.forEach(item => removeMutation({
-        id: item.id,
-      }));
+      selected.value.forEach(item => removeMutation({ id: item.id }));
       deleteDialog.value = false;
       selected.value = [];
     };
@@ -247,9 +225,7 @@ export default defineComponent({
       // remap items ids
       const clonedItems = item.items.map((o) => {
         clonedItemsRemapId.set(o.id, v4());
-        return {
-          ...o, id: clonedItemsRemapId.get(o.id),
-        };
+        return { ...o, id: clonedItemsRemapId.get(o.id) };
       });
 
       const clonedItem = {
@@ -259,14 +235,10 @@ export default defineComponent({
         name:    item.name + ' (clone)',
         command: `!${Math.random().toString(36).substr(2, 5)}`,
         // we need to do another .map as we need to find groupId
-        items:   clonedItems.map(o => ({
-          ...o, groupId: o.groupId === null ? o.groupId : clonedItemsRemapId.get(o.groupId),
-        })),
+        items:   clonedItems.map(o => ({ ...o, groupId: o.groupId === null ? o.groupId : clonedItemsRemapId.get(o.groupId) })),
       };
 
-      saveMutation({
-        data_json: JSON.stringify(clonedItem),
-      });
+      saveMutation({ data_json: JSON.stringify(clonedItem) });
     };
 
     const toggleVisibility = (item: Required<RandomizerInterface>) => {
@@ -279,9 +251,7 @@ export default defineComponent({
 
     const startSpin = () => {
       spin.value = true;
-      getSocket('/registries/randomizer').emit('randomizer::startSpin', () => {
-        return true;
-      });
+      getSocket('/registries/randomizer').emit('randomizer::startSpin');
       setTimeout(() => {
         spin.value = false;
       }, 5000);

@@ -322,7 +322,7 @@ export default defineComponent({
     const refresh = async () => {
       await Promise.all([
         new Promise((resolve) => {
-          getSocket('/core/events').emit('generic::getAll', (err: string | null, data: EventInterface[]) => {
+          getSocket('/core/events').emit('generic::getAll', (err, data: EventInterface[]) => {
             if (err) {
               resolve(false);
               return error(err);
@@ -337,7 +337,7 @@ export default defineComponent({
           });
         }),
         new Promise((resolve) => {
-          getSocket('/core/events').emit('list.supported.events', (err: string | null, data: Events.SupportedEvent[]) => {
+          getSocket('/core/events').emit('list.supported.events', (err, data: Events.SupportedEvent[]) => {
             if (err) {
               error(err);
               resolve(false);
@@ -414,7 +414,11 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/core/events').emit('events::remove', item, (err: string | null) => {
+            if (!item.id) {
+              reject(error('Missing item id'));
+              return;
+            }
+            getSocket('/core/events').emit('events::remove', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

@@ -35,6 +35,7 @@
 </template>
 
 <script lang="ts">
+import { RandomizerInterface } from '@entity/randomizer';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import {
   useMutation, useQuery, useResult,
@@ -44,8 +45,6 @@ import {
   defineComponent, ref, watch,
 } from '@vue/composition-api';
 import gql from 'graphql-tag';
-
-import { RandomizerInterface } from '@entity/randomizer';
 
 import GET_ONE from '~/queries/randomizer/getOne.gql';
 
@@ -64,11 +63,7 @@ export default defineComponent({
       ctx.emit(val ? 'select' : 'unselect');
     });
 
-    const { result } = useQuery(GET_ONE, {
-      id: props.item.options.randomizerId,
-    }, {
-      pollInterval: 5000,
-    });
+    const { result } = useQuery(GET_ONE, { id: props.item.options.randomizerId }, { pollInterval: 5000 });
     const cache = useResult<{ randomizers: RandomizerInterface[] }, null, RandomizerInterface[]>(result, null, data => data.randomizers);
     const randomizer = computed(() => {
       if (cache.value && cache.value.length > 0) {
@@ -78,9 +73,7 @@ export default defineComponent({
       }
     });
 
-    const { mutate: hideMutation } = useMutation(gql`mutation randomizerSetVisibility($id: String!, $value: Boolean!) { randomizerSetVisibility(id: $id, value: $value) }`, {
-      refetchQueries: ['randomizerGetAll'],
-    });
+    const { mutate: hideMutation } = useMutation(gql`mutation randomizerSetVisibility($id: String!, $value: Boolean!) { randomizerSetVisibility(id: $id, value: $value) }`, { refetchQueries: ['randomizerGetAll'] });
 
     const randomizerSpin = ref(false);
 
@@ -114,14 +107,10 @@ export default defineComponent({
           hideMutation({
             id:    randomizer.value.id,
             value: !randomizer.value.isShown,
-          }, {
-            refetchQueries: ['randomizerGetOne'],
-          });
+          }, { refetchQueries: ['randomizerGetOne'] });
         } else {
           randomizerSpin.value = true;
-          getSocket('/registries/randomizer').emit('randomizer::startSpin', () => {
-            return true;
-          });
+          getSocket('/registries/randomizer').emit('randomizer::startSpin');
           setTimeout(() => {
             randomizerSpin.value = false;
           }, 5000);

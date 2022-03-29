@@ -50,7 +50,7 @@ export default defineComponent({
       ));
 
     onMounted(() => {
-      getSocket('/registries/text').emit('generic::getAll', (err: string | null, itemsGetAll: TextInterface[]) => {
+      getSocket('/registries/text').emit('generic::getAll', (err, itemsGetAll: TextInterface[]) => {
         if (err) {
           return error(err);
         }

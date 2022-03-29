@@ -1,6 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <alert-disabled system="howlongtobeat"/>
+    <alert-disabled system="howlongtobeat" />
 
     <v-data-table
       v-model="selected"
@@ -223,6 +223,7 @@
 </template>
 
 <script lang="ts">
+import { HowLongToBeatGameInterface, HowLongToBeatGameItemInterface } from '@entity/howLongToBeatGame';
 import {
   computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -233,28 +234,23 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep, debounce } from 'lodash';
 
-import { HowLongToBeatGameInterface, HowLongToBeatGameItemInterface } from '@entity/howLongToBeatGame';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
-  components: {
-    timeInput: defineAsyncComponent({
-      loader: () => import('~/components/time.vue'),
-    }),
-  },
+  components: { timeInput: defineAsyncComponent({ loader: () => import('~/components/time.vue') }) },
   setup () {
     const timestamp = ref(Date.now());
-    const items = ref([] as HowLongToBeatGameInterface[]);
+    const items = ref([] as Required<HowLongToBeatGameInterface>[]);
     const streams = ref([] as HowLongToBeatGameItemInterface[]);
     const oldStreams = ref([] as HowLongToBeatGameItemInterface[]);
     const searchForGameOpts = ref([] as string[]);
     const deleteDialog = ref(false);
-    const selected = ref([] as HowLongToBeatGameItemInterface[]);
-    const currentItems = ref([] as HowLongToBeatGameItemInterface[]);
-    const saveCurrentItems = (value: HowLongToBeatGameItemInterface[]) => {
+    const selected = ref([] as Required<HowLongToBeatGameInterface>[]);
+    const currentItems = ref([] as Required<HowLongToBeatGameInterface>[]);
+    const saveCurrentItems = (value: Required<HowLongToBeatGameInterface>[]) => {
       currentItems.value = value;
     };
 
@@ -276,9 +272,7 @@ export default defineComponent({
     });
     const search = ref('');
 
-    const rules = {
-      offset: [required, minValue(0)],
-    };
+    const rules = { offset: [required, minValue(0)] };
 
     const getStreamsOffset = (hltbId: string, type: 'extra' | 'main' | 'completionist') => {
       return streams.value
@@ -303,9 +297,7 @@ export default defineComponent({
     });
 
     const headers = [
-      {
-        value: 'thumbnail', text: '',
-      },
+      { value: 'thumbnail', text: '' },
       {
         value: 'game', text: translate('systems.howlongtobeat.game'), sortable: true,
       },
@@ -354,16 +346,14 @@ export default defineComponent({
       refresh();
     });
     const refresh = () => {
-      getSocket('/systems/howlongtobeat').emit('generic::getAll', (err: string | null, _games: HowLongToBeatGameInterface[], _streams: HowLongToBeatGameItemInterface[]) => {
+      getSocket('/systems/howlongtobeat').emit('generic::getAll', (err, _games, _streams) => {
         if (err) {
           return error(err);
         }
         items.value = cloneDeep(_games);
         streams.value = cloneDeep(_streams);
         oldStreams.value = cloneDeep(_streams);
-        console.debug('Loaded', {
-          _games, _streams,
-        });
+        console.debug('Loaded', { _games, _streams });
         state.value.loading = ButtonStates.success;
       });
     };
@@ -411,11 +401,7 @@ export default defineComponent({
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
-            console.log('Updating', {
-              itemToUpdate,
-            }, {
-              attr, value: item[attr],
-            });
+            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
             getSocket('/systems/howlongtobeat').emit('hltb::save', itemToUpdate, () => {
               resolve(true);
             });
@@ -435,7 +421,7 @@ export default defineComponent({
             || oldStream.isCompletionistCounted !== stream.isCompletionistCounted
             || oldStream.isExtraCounted !== stream.isExtraCounted
             || oldStream.offset !== stream.offset)) {
-          getSocket('/systems/howlongtobeat').emit('hltb::saveStreamChange', stream, (err: string | null) => {
+          getSocket('/systems/howlongtobeat').emit('hltb::saveStreamChange', stream, (err) => {
             if (err) {
               error(err);
             }
@@ -444,14 +430,12 @@ export default defineComponent({
         }
       }
       oldStreams.value = cloneDeep(streams.value);
-    }, 1000), {
-      deep: true,
-    });
+    }, 1000), { deep: true });
 
     watch(search, debounce((value: string | null) => {
       if (value && value.trim().length !== 0) {
         state.value.search = ButtonStates.progress;
-        getSocket('/systems/howlongtobeat').emit('hltb::getGamesFromHLTB', value, (err: string | null, val: string[]) => {
+        getSocket('/systems/howlongtobeat').emit('hltb::getGamesFromHLTB', value, (err, val) => {
           if (err) {
             return error(err);
           }
@@ -470,7 +454,7 @@ export default defineComponent({
       }
       if (state.value.add === 0) {
         state.value.add = 1;
-        getSocket('/systems/howlongtobeat').emit('hltb::addNewGame', gameToAdd.value, (err: string | null) => {
+        getSocket('/systems/howlongtobeat').emit('hltb::addNewGame', gameToAdd.value, (err) => {
           if (err) {
             gameToAdd.value = '';
             state.value.add = 0;
@@ -490,7 +474,11 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/howlongtobeat').emit('generic::deleteById', item.id, (err: string | null) => {
+            if (!item.id) {
+              reject(error('Missing item id'));
+              return;
+            }
+            getSocket('/systems/howlongtobeat').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }

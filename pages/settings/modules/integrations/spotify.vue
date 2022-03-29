@@ -119,7 +119,7 @@ export default defineComponent({
 
     const authorize = () => {
       getSocket(`/integrations/spotify`)
-        .emit('spotify::authorize', (err: string | null, op: any) => {
+        .emit('spotify::authorize', (err, op: any) => {
           if (err) {
             error(err);
           } else {
@@ -129,7 +129,7 @@ export default defineComponent({
     };
     const revoke = () => {
       getSocket(`/integrations/spotify`)
-        .emit('spotify::revoke', (err: string | null) => {
+        .emit('spotify::revoke', (err) => {
           if (err) {
             error(err);
           } else if (settings.value) {
@@ -141,7 +141,7 @@ export default defineComponent({
 
     const setActive = () => {
       gettingActive.value = true;
-      getSocket(`/integrations/spotify`).emit('get.value', 'lastActiveDeviceId', (err: null | string, value: string) => {
+      getSocket(`/integrations/spotify`).emit('get.value', 'lastActiveDeviceId', (err, value: string) => {
         if (err) {
           error(err);
         } else if (settings.value) {
@@ -153,7 +153,7 @@ export default defineComponent({
 
     onMounted(() => {
       getSocket(`/integrations/spotify`)
-        .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
+        .emit('settings', (err, _settings, _ui) => {
           if (err) {
             error(err);
             return;

@@ -89,7 +89,7 @@ export default defineComponent({
     });
 
     const getLatestStats = () => {
-      getSocket('/').emit('getLatestStats', (err: string | null, data: any) => {
+      getSocket('/').emit('getLatestStats', (err, data: any) => {
         console.groupCollapsed('navbar::getLatestStats');
         console.log(data);
         if (err) {
@@ -104,7 +104,7 @@ export default defineComponent({
 
     onMounted(() => {
       UIErrorInterval = window.setInterval(() => {
-        getSocket('/').emit('panel::alerts', (err: string | null, data: { errors: { name: string; message: string }[], warns: { name: string; message: string }[] }) => {
+        getSocket('/').emit('panel::alerts', (err, data: { errors: { name: string; message: string }[], warns: { name: string; message: string }[] }) => {
           if (err) {
             return console.error(err);
           }

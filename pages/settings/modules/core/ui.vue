@@ -70,7 +70,7 @@ export default defineComponent({
 
     onMounted(() => {
       getSocket(`/core/ui`)
-        .emit('settings', (err: string | null, _settings: { [x: string]: any }, _ui: { [x: string]: { [attr: string]: any } }) => {
+        .emit('settings', (err, _settings, _ui) => {
           if (err) {
             error(err);
             return;

@@ -305,7 +305,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/polls').emit('generic::getAll', (err: string | null, itemsGetAll: PollInterface[]) => {
+      getSocket('/systems/polls').emit('generic::getAll', (err, itemsGetAll: PollInterface[]) => {
         if (err) {
           return error(err);
         }
@@ -373,7 +373,11 @@ export default defineComponent({
       await Promise.all(
         selected.value.map((item) => {
           return new Promise((resolve, reject) => {
-            getSocket('/systems/polls').emit('generic::deleteById', item.id, (err: string | null) => {
+            if (!item.id) {
+              reject(error('Missing item id'));
+              return;
+            }
+            getSocket('/systems/polls').emit('generic::deleteById', item.id, (err) => {
               if (err) {
                 reject(error(err));
               }
@@ -423,7 +427,7 @@ export default defineComponent({
     const stop = (item: PollInterface) => {
       item.isOpened = false;
       item.closedAt = Date.now();
-      getSocket('/systems/polls').emit('polls::close', item, (err: string | null) => {
+      getSocket('/systems/polls').emit('polls::close', item, (err) => {
         if (err) {
           console.error(err);
         }

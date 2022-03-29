@@ -200,7 +200,7 @@ export default defineComponent({
 
     onMounted(() => {
       getSocket(`/core/dashboard`)
-        .emit('settings', (err: string | null, _settings: {
+        .emit('settings', (err, _settings: {
           [x: string]: any
         }, _ui: {
           [x: string]: {
