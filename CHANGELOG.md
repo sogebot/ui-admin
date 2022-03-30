@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [42.1.1](https://github.com/sogebot/ui-admin/compare/v42.1.0...v42.1.1) (2022-03-30)
+
+
+### Bug Fixes
+
+* **events:** show timeout in human readable form ([656539e](https://github.com/sogebot/ui-admin/commit/656539e1462762ed511c39bc2b3a9cb76d775e8d))
+* **overlays:** use component to show time ([401cad8](https://github.com/sogebot/ui-admin/commit/401cad86aafa08a550fcd55286ac98214a5fc663))
+
 ## [42.1.0](https://github.com/sogebot/ui-admin/compare/v42.0.1...v42.1.0) (2022-03-29)
 
 
