@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [42.1.2](https://github.com/sogebot/ui-admin/compare/v42.1.1...v42.1.2) (2022-03-30)
+
+
+### Bug Fixes
+
+* **events:** dialog should reflect current data ([d7f8353](https://github.com/sogebot/ui-admin/commit/d7f8353ba325f5d95f267289e26d7cf8af96fc43))
+
 ### [42.1.1](https://github.com/sogebot/ui-admin/compare/v42.1.0...v42.1.1) (2022-03-30)
 
 
