@@ -1,16 +1,32 @@
 <template>
-  <v-text-field v-model.lazy="time" :label="label" :hint="hint" :rules="rules" hide-details="auto" @keydown="keydownHandler" />
+  <v-text-field
+    v-model.lazy="time"
+    :label="label"
+    :readonly="readonly"
+    :persistent-hint="persistentHint"
+    :hint="hint"
+    :rules="rules"
+    hide-details="auto"
+    @keydown="keydownHandler"
+  />
 </template>
 
 <script lang="ts">
-import { DAY, HOUR, MINUTE, SECOND } from '@sogebot/ui-helpers/constants';
+import {
+  DAY, HOUR, MINUTE, SECOND,
+} from '@sogebot/ui-helpers/constants';
 import { computed, defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
-  props: { value: Number, label: String, hint: String, rules: [Object, Array] },
+  props: {
+    value: Number, label: String, hint: String, rules: [Object, Array], readonly: Boolean, persistentHint: Boolean,
+  },
   setup (props: { value: number }, ctx) {
     const time = computed({
       get () {
+        if (props.value < 0) {
+          return `0d 0h 0m 0s`;
+        }
         const days = Math.floor(props.value / DAY);
         const hours = Math.floor((props.value - days * DAY) / HOUR);
         const minutes = Math.floor((props.value - (days * DAY) - (hours * HOUR)) / MINUTE);

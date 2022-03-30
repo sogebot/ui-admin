@@ -55,7 +55,7 @@
                   :label="translate(`events.definitions.${defKey}.label`)"
                   hint="NORMAL - trigger command after every event | ADD - add timeout to previous event | RESET - reset timeout"
                 />
-                <x-time-input
+                <form-x-time-input
                   v-else-if="defKey === 'timeout' && o.name === 'run-command'"
                   v-model="o.definitions[defKey]"
                   :label="translate(`events.definitions.${defKey}.label`)"
@@ -136,7 +136,6 @@ export default defineComponent({
   props: {
     operations: Array, item: Object, rules: Object, filters: Array, variables: Object, events: Array,
   },
-  components: { 'x-time-input': defineAsyncComponent(() => import('~/components/form/xTimeInput.vue')) },
   setup (props, ctx) {
     const { result } = useQuery(GET_ALL, null, { pollInterval: 5000 });
     const obsWebsocketsTaskIds = useResult<{ OBSWebsocket: OBSWebsocketInterface[] }, OBSWebsocketInterface[], OBSWebsocketInterface[]>(result, [], data => data.OBSWebsocket);

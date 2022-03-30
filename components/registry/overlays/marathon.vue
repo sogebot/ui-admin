@@ -4,15 +4,14 @@
     <v-expansion-panel>
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
-        <v-text-field
-          v-model="time"
-          readonly
-          class="pb-4"
+        <form-x-time-input
+          :value="options.endTime - Date.now()"
           :persistent-hint="true"
           hint="To adjust time, use quickactions button"
           label="Time"
-          hide-details="auto"
-        />
+          class="pb-4"
+          readonly
+          hide-details="auto"/>
 
         <v-switch
           v-model="maxEndTimeEnabled"
@@ -119,7 +118,7 @@ import {
   defineComponent, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import {
-  DAY, HOUR, MINUTE, SECOND,
+  DAY, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
 import translate from '@sogebot/ui-helpers/translate';
 import {
@@ -194,20 +193,6 @@ export default defineComponent({
         }
       },
     });
-    const time = computed(() => {
-      const calculateTime = options.value.endTime - Date.now();
-
-      if (calculateTime < 0) {
-        return '0d 0h 0m 0s';
-      }
-
-      const days = Math.floor(calculateTime / DAY);
-      const hours = Math.floor((calculateTime - days * DAY) / HOUR);
-      const minutes = Math.floor((calculateTime - (days * DAY) - (hours * HOUR)) / MINUTE);
-      const seconds = Math.floor((calculateTime - (days * DAY) - (hours * HOUR) - (minutes * MINUTE)) / SECOND);
-      return `${days}d ${hours}h ${minutes}m ${seconds}s`;
-    });
-
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {
         ctx.emit('input', val);
@@ -219,7 +204,6 @@ export default defineComponent({
       maxEndTimeEnabled,
       options,
       translate,
-      time,
       currency,
     };
   },
