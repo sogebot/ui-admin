@@ -5,6 +5,7 @@
       persistent
       scrollable
       :fullscreen="$vuetify.breakpoint.mobile"
+      :loading="!isFormReset"
     >
       <template #activator="{ on, attrs }">
         <v-btn v-if="item.id !== undefined" icon v-bind="attrs" class="primary-hover" v-on="on">
@@ -16,7 +17,7 @@
           New item
         </v-btn>
       </template>
-      <v-card outlined class="pt-3">
+      <v-card outlined class="pt-3" :key="item.id + isFormReset">
         <v-card-text>
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-row dense>
@@ -88,12 +89,13 @@
                     persistent-hint
                   />
 
-                  <v-text-field readonly
+                  <v-text-field
+                    readonly
                     :value="'$triggerOperation(' + item.id +')'"
                     persistent-hint
                     title="Response filter"
                     hint="Be careful, not all variables may be available if triggered by response filter"
-                    />
+                  />
                 </div>
               </v-col>
               <v-col>
@@ -107,9 +109,9 @@
                   @save="item.operations = $event; update(item, false, 'operations')"
                 />
               </v-col>
-          </v-row>
+            </v-row>
 
-        <tester :event="item.name" :events="availableEvents" :event-id="item.id" class="pt-6" />
+            <tester :event="item.name" :events="availableEvents" :event-id="item.id" class="pt-6" />
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -128,6 +130,7 @@
 </template>
 
 <script lang="ts">
+import type { EventInterface, Events } from '@entity/event';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
@@ -139,7 +142,6 @@ import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import { v4 } from 'uuid';
 
-import type { EventInterface, Events } from '@entity/event';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
@@ -149,14 +151,12 @@ type Props = {
 };
 
 const newItem: EventInterface = {
-  name:       'clearchat',
-  operations: [],
-  isEnabled:  true,
-  triggered:  {
-  },
-  definitions: {
-  },
-  filter: '',
+  name:        'clearchat',
+  operations:  [],
+  isEnabled:   true,
+  triggered:   {},
+  definitions: {},
+  filter:      '',
 };
 
 export default defineComponent({
@@ -177,6 +177,7 @@ export default defineComponent({
     const valid = ref(true);
     const form = ref(null);
     const group = ref('');
+    const isFormReset = ref(false);
 
     const availableEvents = ref([] as Events.SupportedEvent[]);
 
@@ -188,8 +189,7 @@ export default defineComponent({
           ...item.value,
           definitions: defaultEvent.definitions
             ? cloneDeep(defaultEvent.definitions)
-            : {
-            },
+            : {},
         };
       }
     });
@@ -203,8 +203,7 @@ export default defineComponent({
     });
 
     const haveEventDefinitions = computed(() => {
-      return Object.keys(availableEvents.value.find(o => o.id === item.value.name)?.definitions ?? {
-      }).length > 0;
+      return Object.keys(availableEvents.value.find(o => o.id === item.value.name)?.definitions ?? {}).length > 0;
     });
 
     onMounted(() => {
@@ -249,6 +248,7 @@ export default defineComponent({
       if (form.value as unknown) {
         (form.value as unknown as HTMLFormElement).resetValidation();
         item.value = cloneDeep(props.value || newItem);
+        isFormReset.value = true;
       } else {
         setTimeout(() => {
           resetForm();
@@ -257,6 +257,7 @@ export default defineComponent({
     };
 
     watch(menu, (val) => {
+      isFormReset.value = false;
       if (val) {
         resetForm();
       }
@@ -292,9 +293,7 @@ export default defineComponent({
     };
 
     const availableVariables = computed(() => {
-      const variables = (availableEvents.value.find(o => o.id === item.value.name) || {
-        variables: [],
-      }).variables;
+      const variables = (availableEvents.value.find(o => o.id === item.value.name) || { variables: [] }).variables;
       return variables;
     });
 
@@ -308,6 +307,7 @@ export default defineComponent({
       saving,
       form,
       group,
+      isFormReset,
 
       availableVariables,
       availableEvents,
