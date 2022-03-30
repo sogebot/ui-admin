@@ -173,7 +173,15 @@
                 v-for="key of Object.keys(operation.definitions)"
                 :key="operation.id + key + 'li'">
                   {{ translate('events.definitions.' + key + '.label') }}
-                  <code class="ml-2">{{ operation.definitions[key] }}</code>
+                  <code class="ml-2">
+                    <template v-if="operation.name === 'run-command' && key === 'timeout'">
+                      <span v-if="operation.definitions[key] === 0">immediate</span>
+                      <span v-else>{{ operation.definitions[key] | time }}</span>
+                    </template>
+                    <template v-else>
+                      {{ operation.definitions[key] }}
+                    </template>
+                  </code>
                 </li>
               </ul>
             </template>

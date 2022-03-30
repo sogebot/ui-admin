@@ -45,6 +45,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '@/plugins/filters',
     '@/plugins/remove-shift-selection',
     '@/plugins/before-each.ts',
     '@/plugins/apollo-hook.ts',
