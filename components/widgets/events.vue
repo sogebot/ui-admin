@@ -226,9 +226,6 @@
                           mdi-format-quote-open
                         </v-icon>
                         <span v-html="blockquote(item)" />
-                        <v-icon color="accent" x-small style="transform: translateY(-5px);">
-                          mdi-format-quote-close
-                        </v-icon>
                       </v-col>
                     </v-row>
                   </v-col>
