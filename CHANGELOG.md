@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [42.2.1](https://github.com/sogebot/ui-admin/compare/v42.2.0...v42.2.1) (2022-03-31)
+
+
+### Bug Fixes
+
+* **events:** remove closing quotes ([7f267d3](https://github.com/sogebot/ui-admin/commit/7f267d3a2b1af1e5d93d0995eba7c22e69e44341))
+
 ## [42.2.0](https://github.com/sogebot/ui-admin/compare/v42.1.3...v42.2.0) (2022-03-31)
 
 
