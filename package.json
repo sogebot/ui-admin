@@ -64,7 +64,7 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-nuxt": "^3.1.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-vue": "^7.20.0",
+    "eslint-plugin-vue": "^8.5.0",
     "graphql": "^15.8.0",
     "gsap": "^3.9.1",
     "jwt-decode": "^3.1.2",
