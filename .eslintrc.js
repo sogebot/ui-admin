@@ -17,7 +17,7 @@ module.exports = {
       "singleline": "ignore",
       "multiline": "below"
     }],
-    "vue/multi-word-component-names": ["warning", {
+    "vue/multi-word-component-names": ["warn", {
       "ignores": []
     }],
     'func-call-spacing':                    'off',
