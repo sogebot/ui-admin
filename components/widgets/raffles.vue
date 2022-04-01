@@ -4,7 +4,7 @@
     :loading="isLoading"
     width="100%"
     :height="isPopout ? '100%' : undefined"
-    style="overflow: inherit"
+    style="overflow: inherit;"
     flat
   >
     <v-card-text class="pa-0 ma-0">

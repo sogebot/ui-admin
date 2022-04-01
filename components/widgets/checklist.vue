@@ -4,7 +4,7 @@
     width="100%"
     height="100%"
     :loading="loading"
-    style="overflow: inherit"
+    style="overflow: inherit;"
     flat
   >
     <v-list-item-group

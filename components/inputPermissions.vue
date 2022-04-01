@@ -89,7 +89,7 @@ export default defineComponent({
 <style>
 /* workaround for transparent menu */
 .theme-- .v-menu__content {
-  background-color: rgb(30, 30, 30);
+  background-color: rgb(30 30 30);
 }
 
 .theme--light .v-menu__content {

@@ -1,6 +1,6 @@
 <template>
   <v-container class="fill-height" fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <iframe :src="url + 'graphql'" width="100%" height="100%" style="border: 0" />
+    <iframe :src="url + 'graphql'" width="100%" height="100%" style="border: 0;" />
   </v-container>
 </template>
 

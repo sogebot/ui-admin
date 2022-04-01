@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=PT+Sans&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=PT+Sans+Narrow&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans+Narrow&display=swap");
 
 ::-webkit-calendar-picker-indicator {
   filter: invert(1);
@@ -20,7 +20,8 @@
   justify-content: normal !important;
 }
 
-.v-slide-group:not(.v-slide-group--has-affixes) > .v-slide-group__prev--disabled, .v-slide-group:not(.v-slide-group--has-affixes) > .v-slide-group__next--disabled {
+.v-slide-group:not(.v-slide-group--has-affixes) > .v-slide-group__prev--disabled,
+.v-slide-group:not(.v-slide-group--has-affixes) > .v-slide-group__next--disabled {
   display: none !important;
 }
 
@@ -49,7 +50,7 @@ tr.v-data-table__selected > td:first-child {
 }
 
 tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgb(0 0 0 / 3%);
 }
 
 .v-small-dialog__activator__content {

@@ -19,7 +19,7 @@
         <template #activator="{ on, attrs }">
           <v-tooltip right>
             <template #activator="{ on: on2, attrs: attrs2 }">
-              <div v-bind="attrs2" style="position: relative" v-on="on2">
+              <div v-bind="attrs2" style="position: relative;" v-on="on2">
                 <v-icon class="miniIcon" v-bind="attrs" v-on="on">
                   {{ icons.get(category) }}
                 </v-icon>
@@ -130,11 +130,12 @@ export default defineComponent({
 
 .miniIcon::after {
   border-radius: 4px;
-  transform: scale(1)
+  transform: scale(1);
 }
 
 .caretIcon {
   position: absolute;
-  right: 0; bottom: 0;
+  right: 0;
+  bottom: 0;
 }
 </style>
