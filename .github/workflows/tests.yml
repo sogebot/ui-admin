@@ -11,7 +11,7 @@ jobs:
     name: ESLint check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: install node v14
       uses: actions/setup-node@v2.5.1
       with:
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
       - name: Checkout submodules
         uses: textbook/git-checkout-submodule-action@master
       - uses: actions/setup-node@v2.5.1
