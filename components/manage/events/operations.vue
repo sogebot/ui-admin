@@ -117,13 +117,10 @@
 import type { EventOperationInterface, Events } from '@entity/event';
 import { OBSWebsocketInterface } from '@entity/obswebsocket.js';
 import {
-  computed,
-  defineAsyncComponent,
-  defineComponent, onMounted, ref, watch,
+  computed, defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { useQuery, useResult } from '@vue/apollo-composable';
 import {
   capitalize, cloneDeep, orderBy,
 } from 'lodash';
@@ -137,8 +134,9 @@ export default defineComponent({
     operations: Array, item: Object, rules: Object, filters: Array, variables: Object, events: Array,
   },
   setup (props, ctx) {
-    const { result } = useQuery(GET_ALL, null, { pollInterval: 5000 });
-    const obsWebsocketsTaskIds = useResult<{ OBSWebsocket: OBSWebsocketInterface[] }, OBSWebsocketInterface[], OBSWebsocketInterface[]>(result, [], data => data.OBSWebsocket);
+    const context = useContext();
+
+    const obsWebsocketsTaskIds = ref([] as OBSWebsocketInterface[]);
 
     const valid = ref(true);
     const form = ref(null);
@@ -153,7 +151,13 @@ export default defineComponent({
       }));
     });
 
+    const refresh = async () => {
+      obsWebsocketsTaskIds.value = (await (context as any).$graphql.default.request(GET_ALL)).OBSWebsocket;
+      setTimeout(() => refresh(), 5000);
+    };
+
     onMounted(() => {
+      refresh();
       getSocket('/core/events').emit('list.supported.operations', (err, data: Events.SupportedOperation[]) => {
         if (err) {
           error(err);

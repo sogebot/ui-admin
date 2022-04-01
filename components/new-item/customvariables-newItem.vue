@@ -309,13 +309,12 @@ import type { PermissionsInterface } from '@entity/permissions';
 import type { VariableInterface } from '@entity/variable';
 import {
   computed,
-  defineComponent, onMounted, ref, watch,
+  defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { useQuery, useResult } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
@@ -334,12 +333,8 @@ export default defineComponent({
   components: { PrismEditor },
   props:      { rules: Object, item: Object },
   setup (props: Props, ctx) {
-    const { result } = useQuery(gql`
-      query {
-        permissions { id name }
-      }
-    `);
-    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
+    const context = useContext();
+    const permissions = ref([] as PermissionsInterface[]);
     const computedRules = {
       runEveryX:    [required, minValue(0)],
       variableName: [
@@ -454,6 +449,13 @@ export default defineComponent({
     ];
 
     onMounted(() => {
+      (context as any).$graphql.default.request(gql`
+        query {
+          permissions { id name }
+        }
+      `).then((data: { permissions: PermissionsInterface[]}) => {
+        permissions.value = data.permissions;
+      });
       if (!props.item) {
         // fetch default evalValue
         fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/custom-variables-code.txt')

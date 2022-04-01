@@ -79,10 +79,9 @@
 
 <script lang="ts">
 import {
-  defineAsyncComponent, defineComponent, ref,
+  defineAsyncComponent, defineComponent, onMounted, ref, useContext,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { useQuery, useResult } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 
 type menuType = { category?: string; name: string; id: string; this: any | null }[];
@@ -100,16 +99,19 @@ const icons = new Map<string, string>([
 export default defineComponent({
   components: { notification: defineAsyncComponent(() => import('./notification.vue')) },
   setup () {
-    const { result } = useQuery(gql`
-      query getPrivateMenu { menuPrivate { id name enabled category } }
-    `);
+    const context = useContext();
+    const menu = ref([] as menuWithEnabled[]);
 
-    const menu = useResult<{ menuPrivate: menuWithEnabled[] }, menuWithEnabled[], menuWithEnabled[]>(result, [], (data) => {
-      console.groupCollapsed('menu::menu');
-      console.log({ menu: data.menuPrivate });
-      console.groupEnd();
-      return data.menuPrivate.sort((a, b) => {
-        return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
+    onMounted(() => {
+      (context as any).$graphql.default.request(gql`
+        query getPrivateMenu { menuPrivate { id name enabled category } }
+      `).then((data: { menuPrivate: menuWithEnabled[] }) => {
+        console.groupCollapsed('menu::menu');
+        console.log({ menu: data.menuPrivate });
+        console.groupEnd();
+        menu.value = data.menuPrivate.sort((a, b) => {
+          return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
+        });
       });
     });
     const categories = ['commands', 'manage', 'settings', 'registry', /* 'logs', */ 'stats'];

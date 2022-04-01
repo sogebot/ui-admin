@@ -8,7 +8,7 @@
       :fullscreen="$vuetify.breakpoint.mobile"
     >
       <template #activator="{ on, attrs }">
-        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" v-on="on" class="primary-hover">
+        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" class="primary-hover" v-on="on">
           <v-icon>
             mdi-pencil
           </v-icon>
@@ -114,9 +114,9 @@
 <script lang="ts">
 import { nextTick } from 'process';
 
+import { useContext } from '@nuxtjs/composition-api';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import translate from '@sogebot/ui-helpers/translate';
-import { useMutation } from '@vue/apollo-composable';
 import {
   defineComponent, ref, watch,
 } from '@vue/composition-api';
@@ -151,23 +151,13 @@ export default defineComponent({
     groupItems:      Array,
   },
   setup (props: Props, ctx) {
+    const context = useContext();
     const menu = ref(false);
     const item = ref(cloneDeep(props.value || newAlias));
     const valid = ref(true);
     const form = ref(null);
     const group = ref('');
-
-    const { mutate: updateMutation, onDone: onDoneUpdate, onError: onErrorUpdate, loading: saving } = useMutation(gql`
-      mutation setAlias($id: String!, $data: AliasInput!) {
-        setAlias(id: $id, data: $data) {
-          id
-        }
-      }`);
-    function saveSuccess () {
-      EventBus.$emit('snack', 'success', 'Data updated.');
-    }
-    onDoneUpdate(saveSuccess);
-    onErrorUpdate(errorLog);
+    const saving = ref(false);
 
     const resetForm = () => {
       valid.value = true;
@@ -210,13 +200,24 @@ export default defineComponent({
           }
         }
         const { __typename, id, ...data } = item.value;
-        console.log('Updating', {
-          data,
-        });
+        console.log('Updating', { data });
 
-        await updateMutation({
-          id: id || v4(), data,
-        });
+        saving.value = true;
+        try {
+          await (context as any).$graphql.default.request(gql`
+            mutation setAlias($id: String!, $data: AliasInput!) {
+              setAlias(id: $id, data: $data) {
+                id
+              }
+            }`, { id: id || v4(), data });
+          EventBus.$emit('snack', 'success', 'Data updated.');
+        } catch (e) {
+          if (e instanceof Error) {
+            errorLog(e);
+          }
+        }
+        saving.value = false;
+
         menu.value = false;
         ctx.emit('save');
       }
