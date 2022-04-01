@@ -1,5 +1,5 @@
 <template>
-  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e4" width="100%" :loading="isLoading" style="overflow: inherit" flat>
+  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e4" width="100%" :loading="isLoading" style="overflow: inherit;" flat>
     <v-toolbar height="36" color="blue-grey darken-4" class="mb-1" :rounded="false">
       <v-spacer />
       <v-btn
@@ -237,7 +237,7 @@
               </v-list-item-content>
 
               <v-list-item-action>
-                <div v-if="item.event === 'follow'" class="red--text text--lighten-1 font-condensed" style="font-size:1.2rem;">
+                <div v-if="item.event === 'follow'" class="red--text text--lighten-1 font-condensed" style="font-size: 1.2rem;">
                   follow
                 </div>
                 <div v-else-if="item.event === 'host'" class="orange--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
@@ -272,8 +272,8 @@
                     <v-icon size="15" color="orange">mdi-fire</v-icon>{{ JSON.parse(item.values_json).subStreak }}&nbsp;
                   </span>
 
-                  <span style="font-size:1.2rem;">{{ JSON.parse(item.values_json).tier !== 'Prime' ? 'Tier ' + JSON.parse(item.values_json).tier : JSON.parse(item.values_json).tier }}</span>
-                  <span style="font-size:1.2rem;">x</span>{{ JSON.parse(item.values_json).subCumulativeMonths }}
+                  <span style="font-size: 1.2rem;">{{ JSON.parse(item.values_json).tier !== 'Prime' ? 'Tier ' + JSON.parse(item.values_json).tier : JSON.parse(item.values_json).tier }}</span>
+                  <span style="font-size: 1.2rem;">x</span>{{ JSON.parse(item.values_json).subCumulativeMonths }}
                 </div>
                 <div v-else-if="item.event === 'cheer'" class="yellow--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
                   {{ JSON.parse(item.values_json).bits }}
@@ -281,10 +281,10 @@
                     mdi-diamond
                   </v-icon>
                 </div>
-                <div v-else-if="item.event === 'tip'" class="light-green--text text--lighten-1 font-condensed" style="font-size:1.5rem;">
+                <div v-else-if="item.event === 'tip'" class="light-green--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
                   {{ Intl.NumberFormat($store.state.configuration.lang, { style: 'currency', currency: get(JSON.parse(item.values_json), 'currency', 'USD') }).format(get(JSON.parse(item.values_json), 'amount', '0')) }}
                 </div>
-                <div v-else-if="item.event === 'rewardredeem'" class="blue--text text--lighten-1 font-condensed" style="font-size:1.2rem;">
+                <div v-else-if="item.event === 'rewardredeem'" class="blue--text text--lighten-1 font-condensed" style="font-size: 1.2rem;">
                   {{ JSON.parse(item.values_json).titleOfReward }}
                 </div>
               </v-list-item-action>

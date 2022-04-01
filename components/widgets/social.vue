@@ -1,5 +1,5 @@
 <template>
-  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e6" width="100%" :height="isPopout ? '100%' : undefined" :loading="loading" style="overflow: inherit" flat>
+  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e6" width="100%" :height="isPopout ? '100%' : undefined" :loading="loading" style="overflow: inherit;" flat>
     <v-slide-y-transition>
       <v-card-text v-if="items.length === 0" :style="{ height: height + 'px' }">
         <div class="font-weight-light">

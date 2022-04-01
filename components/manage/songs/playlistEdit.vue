@@ -340,7 +340,8 @@ export default defineComponent({
 </script>
 
 <style>
-.playlist-item-trim .v-input__prepend-outer .v-input, .playlist-item-trim .v-input__append-outer .v-input {
+.playlist-item-trim .v-input__prepend-outer .v-input,
+.playlist-item-trim .v-input__append-outer .v-input {
   padding-top: 0;
   margin-top: 0;
   min-width: 100px;

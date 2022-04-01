@@ -12,7 +12,7 @@
   </v-fab-transition>
   <v-icon style="position: absolute; right: 0; bottom: 0;">mdi-resize-bottom-right</v-icon>
 
-    <div class="text-caption grey darken-4 px-1" style="position: absolute; top: -20px;; z-index: -1; width: max-content;">
+    <div class="text-caption grey darken-4 px-1" style="position: absolute; top: -20px; z-index: -1; width: max-content;">
       {{ Math.max(Math.floor(item.width), 1) }}x{{ Math.max(Math.floor(item.height), 1) }}<br>
     </div>
     <div class="px-1 text-caption grey darken-4 " style="position: absolute; bottom: -20px; z-index: -1; width: max-content;">

@@ -3,7 +3,7 @@
     <template #activator="{ on, attrs }">
       <v-tooltip v-if="$store.state.navbarMiniVariant && !$vuetify.breakpoint.mobile" right>
         <template #activator="{ on: on2, attrs: attrs2 }">
-          <div v-bind="attrs2 && attrs" style="position: relative" v-on="on2 && on">
+          <div v-bind="attrs2 && attrs" style="position: relative;" v-on="on2 && on">
             <v-badge
               :content="$store.state.notifications.length"
               color="red"
@@ -11,7 +11,7 @@
               class="mb-3 pa-2"
               :offset-x="20"
               :offset-y="20"
-              style="cursor: pointer"
+              style="cursor: pointer;"
             >
               <v-icon class="miniIcon" v-bind="attrs" v-on="on">
                 mdi-bell-ring
@@ -32,7 +32,7 @@
         style="cursor: pointer; width: 100%;"
         left
       >
-        <v-list-item style="cursor: pointer" v-bind="attrs" v-on="on">
+        <v-list-item style="cursor: pointer;" v-bind="attrs" v-on="on">
           <v-list-item-icon>
             <v-icon>mdi-bell-ring</v-icon>
           </v-list-item-icon>
@@ -41,7 +41,7 @@
       </v-badge>
     </template>
 
-    <div style="background-color: black">
+    <div style="background-color: black;">
       <v-alert
         v-if="$store.state.notifications.includes('caster-not-set')"
         type="error"

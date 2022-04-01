@@ -22,7 +22,7 @@
               :input-value="selected === item.id"
               @click="selected = item.id"
             >
-              <v-list-item-action style="align-items: baseline; margin:0; margin-right: 10px;align-self: center;">
+              <v-list-item-action style="align-items: baseline; margin: 0; margin-right: 10px;align-self: center;">
                 <v-btn
                   icon
                   :disabled="idx === 0"
@@ -55,7 +55,7 @@
       <v-col>
         <v-responsive
           ref="responsive"
-          style="overflow: inherit"
+          style="overflow: inherit;"
           :aspect-ratio="options.canvas.width/options.canvas.height"
           :max-height="height"
           :max-width="height * options.canvas.width/options.canvas.height"
@@ -97,7 +97,7 @@
                 color="primary"
                 dark
                 small
-                style="z-index: 2"
+                style="z-index: 2;"
                 v-on="on"
               >
                 <v-icon>mdi-plus</v-icon>

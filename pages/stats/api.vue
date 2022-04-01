@@ -57,11 +57,15 @@
         <pre
           v-if="item.request"
           class="pt-1"
-          style="word-wrap: break-word; font-family: monospace; overflow-y: auto; overflow-x: hidden; max-height: 200px; width: fit-content;"
+          style="word-wrap: break-word; font-family: monospace;
+          overflow-y: auto; overflow-x: hidden; max-height: 200px;
+          width: fit-content;"
         >{{ parseJSON(item.request) }}</pre>
         <pre
           class="pt-3"
-          style="word-wrap: break-word; font-family: monospace; overflow-y: auto; overflow-x: hidden; max-height: 200px; width: fit-content;"
+          style="word-wrap: break-word; font-family: monospace;
+          overflow-y: auto; overflow-x: hidden; max-height: 200px;
+          width: fit-content;"
         >{{ parseJSON(item.data) }}</pre>
       </template>
     </v-data-table>

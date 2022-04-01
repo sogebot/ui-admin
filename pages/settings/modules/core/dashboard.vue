@@ -322,7 +322,6 @@ export default defineComponent({
   .hidden-icon {
     position: absolute !important;
     right: 0;
-    ;
     transform: rotate(45deg) translateY(7px);
     opacity: 0.4;
   }

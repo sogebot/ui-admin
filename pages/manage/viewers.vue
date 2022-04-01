@@ -28,7 +28,7 @@
                 </v-icon>
               </v-btn>
 
-              <v-menu absolute offset-y style="max-width: 600px">
+              <v-menu absolute offset-y style="max-width: 600px;">
                 <template #activator="{ on, attrs }">
                   <v-btn color="dark" v-bind="attrs" v-on="on">
                     {{ translate('commons.reset') }}

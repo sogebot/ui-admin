@@ -13,6 +13,13 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
+    "vue/first-attribute-linebreak": ["error", {
+      "singleline": "ignore",
+      "multiline": "below"
+    }],
+    "vue/multi-word-component-names": ["warning", {
+      "ignores": []
+    }],
     'func-call-spacing':                    'off',
     '@typescript-eslint/func-call-spacing': ['error'],
     'key-spacing':                          ['error', {

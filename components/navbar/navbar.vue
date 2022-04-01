@@ -16,7 +16,8 @@
 
       <v-breadcrumbs
         v-if="$store.state.panel.breadcrumbs.length > 0"
-        style="position: absolute; transition: all; transition-duration: 0.24s; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);"
+        style="position: absolute; transition: all; transition-duration: 0.24s;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);"
         class="pl-0"
         :style="{
           left: $store.state.panel.back.length > 0
