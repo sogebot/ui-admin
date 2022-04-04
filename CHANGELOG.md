@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [42.3.0](https://github.com/sogebot/ui-admin/compare/v42.2.1...v42.3.0) (2022-04-04)
+
+
+### Features
+
+* **obswebsocket:** show logs in ui ([73a908d](https://github.com/sogebot/ui-admin/commit/73a908d89c7a60620a0e4c405e0ce3a086a47020))
+
 ### [42.2.1](https://github.com/sogebot/ui-admin/compare/v42.2.0...v42.2.1) (2022-03-31)
 
 
