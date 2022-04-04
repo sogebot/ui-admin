@@ -273,10 +273,15 @@
         </v-form>
       </div>
     </v-fade-transition>
+
+    <v-fade-transition>
+      <v-alert prominent text v-if="logs.length > 0" v-html="logs"/>
+    </v-fade-transition>
   </v-card>
 </template>
 
 <script lang="ts">
+import JsonViewer from 'vue-json-viewer';
 import { OBSWebsocketInterface } from '@entity/obswebsocket';
 import {
   computed,
@@ -284,6 +289,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { availableActions } from '@sogebot/backend/src/helpers/obswebsocket/actions';
 import type { Source, Type } from '@sogebot/backend/src/helpers/obswebsocket/sources';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   useMutation, useQuery, useResult,
@@ -312,13 +318,15 @@ const emptyItem: OBSWebsocketInterface = {
 };
 
 export default defineComponent({
-  components: { PrismEditor },
+  components: { PrismEditor, JsonViewer },
   setup (_, ctx) {
     const router = useRouter();
     const route = useRoute();
 
     let loading = ref(true);
     const item = ref(cloneDeep(emptyItem) as OBSWebsocketInterface);
+
+    const logs = ref('');
 
     if (route.value.params.id !== 'new') {
       const query = useQuery(GET_ONE, { id: route.value.params.id });
@@ -396,6 +404,14 @@ export default defineComponent({
 
     onMounted(() => {
       store.commit('panel/back', '/registry/obswebsocket');
+
+      getSocket('/integrations/obswebsocket').on('log', (toLog => {
+        if (logs.value.length > 0) {
+          logs.value += '<br/>' + toLog;
+        } else {
+          logs.value = toLog;
+        }
+      }));
       initial();
     });
 
@@ -472,6 +488,7 @@ export default defineComponent({
     };
 
     const test = () => {
+      logs.value = '';
       trigger({
         tasks: JSON.stringify(item.value.advancedMode
           ? item.value.advancedModeCode
@@ -489,6 +506,7 @@ export default defineComponent({
       valid1,
       item,
       rules,
+      logs,
 
       actionToAdd,
       availableScenes,
