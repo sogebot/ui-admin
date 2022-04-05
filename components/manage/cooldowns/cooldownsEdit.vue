@@ -32,18 +32,11 @@
               @keydown.enter.prevent
             />
 
-            <v-text-field
-              v-value="item.miliseconds / 1000"
-              @input="item.miliseconds = $event * 1000"
+            <form-x-time-input
+              v-model.number="item.miliseconds"
+              :rules="rules.miliseconds"
               :label="translate('cooldown')"
-              hide-details="auto"
-              type="number"
-              :rules="rules.count"
-            >
-              <template #append>
-                s
-              </template>
-            </v-text-field>
+            />
 
             <v-select
               v-model="item.type"
@@ -167,7 +160,7 @@ type Props = {
 
 const newItem = {
   name:                 '',
-  count:                60,
+  miliseconds:                60000,
   type:                 'global',
   isErrorMsgQuiet:      false,
   isEnabled:            true,

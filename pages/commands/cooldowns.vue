@@ -92,8 +92,8 @@
               {{ item.type }}
             </div>
           </template>
-          <template #count>
-            {{ item.miliseconds / 1000 }}s
+          <template #miliseconds>
+            {{ item.miliseconds | time }}
           </template>
         </table-mobile>
       </template>
@@ -126,7 +126,7 @@ export default defineComponent({
     'table-mobile':    defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
   },
   setup () {
-    const rules = { name: [required, minLength(2)], count: [required, minValue(1)] };
+    const rules = { name: [required, minLength(2)], miliseconds: [required] };
 
     const items = ref([] as CooldownInterface[]);
     const typeItems = [
@@ -157,7 +157,7 @@ export default defineComponent({
     const headers = [
       { value: 'name', text: '!' + translate('command') + ', ' + translate('keyword') + ' ' + translate('or') + ' g:' + translate('group') },
       {
-        value: 'count', text: translate('cooldown'), align: 'right',
+        value: 'miliseconds', text: translate('cooldown'), align: 'right',
       },
       {
         value: 'isEnabled', text: capitalize(translate('enabled')), align: 'center',

@@ -6,5 +6,19 @@ Vue.filter('time', function (value: number) {
   const hours = Math.floor((value - days * DAY) / HOUR);
   const minutes = Math.floor((value - (days * DAY) - (hours * HOUR)) / MINUTE);
   const seconds = Math.floor((value - (days * DAY) - (hours * HOUR) - (minutes * MINUTE)) / SECOND);
-  return `${days}d ${hours}h ${minutes}m ${seconds}s`;
-})
+
+  let output = '';
+  if (days > 0) {
+    output += `${days}d `;
+  }
+  if (hours > 0) {
+    output += `${hours}h `;
+  }
+  if (minutes > 0) {
+    output += `${minutes}m `;
+  }
+  if (seconds > 0) {
+    output += `${seconds}s `;
+  }
+  return output.trim();
+});
