@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [42.3.3](https://github.com/sogebot/ui-admin/compare/v42.3.2...v42.3.3) (2022-04-05)
+
+
+### Bug Fixes
+
+* fix incorrectly used variable ([433683b](https://github.com/sogebot/ui-admin/commit/433683b77aa592548ad843e7c49999a9090f3d4a))
+
 ### [42.3.2](https://github.com/sogebot/ui-admin/compare/v42.3.1...v42.3.2) (2022-04-05)
 
 
