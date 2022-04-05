@@ -194,7 +194,7 @@ export default defineComponent({
           return error(err);
         }
         console.debug('Loaded', itemsGetAll);
-        items.value = { ...itemsGetAll };
+        items.value = [...itemsGetAll];
         // we also need to reset selection values
         if (selected.value.length > 0) {
           selected.value.forEach((selectedItem, index) => {
