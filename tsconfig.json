@@ -34,20 +34,13 @@
     },
     "types": [
       "@nuxt/types",
-      "@types/node",
       "@nuxtjs/axios",
-      "@nuxtjs/proxy",
-      "@nuxtjs/vuetify",
-      "vue-apollo/types",
-      "@nuxtjs/i18n"
-    ],
-    "typeRoots": [
-      "./d.ts/"
+      "@types/node",
+      "@nuxtjs/vuetify"
     ]
   },
   "exclude": [
     "node_modules",
-    ".nuxt",
     "dist"
   ]
 }

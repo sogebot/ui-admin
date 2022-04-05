@@ -13,7 +13,9 @@
           </template>
           <template #[`item.actions`]="{ item }">
             <v-btn icon @click="removePrivateKeyById(item.id)">
-              <v-icon color="red">mdi-delete</v-icon>
+              <v-icon color="red">
+                mdi-delete
+              </v-icon>
             </v-btn>
           </template>
         </v-data-table>
@@ -46,18 +48,10 @@
   </v-form>
 </template>
 
-<script lang="ts">
-import { useStore } from '@nuxtjs/composition-api';
+<script setup lang="ts">
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation,
-  useQuery, useResult,
-} from '@vue/apollo-composable';
-import {
-  defineComponent, nextTick, onMounted, ref, watch,
-} from '@vue/composition-api';
 import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 
@@ -68,136 +62,116 @@ import DELETE_PRIVATE_KEYS from '~/queries/google/privateKeysDelete.gql';
 import GET_ALL_PRIVATE_KEYS from '~/queries/google/privateKeysGetAll.gql';
 import UPLOAD_PRIVATE_KEYS from '~/queries/google/privateKeysUpload.gql';
 
-export default defineComponent({
-  setup () {
-    const privateKeys = ref([] as any[]);
-    const { result, loading, refetch } = useQuery(GET_ALL_PRIVATE_KEYS);
-    const cache = useResult<{privateKeys:any[] }, any[], any[]>(result, [], data => data.privateKeys);
-    watch(cache, (value) => {
-      if (!value) {
-        return;
-      }
-      privateKeys.value = cloneDeep([...value]);
-    }, { immediate: true, deep: true });
-    const privateKeysHeaders = [
-      { value: 'id', text: 'ID' },
-      { value: 'clientEmail', text: 'E-mail' },
-      { value: 'createdAt', text: 'Created at' },
-      { value: 'actions', text: '' },
-    ];
-    const { mutate: updateMutation, onError: onErrorUpdate } = useMutation(UPLOAD_PRIVATE_KEYS);
-    const { mutate: deleteMutation, onError: onErrorDelete } = useMutation(DELETE_PRIVATE_KEYS);
-    onErrorUpdate(error);
-    onErrorDelete(error);
+const { $graphql, $store } = useNuxtApp();
 
-    const settings = ref(null as Record<string, any> | null);
-    const ui = ref(null as Record<string, any> | null);
-    const store = useStore<any>();
-    const valid = ref(true);
-    const tab = ref(null);
-    const uploading = ref(ButtonStates.idle as number);
+const privateKeys = ref([] as any[]);
+const cache = ref([] as any[])
 
-    watch(settings, () => {
-      store.commit('settings/pending', true);
-    }, { deep: true });
+const refetch = () => {
+  $graphql.default.request(GET_ALL_PRIVATE_KEYS).then((data: { privateKeys: any; }) => (cache.value = data.privateKeys));
+}
+watch(cache, (value) => {
+  if (!value) {
+    return;
+  }
+  privateKeys.value = cloneDeep([...value]);
+}, { immediate: true, deep: true });
+const privateKeysHeaders = [
+  { value: 'id', text: 'ID' },
+  { value: 'clientEmail', text: 'E-mail' },
+  { value: 'createdAt', text: 'Created at' },
+  { value: 'actions', text: '' },
+];
 
-    watch(() => store.state.settings.save, async (val) => {
-      if (val && settings.value) {
-        saveSettings('/services/google', store, settings.value);
+const settings = ref(null as Record<string, any> | null);
+const ui = ref(null as Record<string, any> | null);
+const valid = ref(true);
+const tab = ref(null);
+const uploading = ref(ButtonStates.idle as number);
 
-        // upload privateKeys
-        for (const key of privateKeys.value) {
-          if (key.privateKey) {
-            // if contain private key, we must save it do db
-            await updateMutation({
-              data_json: JSON.stringify({
-                id:          key.id,
-                clientEmail: key.clientEmail,
-                privateKey:  key.privateKey,
-                createdAt:   key.createdAt,
-              }),
-            });
-          }
-        }
+watch(settings, () => {
+  $store.commit('settings/pending', true);
+}, { deep: true });
 
-        // go through private keys vs cache to delete keys
-        for (const key of cache.value) {
-          if (!privateKeys.value.find(o => o.id === key.id)) {
-            await deleteMutation({ id: key.id });
-          }
-        }
-        refetch();
-      }
-    });
+watch(() => $store.state.settings.save, async (val) => {
+  if (val && settings.value) {
+    saveSettings('/services/google', $store, settings.value);
 
-    watch(valid, (val) => {
-      store.commit('settings/valid', val);
-    }, { immediate: true });
-
-    onMounted(() => {
-      getSocket(`/services/google`)
-        .emit('settings', (err, _settings, _ui) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          ui.value = _ui;
-          settings.value = _settings;
-          nextTick(() => { store.commit('settings/pending', false); });
+    // upload privateKeys
+    for (const key of privateKeys.value) {
+      if (key.privateKey) {
+        // if contain private key, we must save it do db
+        await $graphql.default.request(UPLOAD_PRIVATE_KEYS, {
+          data_json: JSON.stringify({
+            id:          key.id,
+            clientEmail: key.clientEmail,
+            privateKey:  key.privateKey,
+            createdAt:   key.createdAt,
+          }),
         });
-    });
+      }
+    }
 
-    const filesChange = async (filesUpload: HTMLInputElement['files']) => {
-      if (!filesUpload) {
+    // go through private keys vs cache to delete keys
+    for (const key of cache.value) {
+      if (!privateKeys.value.find(o => o.id === key.id)) {
+        await $graphql.default.request(DELETE_PRIVATE_KEYS, { id: key.id });
+      }
+    }
+    refetch();
+  }
+});
+
+watch(valid, (val) => {
+  $store.commit('settings/valid', val);
+}, { immediate: true });
+
+onMounted(() => {
+  refetch();
+  getSocket(`/services/google`)
+    .emit('settings', (err, _settings, _ui) => {
+      if (err) {
+        console.error(err);
         return;
       }
-      uploading.value = ButtonStates.progress;
-
-      for (const file of filesUpload) {
-        try {
-          const base64 = (await getBase64FromUrl(URL.createObjectURL(file))).split(',')[1];
-          const text = JSON.parse(atob(base64));
-          if (!text.client_email || !text.private_key) {
-            throw new Error(`Invalid JSON file ${file.name}.`);
-          }
-          privateKeys.value = [{
-            id:          v4(),
-            clientEmail: text.client_email,
-            privateKey:  text.private_key,
-            createdAt:   new Date().toISOString(),
-          }, ...privateKeys.value];
-          store.commit('settings/pending', true);
-        } catch (e) {
-          console.error(e);
-          if (e instanceof Error) {
-            error(e.message);
-          }
-        }
-      }
-      uploading.value = ButtonStates.idle;
-    };
-
-    const removePrivateKeyById = (id: string) => {
-      privateKeys.value = privateKeys.value.filter(o => o.id !== id);
-      store.commit('settings/pending', true);
-    };
-
-    return {
-      settings,
-      ui,
-      translate,
-      valid,
-      tab,
-
-      privateKeys,
-      privateKeysHeaders,
-      removePrivateKeyById,
-      loading,
-      uploading,
-      filesChange,
-
-      ButtonStates,
-    };
-  },
+      ui.value = _ui;
+      settings.value = _settings;
+      nextTick(() => { $store.commit('settings/pending', false); });
+    });
 });
+
+const filesChange = async (filesUpload: HTMLInputElement['files']) => {
+  if (!filesUpload) {
+    return;
+  }
+  uploading.value = ButtonStates.progress;
+
+  for (const file of filesUpload) {
+    try {
+      const base64 = (await getBase64FromUrl(URL.createObjectURL(file))).split(',')[1];
+      const text = JSON.parse(atob(base64));
+      if (!text.client_email || !text.private_key) {
+        throw new Error(`Invalid JSON file ${file.name}.`);
+      }
+      privateKeys.value = [{
+        id:          v4(),
+        clientEmail: text.client_email,
+        privateKey:  text.private_key,
+        createdAt:   new Date().toISOString(),
+      }, ...privateKeys.value];
+      $store.commit('settings/pending', true);
+    } catch (e) {
+      console.error(e);
+      if (e instanceof Error) {
+        error(e.message);
+      }
+    }
+  }
+  uploading.value = ButtonStates.idle;
+};
+
+const removePrivateKeyById = (id: string) => {
+  privateKeys.value = privateKeys.value.filter(o => o.id !== id);
+  $store.commit('settings/pending', true);
+};
 </script>

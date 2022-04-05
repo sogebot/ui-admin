@@ -11,7 +11,7 @@
       :items="items"
       sort-by="name"
       @current-items="saveCurrentItems"
-      @click:row="addToSelectedItem"
+      @click:row="addToSelectedItem(selected, 'id', currentItems)"
     >
       <template #top>
         <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
@@ -114,129 +114,92 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent, onMounted, ref, watch,
-} from '@nuxtjs/composition-api';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
-
+<script setup lang="ts">
 import type { OBSWebsocketInterface } from '@entity/obswebsocket';
+import translate from '@sogebot/ui-helpers/translate';
+
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import GET_ALL from '~/queries/obsWebsocket/getAll.gql';
 import REMOVE from '~/queries/obsWebsocket/remove.gql';
 
-export default defineComponent({
-  setup () {
-    const { result, loading, onError, refetch } = useQuery(GET_ALL);
-    onError(error);
-    const items = useResult<{ OBSWebsocket: OBSWebsocketInterface[] }, OBSWebsocketInterface[], OBSWebsocketInterface[]>(result, [], (data) => {
-      // we also need to reset selection values
-      if (selected.value.length > 0) {
-        selected.value.forEach((selectedItem, index) => {
-          selectedItem = data.OBSWebsocket.find(o => o.id === selectedItem.id) || selectedItem;
-          selected.value[index] = selectedItem;
-        });
-      }
-      return data.OBSWebsocket;
+const { $graphql } = useNuxtApp();
+
+const loading = ref(true);
+const items = ref([] as OBSWebsocketInterface[]);
+const refetch = async () => {
+  const data = await $graphql.default.request(GET_ALL);
+
+  // we also need to reset selection values
+  if (selected.value.length > 0) {
+    selected.value.forEach((selectedItem, index) => {
+      selectedItem = data.OBSWebsocket.find(o => o.id === selectedItem.id) || selectedItem;
+      selected.value[index] = selectedItem;
     });
+  }
 
-    onMounted(() => {
-      refetch();
-    });
+  items.value = data.OBSWebsocket;
+  loading.value = false;
+};
 
-    const { mutate: removeMutation, onError: onErrorRemove } = useMutation(REMOVE);
-    onErrorRemove(error);
-
-    const search = ref('');
-
-    const command = ref('!obsws run');
-    const selected = ref([] as OBSWebsocketInterface[]);
-    const currentItems = ref([] as OBSWebsocketInterface[]);
-    const deleteDialog = ref(false);
-    const copied = ref('');
-    const selectable = ref(false);
-    const saveCurrentItems = (value: OBSWebsocketInterface[]) => {
-      currentItems.value = value;
-    };
-    watch(selectable, (val) => {
-      if (!val) {
-        selected.value = [];
-      }
-    });
-
-    watch(copied, (val) => {
-      if (val.length > 0) {
-        EventBus.$emit('snack', 'success', 'Command copied to clipboard.');
-        navigator.clipboard.writeText(`${command.value} ${val}`);
-        setTimeout(() => {
-          copied.value = '';
-        }, 1000);
-      }
-    });
-
-    const headers = [
-      {
-        value: 'name', text: translate('timers.dialog.name'),
-      },
-      {
-        value: 'command', text: translate('integrations.obswebsocket.command'),
-      },
-      {
-        value: 'actions', text: '', sortable: false,
-      },
-    ];
-
-    const headersDelete = [
-      {
-        value: 'name', text: 'Name',
-      },
-    ];
-
-    const deleteSelected = () => {
-      deleteDialog.value = false;
-      selected.value.forEach((item) => {
-        removeMutation({
-          id: item.id,
-        }, {
-          refetchQueries: [
-            'OBSWebsocketGetAll',
-          ],
-        });
-      });
-
-      EventBus.$emit('snack', 'success', 'Data removed.');
-      selected.value = [];
-    };
-
-    return {
-      // refs
-      items,
-      search,
-      loading,
-      headers,
-      headersDelete,
-      selected,
-      deleteSelected,
-      selectable,
-      deleteDialog,
-      translate,
-      currentItems,
-      copied,
-      command,
-
-      // functions
-      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
-      saveCurrentItems,
-
-      // others
-      ButtonStates,
-    };
-  },
+onMounted(() => {
+  refetch();
 });
+
+const { mutate: removeMutation, onError: onErrorRemove } = useMutation(REMOVE);
+onErrorRemove(error);
+
+const search = ref('');
+
+const command = ref('!obsws run');
+const selected = ref([] as OBSWebsocketInterface[]);
+const currentItems = ref([] as OBSWebsocketInterface[]);
+const deleteDialog = ref(false);
+const copied = ref('');
+const selectable = ref(false);
+const saveCurrentItems = (value: OBSWebsocketInterface[]) => {
+  currentItems.value = value;
+};
+watch(selectable, (val) => {
+  if (!val) {
+    selected.value = [];
+  }
+});
+
+watch(copied, (val) => {
+  if (val.length > 0) {
+    EventBus.$emit('snack', 'success', 'Command copied to clipboard.');
+    navigator.clipboard.writeText(`${command.value} ${val}`);
+    setTimeout(() => {
+      copied.value = '';
+    }, 1000);
+  }
+});
+
+const headers = [
+  { value: 'name', text: translate('timers.dialog.name') },
+  { value: 'command', text: translate('integrations.obswebsocket.command') },
+  {
+    value: 'actions', text: '', sortable: false,
+  },
+];
+
+const headersDelete = [
+  { value: 'name', text: 'Name' },
+];
+
+const deleteSelected = () => {
+  deleteDialog.value = false;
+  selected.value.forEach((item) => {
+    removeMutation({ id: item.id }, {
+      refetchQueries: [
+        'OBSWebsocketGetAll',
+      ],
+    });
+  });
+
+  EventBus.$emit('snack', 'success', 'Data removed.');
+  selected.value = [];
+};
 </script>

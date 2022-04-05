@@ -182,7 +182,7 @@ const refetch = async () => {
   // we also need to reset selection values
   if (selected.value.length > 0) {
     selected.value.forEach((selectedItem, index) => {
-      selectedItem = output.find(o => o.id === selectedItem.id) || selectedItem;
+      selectedItem = data.find(o => o.id === selectedItem.id) || selectedItem;
       selected.value[index] = selectedItem;
     });
   }

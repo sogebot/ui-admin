@@ -275,25 +275,17 @@
     </v-fade-transition>
 
     <v-fade-transition>
-      <v-alert prominent text v-if="logs.length > 0" v-html="logs"/>
+      <v-alert v-if="logs.length > 0" prominent text v-html="logs" />
     </v-fade-transition>
   </v-card>
 </template>
 
-<script lang="ts">
-import JsonViewer from 'vue-json-viewer';
+<script setup lang="ts">
 import { OBSWebsocketInterface } from '@entity/obswebsocket';
-import {
-  computed,
-  defineComponent, onMounted, ref, useRoute, useRouter, useStore, watch,
-} from '@nuxtjs/composition-api';
 import { availableActions } from '@sogebot/backend/src/helpers/obswebsocket/actions';
 import type { Source, Type } from '@sogebot/backend/src/helpers/obswebsocket/sources';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { cloneDeep } from 'lodash';
 // import highlighting library (you can use any library you want just return html string)
@@ -316,215 +308,173 @@ const emptyItem: OBSWebsocketInterface = {
   advancedModeCode: '',
   simpleModeTasks:  [],
 };
+const router = useRouter();
+const route = useRoute();
 
-export default defineComponent({
-  components: { PrismEditor, JsonViewer },
-  setup (_, ctx) {
-    const router = useRouter();
-    const route = useRoute();
+const { $graphql, $store } = useNuxtApp();
 
-    let loading = ref(true);
-    const item = ref(cloneDeep(emptyItem) as OBSWebsocketInterface);
+const loading = ref(true);
+const saving = ref(false);
+const item = ref(cloneDeep(emptyItem) as OBSWebsocketInterface);
 
-    const logs = ref('');
+const logs = ref('');
 
-    if (route.value.params.id !== 'new') {
-      const query = useQuery(GET_ONE, { id: route.value.params.id });
-      query.onError(error);
-      loading = query.loading;
-      const cache = useResult<{ OBSWebsocket: OBSWebsocketInterface[] }, null>(query.result, null);
-      watch(cache, (value) => {
-        if (!value) {
-          return;
-        }
+if (route.params.id !== 'new') {
+  $graphql.default.request(GET_ONE, { id: route.params.id }).then((query: { result: any; }) => {
+    const value = query.result;
 
-        if (value.length === 0) {
-          EventBus.$emit('snack', 'error', 'Data not found.');
-          router.push({ path: '/registry/obswebsocket' });
-        } else {
-          item.value = cloneDeep(value[0]);
-        }
-      }, { immediate: true, deep: true });
+    if (value.length === 0) {
+      EventBus.$emit('snack', 'error', 'Data not found.');
+      router.push({ path: '/registry/obswebsocket' });
+    } else {
+      item.value = cloneDeep(value[0]);
     }
-    const { result: sceneResult } = useQuery(SCENES_AND_SOURCES, null, { pollInterval: 1000 });
-    watch(sceneResult, (value) => {
-      if (value) {
-        availableScenes.value = [
-          { value: '', text: translate('integrations.obswebsocket.noSceneSelected') },
-          ...value.OBSWebsocketGetScenes.map((scene: { name: string }) => ({
-            value: scene.name,
-            text:  scene.name,
-          })),
-        ];
-        availableSources.value = value.OBSWebsocketGetSources;
-        sourceTypes.value = value.OBSWebsocketGetSourceTypes;
-      }
-    }, { deep: true });
+    loading.value = false;
+  });
+}
 
-    const { mutate: trigger, loading: testing, onDone: onDone1, onError: onError1 } = useMutation(gql`
-      mutation OBSWebsocketTrigger($tasks: String!) {
-        OBSWebsocketTrigger(tasks: $tasks)
-      }`);
-    onDone1(() => EventBus.$emit('snack', 'success', 'Test done!'));
-    onError1(() => EventBus.$emit('snack', 'error', 'Something went wrong. Check the logs.'));
-    const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(gql`
+const refetch = async () => {
+  const request = await $graphql.default.request(SCENES_AND_SOURCES);
+  if (request) {
+    availableScenes.value = [
+      { value: '', text: translate('integrations.obswebsocket.noSceneSelected') },
+      ...request.OBSWebsocketGetScenes.map((scene: { name: string }) => ({
+        value: scene.name,
+        text:  scene.name,
+      })),
+    ];
+    availableSources.value = request.OBSWebsocketGetSources;
+    sourceTypes.value = request.OBSWebsocketGetSourceTypes;
+  }
+  setTimeout(() => refetch(), 5000);
+};
+
+const form1 = ref(null);
+const valid1 = ref(true);
+
+const rules = {
+  name:        [required],
+  scene:       [required],
+  volume:      [required, maxValue(0), minValue(-100)],
+  miliseconds: [required, minValue(10)],
+};
+
+const availableScenes = ref([] as { value: string; text: string }[]);
+const availableSources = ref([] as Source[]);
+const sourceTypes = ref([] as Type[]);
+const availableAudioSources = computed(() => {
+  const audioTypeId = sourceTypes.value.filter(type => type.caps.hasAudio).map(type => type.typeId);
+  return [
+    { value: '', text: translate('integrations.obswebsocket.noSourceSelected') },
+    ...availableSources.value
+      .filter(source => audioTypeId.includes(source.typeId))
+      .map(source => ({ value: source.name, text: source.name }))];
+});
+const actionToAdd = ref(Object.keys(availableActions)[0] as keyof typeof availableActions);
+
+onMounted(() => {
+  refetch();
+  $store.commit('panel/back', '/registry/obswebsocket');
+
+  getSocket('/integrations/obswebsocket').on('log', (toLog) => {
+    if (logs.value.length > 0) {
+      logs.value += '<br/>' + toLog;
+    } else {
+      logs.value = toLog;
+    }
+  });
+  initial();
+});
+
+const initial = () => {
+  if (route.params.id === 'new') {
+    loading.value = true;
+    // fetch default advancedModeCode
+    fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/obswebsocket-code.txt')
+      .then(response => response.text())
+      .then((data) => {
+        item.value = cloneDeep({
+          ...emptyItem,
+          id:               shortid.generate(),
+          advancedModeCode: data,
+        });
+        loading.value = false;
+      })
+      .catch((e) => {
+        error(e);
+      });
+  }
+};
+
+const save = () => {
+  if (
+    (form1.value as unknown as HTMLFormElement).validate()
+  ) {
+    saving.value = true;
+    $graphql.default.request(gql`
       mutation OBSWebsocketSave($data: String!) {
         OBSWebsocketSave(data: $data) { id }
-      }`);
-    onDoneSave((result) => {
-      router.push({ params: { id: result.data.OBSWebsocketSave.id } });
-      EventBus.$emit('snack', 'success', 'Data saved.');
-    });
-    onErrorSave(error);
+      }`, {
+      data: JSON.stringify({
+        ...item.value,
+        id: item.value.id ?? v4(),
+      }),
+    })
+      .then((result: any) => {
+        router.push({ params: { id: result.data.OBSWebsocketSave.id } });
+        EventBus.$emit('snack', 'success', 'Data saved.');
+      })
+      .catch((e: any) => error(e))
+      .finally(() => (saving.value = false));
+  }
+};
 
-    const store = useStore();
+const addActionRegex = /\(obs, (?<arguments>.*?)\)/;
+const addAction = (actionKey: keyof typeof availableActions) => {
+  const match = addActionRegex.exec(availableActions[actionKey].toString());
+  const argsList = match?.groups?.arguments.split(',').map(o => o.trim()) || [];
+  const args = argsList.reduce((prev, cur) => {
+    let value: number|string|boolean = '';
+    switch (cur) {
+      case 'miliseconds':
+        value = 1000;
+        break;
+      case 'mute':
+        value = false;
+        break;
+      case 'volume':
+        value = 0;
+        break;
+      case 'useDecibel':
+        value = true;
+        break;
+    }
+    return { [cur]: value, ...prev };
+  }, {});
+  item.value.simpleModeTasks.push({
+    id:    shortid.generate(),
+    event: actionKey,
+    args:  args as any,
+  });
+};
 
-    const form1 = ref(null);
-    const valid1 = ref(true);
+const deleteAction = (idx: number) => {
+  if (item.value) {
+    item.value.simpleModeTasks.splice(idx, 1);
+  }
+};
 
-    const rules = {
-      name:        [required],
-      scene:       [required],
-      volume:      [required, maxValue(0), minValue(-100)],
-      miliseconds: [required, minValue(10)],
-    };
-
-    const availableScenes = ref([] as { value: string; text: string }[]);
-    const availableSources = ref([] as Source[]);
-    const sourceTypes = ref([] as Type[]);
-    const availableAudioSources = computed(() => {
-      const audioTypeId = sourceTypes.value.filter(type => type.caps.hasAudio).map(type => type.typeId);
-      return [
-        { value: '', text: translate('integrations.obswebsocket.noSourceSelected') },
-        ...availableSources.value
-          .filter(source => audioTypeId.includes(source.typeId))
-          .map(source => ({ value: source.name, text: source.name }))];
-    });
-    const actionToAdd = ref(Object.keys(availableActions)[0] as keyof typeof availableActions);
-
-    onMounted(() => {
-      store.commit('panel/back', '/registry/obswebsocket');
-
-      getSocket('/integrations/obswebsocket').on('log', (toLog => {
-        if (logs.value.length > 0) {
-          logs.value += '<br/>' + toLog;
-        } else {
-          logs.value = toLog;
-        }
-      }));
-      initial();
-    });
-
-    const initial = () => {
-      if (route.value.params.id === 'new') {
-        loading.value = true;
-        // fetch default advancedModeCode
-        fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/obswebsocket-code.txt')
-          .then(response => response.text())
-          .then((data) => {
-            item.value = cloneDeep({
-              ...emptyItem,
-              id:               shortid.generate(),
-              advancedModeCode: data,
-            });
-            loading.value = false;
-          })
-          .catch((e) => {
-            error(e);
-          });
-      }
-    };
-
-    const save = () => {
-      if (
-        (form1.value as unknown as HTMLFormElement).validate()
-      ) {
-        saveMutation({
-          data: JSON.stringify({
-            ...item.value,
-            id: item.value.id ?? v4(),
-          }),
-        });
-      }
-    };
-
-    const closeDlg = () => {
-      ctx.emit('close');
-    };
-
-    const addActionRegex = /\(obs, (?<arguments>.*?)\)/;
-    const addAction = (actionKey: keyof typeof availableActions) => {
-      const match = addActionRegex.exec(availableActions[actionKey].toString());
-      const argsList = match?.groups?.arguments.split(',').map(o => o.trim()) || [];
-      const args = argsList.reduce((prev, cur) => {
-        let value: number|string|boolean = '';
-        switch (cur) {
-          case 'miliseconds':
-            value = 1000;
-            break;
-          case 'mute':
-            value = false;
-            break;
-          case 'volume':
-            value = 0;
-            break;
-          case 'useDecibel':
-            value = true;
-            break;
-        }
-        return { [cur]: value, ...prev };
-      }, {});
-      item.value.simpleModeTasks.push({
-        id:    shortid.generate(),
-        event: actionKey,
-        args:  args as any,
-      });
-    };
-
-    const deleteAction = (idx: number) => {
-      if (item.value) {
-        item.value.simpleModeTasks.splice(idx, 1);
-      }
-    };
-
-    const test = () => {
-      logs.value = '';
-      trigger({
-        tasks: JSON.stringify(item.value.advancedMode
-          ? item.value.advancedModeCode
-          : item.value.simpleModeTasks),
-      });
-    };
-
-    return {
-      // refs
-      saving,
-      testing,
-      loading,
-      closeDlg,
-      form1,
-      valid1,
-      item,
-      rules,
-      logs,
-
-      actionToAdd,
-      availableScenes,
-      availableSources,
-      availableActions,
-      availableAudioSources,
-      sourceTypes,
-
-      // functions
-      save,
-      highlighterJS,
-      addAction,
-      deleteAction,
-      test,
-
-      // others
-      translate,
-    };
-  },
-});
+const test = () => {
+  logs.value = '';
+  $graphql.default.request(gql`
+      mutation OBSWebsocketTrigger($tasks: String!) {
+        OBSWebsocketTrigger(tasks: $tasks)
+      }`, {
+    tasks: JSON.stringify(item.value.advancedMode
+      ? item.value.advancedModeCode
+      : item.value.simpleModeTasks),
+  })
+    .then(() => EventBus.$emit('snack', 'success', 'Test done!'))
+    .catch(() => EventBus.$emit('snack', 'error', 'Something went wrong. Check the logs.'));
+};
 </script>
