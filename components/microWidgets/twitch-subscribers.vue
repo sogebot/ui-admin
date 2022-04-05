@@ -25,7 +25,7 @@
       :loading="!isLoaded"
     >
       <v-card-title :key="timestamp" class="px-1 py-0 text-truncate" style="font-size: 1rem;">
-        {{ song || capitalize($t('not-available')) }}
+        {{ current || capitalize($t('not-available')) }}
       </v-card-title>
       <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
         {{ capitalize($t('subscribers')) }}
