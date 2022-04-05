@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [42.3.4](https://github.com/sogebot/ui-admin/compare/v42.3.3...v42.3.4) (2022-04-05)
+
+
+### Bug Fixes
+
+* **cooldowns:** fix incorrect coodlown editation ([843cb7b](https://github.com/sogebot/ui-admin/commit/843cb7b2f827635504480b2a1e1b153c7495fb30))
+
 ### [42.3.3](https://github.com/sogebot/ui-admin/compare/v42.3.2...v42.3.3) (2022-04-05)
 
 
