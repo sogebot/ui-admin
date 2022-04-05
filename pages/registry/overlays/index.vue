@@ -73,14 +73,14 @@
       @click:row="addToSelectedItem"
     >
       <template #top>
-        <search-bar :search.sync="search">
+        <table-search-bar :search.sync="search">
           <v-btn
             color="primary"
             @click="addItem()"
           >
             Add item
           </v-btn>
-        </search-bar>
+        </table-search-bar>
       </template>
 
       <template #[`item`]="{ item }">
@@ -159,7 +159,7 @@ import REMOVE from '~/queries/overlays/remove.gql';
 
 export default defineComponent({
   components: {
-    'search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    'table-search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
     'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
   },
   setup () {

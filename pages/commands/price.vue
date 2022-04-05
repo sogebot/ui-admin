@@ -56,9 +56,9 @@
       :loading="state.loading !== ButtonStates.success && state.loadingPrm !== ButtonStates.success" :headers="headers"
       :items-per-page="-1" :items="items" @current-items="saveCurrentItems">
       <template #top>
-        <search-bar :search.sync="search">
+        <table-search-bar :search.sync="search">
           <edit :rules="rules" @save="refresh()" />
-        </search-bar>
+        </table-search-bar>
       </template>
 
       <template #[`item`]="{ item }">
@@ -108,7 +108,7 @@ export default defineComponent({
   components: {
     edit:         defineAsyncComponent(() => import('~/components/manage/price/edit.vue')),
     batch:        defineAsyncComponent(() => import('~/components/manage/price/batch.vue')),
-    'search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    'table-search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
   },
   setup () {
     const store = useStore<any>();

@@ -102,7 +102,7 @@
               {{ translate('registry.goals.fontSettings') }}
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <font v-model="item.font" />
+              <form-expansion-font v-model="item.font" />
             </v-expansion-panel-content>
           </v-expansion-panel>
           <v-expansion-panel>
@@ -110,10 +110,10 @@
               {{ translate('registry.alerts.message.setting') }}
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <font v-model="item.fontMessage" />
+              <form-expansion-font v-model="item.fontMessage" />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <tts v-model="item.tts" />
+          <form-expansion-tts v-model="item.tts" />
         </v-expansion-panels>
 
         <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
@@ -185,7 +185,7 @@
                 <v-col>
                   <v-tabs-items v-model="variantTabs[event]">
                     <v-tab-item v-for="alert of item[event]" :key="'event-tab-items-content-' + alert.id">
-                      <formEdit
+                      <registry-alerts-form
                         :value="alert"
                         :parent="item"
                         :event="event"
@@ -211,26 +211,21 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import {
-  defineAsyncComponent,
-  defineComponent, onMounted, ref, useContext, useRoute, useRouter, useStore,
-} from '@nuxtjs/composition-api';
-import { getContrastColor } from '@sogebot/ui-helpers/colors';
+<script setup lang="ts">
+import { AlertInterface } from '@entity/alert';
 import translate from '@sogebot/ui-helpers/translate';
-import { useMutation } from '@vue/apollo-composable';
 import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 
 import { getBase64FromUrl } from '../../../functions/getBase64FromURL';
 
-import { AlertInterface } from '@entity/alert';
-import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 import GET_ONE from '~/queries/alert/getOne.gql';
 import SAVE from '~/queries/alert/save.gql';
 import UPLOAD from '~/queries/alert/upload.gql';
+
+const { $graphql } = useNuxtApp()
 
 const emptyItem: AlertInterface = {
   id:                  v4(),
@@ -298,355 +293,280 @@ const emptyItem: AlertInterface = {
 
 const supportedEvents = ['follows', 'cheers', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'tips', 'hosts', 'raids', 'cmdredeems', 'rewardredeems'] as const;
 
-export default defineComponent({
-  components: {
-    formEdit: defineAsyncComponent({
-      loader: () => import('~/components/registry/alerts/form.vue'),
-    }),
-    font: defineAsyncComponent({
-      loader: () => import('~/components/form/expansion/font.vue'),
-    }),
-    tts: defineAsyncComponent({
-      loader: () => import('~/components/form/expansion/tts.vue'),
-    }),
-  },
-  setup () {
-    const store = useStore();
-    const router = useRouter();
-    const route = useRoute();
-    const ctx = useContext();
+const store = useStore();
+const router = useRouter();
+const route = useRoute();
 
-    const item = ref(cloneDeep(emptyItem) as AlertInterface);
+const item = ref(cloneDeep(emptyItem) as AlertInterface);
 
-    const loading = ref(true);
+const loading = ref(true);
+const saving = ref(false);
 
-    onMounted(async () => {
-      if (route.value.params.id !== 'new') {
-        const result = await (ctx as any).$graphql.default.request(GET_ONE, {
-          id: route.value.params.id,
-        });
-        if (result.alerts.length === 0) {
-          EventBus.$emit('snack', 'error', 'Data not found.');
-          router.push({
-            path: '/registry/alerts',
-          });
-        }
-        item.value = result.alerts[0];
-        loading.value = false;
+onMounted(async () => {
+  if (route.value.params.id !== 'new') {
+    const result = await $graphql.default.request(GET_ONE, { id: route.value.params.id });
+    if (result.alerts.length === 0) {
+      EventBus.$emit('snack', 'error', 'Data not found.');
+      router.push({ path: '/registry/alerts' });
+    }
+    item.value = result.alerts[0];
+    loading.value = false;
 
-        console.groupCollapsed(`alert::${route.value.params.id}`);
-        console.log(item.value);
-        console.groupEnd();
-      } else {
-        loading.value = false;
-      }
-    });
-
-    const { mutate: uploadMutation, onError: onErrorUpload } = useMutation(UPLOAD);
-    onErrorUpload(error);
-
-    const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(SAVE);
-    onDoneSave((res) => {
-      router.push({
-        params: {
-          id: res.data.alertSave.id,
-        },
-      });
-      EventBus.$emit('snack', 'success', 'Data saved.');
-    });
-    onErrorSave(error);
-
-    const tabs = ref(null);
-    const variantTabs = ref(
-      supportedEvents.map(ev => ({
-        [ev]: 0,
-      })),
-    );
-
-    const form1 = ref(null);
-    const valid1 = ref(true);
-
-    const profanityFilterTypeOptions: { value: string; text: string }[] = [
-      {
-        value: 'disabled', text: translate('registry.alerts.profanityFilterType.disabled'),
-      },
-      {
-        value: 'replace-with-asterisk', text: translate('registry.alerts.profanityFilterType.replace-with-asterisk'),
-      },
-      {
-        value: 'replace-with-happy-words', text: translate('registry.alerts.profanityFilterType.replace-with-happy-words'),
-      },
-      {
-        value: 'hide-messages', text: translate('registry.alerts.profanityFilterType.hide-messages'),
-      },
-      {
-        value: 'disable-alerts', text: translate('registry.alerts.profanityFilterType.disable-alerts'),
-      },
-    ];
-
-    onMounted(() => {
-      store.commit('panel/back', '/registry/alerts');
-    });
-
-    const save = async () => {
-      const isValid = await new Promise((resolve) => {
-        let validation = true;
-        EventBus.$emit('alert::validate', (_isValid: boolean) => {
-          if (!_isValid) {
-            validation = false;
-          }
-        });
-        setTimeout(() => {
-          resolve(validation);
-        }, 100);
-      });
-      if (
-        (form1.value as unknown as HTMLFormElement).validate() && isValid
-      ) {
-        console.log('Saving', item.value);
-        saveMutation({
-          data_json: JSON.stringify({
-            ...item.value, id: item.value.id === 'new' ? v4() : item.value.id,
-          }),
-        });
-      }
-    };
-
-    const newAlert = async (event: typeof supportedEvents[number]) => {
-      const [defaultJs, defaultHtml] = await Promise.all([
-        new Promise<string>((resolve) => {
-          fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/alerts-js.txt')
-            .then(response => response.text())
-            .then(data => resolve(data));
-        }),
-        new Promise<string>((resolve) => {
-          fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/alerts.txt')
-            .then(response => response.text())
-            .then(data => resolve(data));
-        }),
-      ]);
-      const _default: any = {
-        messageTemplate: '',
-        ttsTemplate:     '',
-
-        id:                   v4(),
-        title:                '',
-        filter:               null,
-        variantAmount:        2,
-        enabled:              true,
-        layout:               '1',
-        animationInDuration:  1000,
-        animationOutDuration: 1000,
-        animationIn:          'fadeIn',
-        animationOut:         'fadeOut',
-        animationText:        'wiggle',
-        animationTextOptions: {
-          speed:            'slow',
-          characters:       '█▓░ </>',
-          maxTimeToDecrypt: 4000,
-        },
-        imageId:      '_default_',
-        imageOptions: {
-          translateX: 0,
-          translateY: 0,
-          scale:      100,
-          loop:       false,
-        },
-        soundId:            '_default_',
-        soundVolume:        20,
-        alertDurationInMs:  10000,
-        alertTextDelayInMs: 1500,
-        enableAdvancedMode: false,
-        advancedMode:       {
-          html: defaultHtml,
-          css:  '',
-          js:   defaultJs,
-        },
-        tts: {
-          enabled:         false,
-          skipUrls:        true,
-          keepAlertShown:  false,
-          minAmountToPlay: 0,
-        },
-        font: null, // no override
-      };
-
-      switch (event) {
-        case 'follows':
-          item.value.follows.push({
-            ..._default,
-            messageTemplate: '{name} is now following!',
-            tts:             {
-              enabled:        false,
-              keepAlertShown: false,
-            },
-          });
-          break;
-        case 'cheers':
-          item.value.cheers.push({
-            ..._default,
-            messageTemplate: '{name} cheered! x{amount}',
-            ttsTemplate:     '{message}',
-            message:         {
-              minAmountToShow: 0,
-              allowEmotes:     {
-                twitch: true, ffz: true, bttv: true,
-              },
-              font: null,
-            },
-          });
-          break;
-        case 'subcommunitygifts':
-          item.value.subcommunitygifts.push({
-            ..._default,
-            messageTemplate: '{name} just gifted {amount} subscribes!',
-          });
-          break;
-        case 'subgifts':
-          item.value.subgifts.push({
-            ..._default,
-            messageTemplate: '{name} just gifted sub to {recipient}! {amount} {monthsName}',
-          });
-          break;
-        case 'rewardredeems':
-          item.value.rewardredeems.push({
-            ..._default,
-            message: {
-              minAmountToShow: 0,
-              allowEmotes:     {
-                twitch: true, ffz: true, bttv: true,
-              },
-              font: null,
-            },
-            messageTemplate: '{name} was redeemed by {recipient}!',
-            ttsTemplate:     '{message}',
-            rewardId:        null,
-            tts:             {
-              enabled:        false,
-              keepAlertShown: false,
-              skipUrls:       true,
-            },
-          });
-          break;
-        case 'cmdredeems':
-          item.value.cmdredeems.push({
-            ..._default,
-            // eslint-disable-next-line no-template-curly-in-string
-            messageTemplate: '{name} was redeemed by {recipient} for x{amount}!',
-            tts:             {
-              enabled:        false,
-              keepAlertShown: false,
-            },
-          });
-          break;
-        case 'subs':
-          item.value.subs.push({
-            ..._default,
-            messageTemplate: '{name} just subscribed!',
-            tts:             {
-              enabled:        false,
-              keepAlertShown: false,
-            },
-          });
-          break;
-        case 'resubs':
-          item.value.resubs.push({
-            ..._default,
-            ttsTemplate:     '{message}',
-            messageTemplate: '{name} just resubscribed! {amount} {monthsName}',
-            message:         {
-              allowEmotes: {
-                twitch: true, ffz: true, bttv: true,
-              },
-              font: null,
-            },
-          });
-          break;
-        case 'tips':
-          item.value.tips.push({
-            ..._default,
-            messageTemplate: '{name} donated {amount}{currency}!',
-            message:         {
-              minAmountToShow: 0,
-              allowEmotes:     {
-                twitch: true, ffz: true, bttv: true,
-              },
-              font: null,
-            },
-          });
-          break;
-        case 'hosts':
-          item.value.hosts.push({
-            ..._default,
-            messageTemplate: '{name} is now hosting my stream with {amount} viewers!',
-          });
-          break;
-        case 'raids':
-          item.value.raids.push({
-            ..._default,
-            messageTemplate: '{name} is raiding with a party of {amount} raiders!',
-          });
-          break;
-      }
-    };
-
-    const removeVariant = (event: keyof typeof supportedEvents, idx: number) => {
-      (item.value as any)[event].splice(idx, 1);
-    };
-
-    const duplicateVariant = async (event: keyof typeof supportedEvents, idx: number) => {
-      console.log('Duplicating variant');
-      const newVariant = cloneDeep((item.value as any)[event][idx]);
-      newVariant.id = v4();
-      newVariant.title = '';
-
-      // remap image and sound
-      const mediaMap = new Map<string, string>();
-      const soundId = newVariant.soundId;
-      const imageId = newVariant.imageId;
-      newVariant.soundId = v4();
-      newVariant.imageId = v4();
-      mediaMap.set(soundId, newVariant.soundId);
-      mediaMap.set(imageId, newVariant.imageId);
-
-      for (const mediaId of mediaMap.keys()) {
-        await new Promise<void>((resolve) => {
-          getBase64FromUrl(`/api/v2/registry/alerts/media/${mediaId}`).then((data) => {
-            uploadMutation({
-              id: mediaMap.get(mediaId), data,
-            }).then(() => resolve());
-          });
-        });
-      }
-
-      (item.value as any)[event].push(newVariant as any);
-    };
-
-    return {
-      // refs
-      saving,
-      loading,
-      form1,
-      valid1,
-      item,
-      tabs,
-      variantTabs,
-      profanityFilterTypeOptions,
-      supportedEvents,
-
-      // rules
-      required,
-
-      // functions
-      save,
-      newAlert,
-      removeVariant,
-      duplicateVariant,
-
-      // others
-      translate,
-      getContrastColor,
-    };
-  },
+    console.groupCollapsed(`alert::${route.value.params.id}`);
+    console.log(item.value);
+    console.groupEnd();
+  } else {
+    loading.value = false;
+  }
 });
+
+const tabs = ref(null);
+const variantTabs = ref(
+  supportedEvents.map(ev => ({ [ev]: 0 })),
+);
+
+const form1 = ref(null);
+const valid1 = ref(true);
+
+const profanityFilterTypeOptions: { value: string; text: string }[] = [
+  { value: 'disabled', text: translate('registry.alerts.profanityFilterType.disabled') },
+  { value: 'replace-with-asterisk', text: translate('registry.alerts.profanityFilterType.replace-with-asterisk') },
+  { value: 'replace-with-happy-words', text: translate('registry.alerts.profanityFilterType.replace-with-happy-words') },
+  { value: 'hide-messages', text: translate('registry.alerts.profanityFilterType.hide-messages') },
+  { value: 'disable-alerts', text: translate('registry.alerts.profanityFilterType.disable-alerts') },
+];
+
+onMounted(() => {
+  store.commit('panel/back', '/registry/alerts');
+});
+
+const save = async () => {
+  const isValid = await new Promise((resolve) => {
+    let validation = true;
+    EventBus.$emit('alert::validate', (_isValid: boolean) => {
+      if (!_isValid) {
+        validation = false;
+      }
+    });
+    setTimeout(() => {
+      resolve(validation);
+    }, 100);
+  });
+  if (
+    (form1.value as unknown as HTMLFormElement).validate() && isValid
+  ) {
+    console.log('Saving', item.value);
+    const data = await $graphql.default.request(SAVE, { data_json: JSON.stringify({ ...item.value, id: item.value.id === 'new' ? v4() : item.value.id }) });
+    router.push({ params: { id: data.alertSave.id } });
+    EventBus.$emit('snack', 'success', 'Data saved.');
+  }
+};
+
+const newAlert = async (event: typeof supportedEvents[number]) => {
+  const [defaultJs, defaultHtml] = await Promise.all([
+    new Promise<string>((resolve) => {
+      fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/alerts-js.txt')
+        .then(response => response.text())
+        .then(data => resolve(data));
+    }),
+    new Promise<string>((resolve) => {
+      fetch((process.env.isNuxtDev ? 'http://localhost:20000/' : '/') + 'assets/alerts.txt')
+        .then(response => response.text())
+        .then(data => resolve(data));
+    }),
+  ]);
+  const _default: any = {
+    messageTemplate: '',
+    ttsTemplate:     '',
+
+    id:                   v4(),
+    title:                '',
+    filter:               null,
+    variantAmount:        2,
+    enabled:              true,
+    layout:               '1',
+    animationInDuration:  1000,
+    animationOutDuration: 1000,
+    animationIn:          'fadeIn',
+    animationOut:         'fadeOut',
+    animationText:        'wiggle',
+    animationTextOptions: {
+      speed:            'slow',
+      characters:       '█▓░ </>',
+      maxTimeToDecrypt: 4000,
+    },
+    imageId:      '_default_',
+    imageOptions: {
+      translateX: 0,
+      translateY: 0,
+      scale:      100,
+      loop:       false,
+    },
+    soundId:            '_default_',
+    soundVolume:        20,
+    alertDurationInMs:  10000,
+    alertTextDelayInMs: 1500,
+    enableAdvancedMode: false,
+    advancedMode:       {
+      html: defaultHtml,
+      css:  '',
+      js:   defaultJs,
+    },
+    tts: {
+      enabled:         false,
+      skipUrls:        true,
+      keepAlertShown:  false,
+      minAmountToPlay: 0,
+    },
+    font: null, // no override
+  };
+
+  switch (event) {
+    case 'follows':
+      item.value.follows.push({
+        ..._default,
+        messageTemplate: '{name} is now following!',
+        tts:             {
+          enabled:        false,
+          keepAlertShown: false,
+        },
+      });
+      break;
+    case 'cheers':
+      item.value.cheers.push({
+        ..._default,
+        messageTemplate: '{name} cheered! x{amount}',
+        ttsTemplate:     '{message}',
+        message:         {
+          minAmountToShow: 0,
+          allowEmotes:     {
+            twitch: true, ffz: true, bttv: true,
+          },
+          font: null,
+        },
+      });
+      break;
+    case 'subcommunitygifts':
+      item.value.subcommunitygifts.push({
+        ..._default,
+        messageTemplate: '{name} just gifted {amount} subscribes!',
+      });
+      break;
+    case 'subgifts':
+      item.value.subgifts.push({
+        ..._default,
+        messageTemplate: '{name} just gifted sub to {recipient}! {amount} {monthsName}',
+      });
+      break;
+    case 'rewardredeems':
+      item.value.rewardredeems.push({
+        ..._default,
+        message: {
+          minAmountToShow: 0,
+          allowEmotes:     {
+            twitch: true, ffz: true, bttv: true,
+          },
+          font: null,
+        },
+        messageTemplate: '{name} was redeemed by {recipient}!',
+        ttsTemplate:     '{message}',
+        rewardId:        null,
+        tts:             {
+          enabled:        false,
+          keepAlertShown: false,
+          skipUrls:       true,
+        },
+      });
+      break;
+    case 'cmdredeems':
+      item.value.cmdredeems.push({
+        ..._default,
+        // eslint-disable-next-line no-template-curly-in-string
+        messageTemplate: '{name} was redeemed by {recipient} for x{amount}!',
+        tts:             {
+          enabled:        false,
+          keepAlertShown: false,
+        },
+      });
+      break;
+    case 'subs':
+      item.value.subs.push({
+        ..._default,
+        messageTemplate: '{name} just subscribed!',
+        tts:             {
+          enabled:        false,
+          keepAlertShown: false,
+        },
+      });
+      break;
+    case 'resubs':
+      item.value.resubs.push({
+        ..._default,
+        ttsTemplate:     '{message}',
+        messageTemplate: '{name} just resubscribed! {amount} {monthsName}',
+        message:         {
+          allowEmotes: {
+            twitch: true, ffz: true, bttv: true,
+          },
+          font: null,
+        },
+      });
+      break;
+    case 'tips':
+      item.value.tips.push({
+        ..._default,
+        messageTemplate: '{name} donated {amount}{currency}!',
+        message:         {
+          minAmountToShow: 0,
+          allowEmotes:     {
+            twitch: true, ffz: true, bttv: true,
+          },
+          font: null,
+        },
+      });
+      break;
+    case 'hosts':
+      item.value.hosts.push({
+        ..._default,
+        messageTemplate: '{name} is now hosting my stream with {amount} viewers!',
+      });
+      break;
+    case 'raids':
+      item.value.raids.push({
+        ..._default,
+        messageTemplate: '{name} is raiding with a party of {amount} raiders!',
+      });
+      break;
+  }
+};
+
+const removeVariant = (event: keyof typeof supportedEvents, idx: number) => {
+  (item.value as any)[event].splice(idx, 1);
+};
+
+const duplicateVariant = async (event: keyof typeof supportedEvents, idx: number) => {
+  console.log('Duplicating variant');
+  const newVariant = cloneDeep((item.value as any)[event][idx]);
+  newVariant.id = v4();
+  newVariant.title = '';
+
+  // remap image and sound
+  const mediaMap = new Map<string, string>();
+  const soundId = newVariant.soundId;
+  const imageId = newVariant.imageId;
+  newVariant.soundId = v4();
+  newVariant.imageId = v4();
+  mediaMap.set(soundId, newVariant.soundId);
+  mediaMap.set(imageId, newVariant.imageId);
+
+  for (const mediaId of mediaMap.keys()) {
+    await new Promise<void>((resolve) => {
+      getBase64FromUrl(`/api/v2/registry/alerts/media/${mediaId}`).then((data) => {
+        $graphql.default.request(UPLOAD, { id: mediaMap.get(mediaId), data }).then(() => resolve());
+      });
+    });
+  }
+
+  (item.value as any)[event].push(newVariant as any);
+};
 </script>

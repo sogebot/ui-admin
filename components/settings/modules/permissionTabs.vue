@@ -11,31 +11,19 @@
   </div>
 </template>
 
-<script lang="ts">
-import { useQuery, useResult } from '@vue/apollo-composable';
-import {
-  defineAsyncComponent, defineComponent, ref,
-} from '@vue/composition-api';
+<script setup lang="ts">
+import { PermissionsInterface } from '@entity/permissions';
 import gql from 'graphql-tag';
 
-import { PermissionsInterface } from '@entity/permissions';
+const { $graphql } = useNuxtApp();
+const permissions = ref([] as PermissionsInterface[]);
+const tab = ref(0);
 
-export default defineComponent({
-  props:      { ignored: Array },
-  components: { loading: defineAsyncComponent(() => import('~/components/loading.vue')) },
-  setup () {
-    const { result } = useQuery(gql`
-      query {
-        permissions { id name order }
-      }
-    `);
-    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
-    const tab = ref(0);
-
-    return {
-      permissions,
-      tab,
-    };
-  },
-});
+onMounted(async () => {
+  permissions.value = (await $graphql.default.request(gql`
+  query {
+    permissions { id name order }
+  }
+`)).permissions;
+})
 </script>

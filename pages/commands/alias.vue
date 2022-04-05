@@ -12,7 +12,7 @@
           <v-col cols="auto" align-self="center">
             <v-row dense>
               <v-col v-if="selected.length > 0" cols="auto" class="pr-1">
-                <alias-batch
+                <manage-alias-batch
                   :length="selected.length"
                   :permission-items="permissionItems"
                   :group-items="groupItems"
@@ -76,18 +76,18 @@
       @current-items="saveCurrentItems"
     >
       <template #top>
-        <search-bar :search.sync="search">
-          <alias-edit
+        <table-search-bar :search.sync="search">
+          <manage-alias-edit
             :rules="rules"
             :permission-items="permissionItems"
             :group-items="groupItems"
             @save="refetch()"
           />
-        </search-bar>
+        </table-search-bar>
       </template>
 
       <template #[`group.header`]="{ items, isOpen, toggle }">
-        <group-header
+        <table-group-header
           :is-open="isOpen"
           :toggle="toggle"
           :get-group="getGroup"
@@ -96,7 +96,7 @@
           :items="items"
         >
           <template #config>
-            <group-config
+            <manage-alias-group-config
               v-if="items[0].group"
               :key="items[0].group"
               :permission-items="permissionItems"
@@ -105,13 +105,13 @@
               @save="updateGroup(items[0].group, $event)"
             />
           </template>
-        </group-header>
+        </table-group-header>
       </template>
 
       <template #[`item`]="{ item }">
-        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem(selected, 'id', currentItems)">
           <template #actions>
-            <alias-edit
+            <manage-alias-edit
               :rules="rules"
               :value="item"
               :permission-items="permissionItems"
@@ -151,16 +151,10 @@
   </v-container>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { AliasGroupInterface, AliasInterface } from '@entity/alias';
 import type { PermissionsInterface } from '@entity/permissions';
-import {
-  computed, defineAsyncComponent, defineComponent, ref, useContext, watch,
-} from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import {
   capitalize, isEqual, orderBy,
@@ -170,7 +164,6 @@ import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error as errorLog } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
-import { truncate } from '~/functions/truncate';
 import {
   minLength, required, startsWith,
 } from '~/functions/validators';
@@ -178,264 +171,202 @@ import GET_ALL from '~/queries/alias/getAll.gql';
 
 export type AliasInterfaceUI = AliasInterface & { __typename: string };
 
-export default defineComponent({
-  components: {
-    'group-config': defineAsyncComponent(() => import('~/components/manage/alias/groupConfig.vue')),
-    'alias-edit':   defineAsyncComponent(() => import('~/components/manage/alias/aliasEdit.vue')),
-    'group-header': defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
-    'search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
-    'alias-batch':  defineAsyncComponent(() => import('~/components/manage/alias/aliasBatch.vue')),
-    'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
-  },
-  setup () {
-    const { result, loading, error, refetch } = useQuery(GET_ALL);
-    const groups = useResult<{aliasGroup: AliasGroupInterface[] }, AliasGroupInterface[], AliasGroupInterface[]>(result, [], data => data.aliasGroup);
-    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
-    const items = useResult<{ aliases: AliasInterfaceUI[] }, AliasInterfaceUI[], AliasInterfaceUI[]>(result, [], (data) => {
-      const output = orderBy(data.aliases, 'alias', 'asc');
+const { $graphql } = useNuxtApp()
 
-      // we also need to reset selection values
-      if (selected.value.length > 0) {
-        selected.value.forEach((selectedItem, index) => {
-          selectedItem = output.find(o => o.id === selectedItem.id) || selectedItem;
-          selected.value[index] = selectedItem;
-        });
-      }
-      return output;
+const loading = ref(true);
+const items = ref([] as AliasInterfaceUI[]);
+const groups = ref([] as AliasGroupInterface[]);
+const permissions = ref([] as PermissionsInterface[]);
+const refetch = async () => {
+  const data = await $graphql.default.request(GET_ALL);
+  // we also need to reset selection values
+  if (selected.value.length > 0) {
+    selected.value.forEach((selectedItem, index) => {
+      selectedItem = output.find(o => o.id === selectedItem.id) || selectedItem;
+      selected.value[index] = selectedItem;
     });
-    watch(error, val => errorLog(val?.message ?? ''));
+  }
 
-    const { mutate: updateGroupMutation, onDone: onDoneUpdateGroup, onError: onErrorUpdateGroup } = useMutation(gql`
-      mutation setAliasGroup($name: String!, $data: String!) {
-        setAliasGroup(name: $name, data: $data) {
-          name
+  items.value = orderBy(data.aliases, 'alias', 'asc');
+  groups.value = data.aliasGroup;
+  permissions.value = data.permissions;
+  loading.value = false;
+};
+
+watch(error, val => errorLog(val?.message ?? ''));
+
+const selected = ref([] as AliasInterfaceUI[]);
+const deleteDialog = ref(false);
+
+const currentItems = ref([] as AliasInterfaceUI[]);
+const saveCurrentItems = (value: AliasInterfaceUI[]) => {
+  currentItems.value = value;
+};
+
+const rules = {
+  alias:   [startsWith(['!']), required],
+  command: [startsWith(['!', '$_']), minLength(2)],
+};
+
+const search = ref('');
+
+const permissionItems = computed(() => {
+  return [
+    {
+      text:     '-- unset --',
+      value:    null,
+      disabled: false,
+    },
+    ...permissions.value.map(item => ({
+      text:     item.name,
+      value:    item.id,
+      disabled: false,
+    })),
+  ];
+});
+const groupItems = computed(() => {
+  return [
+    '-- unset --', ...new Set(items.value.filter(o => o.group !== null).map(o => o.group).sort())].map(item => ({
+    text:     item,
+    value:    item === '-- unset --' ? null : item,
+    disabled: false,
+  }));
+});
+
+const isGroupSelected = (group: string) => {
+  for (const item of items.value.filter(o => o.group === group)) {
+    if (!selected.value.find(o => o.id === item.id)) {
+      return false;
+    }
+  }
+  return true;
+};
+const toggleGroupSelection = (group: string) => {
+  if (isGroupSelected(group)) {
+    // deselect all
+    selected.value = selected.value.filter(o => o.group !== group);
+  } else {
+    for (const item of items.value.filter(o => o.group === group)) {
+      if (!selected.value.find(o => o.id === item.id)) {
+        selected.value.push(item);
+      }
+    }
+  }
+};
+
+const headers = [
+  {
+    value: 'alias', text: translate('alias'), width: '15rem',
+  },
+  { value: 'permission', text: translate('permission') },
+  {
+    value: 'enabled', text: translate('enabled'), align: 'center',
+  },
+  {
+    value: 'visible', text: capitalize(translate('visible')), align: 'center',
+  },
+  { value: 'actions', sortable: false },
+];
+
+const headersDelete = [
+  { value: 'alias', text: translate('alias') },
+  { value: 'command', text: translate('command') },
+];
+const batchUpdate = (value: Record<string, any>) => {
+  // check validity
+  for (const toUpdate of selected.value) {
+    const item = items.value.find(o => o.id === toUpdate.id);
+    if (!item) {
+      continue;
+    }
+
+    let isValid = true;
+    for (const key of Object.keys(rules)) {
+      for (const rule of (rules as any)[key]) {
+        const ruleStatus = rule((toUpdate as any)[key]);
+        if (ruleStatus === true) {
+          continue;
+        } else {
+          EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
+          isValid = false;
         }
-      }`);
-    onDoneUpdateGroup(saveSuccess);
-    onErrorUpdateGroup(errorLog);
-    const { mutate: updateMutation, onDone: onDoneUpdate, onError: onErrorUpdate } = useMutation(gql`
+      }
+    }
+
+    if (isValid) {
+      for (const key of Object.keys(value)) {
+        if (typeof value[key] !== 'undefined') {
+          (item as any)[key] = value[key];
+        }
+      }
+      const { __typename, id, ...data } = item;
+      console.log('Updating', { data });
+      $graphql.default.request(gql`
       mutation setAlias($id: String!, $data: AliasInput!) {
         setAlias(id: $id, data: $data) {
           id
         }
-      }`);
-    function saveSuccess () {
-      EventBus.$emit('snack', 'success', 'Data updated.');
-      refetch();
+      }`, { id, data }).then(() => saveSuccess());
     }
-    onDoneUpdate(saveSuccess);
-    onErrorUpdate(errorLog);
+  }
+};
 
-    const { mutate: removeMutation, onDone: onDoneRemove, onError: onErrorRemove } = useMutation(gql`
+const deleteSelected = () => {
+  deleteDialog.value = false;
+  selected.value.forEach((item) => {
+    $graphql.default.request(gql`
       mutation removeAlias($id: String!) {
         removeAlias(id: $id)
-      }`);
-    onDoneRemove(saveSuccess);
-    onErrorRemove(errorLog);
+      }`, { id: item.id });
+  });
+  saveSuccess();
+  selected.value = [];
+};
 
-    const selected = ref([] as AliasInterfaceUI[]);
-    const deleteDialog = ref(false);
-
-    const currentItems = ref([] as AliasInterfaceUI[]);
-    const saveCurrentItems = (value: AliasInterfaceUI[]) => {
-      currentItems.value = value;
-    };
-
-    const rules = {
-      alias:   [startsWith(['!']), required],
-      command: [startsWith(['!', '$_']), minLength(2)],
-    };
-
-    const search = ref('');
-
-    const truncateLength = computed(() => {
-      const breakpoint = useContext().$vuetify.breakpoint;
-      if (breakpoint.mobile) {
-        return 50;
-      } else {
-        return 500;
+const getGroup = computed<{ [name: string]: AliasGroupInterface }>({
+  get () {
+    // set empty groups from aliases
+    const returnGroups: { [name: string]: AliasGroupInterface } = {};
+    for (const item of items.value) {
+      if (item.group && !returnGroups[item.group]) {
+        const group = groups.value.find(o => o.name === item.group);
+        returnGroups[item.group] = {
+          name:    item.group,
+          options: group?.options ?? {
+            filter:     null,
+            permission: null,
+          },
+        };
       }
-    });
-
-    const permissionItems = computed(() => {
-      return [
-        {
-          text:     '-- unset --',
-          value:    null,
-          disabled: false,
-        },
-        ...permissions.value.map(item => ({
-          text:     item.name,
-          value:    item.id,
-          disabled: false,
-        })),
-      ];
-    });
-    const groupItems = computed(() => {
-      return [
-        '-- unset --', ...new Set(items.value.filter(o => o.group !== null).map(o => o.group).sort())].map(item => ({
-        text:     item,
-        value:    item === '-- unset --' ? null : item,
-        disabled: false,
-      }));
-    });
-
-    const isGroupSelected = (group: string) => {
-      for (const item of items.value.filter(o => o.group === group)) {
-        if (!selected.value.find(o => o.id === item.id)) {
-          return false;
-        }
-      }
-      return true;
-    };
-    const toggleGroupSelection = (group: string) => {
-      if (isGroupSelected(group)) {
-        // deselect all
-        selected.value = selected.value.filter(o => o.group !== group);
-      } else {
-        for (const item of items.value.filter(o => o.group === group)) {
-          if (!selected.value.find(o => o.id === item.id)) {
-            selected.value.push(item);
-          }
-        }
-      }
-    };
-
-    const headers = [
-      {
-        value: 'alias', text: translate('alias'), width: '15rem',
-      },
-      { value: 'permission', text: translate('permission') },
-      {
-        value: 'enabled', text: translate('enabled'), align: 'center',
-      },
-      {
-        value: 'visible', text: capitalize(translate('visible')), align: 'center',
-      },
-      { value: 'actions', sortable: false },
-    ];
-
-    const headersDelete = [
-      { value: 'alias', text: translate('alias') },
-      { value: 'command', text: translate('command') },
-    ];
-    const batchUpdate = (value: Record<string, any>) => {
-      // check validity
-      for (const toUpdate of selected.value) {
-        const item = items.value.find(o => o.id === toUpdate.id);
-        if (!item) {
-          continue;
-        }
-
-        let isValid = true;
-        for (const key of Object.keys(rules)) {
-          for (const rule of (rules as any)[key]) {
-            const ruleStatus = rule((toUpdate as any)[key]);
-            if (ruleStatus === true) {
-              continue;
-            } else {
-              EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-              isValid = false;
-            }
-          }
-        }
-
-        if (isValid) {
-          for (const key of Object.keys(value)) {
-            if (typeof value[key] !== 'undefined') {
-              (item as any)[key] = value[key];
-            }
-          }
-          const { __typename, id, ...data } = item;
-          console.log('Updating', { data });
-          updateMutation({ id, data });
-        }
-      }
-    };
-
-    const deleteSelected = () => {
-      deleteDialog.value = false;
-      selected.value.forEach((item) => {
-        removeMutation({ id: item.id });
-      });
-      selected.value = [];
-    };
-
-    const getGroup = computed<{ [name: string]: AliasGroupInterface }>({
-      get () {
-        // set empty groups from aliases
-        const returnGroups: { [name: string]: AliasGroupInterface } = {};
-        for (const item of items.value) {
-          if (item.group && !returnGroups[item.group]) {
-            const group = groups.value.find(o => o.name === item.group);
-            returnGroups[item.group] = {
-              name:    item.group,
-              options: group?.options ?? {
-                filter:     null,
-                permission: null,
-              },
-            };
-          }
-        }
-        return returnGroups;
-      },
-      set (value: { [name: string]: AliasGroupInterface }) {
-        // go through groups and save only changed
-        for (const groupName of Object.keys(getGroup.value)) {
-          if (!isEqual(getGroup.value[groupName], value[groupName])) {
-            updateGroupMutation({
-              name: groupName,
-              data: JSON.stringify(value[groupName].options),
-            }, { refetchQueries: [{ query: GET_ALL }] });
-          }
-        }
-        return true;
-      },
-    });
-
-    function updateGroup (groupName: string, options: { permission: null | string, filter: null | string }) {
-      getGroup.value = {
-        ...getGroup.value,
-        [groupName]: {
-          name: groupName,
-          options,
-        },
-      };
     }
-
-    return {
-      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
-      saveCurrentItems,
-      capitalize,
-      result,
-      items,
-      permissions,
-      search,
-      headers,
-      headersDelete,
-      groupItems,
-      deleteSelected,
-      translate,
-      getPermissionName,
-      truncate,
-      truncateLength,
-      loading,
-      groups,
-      getGroup,
-      updateGroup,
-      refetch,
-      batchUpdate,
-
-      selected,
-      deleteDialog,
-      permissionItems,
-
-      rules,
-      isGroupSelected,
-      toggleGroupSelection,
-
-      saveSuccess,
-    };
+    return returnGroups;
+  },
+  set (value: { [name: string]: AliasGroupInterface }) {
+    // go through groups and save only changed
+    for (const groupName of Object.keys(getGroup.value)) {
+      if (!isEqual(getGroup.value[groupName], value[groupName])) {
+        $graphql.default.request(gql`
+      mutation setAliasGroup($name: String!, $data: String!) {
+        setAliasGroup(name: $name, data: $data) {
+          name
+        }
+      }`, {
+          name: groupName,
+          data: JSON.stringify(value[groupName].options),
+        }).then(() => refetch());
+      }
+    }
+    return true;
   },
 });
+
+function updateGroup (groupName: string, options: { permission: null | string, filter: null | string }) {
+  getGroup.value = {
+    ...getGroup.value,
+    [groupName]: {
+      name: groupName,
+      options,
+    },
+  };
+}
 </script>

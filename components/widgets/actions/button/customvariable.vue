@@ -102,116 +102,90 @@
   </div>
 </template>
 
-<script lang="ts">
-import { useMutation, useQuery } from '@vue/apollo-composable';
-import {
-  defineComponent, ref, watch,
-} from '@vue/composition-api';
+<script setup lang="ts">
+import { VariableInterface } from '@entity/variable';
 import gql from 'graphql-tag';
 import { debounce } from 'lodash';
 
-import { VariableInterface } from '@entity/variable';
+const { $graphql } = useNuxtApp();
+const props = defineProps<{
+  item: Record<string, any>,
+  dialog: boolean,
+  color: string,
+  editing: boolean,
+}>();
 
-export default defineComponent({
-  props: {
-    item: Object, dialog: Boolean, color: String, editing: Boolean,
-  },
-  setup (props: {
-    item: Record<string, any>,
-    dialog: boolean,
-    color: string,
-    editing: boolean,
-  }, ctx) {
-    const { result } = useQuery(gql`
+const customVariable = ref(null as VariableInterface | null);
+const refresh = async () => {
+  customVariable.value = (await $graphql.default.request(gql`
       query customVariable($name: String!) {
         customVariable(name: $name) { id currentValue type }
       }
-    `, {
-      name: props.item.options.customvariable,
-    }, {
-      pollInterval: 5000,
-    });
-    watch(result, (value) => {
-      if (value) {
-        customVariable.value = value.customVariable[0];
+    `, { name: props.item.options.customvariable })).customVariable[0];
+  loading.value = false;
+  setTimeout(() => refresh(), 5000);
+};
+
+onMounted(() => {
+  refresh();
+});
+
+const selected = ref(props.item.selected);
+watch(selected, (val) => {
+  ctx.emit(val ? 'select' : 'unselect');
+});
+
+const showMenu = ref(false);
+
+const showDialog = () => {
+  ctx.emit('update:dialog', true);
+};
+
+const debouncedTrigger = debounce((ev: MouseEvent, value?: string) => trigger(ev, value), 1000);
+const trigger = (ev: MouseEvent, value?: string) => {
+  if (customVariable.value && (customVariable.value.type === 'options' || customVariable.value.type === 'text')) {
+    if (typeof value === 'undefined') {
+      showMenu.value = !showMenu.value;
+    } else {
+      console.log(`quickaction::trigger::${props.item.id}`);
+      customVariable.value.currentValue = value;
+      triggerMutation({ id: props.item.id, value: value.trim() });
+    }
+  } else if (customVariable.value && customVariable.value.type === 'number') {
+    // determinate which part of button is pushed
+    const card = document.getElementById(`quickaction-${props.item.id}`) as HTMLElement;
+    const text = document.getElementsByClassName(`text`)[0] as HTMLElement;
+
+    const getClassList = (el: Element) => {
+      if (el.tagName === 'path') {
+        return (Array.from(el.parentElement?.parentElement?.classList ?? []));
+      } if (el.tagName === 'SPAN') {
+        return (Array.from(el.classList ?? []));
+      } else {
+        return (Array.from(el.parentElement?.classList ?? []));
       }
-    });
-    const { mutate: triggerMutation } = useMutation(gql`
-      mutation quickActionTrigger($id: String!, $value: String!) {
-        quickActionTrigger(id: $id, value: $value)
-      }`);
-
-    const selected = ref(props.item.selected);
-    watch(selected, (val) => {
-      ctx.emit(val ? 'select' : 'unselect');
-    });
-
-    const customVariable = ref(null as VariableInterface | null);
-    const showMenu = ref(false);
-
-    const showDialog = () => {
-      ctx.emit('update:dialog', true);
     };
 
-    const debouncedTrigger = debounce((ev: MouseEvent, value?: string) => trigger(ev, value), 1000);
-    const trigger = (ev: MouseEvent, value?: string) => {
-      if (customVariable.value && (customVariable.value.type === 'options' || customVariable.value.type === 'text')) {
-        if (typeof value === 'undefined') {
-          showMenu.value = !showMenu.value;
-        } else {
-          console.log(`quickaction::trigger::${props.item.id}`);
-          customVariable.value.currentValue = value;
-          triggerMutation({
-            id: props.item.id, value: value.trim(),
-          });
-        }
-      } else if (customVariable.value && customVariable.value.type === 'number') {
-        // determinate which part of button is pushed
-        const card = document.getElementById(`quickaction-${props.item.id}`) as HTMLElement;
-        const text = document.getElementsByClassName(`text`)[0] as HTMLElement;
+    const mouseOffsetX = ev.offsetX;
+    const isText = getClassList(ev.target as Element).includes('text');
 
-        const getClassList = (el: Element) => {
-          if (el.tagName === 'path') {
-            return (Array.from(el.parentElement?.parentElement?.classList ?? []));
-          } if (el.tagName === 'SPAN') {
-            return (Array.from(el.classList ?? []));
-          } else {
-            return (Array.from(el.parentElement?.classList ?? []));
-          }
-        };
-
-        const mouseOffsetX = ev.offsetX;
-        const isText = getClassList(ev.target as Element).includes('text');
-
-        const isDecrement = !getClassList(ev.target as Element).includes('plus')
+    const isDecrement = !getClassList(ev.target as Element).includes('plus')
           && (getClassList(ev.target as Element).includes('minus') || mouseOffsetX < ((isText ? text.clientWidth : card.clientWidth) / 2));
 
-        customVariable.value.currentValue = String(isDecrement
-          ? Number(customVariable.value.currentValue) - 1
-          : Number(customVariable.value.currentValue) + 1);
-        console.log(`quickaction::trigger::${props.item.id}`);
-        triggerMutation({
-          id: props.item.id, value: isDecrement ? '-1' : '+1',
-        });
-      } else {
-        console.log(`quickaction::trigger::${props.item.id}`);
-        triggerMutation({
-          id: props.item.id,
-        });
-      }
-    };
-
-    return {
-      // refs
-      showMenu,
-      customVariable,
-      selected,
-
-      // functions
-      trigger,
-      debouncedTrigger,
-      showDialog,
-    };
-  },
-});
+    customVariable.value.currentValue = String(isDecrement
+      ? Number(customVariable.value.currentValue) - 1
+      : Number(customVariable.value.currentValue) + 1);
+    console.log(`quickaction::trigger::${props.item.id}`);
+    $graphql.default.request(gql`
+      mutation quickActionTrigger($id: String!, $value: String!) {
+        quickActionTrigger(id: $id, value: $value)
+      }`, { id: props.item.id, value: isDecrement ? '-1' : '+1' });
+  } else {
+    console.log(`quickaction::trigger::${props.item.id}`);
+    $graphql.default.request(gql`
+      mutation quickActionTrigger($id: String!, $value: String!) {
+        quickActionTrigger(id: $id, value: $value)
+      }`, { id: props.item.id });
+  }
+};
 </script>

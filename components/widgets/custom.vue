@@ -1,5 +1,12 @@
 <template>
-  <v-card id="27ff4cdf-2ffc-4c14-b619-c1660f5e0491" width="100%" :height="isPopout ? '100%' : undefined" :loading="loading" style="overflow: inherit;" flat>
+  <v-card
+    id="27ff4cdf-2ffc-4c14-b619-c1660f5e0491"
+    width="100%"
+    :height="isPopout ? '100%' : undefined"
+    :loading="loading"
+    style="overflow: inherit;"
+    flat
+  >
     <v-tabs
       v-model="tab"
       height="36"
@@ -47,73 +54,41 @@
         </v-tabs-items>
       </v-card-text>
     </v-slide-y-transition>
-    <edit :key="dialog" :dialog.sync="dialog" />
+    <widgets-custom-edit :key="dialog" :dialog.sync="dialog" />
   </v-card>
 </template>
 
-<script lang="ts">
-import {
-  computed,
-  defineAsyncComponent,
-  defineComponent, onMounted, ref, watch,
-} from '@nuxtjs/composition-api';
-import translate from '@sogebot/ui-helpers/translate';
-import { useQuery, useResult } from '@vue/apollo-composable';
+<script setup lang="ts">
+import type { WidgetCustomInterface } from '@entity/widget';
 import gql from 'graphql-tag';
 
-import { error } from '../../functions/error';
+const loading = ref(true);
+const items = ref([] as Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[]);
 
-import type { WidgetCustomInterface } from '@entity/widget';
+const isPopout = computed(() => location.href.includes('popout'));
+const show = ref(false);
 
-export default defineComponent({
-  props: {
-    height: Number,
-  },
-  components: {
-    edit: defineAsyncComponent({
-      loader: () => import('~/components/widgets/custom/edit.vue'),
-    }),
-  },
-  setup () {
-    const { result, loading, refetch, onError } = useQuery(gql`
+const dialog = ref(false);
+
+const tab = ref('0');
+
+watch(dialog, (val) => {
+  if (!val) {
+    refetch();
+  }
+});
+
+const refresh = async () => {
+  items.value = (await $graphql.default.request(gql`
       query { widgetCustomGet { id url name } }
-    `);
-    onError(error);
-    const items = useResult<{ widgetCustomGet: Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[] }, Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[], Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[]>(result, [], data => data.widgetCustomGet);
+    `)).widgetCustomGet;
+  loading.value = false;
+};
 
-    const isPopout = computed(() => location.href.includes('popout'));
-    const show = ref(false);
-
-    const dialog = ref(false);
-
-    const tab = ref('0');
-
-    watch(dialog, (val) => {
-      if (!val) {
-        refetch();
-      }
-    });
-
-    onMounted(() => {
-      setTimeout(() => {
-        show.value = true;
-      }, 100);
-    });
-
-    return {
-      // refs
-      isPopout,
-      tab,
-      dialog,
-      items,
-      show,
-      loading,
-
-      // functions
-
-      // helpers
-      translate,
-    };
-  },
+onMounted(() => {
+  refresh();
+  setTimeout(() => {
+    show.value = true;
+  }, 100);
 });
 </script>

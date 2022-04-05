@@ -15,53 +15,46 @@
   </v-expansion-panels>
 </template>
 
-<script lang="ts">
-import {
-  computed,
-  defineComponent, ref, watch,
-} from '@nuxtjs/composition-api';
-import translate from '@sogebot/ui-helpers/translate';
-import { useQuery, useResult } from '@vue/apollo-composable';
+<script setup lang="ts">
+import type { AlertInterface } from '@entity/alert';
 import {
   defaults, isEqual, pick,
 } from 'lodash';
 
-import type { AlertInterface } from '@entity/alert';
 import GET_ALL from '~/queries/alert/getAll.gql';
 
-export default defineComponent({
-  props: { value: [Object, Array] },
-  setup (props: any, ctx) {
-    const { result, loading } = useQuery(GET_ALL, null, { pollInterval: 5000 });
-    const items = useResult<{alerts: AlertInterface[] }, AlertInterface[], AlertInterface[]>(result, [], data => data.alerts);
+const { $graphql } = useNuxtApp();
+const props = defineProps({ value: [Object, Array] });
 
-    const itemsOptions = computed(() => {
-      return items.value.map(o => ({
-        value: o.id,
-        text:  o.name,
-      }));
-    });
+const loading = ref(true);
+const items = ref([] as AlertInterface[]);
+const refresh = async () => {
+  items.value = (await $graphql.default.request(GET_ALL)).alerts;
+  loading.value = false;
+  setTimeout(() => refresh(), 5000);
+};
 
-    const model = ref(0);
-    const options = ref(
-      pick(
-        defaults(Array.isArray(props.value) ? null : props.value, { id: '' }),
-        ['id'],
-      ));
-
-    watch(options, (val: any) => {
-      if (!isEqual(props.value, options.value)) {
-        ctx.emit('input', val);
-      }
-    }, { deep: true, immediate: true });
-
-    return {
-      model,
-      options,
-      loading,
-      translate,
-      itemsOptions,
-    };
-  },
+const itemsOptions = computed(() => {
+  return items.value.map(o => ({
+    value: o.id,
+    text:  o.name,
+  }));
 });
+
+onMounted(() => {
+  refresh();
+});
+
+const model = ref(0);
+const options = ref(
+  pick(
+    defaults(Array.isArray(props.value) ? null : props.value, { id: '' }),
+    ['id'],
+  ));
+
+watch(options, (val: any) => {
+  if (!isEqual(props.value, options.value)) {
+    ctx.emit('input', val);
+  }
+}, { deep: true, immediate: true });
 </script>

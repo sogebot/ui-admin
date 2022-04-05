@@ -70,111 +70,66 @@
   </v-dialog>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent, ref, watch,
-} from '@nuxtjs/composition-api';
+<script setup lang="ts">
+import { WidgetCustomInterface } from '@entity/widget';
 import translate from '@sogebot/ui-helpers/translate';
-import { useMutation, useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
-import { error } from '../../../functions/error';
-
-import { WidgetCustomInterface } from '@entity/widget';
-
-type Props = {
+const { $graphql } = useNuxtApp();
+const props = defineProps<{
   dialog: boolean,
+}>();
+
+const loading = ref(true);
+const items = ref([] as Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[]);
+const refetch = async () => {
+  items.value = (await $graphql.default.request(gql`
+      query widgetCustomGetInEdit { widgetCustomGet { id url name } }
+    `)).widgetCustomGet;
+  loading.value = false;
 };
 
-export default defineComponent({
-  props: {
-    dialog: Boolean,
-  },
-  setup (props: Props, ctx) {
-    const { loading, onError, refetch, onResult } = useQuery(gql`
-      query widgetCustomGetInEdit { widgetCustomGet { id url name } }
-    `);
-    onResult((value) => {
-      items.value = value.data.widgetCustomGet;
-    });
-    onError(error);
-    const items = ref([] as Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[]);
+const dialogController = ref(props.dialog);
+const markedToDelete = ref([] as string[]);
 
-    const { mutate: updateMutation, onDone: onDoneUpdate, onError: onErrorUpdate, loading: saving } = useMutation(gql`
+watch(dialogController, (val) => {
+  ctx.emit('update:dialog', val);
+});
+
+const save = () => {
+  markedToDelete.value.forEach((id) => {
+    $graphql.default.request(gql`mutation widgetCustomRemove($id: String!) { widgetCustomRemove(id: $id) }`,
+      { id });
+  });
+  items.value.forEach((item) => {
+    const { id, name, url } = item;
+    $graphql.default.request(gql`
       mutation widgetCustomSet($id: String!, $data: WidgetCustomInput!) {
           widgetCustomSet(id: $id, data: $data) {
             id
           }
-        }`);
-    onDoneUpdate(() => {
-      ctx.emit('save');
-      refetch();
+        }`, {
+      id,
+      data: { name, url },
     });
-    onErrorUpdate(error);
-    const { mutate: removeMutation, onDone: onDoneRemove, onError: onErrorRemove, loading: removing } = useMutation(gql`
-      mutation widgetCustomRemove($id: String!) { widgetCustomRemove(id: $id) }`);
-    onDoneRemove(() => {
-      ctx.emit('save');
-      refetch();
-    });
-    onErrorRemove(error);
+  });
+  markedToDelete.value = [];
+  dialogController.value = false;
+  ctx.emit('save');
+  refetch();
+};
 
-    const dialogController = ref(props.dialog);
-    const valid = ref(true);
-    const markedToDelete = ref([] as string[]);
+const addItem = () => {
+  items.value.push({
+    id:   v4(),
+    name: '',
+    url:  '',
+  });
+};
 
-    watch(dialogController, (val) => {
-      ctx.emit('update:dialog', val);
-    });
-
-    const save = () => {
-      markedToDelete.value.forEach((id) => {
-        removeMutation({
-          id,
-        });
-      });
-      items.value.forEach((item) => {
-        const { id, name, url } = item;
-        updateMutation({
-          id,
-          data: {
-            name, url,
-          },
-        });
-      });
-      markedToDelete.value = [];
-      dialogController.value = false;
-    };
-
-    const addItem = () => {
-      items.value.push({
-        id:   v4(),
-        name: '',
-        url:  '',
-      });
-    };
-
-    const rmItem = (id: string) => {
-      items.value = items.value.filter(o => o.id !== id);
-      markedToDelete.value.push(id);
-    };
-
-    return {
-      // refs
-      dialogController,
-      items,
-      valid,
-      loading,
-      saving,
-      removing,
-
-      // functions
-      translate,
-      save,
-      addItem,
-      rmItem,
-    };
-  },
-});
+const rmItem = (id: string) => {
+  items.value = items.value.filter(o => o.id !== id);
+  markedToDelete.value.push(id);
+};
 </script>

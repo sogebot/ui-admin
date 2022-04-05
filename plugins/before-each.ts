@@ -1,4 +1,3 @@
-import { Context } from '@nuxt/types';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash';
 import { validate } from 'uuid';
@@ -7,7 +6,7 @@ const haveTranslation = (o: string) => {
   return !translate(`menu.${o}`).startsWith('{');
 };
 
-export default ({ app: { store, router } }: Context) => {
+export default ({ app: { store, router } }) => {
   if (!(router && store)) {
     return;
   }

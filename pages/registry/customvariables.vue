@@ -17,7 +17,7 @@
       :items="items"
       sort-by="name"
       @current-items="saveCurrentItems"
-      @click:row="addToSelectedItem"
+      @click:row="addToSelectedItem(selected, 'id', currentItems)"
     >
       <template #top>
         <v-sheet
@@ -115,7 +115,7 @@
                   </v-card-title>
 
                   <v-card-text :key="timestamp">
-                    <new-item
+                    <new-item-customvariables-new-item
                       :rules="rules"
                       @close="newDialog = false"
                       @save="saveSuccess"
@@ -134,7 +134,7 @@
                   </v-card-title>
 
                   <v-card-text :key="timestamp">
-                    <new-item
+                    <new-item-customvariables-new-item
                       :item="editItem"
                       :rules="rules"
                       @close="editItem = null"
@@ -269,18 +269,13 @@
   </v-container>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { PermissionsInterface } from '@entity/permissions';
 import type { VariableInterface } from '@entity/variable';
-import {
-  computed,
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { useQuery, useResult } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
@@ -292,208 +287,179 @@ import {
   minLength, required, restrictedChars, startsWith,
 } from '~/functions/validators';
 
-export default defineComponent({
-  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/customvariables-newItem.vue') }) },
-  setup () {
-    const { result, loading } = useQuery(gql`
+const { $graphql } = useNuxtApp()
+
+const loading = ref(false);
+const permissions = ref([] as PermissionsInterface[]);
+const refetch = async () => {
+  const data = await $graphql.default.request(gql`
       query {
         permissions { id name }
       }
     `);
-    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
-    const rules = { variableName: [required, startsWith(['$_']), minLength(3), restrictedChars([' '])] };
+  permissions.value = data.permissions;
+  loading.value = false;
+};
+const rules = { variableName: [required, startsWith(['$_']), minLength(3), restrictedChars([' '])] };
 
-    const items = ref([] as VariableInterface[]);
-    const editItem = ref(null as null | VariableInterface);
-    const search = ref('');
+const items = ref([] as VariableInterface[]);
+const editItem = ref(null as null | VariableInterface);
+const search = ref('');
 
-    const runningScripts = ref([] as string[]);
+const runningScripts = ref([] as string[]);
 
-    const selected = ref([] as VariableInterface[]);
-    const expanded = ref([] as VariableInterface[]);
-    const currentItems = ref([] as VariableInterface[]);
-    const saveCurrentItems = (value: VariableInterface[]) => {
-      currentItems.value = value;
-    };
-    const deleteDialog = ref(false);
-    const newDialog = ref(false);
-    const selectable = ref(false);
-    const editDialog = computed({
-      get () {
-        return !!editItem.value;
-      },
-      set (value) {
-        if (!value) {
-          editItem.value = null;
-        }
-      },
-    });
-    watch(selectable, (val) => {
-      if (!val) {
-        selected.value = [];
-      }
-    });
-
-    const timestamp = ref(Date.now());
-
-    watch(newDialog, () => {
-      timestamp.value = Date.now();
-    });
-
-    const state = ref({ loading: ButtonStates.progress } as {
-      loading: number;
-    });
-
-    const headers = [
-      { value: 'variableName', text: '$_' },
-      { value: 'description', text: translate('registry.customvariables.description.name') },
-      {
-        value: 'type', sortable: true, text: translate('registry.customvariables.type.name'),
-      },
-      {
-        value: 'additionalInfo', text: translate('registry.customvariables.additional-info'), sortable: false,
-      },
-      { value: 'currentValue', text: translate('registry.customvariables.currentValue.name') },
-      {
-        value: 'actions', text: '', sortable: false,
-      },
-      { text: '', value: 'data-table-expand' },
-    ];
-
-    const headersDelete = [
-      { value: 'variableName', text: '' },
-      { value: 'type', text: '' },
-    ];
-
-    const headersHistory = [
-      { value: 'changedAt', text: '' },
-      { value: 'value', text: '' },
-      { value: 'username', text: '' },
-    ];
-
-    onMounted(() => {
-      refresh();
-    });
-
-    const refresh = async () => {
-      await Promise.all([
-        new Promise<void>((resolve, reject) => {
-          getSocket('/core/customvariables').emit('customvariables::list', (err, itemsGetAll: VariableInterface[]) => {
-            if (err) {
-              reject(err);
-              return error(err);
-            }
-            console.debug('Loaded', itemsGetAll);
-            items.value = itemsGetAll;
-            // we also need to reset selection values
-            if (selected.value.length > 0) {
-              selected.value.forEach((selectedItem, index) => {
-                selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
-                selected.value[index] = selectedItem;
-              });
-            }
-            resolve();
-          });
-        }),
-      ]);
-      state.value.loading = ButtonStates.success;
-    };
-
-    const saveSuccess = () => {
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
+const selected = ref([] as VariableInterface[]);
+const expanded = ref([] as VariableInterface[]);
+const currentItems = ref([] as VariableInterface[]);
+const saveCurrentItems = (value: VariableInterface[]) => {
+  currentItems.value = value;
+};
+const deleteDialog = ref(false);
+const newDialog = ref(false);
+const selectable = ref(false);
+const editDialog = computed({
+  get () {
+    return !!editItem.value;
+  },
+  set (value) {
+    if (!value) {
       editItem.value = null;
-      newDialog.value = false;
-    };
-
-    const deleteSelected = async () => {
-      deleteDialog.value = false;
-      await Promise.all(
-        selected.value.map((item) => {
-          return new Promise((resolve, reject) => {
-            if (item.id === undefined) {
-              reject(error('Item ID is missing'));
-            } else {
-              getSocket('/core/customvariables').emit('customvariables::delete', item.id, (err) => {
-                if (err) {
-                  reject(error(err));
-                }
-                resolve(true);
-              });
-            }
-          });
-        }),
-      );
-      refresh();
-
-      EventBus.$emit('snack', 'success', 'Data removed.');
-      selected.value = [];
-    };
-
-    const clone = (item: VariableInterface) => {
-      getSocket('/core/customvariables').emit('customvariables::save', {
-        ...item, history: [], urls: [], id: v4(), description: '(clone) of ' + item.variableName, variableName: `$_${Math.random().toString(36).substr(2, 5)}`,
-      }, (err) => {
-        if (err) {
-          console.error(err);
-        } else {
-          EventBus.$emit('snack', 'success', 'Data cloned.');
-        }
-        refresh();
-      });
-    };
-
-    const edit = (item: VariableInterface) => {
-      editItem.value = item;
-    };
-
-    const runScript = (id: string) => {
-      if (runningScripts.value.includes(id)) {
-        return;
-      }
-      runningScripts.value.push(id);
-      EventBus.$emit('snack', 'success', 'Script triggered.');
-      getSocket('/core/customvariables').emit('customvariables::runScript', id, (err) => {
-        if (err) {
-          EventBus.$emit('snack', 'error', 'Script error. ' + err);
-        } else {
-          refresh();
-        }
-        runningScripts.value.splice(runningScripts.value.indexOf(id), 1);
-      });
-    };
-
-    return {
-      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
-      edit,
-      editItem,
-      items,
-      search,
-      state,
-      headers,
-      loading,
-      headersDelete,
-      headersHistory,
-      selected,
-      expanded,
-      deleteSelected,
-      selectable,
-      newDialog,
-      deleteDialog,
-      translate,
-      saveSuccess,
-      editDialog,
-      timestamp,
-      rules,
-      ButtonStates,
-      clone,
-      getPermissionName,
-      permissions,
-      runScript,
-      runningScripts,
-      saveCurrentItems,
-      dayjs,
-    };
+    }
   },
 });
+watch(selectable, (val) => {
+  if (!val) {
+    selected.value = [];
+  }
+});
+
+const timestamp = ref(Date.now());
+
+watch(newDialog, () => {
+  timestamp.value = Date.now();
+});
+
+const state = ref({ loading: ButtonStates.progress } as {
+  loading: number;
+});
+
+const headers = [
+  { value: 'variableName', text: '$_' },
+  { value: 'description', text: translate('registry.customvariables.description.name') },
+  {
+    value: 'type', sortable: true, text: translate('registry.customvariables.type.name'),
+  },
+  {
+    value: 'additionalInfo', text: translate('registry.customvariables.additional-info'), sortable: false,
+  },
+  { value: 'currentValue', text: translate('registry.customvariables.currentValue.name') },
+  {
+    value: 'actions', text: '', sortable: false,
+  },
+  { text: '', value: 'data-table-expand' },
+];
+
+const headersDelete = [
+  { value: 'variableName', text: '' },
+  { value: 'type', text: '' },
+];
+
+const headersHistory = [
+  { value: 'changedAt', text: '' },
+  { value: 'value', text: '' },
+  { value: 'username', text: '' },
+];
+
+onMounted(() => {
+  refetch();
+  refresh();
+});
+
+const refresh = async () => {
+  await Promise.all([
+    new Promise<void>((resolve, reject) => {
+      getSocket('/core/customvariables').emit('customvariables::list', (err, itemsGetAll: VariableInterface[]) => {
+        if (err) {
+          reject(err);
+          return error(err);
+        }
+        console.debug('Loaded', itemsGetAll);
+        items.value = itemsGetAll;
+        // we also need to reset selection values
+        if (selected.value.length > 0) {
+          selected.value.forEach((selectedItem, index) => {
+            selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
+            selected.value[index] = selectedItem;
+          });
+        }
+        resolve();
+      });
+    }),
+  ]);
+  state.value.loading = ButtonStates.success;
+};
+
+const saveSuccess = () => {
+  refresh();
+  EventBus.$emit('snack', 'success', 'Data updated.');
+  editItem.value = null;
+  newDialog.value = false;
+};
+
+const deleteSelected = async () => {
+  deleteDialog.value = false;
+  await Promise.all(
+    selected.value.map((item) => {
+      return new Promise((resolve, reject) => {
+        if (item.id === undefined) {
+          reject(error('Item ID is missing'));
+        } else {
+          getSocket('/core/customvariables').emit('customvariables::delete', item.id, (err) => {
+            if (err) {
+              reject(error(err));
+            }
+            resolve(true);
+          });
+        }
+      });
+    }),
+  );
+  refresh();
+
+  EventBus.$emit('snack', 'success', 'Data removed.');
+  selected.value = [];
+};
+
+const clone = (item: VariableInterface) => {
+  getSocket('/core/customvariables').emit('customvariables::save', {
+    ...item, history: [], urls: [], id: v4(), description: '(clone) of ' + item.variableName, variableName: `$_${Math.random().toString(36).substr(2, 5)}`,
+  }, (err) => {
+    if (err) {
+      console.error(err);
+    } else {
+      EventBus.$emit('snack', 'success', 'Data cloned.');
+    }
+    refresh();
+  });
+};
+
+const edit = (item: VariableInterface) => {
+  editItem.value = item;
+};
+
+const runScript = (id: string) => {
+  if (runningScripts.value.includes(id)) {
+    return;
+  }
+  runningScripts.value.push(id);
+  EventBus.$emit('snack', 'success', 'Script triggered.');
+  getSocket('/core/customvariables').emit('customvariables::runScript', id, (err) => {
+    if (err) {
+      EventBus.$emit('snack', 'error', 'Script error. ' + err);
+    } else {
+      refresh();
+    }
+    runningScripts.value.splice(runningScripts.value.indexOf(id), 1);
+  });
+};
 </script>

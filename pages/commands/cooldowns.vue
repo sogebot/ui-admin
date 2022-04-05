@@ -70,9 +70,9 @@
       @current-items="saveCurrentItems"
     >
       <template #top>
-        <search-bar :search.sync="search">
+        <table-search-bar :search.sync="search">
           <cooldowns-edit :rules="rules" :type-items="typeItems" @save="refresh()" />
-        </search-bar>
+        </table-search-bar>
       </template>
 
       <template #[`item`]="{ item }">
@@ -122,7 +122,7 @@ export default defineComponent({
   components: {
     'cooldowns-edit':  defineAsyncComponent(() => import('~/components/manage/cooldowns/cooldownsEdit.vue')),
     'cooldowns-batch': defineAsyncComponent(() => import('~/components/manage/cooldowns/cooldownsBatch.vue')),
-    'search-bar':      defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    'table-search-bar':      defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
     'table-mobile':    defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
   },
   setup () {

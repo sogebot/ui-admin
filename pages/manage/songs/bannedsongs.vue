@@ -50,11 +50,11 @@
       :loading="state.loading !== ButtonStates.success" :headers="headers" :items-per-page="-1" item-key="videoId"
       :items="fItems" @current-items="saveCurrentItems">
       <template #top>
-        <search-bar :search.sync="search" label="Search or add by link/id">
+        <table-search-bar :search.sync="search" label="Search or add by link/id">
           <v-btn color="primary" :disabled="search.length === 0" :loading="state.import === 1" @click="addSong">
             New Item
           </v-btn>
-        </search-bar>
+        </table-search-bar>
       </template>
 
       <template #[`item`]="{ item }">
@@ -96,7 +96,7 @@ import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
   components: {
-    'search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    'table-search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
   },
   setup () {
     const items = ref([] as SongBanInterface[]);

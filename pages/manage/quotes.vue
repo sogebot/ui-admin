@@ -67,13 +67,13 @@
       @current-items="saveCurrentItems"
     >
       <template #top>
-        <search-bar :search.sync="search">
+        <table-search-bar :search.sync="search">
           <quotes-edit
             :rules="rules"
             :tags="tags"
             @save="refresh()"
           />
-        </search-bar>
+        </table-search-bar>
       </template>
 
       <template #[`body.prepend`]="{}">
@@ -153,7 +153,7 @@ import { required } from '~/functions/validators';
 
 export default defineComponent({
   components: {
-    'search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    'table-search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
     'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
     'quotes-edit':  defineAsyncComponent(() => import('~/components/manage/quotes/quotesEdit.vue')),
   },

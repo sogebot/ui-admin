@@ -72,17 +72,17 @@
       @current-items="saveCurrentItems"
     >
       <template #top>
-        <search-bar :search.sync="search">
+        <table-search-bar :search.sync="search">
           <ranks-edit
             :rules="rules"
             :types="getGroup"
             @save="refresh()"
           />
-        </search-bar>
+        </table-search-bar>
       </template>
 
       <template #[`group.header`]="{ items, isOpen, toggle }">
-        <group-header
+        <table-group-header
           :is-open="isOpen"
           :toggle="toggle"
           :get-group="getGroup"
@@ -96,7 +96,7 @@
           <template #headerText="{ group }">
             {{getGroup[group].name}} time
           </template>
-        </group-header>
+        </table-group-header>
       </template>
 
       <template #[`item`]="{ item }">
@@ -143,8 +143,8 @@ import { minValue, required } from '~/functions/validators';
 export default defineComponent({
   components: {
     'ranks-edit':   defineAsyncComponent(() => import('~/components/manage/ranks/ranksEdit.vue')),
-    'group-header': defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
-    'search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    'table-group-header': defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
+    'table-search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
     'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
   },
   setup () {

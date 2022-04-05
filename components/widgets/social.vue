@@ -1,5 +1,12 @@
 <template>
-  <v-card id="5b90af97-ad95-4776-89e3-9a59c67510e6" width="100%" :height="isPopout ? '100%' : undefined" :loading="loading" style="overflow: inherit;" flat>
+  <v-card
+    id="5b90af97-ad95-4776-89e3-9a59c67510e6"
+    width="100%"
+    :height="isPopout ? '100%' : undefined"
+    :loading="loading"
+    style="overflow: inherit;"
+    flat
+  >
     <v-slide-y-transition>
       <v-card-text v-if="items.length === 0" :style="{ height: height + 'px' }">
         <div class="font-weight-light">
@@ -32,47 +39,22 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import {
-  computed,
-  defineComponent,
-} from '@nuxtjs/composition-api';
+<script setup lang="ts">
+import type { WidgetSocialInterface } from '@entity/widget';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import translate from '@sogebot/ui-helpers/translate';
-import { useQuery, useResult } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 
-import { error } from '../../functions/error';
-
-import type { WidgetSocialInterface } from '@entity/widget';
-
-export default defineComponent({
-  props: {
-    height: Number,
-  },
-  setup () {
-    const { result, loading, onError } = useQuery(gql`
+const loading = ref(true);
+const items = ref([] as WidgetSocialInterface[]);
+const refresh = async () => {
+  items.value = (await $graphql.default.request(gql`
       query { widgeSocialGet { id type hashtag text username displayname url timestamp }
-    `, null, {
-      pollInterval: 10000,
-    });
-    onError(error);
-    const items = useResult<{ widgeSocialGet: WidgetSocialInterface[] }, WidgetSocialInterface[], WidgetSocialInterface[]>(result, [], data => data.widgeSocialGet);
-
-    const isPopout = computed(() => location.href.includes('popout'));
-
-    return {
-      // refs
-      isPopout,
-      items,
-      loading,
-
-      // functions
-
-      // helpers
-      translate,
-      dayjs,
-    };
-  },
+    `)).widgeSocialGet;
+  loading.value = false;
+};
+onMounted(() => {
+  refresh();
 });
+
+const isPopout = computed(() => location.href.includes('popout'));
 </script>

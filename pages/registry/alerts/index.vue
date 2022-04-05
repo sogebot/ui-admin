@@ -14,7 +14,7 @@
       :items="items"
       sort-by="name"
       @current-items="saveCurrentItems"
-      @click:row="addToSelectedItem"
+      @click:row="addToSelectedItem(selected, 'id', currentItems)"
     >
       <template #top>
         <v-sheet
@@ -92,7 +92,7 @@
                 </v-dialog>
               </template>
 
-              <test-dialog />
+              <registry-alerts-test-dialog />
 
               <v-btn color="primary" to="/registry/alerts/new" nuxt>
                 New Item
@@ -167,132 +167,68 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@nuxtjs/composition-api';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
-
+<script setup lang="ts">
 import type { AlertInterface } from '@entity/alert';
+import translate from '@sogebot/ui-helpers/translate';
+
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
-import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
-import { required } from '~/functions/validators';
 import CLONE from '~/queries/alert/clone.gql';
 import GET_ALL from '~/queries/alert/getAll.gql';
 import REMOVE from '~/queries/alert/remove.gql';
 
-export default defineComponent({
-  components: {
-    'test-dialog': defineAsyncComponent({
-      loader: () => import('~/components/registry/alerts/test-dialog.vue'),
-    }),
-  },
-  setup () {
-    const { result, loading, refetch } = useQuery(GET_ALL);
-    const items = useResult<{alerts: AlertInterface[] }, AlertInterface[], AlertInterface[]>(result, [], (data) => {
-      if (selected.value.length > 0) {
-        selected.value.forEach((selectedItem, index) => {
-          selectedItem = data.alerts.find(o => o.id === selectedItem.id) || selectedItem;
-          selected.value[index] = selectedItem;
-        });
-      }
-      return data.alerts;
-    });
-    const { mutate: cloneMutation, onError: onErrorClone, onDone: onDoneClone, loading: cloning } = useMutation(CLONE, {
-      refetchQueries: ['AlertGetAll'],
-    });
-    onDoneClone(() => EventBus.$emit('snack', 'success', 'Data cloned.'));
-    onErrorClone(error);
+const { $graphql } = useNuxtApp();
 
-    const { mutate: removeMutation, onError: onErroRemove, onDone: onDoneRemove } = useMutation(REMOVE, {
-      refetchQueries: ['AlertGetAll'],
-    });
-    onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
-    onErroRemove(error);
+const loading = ref(true);
+const items = ref([] as AlertInterface[]);
+const refetch = async () => {
+  const data = await $graphql.default.request(GET_ALL);
+  items.value = data.alerts;
+  loading.value = false;
+};
 
-    const rules = {
-      name: [required],
-    };
+const search = ref('');
 
-    const search = ref('');
-
-    const selected = ref([] as AlertInterface[]);
-    const currentItems = ref([] as AlertInterface[]);
-    const saveCurrentItems = (value: AlertInterface[]) => {
-      currentItems.value = value;
-    };
-    const deleteDialog = ref(false);
-    const selectable = ref(false);
-    watch(selectable, (val) => {
-      if (!val) {
-        selected.value = [];
-      }
-    });
-
-    const headers = [
-      {
-        value: 'name', text: translate('registry.alerts.name.name'),
-      },
-      {
-        value: 'additional', text: translate('registry.customvariables.additional-info'),
-      },
-      {
-        value: 'actions', text: '',
-      },
-    ];
-
-    const headersDelete = [
-      {
-        value: 'name', text: '',
-      },
-    ];
-
-    onMounted(() => {
-      refetch();
-    });
-
-    const saveSuccess = () => {
-      EventBus.$emit('snack', 'success', 'Data updated.');
-    };
-
-    const deleteSelected = () => {
-      deleteDialog.value = false;
-      selected.value.forEach(item => removeMutation({
-        id: item.id,
-      }));
-      selected.value = [];
-    };
-
-    const clone = (id: string) => {
-      cloneMutation({
-        id,
-      });
-    };
-
-    return {
-      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
-      loading,
-      cloning,
-      items,
-      search,
-      headers,
-      headersDelete,
-      selected,
-      deleteSelected,
-      selectable,
-      deleteDialog,
-      translate,
-      saveSuccess,
-      rules,
-      ButtonStates,
-      clone,
-      saveCurrentItems,
-    };
-  },
+const selected = ref([] as AlertInterface[]);
+const currentItems = ref([] as AlertInterface[]);
+const saveCurrentItems = (value: AlertInterface[]) => {
+  currentItems.value = value;
+};
+const deleteDialog = ref(false);
+const selectable = ref(false);
+watch(selectable, (val) => {
+  if (!val) {
+    selected.value = [];
+  }
 });
+
+const headers = [
+  { value: 'name', text: translate('registry.alerts.name.name') },
+  { value: 'additional', text: translate('registry.customvariables.additional-info') },
+  { value: 'actions', text: '' },
+];
+
+const headersDelete = [
+  { value: 'name', text: '' },
+];
+
+onMounted(() => {
+  refetch();
+});
+
+const deleteSelected = () => {
+  deleteDialog.value = false;
+  selected.value.forEach((item) => {
+    $graphql.default.request(REMOVE, { id: item.id });
+  });
+  selected.value = [];
+  EventBus.$emit('snack', 'success', 'Data removed.');
+};
+
+const clone = (id: string) => {
+  $graphql.default.request(CLONE, { id }).then(() => {
+    EventBus.$emit('snack', 'success', 'Data cloned.');
+    refetch();
+  });
+};
 </script>

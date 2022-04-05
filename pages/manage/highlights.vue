@@ -13,7 +13,7 @@
       :items="fItems"
     >
       <template #top>
-        <search-bar :search.sync="search">
+        <table-search-bar :search.sync="search">
           <v-btn
             color="error"
             class="mr-1"
@@ -21,7 +21,7 @@
           >
             Delete Expired
           </v-btn>
-        </search-bar>
+        </table-search-bar>
       </template>
 
       <template #[`item`]="{ item }">
@@ -72,7 +72,7 @@ import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
-  components: { 'search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')) },
+  components: { 'table-search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')) },
   setup () {
     const items = ref([] as HighlightInterface[]);
     const search = ref('');
