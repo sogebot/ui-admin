@@ -11,6 +11,9 @@ const refreshToken = debounce(async (axios: NuxtAxiosInstance) => {
       return;
     }
     const validation = await axios.get(`${process.env.isNuxtDev ? 'http://localhost:20000' : window.location.origin}/socket/refresh`, { headers: { 'x-twitch-token': token } });
+    console.group('check-token-validity::refreshToken');
+    console.debug('refreshToken', { refreshToken: token, validation });
+    console.groupEnd();
     localStorage.setItem('accessToken', validation.data.accessToken);
     localStorage.setItem('refreshToken', validation.data.refreshToken);
     localStorage.setItem('userType', validation.data.userType);
