@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [43.0.0](https://github.com/sogebot/ui-admin/compare/v42.3.4...v43.0.0) (2022-04-06)
+
+
+### Features
+
+* **actions:** able to change order by dragging ([2ae354a](https://github.com/sogebot/ui-admin/commit/2ae354a3f21860c29b275e57a32d3a3b4720284e))
+* **engine:** update from nuxt2 to nuxt-bridge ([#228](https://github.com/sogebot/ui-admin/issues/228)) ([3355bd6](https://github.com/sogebot/ui-admin/commit/3355bd655eb7bd46dd2f065b46d8eb2cfca76370))
+
+
+### Bug Fixes
+
+* **addToSelectedItem:** use .value only if available ([dd28b29](https://github.com/sogebot/ui-admin/commit/dd28b29069f54fc5f90cd8f47243eb459fbc2bda))
+
 ### [42.3.4](https://github.com/sogebot/ui-admin/compare/v42.3.3...v42.3.4) (2022-04-05)
 
 
