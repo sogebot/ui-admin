@@ -67,7 +67,7 @@
       @current-items="saveCurrentItems"
     >
       <template #top>
-        <search-bar :search.sync="search" label="Search or add by link/id">
+        <table-search-bar :search.sync="search" label="Search or add by link/id">
           <v-btn
             color="primary"
             :disabled="search.length === 0"
@@ -76,7 +76,7 @@
           >
             New Item
           </v-btn>
-        </search-bar>
+        </table-search-bar>
       </template>
 
       <template #[`body.prepend`]="{}">
@@ -157,7 +157,7 @@ import {
 
 export default defineComponent({
   components: {
-    'search-bar':    defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    'table-search-bar':    defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
     'playlist-edit': defineAsyncComponent(() => import('~/components/manage/songs/playlistEdit.vue')),
   },
   filters: {

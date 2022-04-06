@@ -1,27 +1,29 @@
 import fs from 'fs';
 
-const packageJson = fs.readFileSync('./package.json');
-const version = JSON.parse(packageJson).version || 0;
+import { defineNuxtConfig } from '@nuxt/bridge';
 
-export default {
+const packageJson = fs.readFileSync('./package.json');
+const version = JSON.parse(String(packageJson)).version || 0;
+
+export default defineNuxtConfig({
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
   ssr:    false,
+
+  env: {
+    isNuxtDev: process.env.NODE_ENV === 'development', BUILD: 'web', version,
+  },
+
+  bridge: { nitro: process.env.NODE_ENV === 'development', meta: true },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s',
     title:         'sogeBot - admin page',
-    htmlAttrs:     {
-      lang: 'en',
-    },
-    meta: [
-      {
-        charset: 'utf-8',
-      },
-      {
-        name: 'viewport', content: 'width=device-width, initial-scale=1',
-      },
+    htmlAttrs:     { lang: 'en' },
+    meta:          [
+      { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       {
         hid: 'description', name: 'description', content: '',
       },
@@ -29,10 +31,6 @@ export default {
     link: [{
       rel: 'icon', type: 'image/x-icon', href: '/favicon.ico',
     }],
-  },
-
-  env: {
-    isNuxtDev: process.env.NODE_ENV === 'development', BUILD: 'web', version,
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -48,17 +46,10 @@ export default {
     '@/plugins/filters',
     '@/plugins/remove-shift-selection',
     '@/plugins/before-each.ts',
-    '@/plugins/apollo-hook.ts',
     '@/plugins/graphql-config.ts',
-    {
-      src: '@/plugins/log-version.js', ssr: false,
-    },
-    {
-      src: '@/plugins/check-token-validity.ts', ssr: false,
-    },
-    {
-      src: '@/plugins/get-bot-versions.ts', ssr: false,
-    },
+    { src: '@/plugins/log-version.js', ssr: false },
+    { src: '@/plugins/check-token-validity.ts', ssr: false },
+    { src: '@/plugins/get-bot-versions.ts', ssr: false },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -67,32 +58,18 @@ export default {
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     'nuxt-graphql-request',
-    // https://go.nuxtjs.dev/typescript
-    '@nuxt/typescript-build',
     // https://go.nuxtjs.dev/stylelint
     '@nuxtjs/stylelint-module',
     // https://go.nuxtjs.dev/vuetify
-    ['@nuxtjs/vuetify', {
-      treeShake: true,
-    }],
-    // https://composition-api.nuxtjs.org/
-    '@nuxtjs/composition-api/module',
+    ['@nuxtjs/vuetify', { treeShake: true }],
   ],
 
   vuetify: {
-    breakpoint: {
-      mobileBreakpoint: 'xs',
-    },
-    theme: {
-      options: {
-        customProperties: true,
-      },
-      dark:   true,
-      themes: {
-        dark: {
-          primary: '#FF9800',
-        },
-      },
+    breakpoint: { mobileBreakpoint: 'xs' },
+    theme:      {
+      options: { customProperties: true },
+      dark:    true,
+      themes:  { dark: { primary: '#FF9800' } },
     },
   },
 
@@ -101,25 +78,11 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/proxy',
     'portal-vue/nuxt',
-    '@nuxtjs/apollo',
     '@nuxtjs/i18n',
   ],
 
-  apollo: {
-    includeNodeModules: true,
-    clientConfigs:      {
-      default: '~/plugins/apollo-config.js',
-    },
-  },
-
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {
-    hotMiddleware: {
-      client: {
-        overlay: false,
-      },
-    },
-  },
+  build: { hotMiddleware: { client: { overlay: false } } },
 
   router: {
     mode: 'hash',
@@ -127,16 +90,12 @@ export default {
     extendRoutes (routes, resolve) {
       routes.push({
         path:       '/manage/viewers/:id',
-        components: {
-          default: resolve(__dirname, 'pages/manage/viewers'),
-        },
+        components: { default: resolve(__dirname, 'pages/manage/viewers') },
       });
     },
   },
 
-  axios: {
-    proxy: true,
-  },
+  axios: { proxy: true },
 
   // enable api proxy
   ...process.env.NODE_ENV === 'development' && {
@@ -172,13 +131,9 @@ export default {
     },
   },
 
-  graphql: {
-    clients: {
-      default: {
-        endpoint: '/graphql',
-      },
-    },
-  },
+  graphql: { clients: { default: { endpoint: '/graphql' } } },
+
+  alias:   { tslib: 'tslib/tslib.es6.js' },
 
   i18n: {
     locales: [
@@ -192,4 +147,4 @@ export default {
     defaultLocale: 'en',
     strategy:      'no_prefix',
   },
-};
+});

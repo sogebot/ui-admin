@@ -30,7 +30,7 @@
           />
           <component
             :is="item.value"
-            v-if="haveAnyOptions(item.value)"
+            v-if="haveAnyOptions(item.value || '')"
             :id="item.id"
             v-model="item.opts"
             @update="item.opts = $event;"
@@ -51,14 +51,9 @@
 
 <script lang="ts">
 import type { OverlayMappers } from '@entity/overlay';
-import {
-  defineComponent, onMounted, ref, useContext, useRoute, useStore, watch,
-} from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { useMutation } from '@vue/apollo-composable';
 import { cloneDeep } from 'lodash';
 
-import { error } from '../../../functions/error';
 import { EventBus } from '../../../functions/event-bus';
 
 import { required } from '~/functions/validators';
@@ -95,25 +90,19 @@ export default defineComponent({
     wordcloud:       () => import('~/components/registry/overlays/wordcloud.vue'),
   },
   setup () {
-    const store = useStore();
+    const { $graphql, $store } = useNuxtApp();
     const route = useRoute();
-    const ctx = useContext();
 
     const loading = ref(true);
+    const saving = ref(false);
 
     const item = ref(cloneDeep({
-      id:      route.value.params.id,
+      id:      route.params.id,
       name:    '',
       value:   null,
       groupId: null,
       opts:    null,
     }) as OverlayMappers);
-
-    const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(SAVE);
-    onDoneSave(() => {
-      EventBus.$emit('snack', 'success', 'Data saved.');
-    });
-    onErrorSave(error);
 
     const form1 = ref(null);
     const valid1 = ref(true);
@@ -145,9 +134,9 @@ export default defineComponent({
     ];
 
     onMounted(async () => {
-      store.commit('panel/back', '/registry/overlays');
+      $store.commit('panel/back', '/registry/overlays');
 
-      const result = await (ctx as any).$graphql.default.request(GET, { id: route.value.params.id });
+      const result = await $graphql.default.request(GET, { id: route.params.id });
 
       for (const key of Object.keys(result.overlays)) {
         if (result.overlays[key].length > 0) {
@@ -158,16 +147,18 @@ export default defineComponent({
       loading.value = false;
 
       watch(item, () => {
-        store.commit('settings/pending', true);
+        $store.commit('settings/pending', true);
       }, { deep: true });
     });
 
-    const save = () => {
+    const save = async () => {
       if (
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
         EventBus.$emit(`save::${item.value.id}`);
-        saveMutation({ data_json: JSON.stringify(item.value) }).then(() => store.commit('settings/pending', false));
+        await $graphql.default.request(SAVE, { data_json: JSON.stringify(item.value) });
+        EventBus.$emit('snack', 'success', 'Data saved.');
+        $store.commit('settings/pending', false);
       }
     };
 

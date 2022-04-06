@@ -191,7 +191,7 @@
                         />
                         <v-expand-transition>
                           <div v-show="!goal.endAfterIgnore">
-                            <datetime v-model.number="goal.endAfter" :label="translate('registry.goals.input.endAfter.title')" />
+                            <form-datetime v-model.number="goal.endAfter" :label="translate('registry.goals.input.endAfter.title')" />
                           </div>
                         </v-expand-transition>
                       </v-expansion-panel-content>
@@ -249,7 +249,7 @@
                         {{ translate('registry.goals.fontSettings') }}
                       </v-expansion-panel-header>
                       <v-expansion-panel-content>
-                        <font :id="goal.id" v-model="goal.customizationFont" />
+                        <form-expansion-font :id="goal.id" v-model="goal.customizationFont" />
                       </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel :disabled="goal.display === 'custom'">
@@ -289,9 +289,9 @@
                             </v-text-field>
                           </v-col>
                           <v-col cols="6">
-                            <color :id="goal.id + '|color'" v-model="goal.customizationBar.color" :label="translate('registry.goals.input.color.title')" />
-                            <color :id="goal.id + '|borderColor'" v-model="goal.customizationBar.borderColor" :label="translate('registry.goals.input.borderColor.title')" />
-                            <color :id="goal.id + '|backgroundColor'" v-model="goal.customizationBar.backgroundColor" :label="translate('registry.goals.input.backgroundColor.title')" />
+                            <form-color :id="goal.id + '|color'" v-model="goal.customizationBar.color" :label="translate('registry.goals.input.color.title')" />
+                            <form-color :id="goal.id + '|borderColor'" v-model="goal.customizationBar.borderColor" :label="translate('registry.goals.input.borderColor.title')" />
+                            <form-color :id="goal.id + '|backgroundColor'" v-model="goal.customizationBar.backgroundColor" :label="translate('registry.goals.input.backgroundColor.title')" />
                           </v-col>
                         </v-row>
                       </v-expansion-panel-content>
@@ -320,21 +320,13 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import {
-  defineAsyncComponent, defineComponent, onMounted,
-
-  ref, useRoute, useRouter, useStore, watch,
-} from '@nuxtjs/composition-api';
+<script setup lang="ts">
+import { GoalGroupInterface, GoalInterface } from '@entity/goal';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 
-import { GoalGroupInterface, GoalInterface } from '@entity/goal';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import {
@@ -342,6 +334,8 @@ import {
 } from '~/functions/prismjs';
 import { minValue, required } from '~/functions/validators';
 import GET_ONE from '~/queries/goals/getOne.gql';
+
+const { $graphql, $store } = useNuxtApp();
 
 const emptyItem: GoalGroupInterface = {
   goals:     [],
@@ -354,157 +348,117 @@ const emptyItem: GoalGroupInterface = {
     animationOutMs: 1000,
   },
 };
+const route = useRoute();
+const stepper = ref(1);
+const router = useRouter();
 
-export default defineComponent({
-  components: {
-    PrismEditor,
-    datetime: defineAsyncComponent({
-      loader: () => import('~/components/form/datetime.vue'),
-    }),
-    color: defineAsyncComponent({
-      loader: () => import('~/components/form/color.vue'),
-    }),
-    font: defineAsyncComponent({
-      loader: () => import('~/components/form/expansion/font.vue'),
-    }),
-  },
-  setup () {
-    const route = useRoute();
-    const store = useStore();
-    const stepper = ref(1);
-    const router = useRouter();
+const loading = ref(true);
+const saving = ref(false);
+const item = ref(cloneDeep(emptyItem) as GoalGroupInterface);
 
-    let loading = ref(true);
-    const item = ref(cloneDeep(emptyItem) as GoalGroupInterface);
-    if (route.value.params.id !== 'new') {
-      const query = useQuery(GET_ONE, {
-        id: route.value.params.id,
-      });
-      query.onError(error);
-      loading = query.loading;
-      const cache = useResult<{ goals: GoalGroupInterface[] }, null>(query.result, null);
-      watch(cache, (value) => {
-        if (!value) {
-          return;
-        }
+onMounted(async () => {
+  if (route.params.id !== 'new') {
+    const request = await $graphql.default.request(GET_ONE, { id: route.params.id });
 
-        if (value.length === 0) {
-          EventBus.$emit('snack', 'error', 'Data not found.');
-          router.push({
-            path: '/registry/goals',
-          });
-        } else {
-          item.value = cloneDeep(value[0]);
-        }
-      }, {
-        immediate: true, deep: true,
-      });
+    if (request.goals.length === 0) {
+      EventBus.$emit('snack', 'error', 'Data not found.');
+      router.push({ path: '/registry/goals' });
     } else {
-      loading.value = false;
+      item.value = cloneDeep(request.goals[0]);
     }
-    const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(gql`
-      mutation goalsSave($data_json: String!) {
-        goalsSave(data: $data_json) { id }
-      }`);
-    onDoneSave((result) => {
-      router.push({
-        params: {
-          id: result.data.goalsSave.id,
-        },
-      });
-      EventBus.$emit('snack', 'success', 'Data saved.');
-    });
-    onErrorSave(error);
+    loading.value = false;
+  }
+});
 
-    const form1 = ref(null);
-    const valid1 = ref(true);
-    const form2 = ref(null);
-    const valid2 = ref(true);
-    const tabs = ref(null as null | HTMLElement);
+const form1 = ref(null);
+const valid1 = ref(true);
+const form2 = ref(null);
+const valid2 = ref(true);
+const tabs = ref(null as null | HTMLElement);
 
-    const selectedTab = ref(0);
-    const customTab = ref(0);
+const selectedTab = ref(0);
+const customTab = ref(0);
 
-    const intervalItems = ['hour', 'day', 'week', 'month', 'year'];
-    const groupType = ['fade', 'multi'];
-    const goalType = [
-      'followers', 'currentFollowers', 'currentSubscribers', 'subscribers',
-      'tips', 'bits', 'intervalSubscribers', 'intervalFollowers', 'intervalTips', 'intervalBits'];
-    const displayType = ['simple', 'full', 'custom'];
+const intervalItems = ['hour', 'day', 'week', 'month', 'year'];
+const groupType = ['fade', 'multi'];
+const goalType = [
+  'followers', 'currentFollowers', 'currentSubscribers', 'subscribers',
+  'tips', 'bits', 'intervalSubscribers', 'intervalFollowers', 'intervalTips', 'intervalBits'];
+const displayType = ['simple', 'full', 'custom'];
 
-    const rules = {
-      name:                  [required],
-      spaceBetweenGoalsInPx: [required, minValue(0)],
-      goalAmount:            [required, minValue(1)],
-      borderPx:              [required, minValue(0)],
-      barHeight:             [required, minValue(1)],
-      currentAmount:         [required, minValue(0)],
-      durationMs:            [required, minValue(1000)],
-      animationInMs:         [required, minValue(1000)],
-      animationOutMs:        [required, minValue(1000)],
-    };
+const rules = {
+  name:                  [required],
+  spaceBetweenGoalsInPx: [required, minValue(0)],
+  goalAmount:            [required, minValue(1)],
+  borderPx:              [required, minValue(0)],
+  barHeight:             [required, minValue(1)],
+  currentAmount:         [required, minValue(0)],
+  durationMs:            [required, minValue(1000)],
+  animationInMs:         [required, minValue(1000)],
+  animationOutMs:        [required, minValue(1000)],
+};
 
-    watch(() => item.value.display.type, (val, old) => {
-      if (val === old) {
-        return;
-      }
-      switch (val) {
-        case 'fade':
-          item.value = {
-            ...item.value,
-            display: {
-              type:           'fade',
-              durationMs:     60000,
-              animationInMs:  1000,
-              animationOutMs: 1000,
-            },
-          };
-          break;
-        case 'multi':
-          item.value = {
-            ...item.value,
-            display: {
-              type:                  'multi',
-              spaceBetweenGoalsInPx: 0,
-            },
-          };
-          break;
-      }
-    });
-
-    onMounted(() => {
-      store.commit('panel/back', '/registry/goals');
-    });
-
-    const addItem = () => {
+watch(() => item.value.display.type, (val, old) => {
+  if (val === old) {
+    return;
+  }
+  switch (val) {
+    case 'fade':
       item.value = {
         ...item.value,
-        goals: [
-          ...item.value.goals,
-          {
-            id:   v4(),
-            name: '',
-            type: 'followers',
+        display: {
+          type:           'fade',
+          durationMs:     60000,
+          animationInMs:  1000,
+          animationOutMs: 1000,
+        },
+      };
+      break;
+    case 'multi':
+      item.value = {
+        ...item.value,
+        display: {
+          type:                  'multi',
+          spaceBetweenGoalsInPx: 0,
+        },
+      };
+      break;
+  }
+});
 
-            display: 'full',
+onMounted(() => {
+  $store.commit('panel/back', '/registry/goals');
+});
 
-            customizationBar: {
-              color:           '#00aa00',
-              backgroundColor: '#e9ecef',
-              borderColor:     '#000000',
-              borderPx:        0,
-              height:          50,
-            },
-            customizationFont: {
-              family:      'PT Sans',
-              weight:      500,
-              color:       '#ffffff',
-              size:        20,
-              borderColor: '#000000',
-              borderPx:    1,
-              shadow:      [],
-            },
-            customizationHtml: '\n\t<!-- '
+const addItem = () => {
+  item.value = {
+    ...item.value,
+    goals: [
+      ...item.value.goals,
+      {
+        id:   v4(),
+        name: '',
+        type: 'followers',
+
+        display: 'full',
+
+        customizationBar: {
+          color:           '#00aa00',
+          backgroundColor: '#e9ecef',
+          borderColor:     '#000000',
+          borderPx:        0,
+          height:          50,
+        },
+        customizationFont: {
+          family:      'PT Sans',
+          weight:      500,
+          color:       '#ffffff',
+          size:        20,
+          borderColor: '#000000',
+          borderPx:    1,
+          shadow:      [],
+        },
+        customizationHtml: '\n\t<!-- '
                 + '\n\t\tAll html objects will be wrapped in the #wrap div'
                 + '\n\t\tBootstrap classes are available'
                 + '\n\t\tAvailable variables:'
@@ -522,109 +476,75 @@ export default defineComponent({
                 + '\n\t\t<div class="progress-bar" style="width: $percentageAmount%; height: 24px;"></div>'
               + '\n\t</div>'
               + '\n',
-            customizationJs: '\n\tfunction onChange(currentAmount) {'
+        customizationJs: '\n\tfunction onChange(currentAmount) {'
                 + '\n\t\tconsole.log(\'new value is \' + currentAmount);'
               + '\n\t}'
               + '\n',
-            customizationCss: '\n\t/* All html objects will be wrapped in the #wrap div */'
+        customizationCss: '\n\t/* All html objects will be wrapped in the #wrap div */'
               + '\n\n\t#wrap .progress-bar {'
                 + '\n\t\tbackground: black;'
               + '\n\t}'
               + '\n',
-            timestamp:       Date.now(),
-            goalAmount:      1000,
-            currentAmount:   0,
-            interval:        'hour',
-            endAfter:        Date.now() + 24 * 60 * 60 * 1000,
-            endAfterIgnore:  true,
-            countBitsAsTips: false,
-          }],
-      };
-      selectedTab.value = item.value.goals.length - 1;
-    };
+        timestamp:       Date.now(),
+        goalAmount:      1000,
+        currentAmount:   0,
+        interval:        'hour',
+        endAfter:        Date.now() + 24 * 60 * 60 * 1000,
+        endAfterIgnore:  true,
+        countBitsAsTips: false,
+      }],
+  };
+  selectedTab.value = item.value.goals.length - 1;
+};
 
-    const removeItem = (goal: GoalInterface) => {
-      item.value = {
-        ...item.value,
-        goals: item.value.goals.filter(o => o.id !== goal.id),
-      };
-    };
+const removeItem = (goal: GoalInterface) => {
+  item.value = {
+    ...item.value,
+    goals: item.value.goals.filter(o => o.id !== goal.id),
+  };
+};
 
-    const save = () => {
-      if (
-        (form1.value as unknown as HTMLFormElement).validate()
+const save = () => {
+  if (
+    (form1.value as unknown as HTMLFormElement).validate()
         && (form2.value as unknown as HTMLFormElement).validate()
-      ) {
-        saveMutation({
-          data_json: JSON.stringify({
-            ...item.value,
-            id: item.value.id ?? v4(),
-          }),
-        });
+  ) {
+    saving.value = true;
+    $graphql.default.request(gql`
+      mutation goalsSave($data_json: String!) {
+        goalsSave(data: $data_json) { id }
+      }`, {
+      data_json: JSON.stringify({
+        ...item.value,
+        id: item.value.id ?? v4(),
+      }),
+    }).then((data: { goalsSave: { id: any; }; }) => {
+      router.push({ params: { id: data.goalsSave.id } });
+      EventBus.$emit('snack', 'success', 'Data saved.');
+    }).catch((e: any) => error(e))
+      .finally(() => (saving.value = false));
+  }
+  updateTabWidth();
+};
+
+const hasError = (id: string) => {
+  if (form2.value) {
+    const inputs = (form2.value as unknown as any).inputs.filter((o: any) => {
+      return (o.id ?? '').split('|')[0] === id;
+    }).map((o: any) => o._uid);
+    const errors = Object.entries((form2.value as unknown as any).errorBag).filter(o => o[1]).map(o => Number(o[0]));
+    for (const input of inputs) {
+      if (errors.includes(input)) {
+        return true;
       }
-      updateTabWidth();
-    };
+    }
+    return false;
+  }
+};
 
-    const hasError = (id: string) => {
-      if (form2.value) {
-        const inputs = (form2.value as unknown as any).inputs.filter((o: any) => {
-          return (o.id ?? '').split('|')[0] === id;
-        }).map((o: any) => o._uid);
-        const errors = Object.entries((form2.value as unknown as any).errorBag).filter(o => o[1]).map(o => Number(o[0]));
-        for (const input of inputs) {
-          if (errors.includes(input)) {
-            return true;
-          }
-        }
-        return false;
-      }
-    };
-
-    const updateTabWidth = () => {
-      if (tabs.value) {
-        (tabs.value as any).callSlider();
-      }
-    };
-
-    const goBack = () => {
-      router.push({
-        path: '/registry/goals',
-      });
-    };
-
-    return {
-      // refs
-      saving,
-      loading,
-      form1,
-      valid1,
-      form2,
-      valid2,
-      item,
-      stepper,
-      displayType,
-      groupType,
-      goalType,
-      rules,
-      customTab,
-      selectedTab,
-      tabs,
-      intervalItems,
-
-      // functions
-      save,
-      addItem,
-      removeItem,
-      hasError,
-      updateTabWidth,
-      goBack,
-
-      // others
-      translate,
-      highlighterJS,
-      highlighterCSS,
-      highlighterHTML,
-    };
-  },
-});
+const updateTabWidth = () => {
+  if (tabs.value) {
+    (tabs.value as any).callSlider();
+  }
+};
 </script>

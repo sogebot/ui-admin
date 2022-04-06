@@ -301,136 +301,124 @@
   </v-card>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { EventListInterface } from '@entity/eventList';
-import {
-  computed,
-  defineComponent, onMounted, ref, useStore, watch,
-} from '@nuxtjs/composition-api';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
 import { get } from 'lodash';
 
 import GET_CFG from '~/queries/alert/getCfg.gql';
 import SET_CFG from '~/queries/alert/setCfg.gql';
 
-export default defineComponent({
-  props: { height: Number },
-  setup () {
-    const store = useStore<any>();
+const { $graphql, $store } = useNuxtApp();
 
-    const areAlertsMuted = ref(false);
-    const isTTSMuted = ref(false);
-    const isSoundMuted = ref(false);
+defineProps({ height: Number });
 
-    const { result } = useQuery(GET_CFG);
-    const cache = useResult<{
-      areAlertsMuted: boolean,
-      isTTSMuted: boolean,
-      isSoundMuted: boolean,
-    }>(result);
-    watch(cache, (value) => {
-      if (!value) {
-        return;
-      }
+const areAlertsMuted = ref(false);
+const isTTSMuted = ref(false);
+const isSoundMuted = ref(false);
 
-      areAlertsMuted.value = value.areAlertsMuted;
-      isTTSMuted.value = value.isTTSMuted;
-      isSoundMuted.value = value.isSoundMuted;
-    }, { immediate: true, deep: true });
-    const { mutate: saveMutation } = useMutation(SET_CFG);
+const cache = ref(null);
+const refresh = async () => {
+  cache.value = (await $graphql.default.request(GET_CFG));
+}
+watch(cache, (value) => {
+  if (!value) {
+    return;
+  }
 
-    const isLoading = ref(true);
-    const events = ref([] as (EventListInterface & { sortAmount: number })[]);
-    const selected = ref([] as number[]);
-    const menu = ref(false);
-    const isPopout = computed(() => location.href.includes('popout'));
+  areAlertsMuted.value = value.areAlertsMuted;
+  isTTSMuted.value = value.isTTSMuted;
+  isSoundMuted.value = value.isSoundMuted;
+}, { immediate: true, deep: true });
 
-    const showFollows = ref((localStorage.showFollows && localStorage.showFollows === 'true') ?? true);
-    const showRedeems = ref((localStorage.showRedeems && localStorage.showRedeems === 'true') ?? true);
-    const showTips = ref((localStorage.showTips && localStorage.showTips === 'true') ?? true);
-    const showTipsMinimal = ref((localStorage.showTipsMinimal && localStorage.showTipsMinimal === 'true') ?? false);
-    const showTipsMinimalAmount = ref(Number(localStorage.showTipsMinimalAmount || 50));
-    const showResubs = ref((localStorage.showResubs && localStorage.showResubs === 'true') ?? true);
-    const showResubsPrime = ref((localStorage.showResubsPrime && localStorage.showResubsPrime === 'true') ?? true);
-    const showResubsTier1 = ref((localStorage.showResubsTier1 && localStorage.showResubsTier1 === 'true') ?? true);
-    const showResubsTier2 = ref((localStorage.showResubsTier2 && localStorage.showResubsTier2 === 'true') ?? true);
-    const showResubsTier3 = ref((localStorage.showResubsTier3 && localStorage.showResubsTier3 === 'true') ?? true);
-    const showSubs = ref((localStorage.showSubs && localStorage.showSubs === 'true') ?? true);
-    const showSubsPrime = ref((localStorage.showSubsPrime && localStorage.showSubsPrime === 'true') ?? true);
-    const showSubsTier1 = ref((localStorage.showSubsTier1 && localStorage.showSubsTier1 === 'true') ?? true);
-    const showSubsTier2 = ref((localStorage.showSubsTier2 && localStorage.showSubsTier2 === 'true') ?? true);
-    const showSubsTier3 = ref((localStorage.showSubsTier3 && localStorage.showSubsTier3 === 'true') ?? true);
-    const showResubsMinimal = ref((localStorage.showResubsMinimal && localStorage.showResubsMinimal === 'true') ?? false);
-    const showResubsMinimalAmount = ref(Number(localStorage.showResubsMinimalAmount || 50));
-    const showHosts = ref((localStorage.showHosts && localStorage.showHosts === 'true') ?? true);
-    const showBits = ref((localStorage.showBits && localStorage.showBits === 'true') ?? true);
-    const showRaids = ref((localStorage.showRaids && localStorage.showRaids === 'true') ?? true);
-    const showSubGifts = ref((localStorage.showSubGifts && localStorage.showSubGifts === 'true') ?? true);
-    const showSubCommunityGifts = ref((localStorage.showSubCommunityGifts && localStorage.showSubCommunityGifts === 'true') ?? true);
-    watch([
-      showFollows, showHosts, showBits, showRaids,
-      showTips, showTipsMinimal, showTipsMinimalAmount,
-      showResubs, showResubsPrime, showResubsTier1, showResubsTier2, showResubsTier3, showResubsMinimal, showResubsMinimalAmount,
-      showSubs, showSubsPrime, showSubsTier1, showSubsTier2, showSubsTier3, showRedeems, showSubGifts, showSubCommunityGifts,
-    ], (val) => {
-      localStorage.showFollows = String(val[0]);
-      localStorage.showHosts = String(val[1]);
-      localStorage.showBits = String(val[2]);
-      localStorage.showRaids = String(val[3]);
-      localStorage.showTips = String(val[4]);
-      localStorage.showTipsMinimal = String(val[5]);
-      localStorage.showTipsMinimalAmount = String(val[6]);
-      localStorage.showResubs = String(val[7]);
-      localStorage.showResubsPrime = String(val[8]);
-      localStorage.showResubsTier1 = String(val[9]);
-      localStorage.showResubsTier2 = String(val[10]);
-      localStorage.showResubsTier3 = String(val[11]);
-      localStorage.showResubsMinimal = String(val[12]);
-      localStorage.showResubsMinimalAmount = String(val[13]);
-      localStorage.showSubs = String(val[14]);
-      localStorage.showSubsPrime = String(val[15]);
-      localStorage.showSubsTier1 = String(val[16]);
-      localStorage.showSubsTier2 = String(val[17]);
-      localStorage.showSubsTier3 = String(val[18]);
-      localStorage.showRedeems = String(val[19]);
-      localStorage.showSubGifts = String(val[20]);
-      localStorage.showSubCommunityGifts = String(val[21]);
-    });
+const isLoading = ref(true);
+const events = ref([] as (EventListInterface & { sortAmount: number })[]);
+const selected = ref([] as number[]);
+const menu = ref(false);
 
-    function filter (event: EventListInterface & { sortAmount: number}) {
-      const follow = showFollows.value && event.event === 'follow';
-      const host = showHosts.value && event.event === 'host';
-      const raid = showRaids.value && event.event === 'raid';
-      const bit = showBits.value && event.event === 'cheer';
-      const redeem = showRedeems.value && event.event === 'rewardredeem';
+const showFollows = ref((localStorage.showFollows && localStorage.showFollows === 'true') ?? true);
+const showRedeems = ref((localStorage.showRedeems && localStorage.showRedeems === 'true') ?? true);
+const showTips = ref((localStorage.showTips && localStorage.showTips === 'true') ?? true);
+const showTipsMinimal = ref((localStorage.showTipsMinimal && localStorage.showTipsMinimal === 'true') ?? false);
+const showTipsMinimalAmount = ref(Number(localStorage.showTipsMinimalAmount || 50));
+const showResubs = ref((localStorage.showResubs && localStorage.showResubs === 'true') ?? true);
+const showResubsPrime = ref((localStorage.showResubsPrime && localStorage.showResubsPrime === 'true') ?? true);
+const showResubsTier1 = ref((localStorage.showResubsTier1 && localStorage.showResubsTier1 === 'true') ?? true);
+const showResubsTier2 = ref((localStorage.showResubsTier2 && localStorage.showResubsTier2 === 'true') ?? true);
+const showResubsTier3 = ref((localStorage.showResubsTier3 && localStorage.showResubsTier3 === 'true') ?? true);
+const showSubs = ref((localStorage.showSubs && localStorage.showSubs === 'true') ?? true);
+const showSubsPrime = ref((localStorage.showSubsPrime && localStorage.showSubsPrime === 'true') ?? true);
+const showSubsTier1 = ref((localStorage.showSubsTier1 && localStorage.showSubsTier1 === 'true') ?? true);
+const showSubsTier2 = ref((localStorage.showSubsTier2 && localStorage.showSubsTier2 === 'true') ?? true);
+const showSubsTier3 = ref((localStorage.showSubsTier3 && localStorage.showSubsTier3 === 'true') ?? true);
+const showResubsMinimal = ref((localStorage.showResubsMinimal && localStorage.showResubsMinimal === 'true') ?? false);
+const showResubsMinimalAmount = ref(Number(localStorage.showResubsMinimalAmount || 50));
+const showHosts = ref((localStorage.showHosts && localStorage.showHosts === 'true') ?? true);
+const showBits = ref((localStorage.showBits && localStorage.showBits === 'true') ?? true);
+const showRaids = ref((localStorage.showRaids && localStorage.showRaids === 'true') ?? true);
+const showSubGifts = ref((localStorage.showSubGifts && localStorage.showSubGifts === 'true') ?? true);
+const showSubCommunityGifts = ref((localStorage.showSubCommunityGifts && localStorage.showSubCommunityGifts === 'true') ?? true);
+watch([
+  showFollows, showHosts, showBits, showRaids,
+  showTips, showTipsMinimal, showTipsMinimalAmount,
+  showResubs, showResubsPrime, showResubsTier1, showResubsTier2, showResubsTier3, showResubsMinimal, showResubsMinimalAmount,
+  showSubs, showSubsPrime, showSubsTier1, showSubsTier2, showSubsTier3, showRedeems, showSubGifts, showSubCommunityGifts,
+], (val) => {
+  localStorage.showFollows = String(val[0]);
+  localStorage.showHosts = String(val[1]);
+  localStorage.showBits = String(val[2]);
+  localStorage.showRaids = String(val[3]);
+  localStorage.showTips = String(val[4]);
+  localStorage.showTipsMinimal = String(val[5]);
+  localStorage.showTipsMinimalAmount = String(val[6]);
+  localStorage.showResubs = String(val[7]);
+  localStorage.showResubsPrime = String(val[8]);
+  localStorage.showResubsTier1 = String(val[9]);
+  localStorage.showResubsTier2 = String(val[10]);
+  localStorage.showResubsTier3 = String(val[11]);
+  localStorage.showResubsMinimal = String(val[12]);
+  localStorage.showResubsMinimalAmount = String(val[13]);
+  localStorage.showSubs = String(val[14]);
+  localStorage.showSubsPrime = String(val[15]);
+  localStorage.showSubsTier1 = String(val[16]);
+  localStorage.showSubsTier2 = String(val[17]);
+  localStorage.showSubsTier3 = String(val[18]);
+  localStorage.showRedeems = String(val[19]);
+  localStorage.showSubGifts = String(val[20]);
+  localStorage.showSubCommunityGifts = String(val[21]);
+});
 
-      const tip = showTips.value && event.event === 'tip';
-      const tipMinimal = !showTipsMinimal.value || (showTipsMinimal.value && event.sortAmount >= showTipsMinimalAmount.value);
+function filter (event: EventListInterface & { sortAmount: number}) {
+  const follow = showFollows.value && event.event === 'follow';
+  const host = showHosts.value && event.event === 'host';
+  const raid = showRaids.value && event.event === 'raid';
+  const bit = showBits.value && event.event === 'cheer';
+  const redeem = showRedeems.value && event.event === 'rewardredeem';
 
-      const resub = showResubs.value && event.event === 'resub';
-      const months = JSON.parse(event.values_json).subCumulativeMonths ?? 0;
-      const tier = JSON.parse(event.values_json).tier ?? 1;
-      const resubMinimal = !showResubsMinimal.value || (showResubsMinimal.value && months >= showResubsMinimalAmount.value);
-      const resubPrime = showResubsPrime.value && tier === 'Prime';
-      const resubTier1 = showResubsTier1.value && Number(tier) === 1;
-      const resubTier2 = showResubsTier2.value && Number(tier) === 2;
-      const resubTier3 = showResubsTier3.value && Number(tier) === 3;
+  const tip = showTips.value && event.event === 'tip';
+  const tipMinimal = !showTipsMinimal.value || (showTipsMinimal.value && event.sortAmount >= showTipsMinimalAmount.value);
 
-      const sub = showSubs.value && event.event === 'sub';
-      const subPrime = showSubsPrime.value && tier === 'Prime';
-      const subTier1 = showSubsTier1.value && Number(tier) === 1;
-      const subTier2 = showSubsTier2.value && Number(tier) === 2;
-      const subTier3 = showSubsTier3.value && Number(tier) === 3;
+  const resub = showResubs.value && event.event === 'resub';
+  const months = JSON.parse(event.values_json).subCumulativeMonths ?? 0;
+  const tier = JSON.parse(event.values_json).tier ?? 1;
+  const resubMinimal = !showResubsMinimal.value || (showResubsMinimal.value && months >= showResubsMinimalAmount.value);
+  const resubPrime = showResubsPrime.value && tier === 'Prime';
+  const resubTier1 = showResubsTier1.value && Number(tier) === 1;
+  const resubTier2 = showResubsTier2.value && Number(tier) === 2;
+  const resubTier3 = showResubsTier3.value && Number(tier) === 3;
 
-      const subgift = showSubGifts.value && event.event === 'subgift';
-      const subcommunitygift = showSubCommunityGifts.value && event.event === 'subcommunitygift';
+  const sub = showSubs.value && event.event === 'sub';
+  const subPrime = showSubsPrime.value && tier === 'Prime';
+  const subTier1 = showSubsTier1.value && Number(tier) === 1;
+  const subTier2 = showSubsTier2.value && Number(tier) === 2;
+  const subTier3 = showSubsTier3.value && Number(tier) === 3;
 
-      return follow
+  const subgift = showSubGifts.value && event.event === 'subgift';
+  const subcommunitygift = showSubCommunityGifts.value && event.event === 'subcommunitygift';
+
+  return follow
         || redeem
         || host
         || raid
@@ -440,136 +428,86 @@ export default defineComponent({
         || (sub && (subPrime || subTier1 || subTier2 || subTier3))
         || subgift
         || subcommunitygift;
+}
+
+watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
+  $graphql.default.request(SET_CFG, { name: 'isTTSMuted', value: val[0] });
+  $graphql.default.request(SET_CFG, { name: 'areAlertsMuted', value: val[1] });
+  $graphql.default.request(SET_CFG, { name: 'isSoundMuted', value: val[2] });
+});
+
+function resendAlert (id: string) {
+  console.log(`resendAlert => ${id}`);
+  getSocket('/widgets/eventlist').emit('eventlist::resend', id);
+}
+
+function emitSkipAlertEvent () {
+  console.log('Skipping current alert');
+  getSocket('/widgets/eventlist').emit('skip');
+}
+
+function prepareMessage (event: any) {
+  let t = translate(`eventlist-events.${event.event}`);
+
+  const values = JSON.parse(event.values_json);
+  const formattedAmount = Intl.NumberFormat($store.state.configuration.lang, { style: 'currency', currency: get(values, 'currency', 'USD') }).format(get(values, 'amount', '0'));
+  t = t.replace('$formatted_amount', '<strong style="font-size: 1rem">' + formattedAmount + '</strong>');
+  t = t.replace('$viewers', '<strong style="font-size: 1rem">' + get(values, 'viewers', '0') + '</strong>');
+  t = t.replace('$tier', `${translate('tier')} <strong style="font-size: 1rem">${get(values, 'tier', 'n/a')}</strong>`);
+  t = t.replace('$username', get(values, 'fromId', 'n/a'));
+  t = t.replace('$subCumulativeMonthsName', get(values, 'subCumulativeMonthsName', 'months'));
+  t = t.replace('$subCumulativeMonths', '<strong style="font-size: 1rem">' + get(values, 'subCumulativeMonths', '0') + '</strong>');
+  t = t.replace('$subStreakName', get(values, 'subStreakName', 'months'));
+  t = t.replace('$subStreak', '<strong style="font-size: 1rem">' + get(values, 'subStreak', '0') + '</strong>');
+  t = t.replace('$bits', '<strong style="font-size: 1rem">' + get(values, 'bits', '0') + '</strong>');
+  t = t.replace('$count', '<strong style="font-size: 1rem">' + get(values, 'count', '0') + '</strong>');
+  t = t.replace('$titleOfReward', '<strong style="font-size: 1rem">' + get(values, 'titleOfReward', '') + '</strong>');
+
+  let output = `<span style="font-size:0.7rem; font-weight: normal">${t}</span>`;
+  if (values.song_url && values.song_title) {
+    output += `<div style="font-size: 0.7rem"><strong>${translate('song-request')}:</strong> <a href="${values.song_url}">${values.song_title}</a></div>`;
+  }
+  return output;
+}
+
+function blockquote (event: any) {
+  const values = JSON.parse(event.values_json);
+  if (values.message) {
+    return `${values.message.replace(/(\w{10})/g, '$1<wbr>')}`;
+  } // will force new line for long texts
+
+  return false;
+}
+
+function removeSelected () {
+  // filter events
+  const filteredEvents: typeof events.value = [];
+  events.value.forEach((item) => {
+    if (filter(item)) {
+      filteredEvents.push(item);
     }
-
-    watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
-      saveMutation({ name: 'areAlertsMuted', value: val[0] });
-      saveMutation({ name: 'isTTSMuted', value: val[1] });
-      saveMutation({ name: 'isSoundMuted', value: val[2] });
-    });
-
-    function resendAlert (id: string) {
-      console.log(`resendAlert => ${id}`);
-      getSocket('/widgets/eventlist').emit('eventlist::resend', id);
-    }
-
-    function emitSkipAlertEvent () {
-      console.log('Skipping current alert');
-      getSocket('/widgets/eventlist').emit('skip');
-    }
-
-    function prepareMessage (event: any) {
-      let t = translate(`eventlist-events.${event.event}`);
-
-      const values = JSON.parse(event.values_json);
-      const formattedAmount = Intl.NumberFormat(store.state.configuration.lang, { style: 'currency', currency: get(values, 'currency', 'USD') }).format(get(values, 'amount', '0'));
-      t = t.replace('$formatted_amount', '<strong style="font-size: 1rem">' + formattedAmount + '</strong>');
-      t = t.replace('$viewers', '<strong style="font-size: 1rem">' + get(values, 'viewers', '0') + '</strong>');
-      t = t.replace('$tier', `${translate('tier')} <strong style="font-size: 1rem">${get(values, 'tier', 'n/a')}</strong>`);
-      t = t.replace('$username', get(values, 'fromId', 'n/a'));
-      t = t.replace('$subCumulativeMonthsName', get(values, 'subCumulativeMonthsName', 'months'));
-      t = t.replace('$subCumulativeMonths', '<strong style="font-size: 1rem">' + get(values, 'subCumulativeMonths', '0') + '</strong>');
-      t = t.replace('$subStreakName', get(values, 'subStreakName', 'months'));
-      t = t.replace('$subStreak', '<strong style="font-size: 1rem">' + get(values, 'subStreak', '0') + '</strong>');
-      t = t.replace('$bits', '<strong style="font-size: 1rem">' + get(values, 'bits', '0') + '</strong>');
-      t = t.replace('$count', '<strong style="font-size: 1rem">' + get(values, 'count', '0') + '</strong>');
-      t = t.replace('$titleOfReward', '<strong style="font-size: 1rem">' + get(values, 'titleOfReward', '') + '</strong>');
-
-      let output = `<span style="font-size:0.7rem; font-weight: normal">${t}</span>`;
-      if (values.song_url && values.song_title) {
-        output += `<div style="font-size: 0.7rem"><strong>${translate('song-request')}:</strong> <a href="${values.song_url}">${values.song_title}</a></div>`;
-      }
-      return output;
-    }
-
-    function blockquote (event: any) {
-      const values = JSON.parse(event.values_json);
-      if (values.message) {
-        return `${values.message.replace(/(\w{10})/g, '$1<wbr>')}`;
-      } // will force new line for long texts
-
-      return false;
-    }
-
-    function removeSelected () {
-      // filter events
-      const filteredEvents: typeof events.value = [];
-      events.value.forEach((item) => {
-        if (filter(item)) {
-          filteredEvents.push(item);
-        }
+  });
+  for (const idx of selected.value) {
+    const id = filteredEvents[idx].id;
+    if (id) {
+      getSocket('/widgets/eventlist').emit('eventlist::removeById', id, () => {
+        return true;
       });
-      for (const idx of selected.value) {
-        const id = filteredEvents[idx].id;
-        if (id) {
-          getSocket('/widgets/eventlist').emit('eventlist::removeById', id, () => {
-            return true;
-          });
 
-          events.value.splice(events.value.findIndex(o => o.id === id), 1);
-        }
-      }
-      selected.value = [];
+      events.value.splice(events.value.findIndex(o => o.id === id), 1);
     }
+  }
+  selected.value = [];
+}
 
-    onMounted(() => {
-      getSocket('/widgets/eventlist').on('askForGet', () => getSocket('/widgets/eventlist').emit('eventlist::get', 100));
-      getSocket('/widgets/eventlist').on('update', (values: any) => {
-        isLoading.value = false;
-        events.value = values;
-      });
-      getSocket('/widgets/eventlist').emit('eventlist::get', 100);
-      setInterval(() => getSocket('/widgets/eventlist').emit('eventlist::get', 100), 60000);
-    });
-
-    return {
-      /* libraries */
-      translate,
-      get,
-      dayjs,
-
-      /* functions */
-      emitSkipAlertEvent,
-      prepareMessage,
-      blockquote,
-      resendAlert,
-      removeSelected,
-      filter,
-
-      /* refs */
-      isTTSMuted,
-      areAlertsMuted,
-      isSoundMuted,
-      events,
-      isLoading,
-      selected,
-      menu,
-      isPopout,
-
-      /* filter refs */
-      showFollows,
-      showTips,
-      showTipsMinimal,
-      showTipsMinimalAmount,
-      showHosts,
-      showBits,
-      showRaids,
-      showResubs,
-      showResubsPrime,
-      showResubsTier1,
-      showResubsTier2,
-      showResubsTier3,
-      showResubsMinimal,
-      showResubsMinimalAmount,
-      showSubs,
-      showSubsPrime,
-      showSubsTier1,
-      showSubsTier2,
-      showSubsTier3,
-      showRedeems,
-      showSubCommunityGifts,
-      showSubGifts,
-    };
-  },
+onMounted(() => {
+  refresh();
+  getSocket('/widgets/eventlist').on('askForGet', () => getSocket('/widgets/eventlist').emit('eventlist::get', 100));
+  getSocket('/widgets/eventlist').on('update', (values: any) => {
+    isLoading.value = false;
+    events.value = values;
+  });
+  getSocket('/widgets/eventlist').emit('eventlist::get', 100);
+  setInterval(() => getSocket('/widgets/eventlist').emit('eventlist::get', 100), 60000);
 });
 </script>

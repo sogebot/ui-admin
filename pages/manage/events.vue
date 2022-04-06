@@ -113,7 +113,7 @@
       </template>
 
       <template #[`group.header`]="{ items, isOpen, toggle }">
-        <group-header
+        <table-group-header
           group-key="name"
           no-filter
           no-permission
@@ -127,7 +127,7 @@
           <template #headerText="{ group }">
             {{ capitalize(translate(group)) }}
           </template>
-        </group-header>
+        </table-group-header>
       </template>
 
       <template #[`item`]="{ item }">
@@ -212,7 +212,7 @@ import {
 
 export default defineComponent({
   components: {
-    'group-header': defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
+    'table-group-header': defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
     'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
     'events-edit':  defineAsyncComponent(() => import('~/components/manage/events/eventsEdit.vue')),
   },

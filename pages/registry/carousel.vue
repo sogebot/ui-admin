@@ -15,7 +15,7 @@
       :items="items"
       sort-by="order"
       @current-items="saveCurrentItems"
-      @click:row="addToSelectedItem"
+      @click:row="addToSelectedItem(selected, 'id', currentItems)"
     >
       <template #top>
         <v-sheet
@@ -105,7 +105,7 @@
                       multiple
                       accept="image/*"
                       @change="filesChange($event.target.files)"
-                    />
+                    >
                   </form>
                 </v-col>
               </v-row>
@@ -331,21 +331,12 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent, onMounted, ref, watch,
-} from '@nuxtjs/composition-api';
+<script setup lang="ts">
+import type { CarouselInterface } from '@entity/carousel';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
 import { cloneDeep, sortBy } from 'lodash';
 
-import { error } from '../../functions/error';
-
-import type { CarouselInterface } from '@entity/carousel';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
 import { getBase64FromUrl } from '~/functions/getBase64FromURL';
@@ -354,6 +345,8 @@ import GET_ALL from '~/queries/carousel/getAll.gql';
 import REMOVE from '~/queries/carousel/remove.gql';
 import SAVE from '~/queries/carousel/save.gql';
 import UPLOAD from '~/queries/carousel/upload.gql';
+
+const { $graphql } = useNuxtApp();
 
 const originalWidths: string[] = [];
 let originalHeight = 0;
@@ -412,13 +405,9 @@ function handleDragStart (e: DragEvent, id: string) {
     if (parent) {
       try {
         const offsetId = parent.children[1].children[0].id;
-        EventBus.$emit(`carousel::dragdrop`, {
-          id, offsetId,
-        });
+        EventBus.$emit(`carousel::dragdrop`, { id, offsetId });
       } catch {
-        EventBus.$emit(`carousel::dragdrop`, {
-          id,
-        });
+        EventBus.$emit(`carousel::dragdrop`, { id });
       }
     }
     element.style.position = 'inherit';
@@ -430,341 +419,241 @@ function handleDragStart (e: DragEvent, id: string) {
   document.onmousemove = elementDrag;
 }
 
-export default defineComponent({
-  setup () {
-    const { result, loading, refetch } = useQuery(GET_ALL);
-    const cache = useResult<{ carousels: CarouselInterface[] }, null, CarouselInterface[]>(result, null, data => data.carousels);
-    watch(cache, (value) => {
-      console.log({
-        value,
-      });
-      if (!value) {
-        return;
-      }
-      items.value = cloneDeep([...value]);
-    }, {
-      immediate: true, deep: true,
-    });
+const loading = ref(false);
+const saving = ref(false);
+const refetch = async () => {
+  const data = await $graphql.default.request(GET_ALL);
+  items.value = cloneDeep([...data.carousels]);
+  loading.value = false;
+};
 
-    const { mutate: uploadMutation, onDone: onDoneUpload } = useMutation(UPLOAD);
-    onDoneUpload((res) => {
-      console.debug('Uploaded', res);
-      uploadedFiles.value++;
-      refetch();
-    });
+const items = ref([] as CarouselInterface[]);
 
-    const { mutate: saveMutation, onDone: onDoneSave, loading: saving } = useMutation(SAVE, {
-      refetchQueries: ['CarouselGetAll'],
-    });
-    onDoneSave(() => {
-      EventBus.$emit('snack', 'success', 'Data saved.');
-    });
+const imageShowOverlay = ref(false);
+const imageShow = ref(null as null | string);
+const isImageLoading = ref(false);
 
-    const { mutate: removeMutation, onError: onErrorRemove } = useMutation(REMOVE, {
-      refetchQueries: ['CarouselGetAll'],
-    });
-    onErrorRemove(error);
+const search = ref('');
+const rules = {
+  waitBefore:           [required, minValue(0)],
+  waitAfter:            [required, minValue(0)],
+  duration:             [required, minValue(0)],
+  animationOutDuration: [required, minValue(0)],
+  animationInDuration:  [required, minValue(0)],
+};
 
-    const items = ref([] as CarouselInterface[]);
+const animationInOptions = [
+  { value: 'fadeIn', text: 'fadeIn' },
+  { value: 'blurIn', text: 'blurIn' },
+  { value: 'slideUp', text: 'slideUp' },
+  { value: 'slideDown', text: 'slideDown' },
+  { value: 'slideLeft', text: 'slideLeft' },
+  { value: 'slideRight', text: 'slideRight' },
+];
 
-    const imageShowOverlay = ref(false);
-    const imageShow = ref(null as null | string);
-    const isImageLoading = ref(false);
+const animationOutOptions = [
+  { value: 'fadeOut', text: 'fadeOut' },
+  { value: 'blurOut', text: 'blurOut' },
+  { value: 'slideUp', text: 'slideUp' },
+  { value: 'slideDown', text: 'slideDown' },
+  { value: 'slideLeft', text: 'slideLeft' },
+  { value: 'slideRight', text: 'slideRight' },
+];
 
-    const search = ref('');
-    const rules = {
-      waitBefore:           [required, minValue(0)],
-      waitAfter:            [required, minValue(0)],
-      duration:             [required, minValue(0)],
-      animationOutDuration: [required, minValue(0)],
-      animationInDuration:  [required, minValue(0)],
-    };
-    const timestamp = ref(Date.now());
-
-    const animationInOptions = [
-      {
-        value: 'fadeIn', text: 'fadeIn',
-      },
-      {
-        value: 'blurIn', text: 'blurIn',
-      },
-      {
-        value: 'slideUp', text: 'slideUp',
-      },
-      {
-        value: 'slideDown', text: 'slideDown',
-      },
-      {
-        value: 'slideLeft', text: 'slideLeft',
-      },
-      {
-        value: 'slideRight', text: 'slideRight',
-      },
-    ];
-
-    const animationOutOptions = [
-      {
-        value: 'fadeOut', text: 'fadeOut',
-      },
-      {
-        value: 'blurOut', text: 'blurOut',
-      },
-      {
-        value: 'slideUp', text: 'slideUp',
-      },
-      {
-        value: 'slideDown', text: 'slideDown',
-      },
-      {
-        value: 'slideLeft', text: 'slideLeft',
-      },
-      {
-        value: 'slideRight', text: 'slideRight',
-      },
-    ];
-
-    const uploadedFiles = ref(0);
-    const isUploadingNum = ref(0);
-    watch(uploadedFiles, (val: number) => {
-      if (isUploadingNum.value === val) {
-        state.value.uploading = ButtonStates.idle;
-      } else {
-        state.value.uploading = ButtonStates.progress;
-      }
-    });
-
-    const selected = ref([] as CarouselInterface[]);
-    const currentItems = ref([] as CarouselInterface[]);
-    const saveCurrentItems = (value: CarouselInterface[]) => {
-      currentItems.value = value;
-    };
-    const deleteDialog = ref(false);
-    const selectable = ref(false);
-    watch(selectable, (val) => {
-      if (!val) {
-        selected.value = [];
-      }
-    });
-
-    const state = ref({
-      dragging: false, uploading: ButtonStates.idle,
-    } as {
-      uploading: number;
-      dragging: boolean;
-    });
-
-    const headers = [
-      {
-        value: 'drag', text: '', sortable: false,
-      },
-      {
-        value: 'image', text: '', sortable: false, align: 'center',
-      },
-      {
-        value: 'waitBefore', text: translate('page.settings.overlays.carousel.titles.waitBefore'), sortable: false,
-      },
-      {
-        value: 'waitAfter', text: translate('page.settings.overlays.carousel.titles.waitAfter'), sortable: false,
-      },
-      {
-        value: 'duration', text: translate('page.settings.overlays.carousel.titles.duration'), sortable: false,
-      },
-      {
-        value: 'animationInDuration', text: translate('page.settings.overlays.carousel.titles.animationInDuration'), sortable: false,
-      },
-      {
-        value: 'animationIn', text: translate('page.settings.overlays.carousel.titles.animationIn'), sortable: false,
-      },
-      {
-        value: 'animationOutDuration', text: translate('page.settings.overlays.carousel.titles.animationOutDuration'), sortable: false,
-      },
-      {
-        value: 'animationOut', text: translate('page.settings.overlays.carousel.titles.animationOut'), sortable: false,
-      },
-      {
-        value: 'showOnlyOncePerStream', text: translate('page.settings.overlays.carousel.titles.showOnlyOncePerStream'), sortable: false,
-      },
-    ];
-
-    watch(imageShowOverlay, (val) => {
-      if (!val) {
-        imageShow.value = null;
-      }
-    });
-    watch(imageShow, (val) => {
-      if (val !== null) {
-        imageShowOverlay.value = true;
-        isImageLoading.value = true;
-      }
-    });
-
-    onMounted(() => {
-      refetch();
-      EventBus.$off(`carousel::dragdrop`).$off(`carousel::dragstart`);
-      EventBus.$on(`carousel::dragstart`, () => {
-        state.value.dragging = true;
-      });
-      EventBus.$on(`carousel::dragstop`, () => {
-        state.value.dragging = false;
-      });
-      EventBus.$on(`carousel::dragdrop`, (data: {id: string, offsetId?: string}) => {
-        // reorder items
-        // remove id
-        const draggedItem = items.value.find(item => item.id === data.id);
-        if (draggedItem) {
-          items.value = items.value.filter(item => item.id !== data.id);
-
-          if (data.offsetId) {
-            // search idx of offset id
-            const idx = items.value.findIndex(item => item.id === data.offsetId);
-            if (idx >= 0) {
-              items.value.splice(idx, 0, draggedItem);
-            }
-          } else {
-            // save as last item
-            items.value.push({
-              ...draggedItem, order: items.value.length,
-            });
-          }
-          reorder();
-        }
-      });
-    });
-
-    const reorder = () => {
-      // reorder
-      for (let i = 0; i < items.value.length; i++) {
-        items.value[i].order = i;
-      }
-      items.value.forEach(item => saveMutation({
-        data_json: JSON.stringify({
-          id: item.id, order: item.order,
-        }),
-      }));
-    };
-
-    const saveSuccess = () => {
-      refetch();
-      EventBus.$emit('snack', 'success', 'Data updated.');
-    };
-
-    const deleteSelected = () => {
-      deleteDialog.value = false;
-      selected.value.forEach((item) => {
-        removeMutation({
-          id: item.id,
-        });
-      });
-
-      EventBus.$emit('snack', 'success', 'Data removed.');
-      selected.value = [];
-    };
-
-    const update = (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
-      // check validity
-      for (const key of Object.keys(rules)) {
-        for (const rule of (rules as any)[key]) {
-          const ruleStatus = rule((item as any)[key]);
-          if (ruleStatus === true) {
-            continue;
-          } else {
-            EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-            refetch();
-            return;
-          }
-        }
-      }
-
-      // update all instantly
-      for (const i of [item, ...(multi ? selected.value : [])]) {
-        (i as any)[attr] = item[attr];
-      }
-
-      [item, ...(multi ? selected.value : [])].forEach((itemToUpdate) => {
-        console.log('Updating', {
-          itemToUpdate,
-        }, {
-          attr, value: item[attr],
-        });
-        saveMutation({
-          data_json: JSON.stringify({
-            itemToUpdate,
-            [attr]: item[attr],
-          }),
-        });
-      });
-    };
-
-    const filesChange = async (filesUpload: HTMLInputElement['files']) => {
-      if (!filesUpload) {
-        return;
-      }
-      // state.value.uploading = ButtonStates.progress;
-      isUploadingNum.value = filesUpload.length;
-      uploadedFiles.value = 0;
-
-      for (const file of filesUpload) {
-        const type = file.type;
-        const base64 = (await getBase64FromUrl(URL.createObjectURL(file))).split(',')[1];
-        uploadMutation({
-          data_json: JSON.stringify({
-            type, base64,
-          }),
-        });
-      }
-    };
-
-    const swapOrder = (order1: number, order2: number) => {
-      const item1 = items.value.find(o => o.order === order1);
-      const item2 = items.value.find(o => o.order === order2);
-      if (item1 && item2) {
-        item1.order = order2;
-        item2.order = order1;
-      }
-      items.value = sortBy(items.value, 'order', 'ASC');
-      reorder();
-    };
-
-    function closeOverlay () {
-      imageShowOverlay.value = false;
-    }
-
-    return {
-      // refs
-      loading,
-      saving,
-      timestamp,
-      update,
-      items,
-      search,
-      state,
-      headers,
-      selected,
-      deleteSelected,
-      selectable,
-      deleteDialog,
-      translate,
-      saveSuccess,
-      rules,
-      imageShowOverlay,
-      imageShow,
-      isImageLoading,
-      animationInOptions,
-      animationOutOptions,
-
-      // functions
-      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
-      filesChange,
-      handleDragStart,
-      closeOverlay,
-      swapOrder,
-
-      ButtonStates,
-
-      // external functions
-      saveCurrentItems,
-      dayjs,
-    };
-  },
+const uploadedFiles = ref(0);
+const isUploadingNum = ref(0);
+watch(uploadedFiles, (val: number) => {
+  if (isUploadingNum.value === val) {
+    state.value.uploading = ButtonStates.idle;
+  } else {
+    state.value.uploading = ButtonStates.progress;
+  }
 });
+
+const selected = ref([] as CarouselInterface[]);
+const currentItems = ref([] as CarouselInterface[]);
+const saveCurrentItems = (value: CarouselInterface[]) => {
+  currentItems.value = value;
+};
+const deleteDialog = ref(false);
+const selectable = ref(false);
+watch(selectable, (val) => {
+  if (!val) {
+    selected.value = [];
+  }
+});
+
+const state = ref({ dragging: false, uploading: ButtonStates.idle } as {
+  uploading: number;
+  dragging: boolean;
+});
+
+const headers = [
+  {
+    value: 'drag', text: '', sortable: false,
+  },
+  {
+    value: 'image', text: '', sortable: false, align: 'center',
+  },
+  {
+    value: 'waitBefore', text: translate('page.settings.overlays.carousel.titles.waitBefore'), sortable: false,
+  },
+  {
+    value: 'waitAfter', text: translate('page.settings.overlays.carousel.titles.waitAfter'), sortable: false,
+  },
+  {
+    value: 'duration', text: translate('page.settings.overlays.carousel.titles.duration'), sortable: false,
+  },
+  {
+    value: 'animationInDuration', text: translate('page.settings.overlays.carousel.titles.animationInDuration'), sortable: false,
+  },
+  {
+    value: 'animationIn', text: translate('page.settings.overlays.carousel.titles.animationIn'), sortable: false,
+  },
+  {
+    value: 'animationOutDuration', text: translate('page.settings.overlays.carousel.titles.animationOutDuration'), sortable: false,
+  },
+  {
+    value: 'animationOut', text: translate('page.settings.overlays.carousel.titles.animationOut'), sortable: false,
+  },
+  {
+    value: 'showOnlyOncePerStream', text: translate('page.settings.overlays.carousel.titles.showOnlyOncePerStream'), sortable: false,
+  },
+];
+
+watch(imageShowOverlay, (val) => {
+  if (!val) {
+    imageShow.value = null;
+  }
+});
+watch(imageShow, (val) => {
+  if (val !== null) {
+    imageShowOverlay.value = true;
+    isImageLoading.value = true;
+  }
+});
+
+onMounted(() => {
+  refetch();
+  EventBus.$off(`carousel::dragdrop`).$off(`carousel::dragstart`);
+  EventBus.$on(`carousel::dragstart`, () => {
+    state.value.dragging = true;
+  });
+  EventBus.$on(`carousel::dragstop`, () => {
+    state.value.dragging = false;
+  });
+  EventBus.$on(`carousel::dragdrop`, (data: {id: string, offsetId?: string}) => {
+    // reorder items
+    // remove id
+    const draggedItem = items.value.find(item => item.id === data.id);
+    if (draggedItem) {
+      items.value = items.value.filter(item => item.id !== data.id);
+
+      if (data.offsetId) {
+        // search idx of offset id
+        const idx = items.value.findIndex(item => item.id === data.offsetId);
+        if (idx >= 0) {
+          items.value.splice(idx, 0, draggedItem);
+        }
+      } else {
+        // save as last item
+        items.value.push({ ...draggedItem, order: items.value.length });
+      }
+      reorder();
+    }
+  });
+});
+
+const reorder = () => {
+  // reorder
+  for (let i = 0; i < items.value.length; i++) {
+    items.value[i].order = i;
+  }
+  saving.value = true;
+  items.value.forEach((item) => {
+    $graphql.default.request(SAVE, { data_json: JSON.stringify({ id: item.id, order: item.order }) })
+      .then(() => EventBus.$emit('snack', 'success', 'Data saved.'));
+  });
+  setTimeout(() => {
+    saving.value = false;
+  }, 1000);
+};
+
+const deleteSelected = () => {
+  deleteDialog.value = false;
+  selected.value.forEach((item) => {
+    $graphql.default.request(REMOVE, { id: item.id });
+  });
+
+  EventBus.$emit('snack', 'success', 'Data removed.');
+  selected.value = [];
+};
+
+const update = (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
+  // check validity
+  for (const key of Object.keys(rules)) {
+    for (const rule of (rules as any)[key]) {
+      const ruleStatus = rule((item as any)[key]);
+      if (ruleStatus === true) {
+        continue;
+      } else {
+        EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
+        refetch();
+        return;
+      }
+    }
+  }
+
+  // update all instantly
+  for (const i of [item, ...(multi ? selected.value : [])]) {
+    (i as any)[attr] = item[attr];
+  }
+
+  [item, ...(multi ? selected.value : [])].forEach((itemToUpdate) => {
+    console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+
+    $graphql.default.request(SAVE, {
+      data_json: JSON.stringify({
+        itemToUpdate,
+        [attr]: item[attr],
+      }),
+    })
+      .then(() => EventBus.$emit('snack', 'success', 'Data saved.'));
+  });
+};
+
+const filesChange = async (filesUpload: HTMLInputElement['files']) => {
+  if (!filesUpload) {
+    return;
+  }
+  // state.value.uploading = ButtonStates.progress;
+  isUploadingNum.value = filesUpload.length;
+  uploadedFiles.value = 0;
+
+  for (const file of filesUpload) {
+    const type = file.type;
+    const base64 = (await getBase64FromUrl(URL.createObjectURL(file))).split(',')[1];
+    $graphql.default.request(UPLOAD, { data_json: JSON.stringify({ type, base64 }) })
+      .then((res) => {
+        console.debug('Uploaded', res);
+        uploadedFiles.value++;
+        refetch();
+      });
+  }
+};
+
+const swapOrder = (order1: number, order2: number) => {
+  const item1 = items.value.find(o => o.order === order1);
+  const item2 = items.value.find(o => o.order === order2);
+  if (item1 && item2) {
+    item1.order = order2;
+    item2.order = order1;
+  }
+  items.value = sortBy(items.value, 'order', 'ASC');
+  reorder();
+};
+
+function closeOverlay () {
+  imageShowOverlay.value = false;
+}
 </script>

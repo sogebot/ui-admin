@@ -14,7 +14,7 @@
       :items="items"
       sort-by="name"
       @current-items="saveCurrentItems"
-      @click:row="addToSelectedItem"
+      @click:row="addToSelectedItem(selected, 'id', currentItems)"
     >
       <template #top>
         <v-sheet flat color="dark" class="my-2 pb-2 mt-0">
@@ -192,19 +192,12 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent, onMounted, ref, watch,
-} from '@nuxtjs/composition-api';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+<script setup lang="ts">
+import type { GoalGroupInterface } from '@entity/goal';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
 import { v4 } from 'uuid';
 
-import type { GoalGroupInterface } from '@entity/goal';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -212,130 +205,85 @@ import GET_ALL from '~/queries/goals/getAll.gql';
 import REMOVE from '~/queries/goals/remove.gql';
 import SAVE from '~/queries/goals/save.gql';
 
-export default defineComponent({
-  setup () {
-    const { result, loading, onError, refetch } = useQuery(GET_ALL);
-    onError(error);
-    const items = useResult<{ goals: GoalGroupInterface[] }, GoalGroupInterface[], GoalGroupInterface[]>(result, [], (data) => {
-      // we also need to reset selection values
-      if (selected.value.length > 0) {
-        selected.value.forEach((selectedItem, index) => {
-          selectedItem = data.goals.find(o => o.id === selectedItem.id) || selectedItem;
-          selected.value[index] = selectedItem;
-        });
-      }
-      return data.goals;
+const { $graphql } = useNuxtApp();
+
+const loading = ref(true);
+const items = ref([] as GoalGroupInterface[]);
+const refetch = async () => {
+  const data = await $graphql.default.request(GET_ALL);
+  // we also need to reset selection values
+  if (selected.value.length > 0) {
+    selected.value.forEach((selectedItem, index) => {
+      selectedItem = data.find((o: { id: string | undefined; }) => o.id === selectedItem.id) || selectedItem;
+      selected.value[index] = selectedItem;
     });
+  }
 
-    onMounted(() => {
-      refetch();
-    });
+  items.value = data.goals;
+  loading.value = false;
+};
 
-    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, {
-      refetchQueries: ['GoalsGetAll'],
-    });
-    onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
-    onErrorRemove(error);
-
-    const { mutate: saveMutation, onError: onErrorSave, onDone: onDoneSave } = useMutation(SAVE, {
-      refetchQueries: ['GoalsGetAll'],
-    });
-    onDoneSave(() => EventBus.$emit('snack', 'success', 'Data saved.'));
-    onErrorSave(error);
-
-    const search = ref('');
-
-    const selected = ref([] as GoalGroupInterface[]);
-    const expanded = ref([] as GoalGroupInterface[]);
-    const currentItems = ref([] as GoalGroupInterface[]);
-    const deleteDialog = ref(false);
-    const selectable = ref(false);
-    const saveCurrentItems = (value: GoalGroupInterface[]) => {
-      currentItems.value = value;
-    };
-    watch(selectable, (val) => {
-      if (!val) {
-        selected.value = [];
-      }
-    });
-
-    const headers = [
-      {
-        value: 'name', text: translate('timers.dialog.name'),
-      },
-      {
-        value: 'display.type', text: translate('registry.goals.input.displayAs.title'),
-      },
-      {
-        value: 'items', text: 'Items', sortable: false,
-      },
-      {
-        value: 'actions', text: '', sortable: false,
-      },
-      {
-        text: '', value: 'data-table-expand',
-      },
-    ];
-
-    const headersDelete = [
-      {
-        value: 'name', text: translate('timers.dialog.name'),
-      },
-      {
-        value: 'display.type', text: translate('registry.goals.input.displayAs.title'),
-      },
-      {
-        value: 'items', text: 'Items',
-      },
-    ];
-
-    const deleteSelected = () => {
-      deleteDialog.value = false;
-      selected.value.forEach(item => removeMutation({
-        id: item.id,
-      }));
-      selected.value = [];
-    };
-
-    const clone = (group: GoalGroupInterface) => {
-      const clonedGroupId = v4();
-      const clonedGroup = {
-        ...group,
-        id:    clonedGroupId,
-        name:  group.name + ' (clone)',
-        goals: group.goals.map(goal => ({
-          ...goal, id: v4(), groupId: clonedGroupId,
-        })),
-      };
-
-      saveMutation({
-        data_json: JSON.stringify(clonedGroup),
-      });
-    };
-
-    return {
-      // refs
-      items,
-      search,
-      loading,
-      headers,
-      headersDelete,
-      selected,
-      deleteSelected,
-      selectable,
-      deleteDialog,
-      translate,
-      currentItems,
-      expanded,
-
-      // functions
-      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
-      clone,
-      saveCurrentItems,
-      // others
-      dayjs,
-      ButtonStates,
-    };
-  },
+onMounted(() => {
+  refetch();
 });
+
+const search = ref('');
+
+const selected = ref([] as GoalGroupInterface[]);
+const expanded = ref([] as GoalGroupInterface[]);
+const currentItems = ref([] as GoalGroupInterface[]);
+const deleteDialog = ref(false);
+const selectable = ref(false);
+const saveCurrentItems = (value: GoalGroupInterface[]) => {
+  currentItems.value = value;
+};
+watch(selectable, (val) => {
+  if (!val) {
+    selected.value = [];
+  }
+});
+
+const headers = [
+  { value: 'name', text: translate('timers.dialog.name') },
+  { value: 'display.type', text: translate('registry.goals.input.displayAs.title') },
+  {
+    value: 'items', text: 'Items', sortable: false,
+  },
+  {
+    value: 'actions', text: '', sortable: false,
+  },
+  { text: '', value: 'data-table-expand' },
+];
+
+const headersDelete = [
+  { value: 'name', text: translate('timers.dialog.name') },
+  { value: 'display.type', text: translate('registry.goals.input.displayAs.title') },
+  { value: 'items', text: 'Items' },
+];
+
+const deleteSelected = async () => {
+  deleteDialog.value = false;
+  await Promise.all(selected.value.map(async (item) => {
+    await $graphql.default.request(REMOVE, { id: item.id });
+  }));
+  selected.value.forEach(item => $graphql.default.request(REMOVE, { id: item.id }));
+  selected.value = [];
+  EventBus.$emit('snack', 'success', 'Data removed.');
+};
+
+const clone = (group: GoalGroupInterface) => {
+  const clonedGroupId = v4();
+  const clonedGroup = {
+    ...group,
+    id:    clonedGroupId,
+    name:  group.name + ' (clone)',
+    goals: group.goals.map(goal => ({
+      ...goal, id: v4(), groupId: clonedGroupId,
+    })),
+  };
+
+  $graphql.default.request(SAVE, { data_json: JSON.stringify(clonedGroup) })
+    .then(() => EventBus.$emit('snack', 'success', 'Data saved.'))
+    .catch((e: any) => error(e));
+};
 </script>

@@ -38,7 +38,7 @@
                         hide-default-footer
                       >
                         <template #[`item.id`]="{ item }">
-                          <code>{{item.id}}</code>
+                          <code>{{ item.id }}</code>
                         </template>
                       </v-data-table>
                     </v-card-text>
@@ -73,14 +73,14 @@
       @click:row="addToSelectedItem"
     >
       <template #top>
-        <search-bar :search.sync="search">
+        <table-search-bar :search.sync="search">
           <v-btn
             color="primary"
             @click="addItem()"
           >
             Add item
           </v-btn>
-        </search-bar>
+        </table-search-bar>
       </template>
 
       <template #[`item`]="{ item }">
@@ -142,15 +142,8 @@
 
 <script lang="ts">
 import type { OverlayMappers } from '@entity/overlay';
-import {
-  defineAsyncComponent,
-  defineComponent, onMounted, ref, useContext, useRouter, watch,
-} from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { useMutation } from '@vue/apollo-composable';
 import { v4 } from 'uuid';
-
-import { error } from '../../../functions/error';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
@@ -158,21 +151,10 @@ import GET from '~/queries/overlays/get.gql';
 import REMOVE from '~/queries/overlays/remove.gql';
 
 export default defineComponent({
-  components: {
-    'search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
-    'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
-  },
   setup () {
-    const ctx = useContext();
+    const { $graphql } = useNuxtApp();
 
     const loading = ref(true);
-
-    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, { refetchQueries: [{ query: GET }] });
-    onDoneRemove(() => {
-      EventBus.$emit('snack', 'success', 'Data removed.');
-      refresh();
-    });
-    onErrorRemove(error);
 
     const router = useRouter();
     const search = ref('');
@@ -228,7 +210,7 @@ export default defineComponent({
 
     const refresh = async () => {
       loading.value = true;
-      const result = await (ctx as any).$graphql.default.request(GET);
+      const result = await $graphql.default.request(GET);
 
       const outputData: OverlayMappers[] = [];
       for (const key of Object.keys(result.overlays)) {
@@ -249,14 +231,15 @@ export default defineComponent({
       loading.value = false;
     };
 
-    const deleteSelected = () => {
+    const deleteSelected = async () => {
       deleteDialog.value = false;
-      selected.value.forEach((item) => {
-        removeMutation({ id: item.id });
-      });
-
-      EventBus.$emit('snack', 'success', 'Data removed.');
+      await Promise.all(selected.value.map(async (item) => {
+        await $graphql.default.request(REMOVE, { id: item.id });
+      }));
+      selected.value.forEach(item => $graphql.default.request(REMOVE, { id: item.id }));
       selected.value = [];
+      EventBus.$emit('snack', 'success', 'Data removed.');
+      refresh();
     };
 
     const addItem = () => {

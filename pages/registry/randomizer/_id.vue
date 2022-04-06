@@ -63,14 +63,14 @@
         </v-form>
 
         <v-expansion-panels :value="3">
-          <position v-model="item.position" :disabled="item.type === 'wheelOfFortune'" :disable-x="item.type === 'tape'" :disable-anchor-x="item.type === 'tape'" :disable-anchor-y="item.type === 'tape'" />
-          <tts v-model="item.tts" />
+          <form-expansion-position v-model="item.position" :disabled="item.type === 'wheelOfFortune'" :disable-x="item.type === 'tape'" :disable-anchor-x="item.type === 'tape'" :disable-anchor-y="item.type === 'tape'" />
+          <form-expansion-tts v-model="item.tts" />
           <v-expansion-panel>
             <v-expansion-panel-header>
               {{ translate('registry.goals.fontSettings') }}
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <font v-model="item.customizationFont" />
+              <form-expansion-font v-model="item.customizationFont" />
             </v-expansion-panel-content>
           </v-expansion-panel>
           <v-expansion-panel>
@@ -83,7 +83,7 @@
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <options-table v-model="item.items" />
+              <randomizer-table v-model="item.items" />
             </v-expansion-panel-content>
           </v-expansion-panel>
           <v-expansion-panel>
@@ -105,14 +105,15 @@
               <v-alert v-if="generateItems(item.items).length === 0" text color="error">
                 {{ translate('registry.randomizer.form.optionsAreEmpty') }}
               </v-alert>
-              <div
-                v-for="(item, index) of generateItems(item.items)"
-                v-else
-                :key="index + item.id"
-                :style="{ color: getContrastColor(item.color), 'background-color': item.color, 'min-width': 'fit-content' }"
-              >
-                {{ item.name }}
-              </div>
+              <template v-else>
+                <div
+                  v-for="(item, index) of generateItems(item.items)"
+                  :key="index + item.id"
+                  :style="{ color: getContrastColor(item.color), 'background-color': item.color, 'min-width': 'fit-content' }"
+                >
+                  {{ item.name }}
+                </div>
+              </template>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -130,27 +131,17 @@
 </template>
 
 <script lang="ts">
-import {
-  computed, defineAsyncComponent, defineComponent, onMounted,
-
-  ref,
-  useRoute,
-  useRouter, useStore, watch,
-} from '@nuxtjs/composition-api';
+import { PermissionsInterface } from '@entity/permissions';
+import { RandomizerInterface, RandomizerItemInterface } from '@entity/randomizer';
 import { getContrastColor, getRandomColor } from '@sogebot/ui-helpers/colors';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import {
   cloneDeep, isEqual, orderBy,
 } from 'lodash';
 import { v4 } from 'uuid';
 
-import { PermissionsInterface } from '@entity/permissions';
-import { RandomizerInterface, RandomizerItemInterface } from '@entity/randomizer';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import {
@@ -194,63 +185,29 @@ const emptyItem: RandomizerInterface = {
 };
 
 export default defineComponent({
-  components: {
-    font: defineAsyncComponent({
-      loader: () => import('~/components/form/expansion/font.vue'),
-    }),
-    position: defineAsyncComponent({
-      loader: () => import('~/components/form/expansion/position.vue'),
-    }),
-    tts: defineAsyncComponent({
-      loader: () => import('~/components/form/expansion/tts.vue'),
-    }),
-    optionsTable: defineAsyncComponent({
-      loader: () => import('~/components/randomizer/table.vue'),
-    }),
-  },
   setup () {
-    const store = useStore();
+    const { $graphql, $store } = useNuxtApp();
     const route = useRoute();
     const router = useRouter();
 
+    const loading = ref(true);
+    const saving = ref(false);
     const item = ref(cloneDeep(emptyItem) as RandomizerInterface);
+    const permissions = ref([] as PermissionsInterface[]);
+    onMounted(async () => {
+      if (route.params.id !== 'new') {
+        const request = await $graphql.default.request(GET_ONE, { id: route.params.id });
 
-    const { result, loading } = useQuery(GET_ONE, {
-      id: route.value.params.id,
-    });
-    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
-    if (route.value.params.id !== 'new') {
-      const cache = useResult<{ randomizers: RandomizerInterface[] }, null, RandomizerInterface[]>(result, null, data => data.randomizers);
-      watch(cache, (value) => {
-        if (!value) {
-          return;
-        }
-
-        if (value.length === 0) {
+        if (request.goals.length === 0) {
           EventBus.$emit('snack', 'error', 'Data not found.');
-          router.push({
-            path: '/registry/randomizer',
-          });
+          router.push({ path: '/registry/randomizer' });
         } else {
-          item.value = cloneDeep(value[0]);
+          item.value = cloneDeep(request.randomizers[0]);
+          permissions.value = cloneDeep(request.permissions);
         }
-      }, {
-        immediate: true, deep: true,
-      });
-    }
-    const { mutate: saveMutation, loading: saving, onDone: onDoneSave, onError: onErrorSave } = useMutation(gql`
-      mutation randomizersSave($data_json: String!) {
-        randomizersSave(data: $data_json) { id }
-      }`);
-    onDoneSave((res) => {
-      router.push({
-        params: {
-          id: res.data.randomizersSave.id,
-        },
-      });
-      EventBus.$emit('snack', 'success', 'Data saved.');
+        loading.value = false;
+      }
     });
-    onErrorSave(error);
 
     const stepper = ref(1);
 
@@ -258,15 +215,9 @@ export default defineComponent({
     const valid1 = ref(true);
 
     const typeItems = [
-      {
-        text: translate('registry.randomizer.form.simple'), value: 'simple',
-      },
-      {
-        text: translate('registry.randomizer.form.wheelOfFortune'), value: 'wheelOfFortune',
-      },
-      {
-        text: translate('registry.randomizer.form.tape'), value: 'tape',
-      },
+      { text: translate('registry.randomizer.form.simple'), value: 'simple' },
+      { text: translate('registry.randomizer.form.wheelOfFortune'), value: 'wheelOfFortune' },
+      { text: translate('registry.randomizer.form.tape'), value: 'tape' },
     ];
     const permissionItems = computed(() => {
       return permissions.value.map(o => ({
@@ -276,21 +227,30 @@ export default defineComponent({
       }));
     });
 
-    const rules = {
-      name: [required], command: [required, startsWith(['!']), minLength(3)],
-    };
+    const rules = { name: [required], command: [required, startsWith(['!']), minLength(3)] };
 
     onMounted(() => {
-      store.commit('panel/back', '/registry/randomizer/');
+      $store.commit('panel/back', '/registry/randomizer/');
     });
 
     const save = () => {
       if (
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
-        saveMutation({
-          data_json: JSON.stringify(item.value),
-        });
+        saving.value = true;
+        $graphql.default.request(gql`
+      mutation randomizersSave($data_json: String!) {
+        randomizersSave(data: $data_json) { id }
+      }`, {
+          data_json: JSON.stringify({
+            ...item.value,
+            id: item.value.id ?? v4(),
+          }),
+        }).then((data: { randomizersSave: { id: any; }; }) => {
+          router.push({ params: { id: data.randomizersSave.id } });
+          EventBus.$emit('snack', 'success', 'Data saved.');
+        }).catch((e: any) => error(e))
+          .finally(() => (saving.value = false));
       }
     };
 

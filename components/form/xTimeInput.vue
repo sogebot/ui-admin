@@ -3,6 +3,7 @@
     v-model.lazy="time"
     :label="label"
     :readonly="readonly"
+    :disabled="disabled"
     :persistent-hint="persistentHint"
     :hint="hint"
     :rules="rules"
@@ -19,7 +20,7 @@ import { computed, defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   props: {
-    value: Number, label: String, hint: String, rules: [Object, Array], readonly: Boolean, persistentHint: Boolean,
+    value: Number, label: String, hint: String, rules: [Object, Array], readonly: Boolean, disabled: Boolean, persistentHint: Boolean,
   },
   setup (props: { value: number }, ctx) {
     const time = computed({

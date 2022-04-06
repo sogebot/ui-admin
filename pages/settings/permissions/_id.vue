@@ -34,24 +34,24 @@
             :label="translate('core.permissions.allowHigherPermissions')"
           />
 
-          <userslist
+          <settings-permissions-userslist
             v-if="!model.isCorePermission"
             v-model="model.userIds"
             :label="translate('core.permissions.manuallyAddedUsers')"
           />
 
-          <userslist
+          <settings-permissions-userslist
             v-if="!model.isCorePermission"
             v-model="model.excludeUserIds"
             :label="translate('core.permissions.manuallyExcludedUsers')"
           />
 
-          <filters
+          <settings-permissions-filters
             v-if="!model.isCorePermission"
             v-model="model.filters"
           />
 
-          <test :permission="model.id" />
+          <settings-permissions-test :permission="model.id" />
         </v-form>
       </template>
     </v-card-text>
@@ -77,30 +77,25 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import {
-  defineAsyncComponent, defineComponent,
-  ref, useRoute, useRouter, watch,
-} from '@nuxtjs/composition-api';
+<script setup lang="ts">
+import { PermissionsInterface } from '@entity/permissions';
 import translate from '@sogebot/ui-helpers/translate';
-import { useMutation, useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 
-import { PermissionsInterface } from '@entity/permissions';
-import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 
-export default defineComponent({
-  components: {
-    userslist: defineAsyncComponent(() => import('~/components/settings/permissions/userslist.vue')),
-    filters:   defineAsyncComponent(() => import('~/components/settings/permissions/filters.vue')),
-    test:      defineAsyncComponent(() => import('~/components/settings/permissions/test.vue')),
-  },
-  setup () {
-    const router = useRouter();
-    const route = useRoute();
-    const { result, variables } = useQuery(gql`
+const { $graphql } = useNuxtApp();
+
+const router = useRouter();
+const route = useRoute();
+
+const loading = ref(true);
+const saving = ref(false);
+const removing = ref(false);
+
+const refetch = async () => {
+  const result = await $graphql.default.request(gql`
       query getPermissions($id: String) {
         permissions(id: $id) {
           id name order isCorePermission isWaterfallAllowed automation userIds excludeUserIds
@@ -112,82 +107,49 @@ export default defineComponent({
           }
         }
       }
-    `, {
-      id: route.value.params.id,
-    });
-    watch(result, (value) => {
-      if (value && value.permissions && value.permissions[0]) {
-        const { __typename, ...data } = value.permissions[0];
-        model.value = data;
-      }
-    });
-    watch(() => route.value.params.id, (id) => {
-      variables.value = {
-        id,
-      };
-    });
-    const { mutate: updateMutation, onDone: onDoneUpdate, onError: onErrorUpdate, loading: saving } = useMutation(gql`
-      mutation permissionUpdate($id: String!, $data: PermissionInput!) {
+    `, { id: route.params.id });
+  if (result && result.permissions && result.permissions[0]) {
+    const { __typename, ...data } = result.permissions[0];
+    model.value = data;
+  }
+  loading.value = false;
+};
+onMounted(() => {
+  refetch();
+});
+watch(() => route.params.id, () => {
+  refetch();
+})
+
+const model = ref(null as PermissionsInterface | null);
+const valid = ref(true);
+
+const automationItems = ['none', 'casters', 'moderators', 'subscribers', 'vip', 'viewers', 'followers']
+  .map(o => ({ value: o, text: translate('core.permissions.' + o) }));
+
+const remove = async (id: string) => {
+  removing.value = true;
+  await $graphql.default.request(gql`
+      mutation permissionDelete($id: String!) {
+        permissionDelete(id: $id)
+      }`, { id });
+  router.push('/settings/permissions');
+  removing.value = false;
+};
+
+const save = async () => {
+  if (model.value && model.value.id && valid) {
+    saving.value = true;
+    const { id, ...data } = model.value;
+    await $graphql.default.request(gql`
+    mutation permissionUpdate($id: String!, $data: PermissionInput!) {
         permissionUpdate(id: $id, data: $data) {
           id
         }
-      }`);
-    function saveSuccess () {
-      EventBus.$emit('settings::permissions::refresh');
-      EventBus.$emit('snack', 'success', 'Data updated.');
-    }
-    onDoneUpdate(saveSuccess);
-    onErrorUpdate(error);
-    const { mutate: removeMutation, onDone: onDoneRemove, onError: onErrorRemove, loading: removing } = useMutation(gql`
-      mutation permissionDelete($id: String!) {
-        permissionDelete(id: $id)
-      }`);
-    onDoneRemove(() => {
-      router.push('/settings/permissions');
-    });
-    onErrorRemove(error);
-
-    const model = ref(null as PermissionsInterface | null);
-    const valid = ref(true);
-
-    const automationItems = ['none', 'casters', 'moderators', 'subscribers', 'vip', 'viewers', 'followers']
-      .map(o => ({
-        value: o, text: translate('core.permissions.' + o),
-      }));
-
-    const remove = (id: string) => {
-      removeMutation({
-        id,
-      });
-    };
-
-    const save = () => {
-      if (model.value && model.value.id && valid) {
-        const { id, ...data } = model.value;
-        updateMutation({
-          id, data,
-        });
-      }
-    };
-
-    return {
-      // refs
-      model,
-      automationItems,
-      removing,
-      saving,
-      valid,
-
-      // functions
-      save,
-      remove,
-
-      // others
-      translate,
-
-      // validators
-      required,
-    };
-  },
-});
+      }`, { id, data });
+    EventBus.$emit('settings::permissions::refresh');
+    EventBus.$emit('snack', 'success', 'Data updated.');
+    saving.value = false;
+  }
+};
 </script>

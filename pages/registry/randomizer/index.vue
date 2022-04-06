@@ -126,17 +126,10 @@
 <script lang="ts">
 import { PermissionsInterface } from '@entity/permissions';
 import type { RandomizerInterface } from '@entity/randomizer';
-import {
-  defineComponent, onMounted, ref,
-  watch,
-} from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
 import gql from 'graphql-tag';
-import { orderBy } from 'lodash';
+import { cloneDeep, orderBy } from 'lodash';
 import { v4 } from 'uuid';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
@@ -149,29 +142,24 @@ import SAVE from '~/queries/randomizer/save.gql';
 
 export default defineComponent({
   setup () {
-    const { result, loading, refetch } = useQuery(GET_ALL);
-    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
-    const items = useResult<{randomizers: RandomizerInterface[] }, RandomizerInterface[], RandomizerInterface[]>(result, [], (data) => {
+    const loading = ref(true);
+    const items = ref([] as RandomizerInterface[]);
+    const permissions = ref([] as PermissionsInterface[]);
+    const { $graphql } = useNuxtApp();
+
+    const refetch = async () => {
+      const request = await $graphql.default.request(GET_ALL);
       if (selected.value.length > 0) {
         selected.value.forEach((selectedItem, index) => {
-          selectedItem = data.randomizers.find(o => o.id === selectedItem.id) || selectedItem;
+          selectedItem = request.randomizers.find(o => o.id === selectedItem.id) || selectedItem;
           selected.value[index] = selectedItem;
         });
       }
-      return data.randomizers;
-    });
 
-    const { mutate: removeMutation, onError: onErrorRemove, onDone: onDoneRemove } = useMutation(REMOVE, { refetchQueries: ['randomizerGetAll'] });
-    onDoneRemove(() => EventBus.$emit('snack', 'success', 'Data removed.'));
-    onErrorRemove(error);
-
-    const { mutate: saveMutation, onError: onErrorSave, onDone: onDoneSave } = useMutation(SAVE, { refetchQueries: ['randomizerGetAll'] });
-    onDoneSave(() => EventBus.$emit('snack', 'success', 'Data saved.'));
-    onErrorSave(error);
-
-    const { mutate: hideMutation, onError: onErrorHide, onDone: onDoneHide } = useMutation(gql`mutation randomizerSetVisibility($id: String!, $value: Boolean!) { randomizerSetVisibility(id: $id, value: $value) }`, { refetchQueries: ['randomizerGetAll'] });
-    onDoneHide(() => EventBus.$emit('snack', 'success', 'Visibility changed.'));
-    onErrorHide(error);
+      items.value = cloneDeep(request.randomizers);
+      permissions.value = cloneDeep(request.permissions);
+      loading.value = false;
+    };
 
     const search = ref('');
 
@@ -212,10 +200,15 @@ export default defineComponent({
       refetch();
     });
 
-    const deleteSelected = () => {
-      selected.value.forEach(item => removeMutation({ id: item.id }));
+    const deleteSelected = async () => {
       deleteDialog.value = false;
+      await Promise.all(selected.value.map(async (item) => {
+        await $graphql.default.request(REMOVE, { id: item.id });
+      }));
+      selected.value.forEach(item => $graphql.default.request(REMOVE, { id: item.id }));
       selected.value = [];
+      EventBus.$emit('snack', 'success', 'Data removed.');
+      refetch();
     };
 
     const clone = (item: Required<RandomizerInterface>) => {
@@ -238,15 +231,22 @@ export default defineComponent({
         items:   clonedItems.map(o => ({ ...o, groupId: o.groupId === null ? o.groupId : clonedItemsRemapId.get(o.groupId) })),
       };
 
-      saveMutation({ data_json: JSON.stringify(clonedItem) });
+      $graphql.default.request(SAVE, { data_json: JSON.stringify(clonedItem) })
+        .then(() => EventBus.$emit('snack', 'success', 'Data saved.'))
+        .catch((e: any) => error(e))
+        .finally(() => refetch());
     };
 
     const toggleVisibility = (item: Required<RandomizerInterface>) => {
       item.isShown = !item.isShown;
-      hideMutation({
+
+      $graphql.default.request(gql`mutation randomizerSetVisibility($id: String!, $value: Boolean!) { randomizerSetVisibility(id: $id, value: $value) }`, {
         id:    item.id,
         value: item.isShown,
-      });
+      })
+        .then(() => EventBus.$emit('snack', 'success', 'Visibility changed.'))
+        .catch((e: any) => error(e))
+        .finally(() => refetch());
     };
 
     const startSpin = () => {

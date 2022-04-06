@@ -2,7 +2,7 @@ import { Context } from '@nuxt/types';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 
 export default function ({ app }: Context) {
-  getSocket('/').emit('version', async (version: string) => {
+  getSocket('/', true).emit('version', async (version: string) => {
     app.store?.commit('setVersion', ['current', version]);
     const { response } = await new Promise<{ response: Record<string, any>}>((resolve) => {
       const request = new XMLHttpRequest();

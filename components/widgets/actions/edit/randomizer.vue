@@ -22,59 +22,52 @@
   </div>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent, onMounted, onUnmounted, ref, watch,
-} from '@nuxtjs/composition-api';
-import { useQuery, useResult } from '@vue/apollo-composable';
+<script setup lang="ts">
+import type { RandomizerItem } from '@entity/dashboard';
+import { RandomizerInterface } from '@entity/randomizer';
 import { cloneDeep, pick } from 'lodash';
 
-import { RandomizerInterface } from '@entity/randomizer';
-
-import type { RandomizerItem } from '@entity/dashboard';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 import GET_ALL from '~/queries/randomizer/getAll.gql';
 
-type Props = {
+const { $graphql } = useNuxtApp();
+const props = defineProps<{
   item: RandomizerItem
+}>();
+const emit = defineEmits(['update:item', 'update:valid']);
+
+const loading = ref(true);
+const randomizers = ref([] as RandomizerInterface[]);
+const refetch = async () => {
+  randomizers.value = (await $graphql.default.request(GET_ALL)).randomizers;
+  loading.value = false;
 };
-export default defineComponent({
-  props: { item: Object },
-  setup (props: Props, ctx) {
-    const { result, loading, refetch } = useQuery(GET_ALL);
-    const randomizers = useResult<{randomizers: RandomizerInterface[] }, RandomizerInterface[], RandomizerInterface[]>(result, [], data => data.randomizers);
 
-    const clonedItem = ref(cloneDeep(props.item));
-    const valid = ref(true);
-    const form = ref(null);
+const clonedItem = ref(cloneDeep(props.item));
+const valid = ref(true);
+const form = ref(null);
 
-    onMounted(() => {
-      refetch();
+onMounted(() => {
+  refetch();
 
-      EventBus.$on(`quickaction::${props.item.id}::valid`, () => {
-        console.debug(`quickaction::${props.item.id}::valid`);
-        (form.value as unknown as HTMLFormElement).validate();
-      });
-    });
+  EventBus.$on(`quickaction::${props.item.id}::valid`, () => {
+    console.debug(`quickaction::${props.item.id}::valid`);
+    (form.value as unknown as HTMLFormElement).validate();
+  });
+});
 
-    onUnmounted(() => {
-      EventBus.$off(`quickaction::${props.item.id}::valid`);
-    });
+onUnmounted(() => {
+  EventBus.$off(`quickaction::${props.item.id}::valid`);
+});
 
-    const rules = { randomizerId: [required] };
+const rules = { randomizerId: [required] };
 
-    watch(clonedItem, (val) => {
-      ctx.emit('update:item', pick(val, ['id', 'userId', 'order', 'type', 'options.label', 'options.color', 'options.randomizerId']));
-    }, { deep: true });
+watch(clonedItem, (val) => {
+  emit('update:item', pick(val, ['id', 'userId', 'order', 'type', 'options.label', 'options.color', 'options.randomizerId']));
+}, { deep: true });
 
-    watch(valid, (val) => {
-      ctx.emit('update:valid', val);
-    });
-
-    return {
-      clonedItem, rules, valid, form, loading, randomizers,
-    };
-  },
+watch(valid, (val) => {
+  emit('update:valid', val);
 });
 </script>

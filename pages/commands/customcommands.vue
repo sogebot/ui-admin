@@ -12,7 +12,7 @@
           <v-col cols="auto" align-self="center">
             <v-row dense>
               <v-col v-if="selected.length > 0" cols="auto" class="pr-1">
-                <command-batch
+                <manage-commands-batch
                   :length="selected.length"
                   :permission-items="permissionItems"
                   :group-items="groupItems"
@@ -76,19 +76,19 @@
       @current-items="saveCurrentItems"
     >
       <template #top>
-        <search-bar :search.sync="search">
-          <command-edit
+        <table-search-bar :search.sync="search">
+          <manage-commands-edit
             :rules="rules"
             :permission-items="permissionItems"
             :permissions="permissions"
             :group-items="groupItems"
             @save="refresh()"
           />
-        </search-bar>
+        </table-search-bar>
       </template>
 
       <template #[`group.header`]="{ items, isOpen, toggle }">
-        <group-header
+        <table-group-header
           :is-open="isOpen"
           :toggle="toggle"
           :get-group="getGroup"
@@ -97,7 +97,7 @@
           :items="items"
         >
           <template #config>
-            <group-config
+            <alias-group-config
               v-if="items[0].group"
               :key="items[0].group"
               :permission-items="permissionItems"
@@ -106,13 +106,13 @@
               @save="updateGroup(items[0].group, $event)"
             />
           </template>
-        </group-header>
+        </table-group-header>
       </template>
 
       <template #[`item`]="{ item }">
-        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem(selected, 'id', currentItems)">
           <template #actions>
-            <command-edit
+            <manage-commands-edit
               :rules="rules"
               :value="item"
               :permission-items="permissionItems"
@@ -143,19 +143,12 @@
   </v-container>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { CommandsGroupInterface, CommandsInterface } from '@entity/commands';
 import type { PermissionsInterface } from '@entity/permissions';
-import {
-  computed,
-  defineAsyncComponent, defineComponent, onMounted, ref,
-} from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  useMutation, useQuery, useResult,
-} from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import {
   capitalize, isEqual, orderBy,
@@ -176,283 +169,254 @@ let count: {
 
 export type CommandsInterfaceUI = CommandsInterface & { count: number };
 
-export default defineComponent({
-  components: {
-    'command-edit':  defineAsyncComponent(() => import('~/components/manage/commands/commandsEdit.vue')),
-    'command-batch': defineAsyncComponent(() => import('~/components/manage/commands/commandsBatch.vue')),
-    responses:       defineAsyncComponent({ loader: () => import('~/components/responses.vue') }),
-    'group-config':  defineAsyncComponent(() => import('~/components/manage/alias/groupConfig.vue')),
-    'group-header':  defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
-    'search-bar':    defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+const { $graphql } = useNuxtApp();
+
+const loading = ref(true);
+const items = ref([] as CommandsInterfaceUI[]);
+const groups = ref([] as CommandsGroupInterface[]);
+const permissions = ref([] as PermissionsInterface[]);
+const refetch = async () => {
+  const data = await $graphql.default.request(GET_ALL);
+  // we also need to reset selection values
+  if (selected.value.length > 0) {
+    selected.value.forEach((selectedItem, index) => {
+      selectedItem = output.find(o => o.id === selectedItem.id) || selectedItem;
+      selected.value[index] = selectedItem;
+    });
+  }
+
+  groups.value = data.customCommandsGroup;
+  permissions.value = data.permissions;
+  loading.value = false;
+};
+
+const rules = {
+  command: [startsWith(['!']), required, minLength(2)],
+  count:   [required, minValue(0)],
+};
+
+const search = ref('');
+
+const selected = ref([] as CommandsInterfaceUI[]);
+const deleteDialog = ref(false);
+
+const currentItems = ref([] as CommandsInterfaceUI[]);
+const saveCurrentItems = (value: CommandsInterfaceUI[]) => {
+  currentItems.value = value;
+};
+
+const state = ref({
+  loadingPrm: ButtonStates.progress,
+  loading:    ButtonStates.progress,
+} as {
+  loadingPrm: number;
+  loading: number;
+});
+
+const headers = [
+  {
+    value: 'command', text: translate('command'), width: '15rem',
   },
-  setup () {
-    const { result, loading } = useQuery(GET_ALL);
-    const permissions = useResult<{permissions: PermissionsInterface[] }, PermissionsInterface[], PermissionsInterface[]>(result, [], data => data.permissions);
-    const groups = useResult<{customCommandsGroup: CommandsGroupInterface[] }, CommandsGroupInterface[], CommandsGroupInterface[]>(result, [], data => data.customCommandsGroup);
+  {
+    value: 'enabled', text: translate('enabled'), align: 'center',
+  },
+  {
+    value: 'visible', text: capitalize(translate('visible')), align: 'center',
+  },
+  {
+    value: 'count', text: capitalize(translate('count')), align: 'right',
+  },
+  { value: 'actions', sortable: false },
+];
 
-    const { mutate: updateGroupMutation, onDone: onDoneUpdateGroup, onError: onErrorUpdateGroup } = useMutation(gql`
-      mutation setCustomCommandsGroup($name: String!, $data: String!) {
-        setCustomCommandsGroup(name: $name, data: $data) {
-          name
-        }
-      }`);
-    onDoneUpdateGroup(() => { EventBus.$emit('snack', 'success', 'Data updated.'); });
-    onErrorUpdateGroup(error);
+const headersDelete = [
+  { value: 'command', text: translate('command') },
+];
 
-    const rules = {
-      command: [startsWith(['!']), required, minLength(2)],
-      count:   [required, minValue(0)],
-    };
-
-    const search = ref('');
-    const items = ref([] as Required<CommandsInterfaceUI>[]);
-
-    const selected = ref([] as CommandsInterfaceUI[]);
-    const deleteDialog = ref(false);
-
-    const currentItems = ref([] as CommandsInterfaceUI[]);
-    const saveCurrentItems = (value: CommandsInterfaceUI[]) => {
-      currentItems.value = value;
-    };
-
-    const state = ref({
-      loadingPrm: ButtonStates.progress,
-      loading:    ButtonStates.progress,
-    } as {
-      loadingPrm: number;
-      loading: number;
-    });
-
-    const headers = [
-      {
-        value: 'command', text: translate('command'), width: '15rem',
-      },
-      {
-        value: 'enabled', text: translate('enabled'), align: 'center',
-      },
-      {
-        value: 'visible', text: capitalize(translate('visible')), align: 'center',
-      },
-      {
-        value: 'count', text: capitalize(translate('count')), align: 'right',
-      },
-      { value: 'actions', sortable: false },
-    ];
-
-    const headersDelete = [
-      { value: 'command', text: translate('command') },
-    ];
-
-    const refresh = () => {
-      getSocket('/systems/customcommands').emit('generic::getAll', (err, commands, countArg) => {
-        if (err) {
-          return error(err);
-        }
-        console.debug({ commands, count });
-        count = countArg || [];
-        items.value.length = 0;
-        for (const command of commands) {
-          items.value.push({
-            ...command,
-            responses: orderBy(command.responses, 'order', 'asc'),
-            count:     count.find(o => o.command === command.command)?.count || 0,
-          });
-        }
-        // we also need to reset selection values
-        if (selected.value.length > 0) {
-          selected.value.forEach((_selectedItem, index) => {
-            _selectedItem = items.value.find(o => o.id === _selectedItem.id) || _selectedItem;
-            selected.value[index] = _selectedItem;
-          });
-        }
-        state.value.loading = ButtonStates.success;
+const refresh = () => {
+  refetch();
+  getSocket('/systems/customcommands').emit('generic::getAll', (err, commands, countArg) => {
+    if (err) {
+      return error(err);
+    }
+    console.debug({ commands, count });
+    count = countArg || [];
+    items.value.length = 0;
+    for (const command of commands) {
+      items.value.push({
+        ...command,
+        responses: orderBy(command.responses, 'order', 'asc'),
+        count:     count.find(o => o.command === command.command)?.count || 0,
       });
-    };
+    }
+    // we also need to reset selection values
+    if (selected.value.length > 0) {
+      selected.value.forEach((_selectedItem, index) => {
+        _selectedItem = items.value.find(o => o.id === _selectedItem.id) || _selectedItem;
+        selected.value[index] = _selectedItem;
+      });
+    }
+    state.value.loading = ButtonStates.success;
+  });
+};
 
-    onMounted(() => {
-      refresh();
-    });
+onMounted(() => {
+  refresh();
+});
 
-    const deleteSelected = async () => {
-      deleteDialog.value = false;
-      await Promise.all(
-        selected.value.map((item) => {
-          return new Promise((resolve, reject) => {
-            getSocket('/systems/customcommands').emit('generic::deleteById', item.id, (err) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
-          });
-        }),
-      );
-      refresh();
+const deleteSelected = async () => {
+  deleteDialog.value = false;
+  await Promise.all(
+    selected.value.map((item) => {
+      return new Promise((resolve, reject) => {
+        getSocket('/systems/customcommands').emit('generic::deleteById', item.id, (err) => {
+          if (err) {
+            reject(error(err));
+          }
+          resolve(true);
+        });
+      });
+    }),
+  );
+  refresh();
 
-      EventBus.$emit('snack', 'success', 'Data removed.');
-      selected.value = [];
-    };
+  EventBus.$emit('snack', 'success', 'Data removed.');
+  selected.value = [];
+};
 
-    const permissionItems = computed(() => {
-      return [
-        {
-          text:     '-- unset --',
-          value:    null,
-          disabled: false,
-        },
-        ...permissions.value.map(item => ({
-          text:     item.name,
-          value:    item.id,
-          disabled: false,
-        })),
-      ];
-    });
+const permissionItems = computed(() => {
+  return [
+    {
+      text:     '-- unset --',
+      value:    null,
+      disabled: false,
+    },
+    ...permissions.value.map(item => ({
+      text:     item.name,
+      value:    item.id,
+      disabled: false,
+    })),
+  ];
+});
 
-    const groupItems = computed(() => {
-      return [...new Set(items.value.filter(o => o.group !== null).map(o => o.group).sort())].map(item => ({
-        text:     item,
-        value:    item,
-        disabled: false,
-      }));
-    });
+const groupItems = computed(() => {
+  return [...new Set(items.value.filter(o => o.group !== null).map(o => o.group).sort())].map(item => ({
+    text:     item,
+    value:    item,
+    disabled: false,
+  }));
+});
 
-    const isGroupSelected = (group: string) => {
-      for (const item of items.value.filter(o => o.group === group)) {
-        if (!selected.value.find(o => o.id === item.id)) {
-          return false;
-        }
-      }
-      return true;
-    };
-    const toggleItemSelection = (item: typeof items.value[number]) => {
-      if (selected.value.find(o => o.id === item.id)) {
-        // deselect
-        selected.value = selected.value.filter(o => o.id !== item.id);
-      } else {
+const isGroupSelected = (group: string) => {
+  for (const item of items.value.filter(o => o.group === group)) {
+    if (!selected.value.find(o => o.id === item.id)) {
+      return false;
+    }
+  }
+  return true;
+};
+const toggleItemSelection = (item: typeof items.value[number]) => {
+  if (selected.value.find(o => o.id === item.id)) {
+    // deselect
+    selected.value = selected.value.filter(o => o.id !== item.id);
+  } else {
+    selected.value.push(item);
+  }
+};
+const toggleGroupSelection = (group: string) => {
+  if (isGroupSelected(group)) {
+    // deselect all
+    selected.value = selected.value.filter(o => o.group !== group);
+  } else {
+    for (const item of items.value.filter(o => o.group === group)) {
+      if (!selected.value.find(o => o.id === item.id)) {
         selected.value.push(item);
       }
-    };
-    const toggleGroupSelection = (group: string) => {
-      if (isGroupSelected(group)) {
-        // deselect all
-        selected.value = selected.value.filter(o => o.group !== group);
-      } else {
-        for (const item of items.value.filter(o => o.group === group)) {
-          if (!selected.value.find(o => o.id === item.id)) {
-            selected.value.push(item);
-          }
-        }
-      }
-    };
-    const batchUpdate = (value: Record<string, any>) => {
-      // check validity
-      for (const toUpdate of selected.value) {
-        const item = items.value.find(o => o.id === toUpdate.id);
-        if (!item) {
-          continue;
-        }
-
-        let isValid = true;
-        for (const key of Object.keys(rules)) {
-          for (const rule of (rules as any)[key]) {
-            const ruleStatus = rule((toUpdate as any)[key]);
-            if (ruleStatus === true) {
-              continue;
-            } else {
-              EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-              isValid = false;
-            }
-          }
-        }
-
-        if (isValid) {
-          for (const key of Object.keys(value)) {
-            if (typeof value[key] !== 'undefined') {
-              (item as any)[key] = value[key];
-            }
-          }
-          console.log('Updating', { item });
-          getSocket('/systems/customcommands').emit('generic::setById', {
-            id: item.id,
-            item,
-          }, () => {
-            EventBus.$emit('snack', 'success', 'Data updated.');
-          });
-        }
-      }
-    };
-    const getGroup = computed<{ [name: string]: CommandsGroupInterface }>({
-      get () {
-        // set empty groups from aliases
-        const returnGroups: { [name: string]: CommandsGroupInterface } = {};
-        for (const item of items.value) {
-          if (item.group && !returnGroups[item.group]) {
-            const group = groups.value.find(o => o.name === item.group);
-            returnGroups[item.group] = {
-              name:    item.group,
-              options: group?.options ?? {
-                filter:     null,
-                permission: null,
-              },
-            };
-          }
-        }
-        return returnGroups;
-      },
-      set (value: { [name: string]: CommandsGroupInterface }) {
-        // go through groups and save only changed
-        for (const groupName of Object.keys(getGroup.value)) {
-          if (!isEqual(getGroup.value[groupName], value[groupName])) {
-            updateGroupMutation({
-              name: groupName,
-              data: JSON.stringify(value[groupName].options),
-            }, { refetchQueries: [{ query: GET_ALL }] });
-          }
-        }
-        return true;
-      },
-    });
-    function updateGroup (groupName: string, options: { permission: null | string, filter: null | string }) {
-      getGroup.value = {
-        ...getGroup.value,
-        [groupName]: {
-          name: groupName,
-          options,
-        },
-      };
+    }
+  }
+};
+const batchUpdate = (value: Record<string, any>) => {
+  // check validity
+  for (const toUpdate of selected.value) {
+    const item = items.value.find(o => o.id === toUpdate.id);
+    if (!item) {
+      continue;
     }
 
-    return {
-      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
-      saveCurrentItems,
-      orderBy,
-      toggleItemSelection,
-      headers,
-      search,
-      items,
-      state,
-      permissions,
-      getPermissionName,
-      deleteDialog,
-      selected,
-      loading,
-      translate,
-      rules,
-      headersDelete,
-      deleteSelected,
-      refresh,
-      capitalize,
-      batchUpdate,
-      ButtonStates,
+    let isValid = true;
+    for (const key of Object.keys(rules)) {
+      for (const rule of (rules as any)[key]) {
+        const ruleStatus = rule((toUpdate as any)[key]);
+        if (ruleStatus === true) {
+          continue;
+        } else {
+          EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
+          isValid = false;
+        }
+      }
+    }
 
-      permissionItems,
-      groups,
-      groupItems,
-      getGroup,
-      isGroupSelected,
-      toggleGroupSelection,
-      updateGroup,
-    };
+    if (isValid) {
+      for (const key of Object.keys(value)) {
+        if (typeof value[key] !== 'undefined') {
+          (item as any)[key] = value[key];
+        }
+      }
+      console.log('Updating', { item });
+      getSocket('/systems/customcommands').emit('generic::setById', {
+        id: item.id,
+        item,
+      }, () => {
+        EventBus.$emit('snack', 'success', 'Data updated.');
+      });
+    }
+  }
+};
+const getGroup = computed<{ [name: string]: CommandsGroupInterface }>({
+  get () {
+    // set empty groups from aliases
+    const returnGroups: { [name: string]: CommandsGroupInterface } = {};
+    for (const item of items.value) {
+      if (item.group && !returnGroups[item.group]) {
+        const group = groups.value.find(o => o.name === item.group);
+        returnGroups[item.group] = {
+          name:    item.group,
+          options: group?.options ?? {
+            filter:     null,
+            permission: null,
+          },
+        };
+      }
+    }
+    return returnGroups;
+  },
+  set (value: { [name: string]: CommandsGroupInterface }) {
+    // go through groups and save only changed
+    for (const groupName of Object.keys(getGroup.value)) {
+      if (!isEqual(getGroup.value[groupName], value[groupName])) {
+        $graphql.default.request(gql`
+          mutation setCustomCommandsGroup($name: String!, $data: String!) {
+            setCustomCommandsGroup(name: $name, data: $data) {
+              name
+            }
+          }`, {
+          name: groupName,
+          data: JSON.stringify(value[groupName].options),
+        });
+      }
+    }
+    refresh();
+    EventBus.$emit('snack', 'success', 'Data updated.');
+    return true;
   },
 });
+function updateGroup (groupName: string, options: { permission: null | string, filter: null | string }) {
+  getGroup.value = {
+    ...getGroup.value,
+    [groupName]: {
+      name: groupName,
+      options,
+    },
+  };
+}
 </script>

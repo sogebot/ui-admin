@@ -5,8 +5,14 @@ import { isUserLoggedIn } from '@sogebot/ui-helpers/isUserLoggedIn';
 import { getConfiguration, getTranslations } from '@sogebot/ui-helpers/socket';
 import { cloneDeep } from 'lodash';
 
-export default function ({ store }: { store: any, app: any }) {
-  (async function init () {
+let lastCheck = 0;
+
+export default async function ({ store }: { store: any, app: any }) {
+  try {
+    if (Date.now() - lastCheck < 60 * 1000 * 5) {
+      return;
+    }
+    lastCheck = Date.now();
     await isBotStarted(store);
     store.commit('setLoggedUser', await isUserLoggedIn());
 
@@ -26,5 +32,7 @@ export default function ({ store }: { store: any, app: any }) {
     setLocale(configuration.lang as string);
 
     store.commit('setUILoaded');
-  })();
+  } catch (e) {
+    console.error(e)
+  }
 }

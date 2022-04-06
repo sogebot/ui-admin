@@ -8,7 +8,7 @@
     width="100%"
   >
     <component
-      :is="item.type"
+      :is="components[item.type]"
       :item="item"
       :dialog.sync="dialog"
       :color="color"
@@ -48,30 +48,40 @@
           </v-btn>
         </v-toolbar>
         <v-card-text class="pa-0">
-          <edit :key="timestamp" :item.sync="clonedItem" :valid.sync="valid" />
+          <widgets-actions-edit :key="timestamp" :item.sync="clonedItem" :valid.sync="valid" />
         </v-card-text>
       </v-card>
     </v-dialog>
   </v-card>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { QuickActions } from '@entity/dashboard';
-import {
-  defineAsyncComponent,
-  defineComponent, nextTick, onMounted, ref, watch,
-} from '@nuxtjs/composition-api';
 import { getContrastColor } from '@sogebot/ui-helpers/colors';
 import translate from '@sogebot/ui-helpers/translate';
-import { useMutation } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { cloneDeep } from 'lodash';
 
-import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 
 type Props = {
   item: QuickActions.Item & { selected: boolean, temporary: boolean, show: boolean },
+  editing: boolean,
+};
+
+const { $graphql } = useNuxtApp();
+const props = defineProps<Props>();
+const emit = defineEmits(['selected', 'save'])
+
+const saving = ref(false);
+
+const components = {
+  command:          'widgets-actions-button-command',
+  customvariable:   'widgets-actions-button-customvariable',
+  randomizer:       'widgets-actions-button-randomizer',
+  overlayCountdown: 'widgets-actions-button-overlay-countdown',
+  overlayStopwatch: 'widgets-actions-button-overlay-stopwatch',
+  overlayMarathon:  'widgets-actions-button-overlay-marathon',
 };
 
 const rgbToHex = function (rgb: number | string) {
@@ -82,19 +92,44 @@ const rgbToHex = function (rgb: number | string) {
   return hex;
 };
 
-export default defineComponent({
-  props:      { item: Object, editing: Boolean },
-  components: {
-    command:          defineAsyncComponent(() => import('./button/command.vue')),
-    customvariable:   defineAsyncComponent(() => import('./button/customvariable.vue')),
-    randomizer:       defineAsyncComponent(() => import('./button/randomizer.vue')),
-    overlayCountdown: defineAsyncComponent(() => import('./button/overlayCountdown.vue')),
-    overlayStopwatch: defineAsyncComponent(() => import('./button/overlayStopwatch.vue')),
-    overlayMarathon:  defineAsyncComponent(() => import('./button/overlayMarathon.vue')),
-    edit:             defineAsyncComponent(() => import('~/components/widgets/actions/edit.vue')),
-  },
-  setup (props: Props, ctx) {
-    const { mutate: updateMutation, onError, onDone, loading: saving } = useMutation(gql`
+const dialog = ref((props.item as any).temporary);
+const timestamp = ref(Date.now());
+const clonedItem = ref(cloneDeep(props.item));
+const valid = ref(true);
+const color = ref('white');
+
+const recalculateColor = () => {
+  // get computed color
+  const card = document.getElementById(`quickaction-${clonedItem.value.id}`) as HTMLElement;
+  const bgColor = window.getComputedStyle(card, null).getPropertyValue('background-color');
+  color.value = getContrastColor('#' + bgColor.replace('rgb(', '').replace(')', '').split(',').map(o => rgbToHex(o.trim())).join(''));
+};
+
+onMounted(() => {
+  recalculateColor();
+});
+
+watch(dialog, (val) => {
+  if (val) {
+    valid.value = true;
+    timestamp.value = Date.now();
+    clonedItem.value = cloneDeep(props.item);
+  }
+
+  recalculateColor();
+});
+
+const emitSelect = (val: boolean) => {
+  emit('selected', val);
+};
+
+const save = () => {
+  EventBus.$emit(`quickaction::${props.item.id}::valid`);
+  nextTick(async () => {
+    if (valid.value) {
+      const { selected, temporary, show, ...item } = clonedItem.value;
+      saving.value = true;
+      await $graphql.default.request(gql`
       mutation quickActionSave($data: QuickActionInput!) {
         quickActionSave(data: $data) {
           ... on CommandItem { id }
@@ -104,72 +139,13 @@ export default defineComponent({
           ... on OverlayMarathonItem { id }
           ... on OverlayStopwatchItem { id }
         }
-      }`);
-    onError(error);
-    onDone(() => {
-      ctx.emit('save');
+      }`, { data: { [item.type]: [item] } });
+      emit('save');
       dialog.value = false;
-    });
-
-    const dialog = ref((props.item as any).temporary);
-    const timestamp = ref(Date.now());
-    const clonedItem = ref(cloneDeep(props.item));
-    const valid = ref(true);
-    const color = ref('white');
-
-    const recalculateColor = () => {
-      // get computed color
-      const card = document.getElementById(`quickaction-${clonedItem.value.id}`) as HTMLElement;
-      const bgColor = window.getComputedStyle(card, null).getPropertyValue('background-color');
-      color.value = getContrastColor('#' + bgColor.replace('rgb(', '').replace(')', '').split(',').map(o => rgbToHex(o.trim())).join(''));
-    };
-
-    onMounted(() => {
-      recalculateColor();
-    });
-
-    watch(dialog, (val) => {
-      if (val) {
-        valid.value = true;
-        timestamp.value = Date.now();
-        clonedItem.value = cloneDeep(props.item);
-      }
-
-      recalculateColor();
-    });
-
-    const emitSelect = (val: boolean) => {
-      ctx.emit('selected', val);
-    };
-
-    const save = () => {
-      EventBus.$emit(`quickaction::${props.item.id}::valid`);
-      nextTick(() => {
-        if (valid.value) {
-          const { selected, temporary, show, ...item } = clonedItem.value;
-          updateMutation({ data: { [item.type]: [item] } });
-        }
-      });
-    };
-
-    return {
-      /* refs */
-      clonedItem,
-      color,
-      dialog,
-      saving,
-      timestamp,
-      valid,
-
-      // fncs
-      save,
-      emitSelect,
-
-      // others
-      translate,
-    };
-  },
-});
+      saving.value = false;
+    }
+  });
+};
 </script>
 
 <style>
