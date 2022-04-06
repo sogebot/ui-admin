@@ -5,7 +5,8 @@ function addToSelectedItem<T> (selected: Ref<T[]>, key: keyof T, currentItems: R
   let lastOp: 'select' | 'unselect' = 'select';
 
   return function (item: T) {
-    const idx = selected.value.findIndex(o => o[key] === item[key]);
+    let selectedValue = typeof selected.value === 'undefined' ? selected : selected.value
+    const idx = selectedValue.findIndex(o => o[key] === item[key]);
 
     let isShift = false;
     if (window.event) {
@@ -19,10 +20,10 @@ function addToSelectedItem<T> (selected: Ref<T[]>, key: keyof T, currentItems: R
       // add/remove all to selected between those two values
       if (lastOp === 'select') {
         for (let i = Math.min(prevIdx, curIdx); i <= Math.max(prevIdx, curIdx); i++) {
-          selected.value.push(currentItems.value[i]);
+          selectedValue.push(currentItems.value[i]);
         }
       } else {
-        selected.value = selected.value.filter((o) => {
+        selectedValue = selectedValue.filter((o) => {
           let notFound = true;
           for (let i = Math.min(prevIdx, curIdx); i <= Math.max(prevIdx, curIdx); i++) {
             if (o === currentItems.value[i]) {
@@ -38,15 +39,15 @@ function addToSelectedItem<T> (selected: Ref<T[]>, key: keyof T, currentItems: R
       // eslint-disable-next-line no-lonely-if
       lastSelected = item[key];
       if (idx === -1) {
-        selected.value.push(item);
+        selectedValue.push(item);
         lastOp = 'select';
       } else {
-        selected.value.splice(idx, 1);
+        selectedValue.splice(idx, 1);
         lastOp = 'unselect';
       }
     }
-    selected.value = Array.from(new Set([...selected.value]));
-    console.log(selected.value);
+    selectedValue = Array.from(new Set([...selectedValue]));
+    console.log(selectedValue);
   };
 }
 
