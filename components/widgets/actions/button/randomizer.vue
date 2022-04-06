@@ -7,12 +7,6 @@
     @click="!editing ? trigger($event) : showDialog()"
   >
     <v-row v-if="randomizer" no-gutters ripple>
-      <v-slide-x-transition>
-        <v-col v-if="editing" cols="auto" class="d-flex">
-          <v-simple-checkbox v-if="color !== 'white'" v-model="selected" light />
-          <v-simple-checkbox v-else v-model="selected" dark />
-        </v-col>
-      </v-slide-x-transition>
       <v-col v-if="!editing" cols="auto" class="d-flex">
         <v-icon class="minus" :color="color">
           {{ randomizer.isShown ? 'mdi-eye' : 'mdi-eye-off' }}
@@ -30,6 +24,13 @@
         </v-icon>
         <v-progress-circular v-else indeterminate size="20" />
       </v-col>
+
+      <v-slide-x-reverse-transition>
+        <v-col v-if="editing" cols="auto" class="d-flex">
+          <v-simple-checkbox v-if="color !== 'white'" v-model="selected" light />
+          <v-simple-checkbox v-else v-model="selected" dark />
+        </v-col>
+      </v-slide-x-reverse-transition>
     </v-row>
   </v-card-text>
 </template>

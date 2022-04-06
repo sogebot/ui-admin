@@ -8,12 +8,6 @@
       @click="!editing ? trigger($event) : showDialog()"
     >
       <v-row v-if="item.type === 'customvariable'" no-gutters ripple>
-        <v-slide-x-transition>
-          <v-col v-if="editing" cols="auto" class="d-flex">
-            <v-simple-checkbox v-if="color !== 'white'" v-model="selected" light />
-            <v-simple-checkbox v-else v-model="selected" dark />
-          </v-col>
-        </v-slide-x-transition>
         <template v-if="customVariable && customVariable.type === 'eval'">
           <v-col class="text-truncate" style="line-height: normal;">
             <div>Eval cannot be used</div>
@@ -71,6 +65,13 @@
             <v-icon>mdi-pencil</v-icon>
           </v-col>
         </template>
+
+        <v-slide-x-reverse-transition>
+          <v-col v-if="editing" cols="auto" class="d-flex">
+            <v-simple-checkbox v-if="color !== 'white'" v-model="selected" light />
+            <v-simple-checkbox v-else v-model="selected" dark />
+          </v-col>
+        </v-slide-x-reverse-transition>
       </v-row>
     </v-card-text>
 

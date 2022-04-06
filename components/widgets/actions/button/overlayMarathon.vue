@@ -8,12 +8,6 @@
       @click="!editing ? trigger() : showDialog()"
     >
       <v-row no-gutters ripple>
-        <v-slide-x-transition>
-          <v-col v-if="editing" cols="auto" class="d-flex">
-            <v-simple-checkbox v-if="color !== 'white'" v-model="selected" light />
-            <v-simple-checkbox v-else v-model="selected" dark />
-          </v-col>
-        </v-slide-x-transition>
         <v-col v-if="!editing" cols="auto" class="d-flex" />
         <v-col :key="tick" style="align-self: center;" class="text">
           <div style="font-size: 0.8rem;" v-html="time()" />
@@ -24,6 +18,13 @@
             mdi-alarm-plus
           </v-icon>
         </v-col>
+
+        <v-slide-x-reverse-transition>
+          <v-col v-if="editing" cols="auto" class="d-flex">
+            <v-simple-checkbox v-if="color !== 'white'" v-model="selected" light />
+            <v-simple-checkbox v-else v-model="selected" dark />
+          </v-col>
+        </v-slide-x-reverse-transition>
       </v-row>
     </v-card-text>
 

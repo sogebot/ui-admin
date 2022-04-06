@@ -47,20 +47,30 @@
 
     <v-row :key="timestamp" dense>
       <v-col cols="12">
-        <template v-for="item of items">
-          <span :key="item.id + 'transition'">
-            <v-expand-transition>
-              <widgets-actions-button
-                v-show="!item.temporary && item.show"
-                :key="item.id"
-                :item="item"
-                :editing="editing"
-                @save="refetch"
-                @selected="item.selected = $event"
-              />
-            </v-expand-transition>
+        <draggable
+            :list="items"
+            handle=".handle"
+            @change="reorder"
+          >
+          <span :key="item.id + 'transition'" v-for="item of items">
+            <v-slide-x-transition>
+              <v-icon
+                v-show="editing"
+                :light="itemColor[item.id] !== 'white'"
+                class="handle"
+                style="position: absolute; transform: translateY(40%); z-index: 99;">mdi-drag</v-icon>
+            </v-slide-x-transition>
+
+            <widgets-actions-button
+              v-show="!item.temporary && item.show"
+              :key="item.id"
+              :item="item"
+              :editing="editing"
+              @save="refetch"
+              @selected="item.selected = $event"
+            />
           </span>
-        </template>
+        </draggable>
       </v-col>
     </v-row>
     <v-fade-transition>
@@ -82,8 +92,11 @@
 
 <script setup lang="ts">
 import type { QuickActions } from '@entity/dashboard';
+import { getContrastColor } from '@sogebot/ui-helpers/colors';
 import gql from 'graphql-tag';
+import { orderBy } from 'lodash';
 import { v4 } from 'uuid';
+import draggable from 'vuedraggable';
 
 import { error } from '~/functions/error';
 import { omitDeep } from '~/functions/omitDeep';
@@ -106,12 +119,19 @@ const refetch = async () => {
         }
       }
     `);
-  items.value = request.quickAction.map((o: any) => {
+  items.value = orderBy(request.quickAction.map((o: any) => {
     const item = omitDeep(o, ['__typename']);
     return {
       ...item, selected: items.value.find(b => b.id === item.id)?.selected ?? false, temporary: false, show: true,
     };
-  });
+  }), 'order', 'asc');
+
+  setTimeout(() => {
+    for (const item of items.value) {
+      itemColor[item.id] = recalculateColor(item.id);
+    }
+    timestamp.value = Date.now();
+  }, 1000);
   loading.value = false;
 };
 
@@ -121,12 +141,27 @@ const timestamp = ref(Date.now());
 const height = ref(600);
 const isPopout = computed(() => location.href.includes('popout'));
 
+const itemColor = reactive({})
+
 const selectedItems = computed(() => {
   return items.value.filter(o => o.selected);
 });
 const isAnySelected = computed(() => {
   return selectedItems.value.length > 0;
 });
+
+const rgbToHex = function (rgb: number | string) {
+  let hex = Number(rgb).toString(16);
+  if (hex.length < 2) {
+    hex = '0' + hex;
+  }
+  return hex;
+};
+const recalculateColor = (id: string) => {
+  const card = document.getElementById(`quickaction-${id}`) as HTMLElement;
+  const bgColor = window.getComputedStyle(card, null).getPropertyValue('background-color');
+  return getContrastColor('#' + bgColor.replace('rgb(', '').replace(')', '').split(',').map(o => rgbToHex(o.trim())).join(''));
+};
 
 function updateHeight () {
   // so. many. parentElement. to get proper offsetTop as children offset is 0
@@ -150,6 +185,27 @@ function addItem () {
       command: '',
     },
   });
+}
+
+function reorder () {
+  let order = 0;
+  for (const uiItem of items.value) {
+    const { selected, temporary, show, ...item } = uiItem;
+    item.order = order;
+    order++;
+    console.log({item})
+    $graphql.default.request(gql`
+    mutation quickActionSave($data: QuickActionInput!) {
+      quickActionSave(data: $data) {
+        ... on CommandItem { id }
+        ... on CustomVariableItem { id }
+        ... on RandomizerItem { id }
+        ... on OverlayCountdownItem { id }
+        ... on OverlayMarathonItem { id }
+        ... on OverlayStopwatchItem { id }
+      }
+    }`, { data: { [item.type]: [item] } });
+  }
 }
 
 function deleteItems () {

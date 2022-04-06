@@ -8,12 +8,6 @@
       @click="!editing ? trigger($event) : showDialog()"
     >
       <v-row v-if="stopwatch" no-gutters ripple>
-        <v-slide-x-transition>
-          <v-col v-if="editing" cols="auto" class="d-flex">
-            <v-simple-checkbox v-if="color !== 'white'" v-model="selected" light />
-            <v-simple-checkbox v-else v-model="selected" dark />
-          </v-col>
-        </v-slide-x-transition>
         <v-col v-if="!editing" cols="auto" class="d-flex">
           <v-icon class="minus" :color="color">
             <template v-if="isStarted === null">
@@ -33,6 +27,13 @@
             mdi-alarm-plus
           </v-icon>
         </v-col>
+
+        <v-slide-x-reverse-transition>
+          <v-col v-if="editing" cols="auto" class="d-flex">
+            <v-simple-checkbox v-if="color !== 'white'" v-model="selected" light />
+            <v-simple-checkbox v-else v-model="selected" dark />
+          </v-col>
+        </v-slide-x-reverse-transition>
       </v-row>
     </v-card-text>
 

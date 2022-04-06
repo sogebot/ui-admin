@@ -4,18 +4,17 @@
     class="text-button pa-1 mb-1 text-center"
     style="font-size: 12px !important; display: block;"
     :style="{ 'color': color }"
-    @click="!editing ? trigger($event) : showDialog()"
   >
     <v-row no-gutters>
-      <v-slide-x-transition>
+      <v-col class="text-truncate">
+        {{ item.options.label }}
+      </v-col>
+      <v-slide-x-reverse-transition>
         <v-col v-if="editing" cols="auto" class="d-flex">
           <v-simple-checkbox v-if="color !== 'white'" v-model="selected" light />
           <v-simple-checkbox v-else v-model="selected" dark />
         </v-col>
-      </v-slide-x-transition>
-      <v-col class="text-truncate">
-        {{ item.options.label }}
-      </v-col>
+      </v-slide-x-reverse-transition>
     </v-row>
   </v-card-text>
 </template>

@@ -6,6 +6,7 @@
     :color="item.options.color"
     elevation="2"
     width="100%"
+    tile
   >
     <component
       :is="components[item.type]"
