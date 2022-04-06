@@ -18,21 +18,15 @@
           <v-form v-model="valid" lazy-validation>
             <v-row no-gutters>
               <v-col cols="auto" align-self="center">
-                <v-checkbox v-model="toggles" value="count" />
+                <v-checkbox v-model="toggles" value="miliseconds" />
               </v-col>
               <v-col>
-                <v-text-field
-                  :disabled="!toggles.includes('count')"
-                  v-model.number="count"
+                <form-x-time-input
+                  v-model.number="miliseconds"
+                  :rules="rules.miliseconds"
                   :label="translate('cooldown')"
-                  hide-details="auto"
-                  type="number"
-                  :rules="rules.count"
-                >
-                  <template #append>
-                    s
-                  </template>
-                </v-text-field>
+                  :disabled="!toggles.includes('miliseconds')"
+                />
               </v-col>
             </v-row>
 
@@ -189,7 +183,7 @@ export default defineComponent({
 
     const toggles = ref([] as string[]);
 
-    const count = ref(60);
+    const miliseconds = ref(60000);
     const isEnabled = ref(false);
     const isErrorMsgQuiet = ref(false);
     const isOwnerAffected = ref(false);
@@ -199,8 +193,8 @@ export default defineComponent({
 
     const save = () => {
       ctx.emit('save', {
-        miliseconds: toggles.value.includes('count')
-          ? count.value * 1000
+        miliseconds: toggles.value.includes('miliseconds')
+          ? miliseconds.value
           : undefined,
         isEnabled: toggles.value.includes('isEnabled')
           ? isEnabled.value
@@ -225,7 +219,7 @@ export default defineComponent({
     };
 
     return {
-      count,
+      miliseconds,
       toggles,
       isEnabled,
       isErrorMsgQuiet,

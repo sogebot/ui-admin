@@ -44,6 +44,7 @@ const { $graphql } = useNuxtApp();
 const props = defineProps<{
   item: OverlayMappers
 }>();
+const emit = defineEmits(['update:item', 'update:valid']);
 const clonedItem = ref(cloneDeep(props.item));
 const valid = ref(true);
 const form = ref(null);
@@ -70,10 +71,10 @@ onUnmounted(() => {
 const rules = { marathonId: [required] };
 
 watch(clonedItem, (val) => {
-  ctx.emit('update:item', pick(val, ['id', 'userId', 'order', 'type', 'options.label', 'options.color', 'options.marathonId']));
+  emit('update:item', pick(val, ['id', 'userId', 'order', 'type', 'options.label', 'options.color', 'options.marathonId']));
 }, { deep: true });
 
 watch(valid, (val) => {
-  ctx.emit('update:valid', val);
+  emit('update:valid', val);
 });
 </script>

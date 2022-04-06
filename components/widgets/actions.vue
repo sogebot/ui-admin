@@ -88,12 +88,12 @@ import { v4 } from 'uuid';
 import { error } from '~/functions/error';
 import { omitDeep } from '~/functions/omitDeep';
 
-const { $graphql } = useNuxtApp();
+const { $graphql, $store } = useNuxtApp();
 
 const loading = ref(true);
 const items = ref([] as (QuickActions.Item & { selected: boolean, temporary: boolean, show: boolean })[]);
 
-const refresh = async () => {
+const refetch = async () => {
   const request = await $graphql.default.request(gql`
       query quickAction {
         quickAction {
@@ -120,7 +120,6 @@ const editing = ref(false);
 const timestamp = ref(Date.now());
 const height = ref(600);
 const isPopout = computed(() => location.href.includes('popout'));
-const store = useStore<any>();
 
 const selectedItems = computed(() => {
   return items.value.filter(o => o.selected);
@@ -140,7 +139,7 @@ function addItem () {
   items.value.push({
     id:        v4(),
     selected:  false,
-    userId:    store.state.loggedUser.id,
+    userId:    $store.state.loggedUser.id,
     order:     -1,
     temporary: true,
     show:      true,
@@ -168,7 +167,7 @@ function deleteItems () {
 }
 
 onMounted(() => {
-  refresh();
+  refetch();
   setInterval(() => updateHeight(), 100);
 });
 </script>

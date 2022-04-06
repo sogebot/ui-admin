@@ -71,6 +71,7 @@ type Props = {
 
 const { $graphql } = useNuxtApp();
 const props = defineProps<Props>();
+const emit = defineEmits(['selected', 'save'])
 
 const saving = ref(false);
 
@@ -119,7 +120,7 @@ watch(dialog, (val) => {
 });
 
 const emitSelect = (val: boolean) => {
-  ctx.emit('selected', val);
+  emit('selected', val);
 };
 
 const save = () => {
@@ -139,7 +140,7 @@ const save = () => {
           ... on OverlayStopwatchItem { id }
         }
       }`, { data: { [item.type]: [item] } });
-      ctx.emit('save');
+      emit('save');
       dialog.value = false;
       saving.value = false;
     }

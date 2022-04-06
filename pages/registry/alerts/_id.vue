@@ -225,7 +225,7 @@ import GET_ONE from '~/queries/alert/getOne.gql';
 import SAVE from '~/queries/alert/save.gql';
 import UPLOAD from '~/queries/alert/upload.gql';
 
-const { $graphql } = useNuxtApp()
+const { $graphql, $store } = useNuxtApp()
 
 const emptyItem: AlertInterface = {
   id:                  v4(),
@@ -293,7 +293,6 @@ const emptyItem: AlertInterface = {
 
 const supportedEvents = ['follows', 'cheers', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'tips', 'hosts', 'raids', 'cmdredeems', 'rewardredeems'] as const;
 
-const store = useStore();
 const router = useRouter();
 const route = useRoute();
 
@@ -303,8 +302,9 @@ const loading = ref(true);
 const saving = ref(false);
 
 onMounted(async () => {
-  if (route.value.params.id !== 'new') {
-    const result = await $graphql.default.request(GET_ONE, { id: route.value.params.id });
+  $store.commit('panel/back', '/registry/alerts');
+  if (route.params.id !== 'new') {
+    const result = await $graphql.default.request(GET_ONE, { id: route.params.id });
     if (result.alerts.length === 0) {
       EventBus.$emit('snack', 'error', 'Data not found.');
       router.push({ path: '/registry/alerts' });
@@ -312,7 +312,7 @@ onMounted(async () => {
     item.value = result.alerts[0];
     loading.value = false;
 
-    console.groupCollapsed(`alert::${route.value.params.id}`);
+    console.groupCollapsed(`alert::${route.params.id}`);
     console.log(item.value);
     console.groupEnd();
   } else {
@@ -335,10 +335,6 @@ const profanityFilterTypeOptions: { value: string; text: string }[] = [
   { value: 'hide-messages', text: translate('registry.alerts.profanityFilterType.hide-messages') },
   { value: 'disable-alerts', text: translate('registry.alerts.profanityFilterType.disable-alerts') },
 ];
-
-onMounted(() => {
-  store.commit('panel/back', '/registry/alerts');
-});
 
 const save = async () => {
   const isValid = await new Promise((resolve) => {

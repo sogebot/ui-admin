@@ -161,7 +161,6 @@ import {
 } from 'lodash';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
-import { error as errorLog } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
 import {
@@ -177,6 +176,9 @@ const loading = ref(true);
 const items = ref([] as AliasInterfaceUI[]);
 const groups = ref([] as AliasGroupInterface[]);
 const permissions = ref([] as PermissionsInterface[]);
+
+onMounted(() => refetch());
+
 const refetch = async () => {
   const data = await $graphql.default.request(GET_ALL);
   // we also need to reset selection values
@@ -192,8 +194,6 @@ const refetch = async () => {
   permissions.value = data.permissions;
   loading.value = false;
 };
-
-watch(error, val => errorLog(val?.message ?? ''));
 
 const selected = ref([] as AliasInterfaceUI[]);
 const deleteDialog = ref(false);
@@ -321,6 +321,11 @@ const deleteSelected = () => {
   });
   saveSuccess();
   selected.value = [];
+};
+
+const saveSuccess = () => {
+  refetch();
+  EventBus.$emit('snack', 'success', 'Data updated.');
 };
 
 const getGroup = computed<{ [name: string]: AliasGroupInterface }>({

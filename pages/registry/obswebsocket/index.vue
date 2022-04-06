@@ -147,9 +147,6 @@ onMounted(() => {
   refetch();
 });
 
-const { mutate: removeMutation, onError: onErrorRemove } = useMutation(REMOVE);
-onErrorRemove(error);
-
 const search = ref('');
 
 const command = ref('!obsws run');
@@ -189,17 +186,14 @@ const headersDelete = [
   { value: 'name', text: 'Name' },
 ];
 
-const deleteSelected = () => {
+const deleteSelected = async () => {
   deleteDialog.value = false;
-  selected.value.forEach((item) => {
-    removeMutation({ id: item.id }, {
-      refetchQueries: [
-        'OBSWebsocketGetAll',
-      ],
-    });
-  });
-
-  EventBus.$emit('snack', 'success', 'Data removed.');
+  await Promise.all(selected.value.map(async (item) => {
+    await $graphql.default.request(REMOVE, { id: item.id });
+  }));
+  selected.value.forEach(item => $graphql.default.request(REMOVE, { id: item.id }));
   selected.value = [];
+  EventBus.$emit('snack', 'success', 'Data removed.');
+  refetch();
 };
 </script>

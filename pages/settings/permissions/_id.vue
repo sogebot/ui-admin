@@ -117,6 +117,9 @@ const refetch = async () => {
 onMounted(() => {
   refetch();
 });
+watch(() => route.params.id, () => {
+  refetch();
+})
 
 const model = ref(null as PermissionsInterface | null);
 const valid = ref(true);

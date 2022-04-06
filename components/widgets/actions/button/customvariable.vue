@@ -23,8 +23,8 @@
           </v-col>
         </template>
         <template v-if="customVariable && customVariable.type === 'number'">
-          <v-col v-if="!editing" cols="auto" class="d-flex">
-            <v-icon class="minus" :color="color">
+          <v-col v-if="!editing" cols="auto" class="d-flex minus">
+            <v-icon :color="color">
               mdi-minus
             </v-icon>
           </v-col>
@@ -37,8 +37,8 @@
             </div>
           </v-col>
 
-          <v-col v-if="!editing" cols="auto" class="d-flex">
-            <v-icon class="plus" :color="color">
+          <v-col v-if="!editing" cols="auto" class="d-flex plus">
+            <v-icon :color="color">
               mdi-plus
             </v-icon>
           </v-col>
@@ -115,6 +115,7 @@ const props = defineProps<{
   editing: boolean,
 }>();
 
+const loading = ref(true);
 const customVariable = ref(null as VariableInterface | null);
 const refresh = async () => {
   customVariable.value = (await $graphql.default.request(gql`
@@ -131,14 +132,15 @@ onMounted(() => {
 });
 
 const selected = ref(props.item.selected);
+const emit = defineEmits(['select', 'unselect', 'update:dialog'])
 watch(selected, (val) => {
-  ctx.emit(val ? 'select' : 'unselect');
+  emit(val ? 'select' : 'unselect');
 });
 
 const showMenu = ref(false);
 
 const showDialog = () => {
-  ctx.emit('update:dialog', true);
+  emit('update:dialog', true);
 };
 
 const debouncedTrigger = debounce((ev: MouseEvent, value?: string) => trigger(ev, value), 1000);
@@ -149,8 +151,11 @@ const trigger = (ev: MouseEvent, value?: string) => {
     } else {
       console.log(`quickaction::trigger::${props.item.id}`);
       customVariable.value.currentValue = value;
-      triggerMutation({ id: props.item.id, value: value.trim() });
-    }
+      $graphql.default.request(gql`
+        mutation quickActionTrigger($id: String!, $value: String!) {
+          quickActionTrigger(id: $id, value: $value)
+        }`, { id: props.item.id, value: value.trim() });
+      }
   } else if (customVariable.value && customVariable.value.type === 'number') {
     // determinate which part of button is pushed
     const card = document.getElementById(`quickaction-${props.item.id}`) as HTMLElement;

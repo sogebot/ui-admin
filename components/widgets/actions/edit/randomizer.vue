@@ -35,6 +35,7 @@ const { $graphql } = useNuxtApp();
 const props = defineProps<{
   item: RandomizerItem
 }>();
+const emit = defineEmits(['update:item', 'update:valid']);
 
 const loading = ref(true);
 const randomizers = ref([] as RandomizerInterface[]);
@@ -63,10 +64,10 @@ onUnmounted(() => {
 const rules = { randomizerId: [required] };
 
 watch(clonedItem, (val) => {
-  ctx.emit('update:item', pick(val, ['id', 'userId', 'order', 'type', 'options.label', 'options.color', 'options.randomizerId']));
+  emit('update:item', pick(val, ['id', 'userId', 'order', 'type', 'options.label', 'options.color', 'options.randomizerId']));
 }, { deep: true });
 
 watch(valid, (val) => {
-  ctx.emit('update:valid', val);
+  emit('update:valid', val);
 });
 </script>

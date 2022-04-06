@@ -311,7 +311,9 @@ import { get } from 'lodash';
 import GET_CFG from '~/queries/alert/getCfg.gql';
 import SET_CFG from '~/queries/alert/setCfg.gql';
 
-const { $graphql } = useNuxtApp();
+const { $graphql, $store } = useNuxtApp();
+
+defineProps({ height: Number });
 
 const areAlertsMuted = ref(false);
 const isTTSMuted = ref(false);
@@ -330,7 +332,6 @@ watch(cache, (value) => {
   isTTSMuted.value = value.isTTSMuted;
   isSoundMuted.value = value.isSoundMuted;
 }, { immediate: true, deep: true });
-const { mutate: saveMutation } = useMutation(SET_CFG);
 
 const isLoading = ref(true);
 const events = ref([] as (EventListInterface & { sortAmount: number })[]);
@@ -430,9 +431,9 @@ function filter (event: EventListInterface & { sortAmount: number}) {
 }
 
 watch([areAlertsMuted, isTTSMuted, isSoundMuted], (val) => {
-  saveMutation({ name: 'areAlertsMuted', value: val[0] });
-  saveMutation({ name: 'isTTSMuted', value: val[1] });
-  saveMutation({ name: 'isSoundMuted', value: val[2] });
+  $graphql.default.request(SET_CFG, { name: 'isTTSMuted', value: val[0] });
+  $graphql.default.request(SET_CFG, { name: 'areAlertsMuted', value: val[1] });
+  $graphql.default.request(SET_CFG, { name: 'isSoundMuted', value: val[2] });
 });
 
 function resendAlert (id: string) {

@@ -50,8 +50,9 @@ const props = defineProps<{
 }>();
 
 const selected = ref(props.item.selected);
+const emit = defineEmits(['select', 'unselect', 'update:dialog'])
 watch(selected, (val) => {
-  ctx.emit(val ? 'select' : 'unselect');
+  emit(val ? 'select' : 'unselect');
 });
 
 const cache = ref([] as RandomizerInterface[]);
@@ -74,7 +75,7 @@ onMounted(() => {
 const randomizerSpin = ref(false);
 
 const showDialog = () => {
-  ctx.emit('update:dialog', true);
+  emit('update:dialog', true);
 };
 
 const trigger = (ev: MouseEvent) => {

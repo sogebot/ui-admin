@@ -30,13 +30,16 @@ const props = defineProps<{
   color: string,
   editing: boolean,
 }>();
+
+const emit = defineEmits(['select', 'unselect', 'update:dialog'])
+
 const selected = ref(props.item.selected);
 watch(selected, (val) => {
-  ctx.emit(val ? 'select' : 'unselect');
+  emit(val ? 'select' : 'unselect');
 });
 
 const showDialog = () => {
-  ctx.emit('update:dialog', true);
+  emit('update:dialog', true);
 };
 
 const trigger = () => {

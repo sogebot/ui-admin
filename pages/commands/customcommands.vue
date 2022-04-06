@@ -12,7 +12,7 @@
           <v-col cols="auto" align-self="center">
             <v-row dense>
               <v-col v-if="selected.length > 0" cols="auto" class="pr-1">
-                <manage-command-batch
+                <manage-commands-batch
                   :length="selected.length"
                   :permission-items="permissionItems"
                   :group-items="groupItems"
@@ -77,7 +77,7 @@
     >
       <template #top>
         <table-search-bar :search.sync="search">
-          <manage-command-edit
+          <manage-commands-edit
             :rules="rules"
             :permission-items="permissionItems"
             :permissions="permissions"
@@ -112,7 +112,7 @@
       <template #[`item`]="{ item }">
         <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem(selected, 'id', currentItems)">
           <template #actions>
-            <manage-command-edit
+            <manage-commands-edit
               :rules="rules"
               :value="item"
               :permission-items="permissionItems"
@@ -171,6 +171,7 @@ export type CommandsInterfaceUI = CommandsInterface & { count: number };
 
 const { $graphql } = useNuxtApp();
 
+const loading = ref(true);
 const items = ref([] as CommandsInterfaceUI[]);
 const groups = ref([] as CommandsGroupInterface[]);
 const permissions = ref([] as PermissionsInterface[]);
@@ -394,11 +395,11 @@ const getGroup = computed<{ [name: string]: CommandsGroupInterface }>({
     for (const groupName of Object.keys(getGroup.value)) {
       if (!isEqual(getGroup.value[groupName], value[groupName])) {
         $graphql.default.request(gql`
-      mutation setCustomCommandsGroup($name: String!, $data: String!) {
-        setCustomCommandsGroup(name: $name, data: $data) {
-          name
-        }
-      }`, {
+          mutation setCustomCommandsGroup($name: String!, $data: String!) {
+            setCustomCommandsGroup(name: $name, data: $data) {
+              name
+            }
+          }`, {
           name: groupName,
           data: JSON.stringify(value[groupName].options),
         });

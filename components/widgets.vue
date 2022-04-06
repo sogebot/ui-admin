@@ -39,86 +39,51 @@
     </v-row>
     <v-tabs-items id="widget-tab-items" v-model="tab" :style="{ height: `${height}px`, overflow: 'hidden' }">
       <v-tab-item>
-        <events :height="height"/>
+        <widgets-events :height="height" />
       </v-tab-item>
       <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'songs').enabled">
-        <ytplayer :height="height" />
+        <widgets-ytplayer :height="height" />
       </v-tab-item>
       <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'queue').enabled">
-        <queue :height="height" />
+        <widgets-queue :height="height" />
       </v-tab-item>
       <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'raffles').enabled">
-        <raffles :height="height" />
+        <widgets-raffles :height="height" />
       </v-tab-item>
       <v-tab-item v-if="$store.state.$integrations.find(o => o.name === 'twitter').enabled">
-        <social :height="height" />
+        <widgets-social :height="height" />
       </v-tab-item>
       <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'checklist').enabled">
-        <checklist :height="height" />
+        <widgets-checklist :height="height" />
       </v-tab-item>
       <v-tab-item>
-        <custom :height="height" />
+        <widgets-custom :height="height" />
       </v-tab-item>
     </v-tabs-items>
   </div>
 </template>
 
-<script lang="ts">
-import {
-  computed,
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@nuxtjs/composition-api';
+<script setup lang="ts">
 import translate from '@sogebot/ui-helpers/translate';
 
-export default defineComponent({
-  components: {
-    events: defineAsyncComponent({
-      loader: () => import('~/components/widgets/events.vue'),
-    }),
-    checklist: defineAsyncComponent({
-      loader: () => import('~/components/widgets/checklist.vue'),
-    }),
-    ytplayer: defineAsyncComponent({
-      loader: () => import('~/components/widgets/ytplayer.vue'),
-    }),
-    queue: defineAsyncComponent({
-      loader: () => import('~/components/widgets/queue.vue'),
-    }),
-    raffles: defineAsyncComponent({
-      loader: () => import('~/components/widgets/raffles.vue'),
-    }),
-    social: defineAsyncComponent({
-      loader: () => import('~/components/widgets/social.vue'),
-    }),
-    custom: defineAsyncComponent({
-      loader: () => import('~/components/widgets/custom.vue'),
-    }),
-  },
-  setup () {
-    const tab = ref(Number(localStorage.dashboardTab));
-    const isPopout = computed(() => location.href.includes('popout'));
-    const height = ref(0);
+const tab = ref(Number(localStorage.dashboardTab));
+const isPopout = computed(() => location.href.includes('popout'));
+const height = ref(0);
 
-    function updateHeight () {
-      // so. many. parentElement. to get proper offsetTop as children offset is 0
-      const offsetTop = document.getElementById('widget-tab-items')?.parentElement?.offsetTop || 0;
-      const offset = 41;
-      const newHeight = window.innerHeight - offsetTop - offset;
-      height.value = Math.max(newHeight, 300);
-    }
+function updateHeight () {
+  // so. many. parentElement. to get proper offsetTop as children offset is 0
+  const offsetTop = document.getElementById('widget-tab-items')?.parentElement?.offsetTop || 0;
+  const offset = 41;
+  const newHeight = window.innerHeight - offsetTop - offset;
+  height.value = Math.max(newHeight, 300);
+}
 
-    onMounted(() => {
-      setTimeout(() => { updateHeight(); }, 1000);
-      window.addEventListener('resize', updateHeight);
-    });
+onMounted(() => {
+  setTimeout(() => { updateHeight(); }, 1000);
+  window.addEventListener('resize', updateHeight);
+});
 
-    watch(tab, (val) => {
-      localStorage.dashboardTab = String(val);
-    });
-
-    return {
-      translate, tab, isPopout, height,
-    };
-  },
+watch(tab, (val) => {
+  localStorage.dashboardTab = String(val);
 });
 </script>

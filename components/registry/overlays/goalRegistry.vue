@@ -25,6 +25,7 @@ import GET_ALL from '~/queries/goals/getAll.gql';
 
 const { $graphql } = useNuxtApp();
 const props = defineProps({ value: [Object, Array] });
+const emit = defineEmits(['input'])
 
 const loading = ref(true);
 const items = ref([] as GoalGroupInterface[]);
@@ -54,7 +55,7 @@ const options = ref(
 
 watch(options, (val: any) => {
   if (!isEqual(props.value, options.value)) {
-    ctx.emit('input', val);
+    emit('input', val);
   }
 }, { deep: true, immediate: true });
 </script>

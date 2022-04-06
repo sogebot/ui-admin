@@ -80,6 +80,7 @@ const { $graphql } = useNuxtApp();
 const props = defineProps<{
   dialog: boolean,
 }>();
+const emit = defineEmits(['update:dialog', 'save']);
 
 const loading = ref(true);
 const items = ref([] as Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[]);
@@ -94,7 +95,7 @@ const dialogController = ref(props.dialog);
 const markedToDelete = ref([] as string[]);
 
 watch(dialogController, (val) => {
-  ctx.emit('update:dialog', val);
+  emit('update:dialog', val);
 });
 
 const save = () => {
@@ -116,7 +117,7 @@ const save = () => {
   });
   markedToDelete.value = [];
   dialogController.value = false;
-  ctx.emit('save');
+  emit('save');
   refetch();
 };
 

@@ -71,12 +71,8 @@
 
 <script lang="ts">
 import type { PermissionsInterface } from '@entity/permissions';
-import {
-  defineComponent, onMounted, ref, useRoute, useRouter, watch,
-} from '@nuxtjs/composition-api';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import translate from '@sogebot/ui-helpers/translate';
-import { useMutation, useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { cloneDeep, sortBy } from 'lodash';
 import shortid from 'shortid';
@@ -177,7 +173,13 @@ function handleDragStart (e: DragEvent) {
 
 export default defineComponent({
   setup () {
-    const { result, loading, refetch } = useQuery(gql`
+    const loading = ref(true);
+    const { $graphql } = useNuxtApp();
+
+    const permissions = ref([] as PermissionsInterface[]);
+
+    const refetch = async () => {
+      const request = await $graphql.default.request(gql`
       query getPermissions {
         permissions {
           id name order isCorePermission isWaterfallAllowed automation userIds excludeUserIds
@@ -190,24 +192,17 @@ export default defineComponent({
         }
       }
     `);
-    watch(result, (value) => {
-      const { __typename, ...data } = value.permissions;
-      permissions.value = data;
-      if (!route.value.params.id) {
+      permissions.value = cloneDeep(request.permissions);
+
+      if (!route.params.id) {
         router.replace('/settings/permissions/' + permissions.value[0].id);
       }
-    });
-    const { mutate: updateMutation } = useMutation(gql`
-      mutation permissionUpdate($id: String!, $data: PermissionInput!) {
-        permissionUpdate(id: $id, data: $data) {
-          id
-        }
-      }`);
+      loading.value = false;
+    };
 
     const route = useRoute();
     const router = useRouter();
     const tab = ref(0);
-    const permissions = ref([] as PermissionsInterface[]);
     const tabsRef = ref(null as any);
 
     const state = ref({ dragging: false, saving: false } as {
@@ -215,9 +210,9 @@ export default defineComponent({
       saving: boolean;
     });
 
-    watch(() => route.value.params.id, (val?: string) => {
+    watch(() => route.params.id, (val?: string) => {
       if (!val && !loading.value) {
-        if (!route.value.params.id) {
+        if (!route.params.id) {
           router.replace('/settings/permissions/' + permissions.value[0].id);
         }
       }
@@ -269,7 +264,13 @@ export default defineComponent({
 
       permissions.value.forEach((permission) => {
         const { id, ...data } = permission;
-        updateMutation({ id, data });
+
+        $graphql.default.request(gql`
+          mutation permissionUpdate($id: String!, $data: PermissionInput!) {
+            permissionUpdate(id: $id, data: $data) {
+              id
+            }
+          }`, { id, data });
       });
     };
 

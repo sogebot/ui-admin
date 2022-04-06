@@ -74,8 +74,11 @@ const props = defineProps<{
   editing: boolean,
 }>();
 const selected = ref(props.item.selected);
+
+const emit = defineEmits(['select', 'unselect', 'update:dialog'])
+
 watch(selected, (val) => {
-  ctx.emit(val ? 'select' : 'unselect');
+  emit(val ? 'select' : 'unselect');
 });
 
 const timestamp = ref(0);
@@ -83,7 +86,7 @@ const isStarted = ref(null as boolean | null);
 const showMenu = ref(false);
 
 const showDialog = () => {
-  ctx.emit('update:dialog', true);
+  emit('update:dialog', true);
 };
 
 const time = computed(() => {

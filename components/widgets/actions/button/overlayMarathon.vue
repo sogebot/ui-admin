@@ -68,8 +68,9 @@ let interval = 0;
 const selected = ref(props.item.selected);
 const tick = ref(0);
 const newTime = ref(0);
+const emit = defineEmits(['select', 'unselect', 'update:dialog'])
 watch(selected, (val) => {
-  ctx.emit(val ? 'select' : 'unselect');
+  emit(val ? 'select' : 'unselect');
 });
 
 const timestamp = ref(0);
@@ -82,7 +83,7 @@ watch(showMenu, (val) => {
 });
 
 const showDialog = () => {
-  ctx.emit('update:dialog', true);
+  emit('update:dialog', true);
 };
 
 const time = () => {

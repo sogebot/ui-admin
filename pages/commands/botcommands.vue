@@ -50,6 +50,7 @@
 </template>
 
 <script setup lang="ts">
+import type { PermissionsInterface } from '@entity/permissions';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
@@ -79,6 +80,7 @@ const rules = { command: [startsWith(['!']), required, minLength(2)] };
 
 const search = ref('');
 const items = ref([] as CommandsInterface[]);
+const permissions = ref([] as PermissionsInterface[]);
 
 const selected = ref([] as CommandsInterface[]);
 

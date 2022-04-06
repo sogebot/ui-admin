@@ -12,7 +12,7 @@
           <v-col cols="auto" align-self="center">
             <v-row dense>
               <v-col v-if="selected.length > 0" cols="auto" class="pr-1">
-                <manage-keyword-batch
+                <manage-keywords-batch
                   :length="selected.length"
                   :permission-items="permissionItems"
                   :group-items="groupItems"
@@ -77,7 +77,7 @@
     >
       <template #top>
         <table-search-bar :search.sync="search">
-          <manage-keyword-edit
+          <manage-keywords-edit
             :rules="rules"
             :permission-items="permissionItems"
             :permissions="permissions"
@@ -112,7 +112,7 @@
       <template #[`item`]="{ item }">
         <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem(selected, 'id', currentItems)">
           <template #actions>
-            <manage-keyword-edit
+            <manage-keywords-edit
               :rules="rules"
               :value="item"
               :permission-items="permissionItems"
@@ -176,15 +176,6 @@ const refetch = async () => {
 
 const search = ref('');
 const items = ref([] as Required<KeywordInterface>[]);
-
-const { mutate: updateGroupMutation, onDone: onDoneUpdateGroup, onError: onErrorUpdateGroup } = useMutation(gql`
-      mutation setKeywordGroup($name: String!, $data: String!) {
-        setKeywordGroup(name: $name, data: $data) {
-          name
-        }
-      }`);
-onDoneUpdateGroup(() => { EventBus.$emit('snack', 'success', 'Data updated.'); });
-onErrorUpdateGroup(error);
 
 const selected = ref([] as KeywordInterface[]);
 const deleteDialog = ref(false);
@@ -378,10 +369,15 @@ const getGroup = computed<{ [name: string]: KeywordGroupInterface }>({
     // go through groups and save only changed
     for (const groupName of Object.keys(getGroup.value)) {
       if (!isEqual(getGroup.value[groupName], value[groupName])) {
-        updateGroupMutation({
+        $graphql.default.request(gql`
+          mutation setkeywordGroup($name: String!, $data: String!) {
+            setkeywordGroup(name: $name, data: $data) {
+              name
+            }
+          }`, {
           name: groupName,
           data: JSON.stringify(value[groupName].options),
-        }, { refetchQueries: [{ query: GET_ALL }] });
+        });
       }
     }
     return true;
