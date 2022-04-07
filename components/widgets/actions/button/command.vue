@@ -4,6 +4,7 @@
     class="text-button pa-1 mb-1 text-center"
     style="font-size: 12px !important; display: block;"
     :style="{ 'color': color }"
+    @click="!editing ? trigger($event) : showDialog()"
   >
     <v-row no-gutters>
       <v-col class="text-truncate">
