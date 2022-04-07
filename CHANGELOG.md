@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [43.0.1](https://github.com/sogebot/ui-admin/compare/v43.0.0...v43.0.1) (2022-04-07)
+
+
+### Bug Fixes
+
+* **microWidgets:** show proper unavailable data ([c746319](https://github.com/sogebot/ui-admin/commit/c7463195d362cb8daf9082341060dc0d7ee7b48d))
+
 ## [43.0.0](https://github.com/sogebot/ui-admin/compare/v42.3.4...v43.0.0) (2022-04-06)
 
 
