@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [43.0.2](https://github.com/sogebot/ui-admin/compare/v43.0.1...v43.0.2) (2022-04-07)
+
+
+### Bug Fixes
+
+* **actions:** add missing click event ([4eb0531](https://github.com/sogebot/ui-admin/commit/4eb053182365ae134765d6363d96fbde18bfbace))
+
 ### [43.0.1](https://github.com/sogebot/ui-admin/compare/v43.0.0...v43.0.1) (2022-04-07)
 
 
