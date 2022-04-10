@@ -1,5 +1,5 @@
 <template>
-  <loading v-if="!settings || loading" />
+  <loading v-if="!settings || isLoading"/>
   <v-form v-else v-model="valid" lazy-validation>
     <v-tabs v-model="tab">
       <v-tab>{{ translate('categories.general') }}</v-tab>
@@ -194,7 +194,7 @@ type Channel = { text: string, value: string };
 
 const { $graphql, $store } = useNuxtApp();
 
-const loading = ref(true);
+const isLoading = ref(true);
 const permissions = ref([] as PermissionsInterface[]);
 const refetch = async () => {
   const data = await $graphql.default.request(gql`
@@ -204,11 +204,8 @@ const refetch = async () => {
     `);
 
   permissions.value = data.permissions;
-  loading.value = false;
+  isLoading.value = false;
 };
-onMounted(() => {
-  refetch();
-});
 const settings = ref(null as Record<string, any> | null);
 const ui = ref(null as Record<string, any> | null);
 const valid = ref(true);
@@ -233,6 +230,7 @@ watch(valid, (val) => {
 }, { immediate: true });
 
 onMounted(() => {
+  refetch();
   getSocket(`/integrations/discord`)
     .emit('settings', (err, _settings, _ui) => {
       if (err) {
