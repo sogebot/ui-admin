@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [43.0.3](https://github.com/sogebot/ui-admin/compare/v43.0.2...v43.0.3) (2022-04-10)
+
+
+### Bug Fixes
+
+* **discord:** fix variable name shadowing ([d302d58](https://github.com/sogebot/ui-admin/commit/d302d58a50eecef9ef453497bf2f22ab23fccb44))
+
 ### [43.0.2](https://github.com/sogebot/ui-admin/compare/v43.0.1...v43.0.2) (2022-04-07)
 
 
