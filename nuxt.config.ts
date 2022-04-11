@@ -39,6 +39,7 @@ export default defineNuxtConfig({
     '@/assets/global.scss',
     '@/assets/transitions.scss',
     '@/assets/letter-animations.scss',
+    'node_modules/drawflow/dist/drawflow.min.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -82,7 +83,7 @@ export default defineNuxtConfig({
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: { hotMiddleware: { client: { overlay: false } } },
+  build: { hotMiddleware: { client: { overlay: false } }, transpile: ['drawflow'] },
 
   router: {
     mode: 'hash',
