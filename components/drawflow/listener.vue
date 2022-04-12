@@ -8,7 +8,6 @@
         Event listener
       </v-toolbar-title>
     </v-toolbar>
-    {{ nodeId }}
     <v-autocomplete dark :items="items" hide-details="auto" class="pa-4" style="width: 300px;" v-model="item"/>
   </div>
 </template>
@@ -19,7 +18,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash';
 import { EventBus } from '~/functions/event-bus';
 
-const item = ref('twitch-chat-message');
+const item = ref('twitchChatMessage');
 
 const availableListeners = ref([] as string[]);
 const items = computed(() => {
@@ -39,7 +38,7 @@ watch(pointer, (value) => {
 
 watch(item, (value) => {
   if (nodeId.value) {
-    EventBus.$emit('drawflow::node::update', nodeId.value, item.value)
+    EventBus.$emit('drawflow::node::update', nodeId.value, value)
   }
 })
 
