@@ -6,6 +6,7 @@
 import listener from '~/components/drawflow/listener';
 import Drawflow from 'drawflow';
 import Vue from 'vue';
+import { EventBus } from '~/functions/event-bus';
 
 
 export default defineComponent({
@@ -14,19 +15,32 @@ export default defineComponent({
     let editor: Drawflow | null = null;
     // Pass render Vue
     onMounted(() => {
+      EventBus.$on('drawflow::node::update', (id: string, update: Record<string, any>) => {
+        id = id.replace('node-', '');
+        const node = editor?.getNodeFromId(id);
+        if (node !== undefined) {
+          editor?.updateNodeDataFromId(id, { value: update })
+          console.log(`drawflow::node::update!!${id}`, {node, update})
+        }
+
+        console.log(editor?.export());
+      });
+
       const id = document.getElementById('drawflow');
       if (id) {
         editor = new Drawflow(id, Vue, context.root);
+        editor.reroute = true;
+        editor.draggable_inputs = false;
         editor.start();
 
         const props = {};
         const options = {};
-        console.log({listener})
         editor.registerNode('listener', listener, props, options);
-        editor.addNode('listener', 0, 1, 100, 100, 'listener', { event: 'event1' }, 'listener', 'vue');
+        editor.addNode('listener', 0, 1, 100, 100, 'listener', { value: '' }, 'listener', 'vue');
+        editor.addNode('listener', 1, 0, 300, 300, 'listener', { value: '' }, 'listener', 'vue');
       }
     });
-  }
+  },
 });
 
   /* function addNodeToDrawFlow (name: string, posX: number, posY: number) {
