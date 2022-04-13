@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [43.0.4](https://github.com/sogebot/ui-admin/compare/v43.0.3...v43.0.4) (2022-04-13)
+
+
+### Bug Fixes
+
+* **modules:** define missing prop ([7b4b6b0](https://github.com/sogebot/ui-admin/commit/7b4b6b0e8dee86fbed8ec4adf04746aaced77589))
+
 ### [43.0.3](https://github.com/sogebot/ui-admin/compare/v43.0.2...v43.0.3) (2022-04-10)
 
 
