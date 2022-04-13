@@ -15,9 +15,11 @@
 import { PermissionsInterface } from '@entity/permissions';
 import gql from 'graphql-tag';
 
+defineProps({ ignored: [Array, Object] })
 const { $graphql } = useNuxtApp();
 const permissions = ref([] as PermissionsInterface[]);
 const tab = ref(0);
+
 
 onMounted(async () => {
   permissions.value = (await $graphql.default.request(gql`
