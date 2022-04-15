@@ -39,7 +39,7 @@ export default defineComponent({
           editor?.addNode('listener', 0, 1, 100, 100, 'listener', { value: '' }, 'listener', 'vue');
           break;
         case 'filter':
-          editor?.addNode('filter', 1, 1, 100, 100, 'filter', { value: '' }, 'filter', 'vue');
+          editor?.addNode('filter', 1, 2, 100, 100, 'filter', { value: '' }, 'filter', 'vue');
           break;
         default:
       }
@@ -116,6 +116,20 @@ export default defineComponent({
         }
         localStorage.plugins = JSON.stringify(editor?.export());
       });
+      EventBus.$on('drawflow::node::redraw', (id: string) => {
+        console.log('Redraw', id)
+        editor?.updateConnectionNodes(id);
+      });
+      EventBus.$on('drawflow::node::value', (id: string, cb: (value: any) => void) => {
+        id = id.replace('node-', '');
+        const node = editor?.getNodeFromId(id);
+        console.log(`drawflow::node::value!!${id}`, { node });
+        if (node !== undefined) {
+          cb(node.data.value)
+        } else {
+          cb(null);
+        }
+      });
       EventBus.$on('drawflow::node::update', (id: string, update: Record<string, any>) => {
         id = id.replace('node-', '');
         const node = editor?.getNodeFromId(id);
@@ -130,7 +144,6 @@ export default defineComponent({
       const id = document.getElementById('drawflow');
       if (id) {
         editor = new Drawflow(id, Vue, context.root);
-        editor.reroute = true;
         editor.draggable_inputs = false;
         editor.registerNode('listener', listener, {}, {});
         editor.registerNode('filter', filter, {}, {});
@@ -153,7 +166,8 @@ export default defineComponent({
           localStorage.plugins = JSON.stringify(editor?.export());
         });
 
-        editor.on('nodeRemoved', () => {
+        editor.on('nodeRemoved', (event) => {
+          EventBus.$emit(`drawflow::nodeRemoved::node-${event}`);
           localStorage.plugins = JSON.stringify(editor?.export());
         });
 
@@ -164,6 +178,7 @@ export default defineComponent({
         editor.on('nodeUnselected', () => {
           localStorage.plugins = JSON.stringify(editor?.export());
         });
+
 
         editor.start();
         editor.zoom = 0.6;
@@ -226,5 +241,13 @@ export default defineComponent({
 
 .drawflow .drawflow-node.selected {
   border-color: var(--v-info-base) !important;
+}
+
+.drawflow-node.filter > .outputs > .output_1 {
+  background-color: rgb(108 255 108);
+}
+
+.drawflow-node.filter > .outputs > .output_2 {
+  background-color: rgb(255 93 93);
 }
 </style>
