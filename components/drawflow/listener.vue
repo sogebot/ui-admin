@@ -43,7 +43,8 @@ watch(item, (value) => {
 })
 
 onMounted(() => {
-  getSocket('/core/plugins').emit('listeners', (listeners: string[]) => {
+  getSocket('/core/plugins').emit('listeners', (data) => {
+    const listeners = Object.keys(data);
     availableListeners.value = listeners.sort((a, b) => {
       const A = translate(a).toLowerCase();
       const B = translate(b).toLowerCase();

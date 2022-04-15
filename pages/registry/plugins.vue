@@ -39,7 +39,7 @@ export default defineComponent({
           editor?.addNode('listener', 0, 1, 100, 100, 'listener', { value: '' }, 'listener', 'vue');
           break;
         case 'filter':
-          editor?.addNode('filter', 5, 1, 100, 100, 'filter', { value: '' }, 'filter', 'vue');
+          editor?.addNode('filter', 1, 1, 100, 100, 'filter', { value: '' }, 'filter', 'vue');
           break;
         default:
       }
@@ -48,8 +48,32 @@ export default defineComponent({
     };
 
     let editor: Drawflow | null = null;
+
     // Pass render Vue
     onMounted(() => {
+      EventBus.$on('drawflow::getCommonParents', (id: string, cb: (attrs: any) => void) => {
+        id = id.replace('node-', '');
+
+        const parentNodes: any[] = [];
+        const getParentNodeWithoutInputs = (childId: string | number) => {
+          if (editor) {
+            const originalNode = editor.getNodeFromId(childId);
+            for (const key of Object.keys(originalNode.inputs)) {
+              const connections = originalNode.inputs[key].connections;
+              for (const connection of connections) {
+                const childNode = editor.getNodeFromId(connection.node);
+                if (Object.keys(childNode.inputs).length === 0) {
+                  parentNodes.push(childNode);
+                } else {
+                  getParentNodeWithoutInputs(childNode.id);
+                }
+              }
+            }
+          }
+        };
+        getParentNodeWithoutInputs(id);
+        cb(parentNodes);
+      });
       EventBus.$on('drawflow::node::output', (id: string, value: '+' | '-') => {
         id = id.replace('node-', '');
         console.log(`drawflow::node::output!!${id}${value}`);
@@ -142,7 +166,7 @@ export default defineComponent({
         });
 
         editor.start();
-        editor.zoom = 0.3;
+        editor.zoom = 0.6;
         editor.zoom_refresh();
 
         try {
