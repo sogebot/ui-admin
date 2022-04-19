@@ -1,56 +1,95 @@
 <template>
   <div ref="pointer">
-    <v-toolbar dense color="blue-grey darken-4">
+    <v-toolbar dense color="blue-grey darken-4" :loading="loading">
       <v-icon color="white" left>
         mdi-filter
       </v-icon>
       <v-toolbar-title class="text-button white--text">
-        Event filter
+        Permission filter
       </v-toolbar-title>
-      <v-menu
-        :close-on-content-click="false"
-      >
-        <template #activator="{ on, attrs }">
-          <v-btn
-            class="ml-4"
-            color="white"
-            icon
-            small
-            v-bind="attrs"
-            v-on="on"
-          >
-            <v-icon>mdi-dots-vertical</v-icon>
-          </v-btn>
-        </template>
-      </v-menu>
     </v-toolbar>
     <v-card dark>
       <v-card-text>
-        {{ attributes }}
+        <v-alert v-if="!haveUserParam" type="error" color="red" class="ma-0">
+          This filter needs to be linked with listeners with sender attributes
+        </v-alert>
+        <template v-else>
+          <v-checkbox
+            v-for="permission of permissions"
+            :key="permission.id"
+            v-model="item"
+            dense
+            color="white"
+            hide-details="auto"
+            :label="permission.name"
+            :value="permission.id"
+          />
+        </template>
       </v-card-text>
     </v-card>
   </div>
 </template>
 
 <script setup lang="ts">
+import { PermissionsInterface } from '@sogebot/backend/src/database/entity/permissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
+import gql from 'graphql-tag';
 
-import { EventBus } from '../../functions/event-bus';
-
+import { EventBus } from '~/functions/event-bus';
 import { flatten } from '~/functions/flatten';
+
+const loading = ref(true);
+
+const { $graphql } = useNuxtApp();
+const permissions = ref([] as PermissionsInterface[]);
+const item = ref([]);
+
+const refresh = () => {
+  $graphql.default.request(gql`
+      query {
+        permissions { id name }
+      }
+    `).then((data: any) => {
+    permissions.value = data.permissions;
+    loading.value = false;
+  });
+};
+
+onMounted(() => {
+  refresh();
+});
 
 const pointer = ref(null as null | HTMLElement);
 const nodeId = ref(null as null | string);
-const attributes = ref({});
-
-watch(pointer, (value) => {
-  nodeId.value = value?.parentElement?.parentElement?.id ?? null;
-});
 
 watch(nodeId, (val) => {
   if (val) {
     EventBus.$emit(`drawflow::node::redraw`, val);
   }
+});
+
+watch(pointer, (value) => {
+  nodeId.value = value?.parentElement?.parentElement?.id ?? null;
+
+  if (nodeId.value) {
+    EventBus.$emit('drawflow::node::value', nodeId.value, (val) => {
+      item.value = val;
+    });
+    EventBus.$emit(`drawflow::node::redraw`, nodeId.value);
+  }
+});
+
+watch(item, (value) => {
+  if (nodeId.value) {
+    EventBus.$emit('drawflow::node::update', nodeId.value, value);
+  }
+});
+
+const haveUserParam = ref(false);
+watch(haveUserParam, () => {
+  nextTick(() => {
+    EventBus.$emit(`drawflow::node::redraw`, nodeId.value);
+  });
 });
 
 // get all parents
@@ -93,7 +132,7 @@ const interval = setInterval(() => {
           }
         }
       }
-      attributes.value = { ...commonAttributes };
+      haveUserParam.value = !!Object.keys(commonAttributes).find(key => key.startsWith('sender'));
     });
   });
 }, 100);

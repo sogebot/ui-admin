@@ -8,7 +8,11 @@
         Event listener
       </v-toolbar-title>
     </v-toolbar>
-    <v-autocomplete dark :items="items" hide-details="auto" class="pa-4" style="width: 300px;" v-model="item"/>
+    <v-card dark>
+      <v-card-text>
+        <v-autocomplete dark :items="items" hide-details="auto" class="pa-4" style="width: 300px;" v-model="item"/>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 
@@ -16,7 +20,6 @@
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize } from 'lodash';
-import { node } from 'unenv';
 import { EventBus } from '~/functions/event-bus';
 
 const item = ref('twitchChatMessage');
