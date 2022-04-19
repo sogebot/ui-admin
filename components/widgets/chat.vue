@@ -135,36 +135,53 @@
         </v-speed-dial>
       </v-col>
     </v-row>
-    <v-alert
-      v-if="!isHttps"
-      border="left"
-      color="red"
-      icon="mdi-exclamation-thick"
-      text
-      type="success"
-    >
-      You need to run bot on HTTPS on port 443 with valid certificate for this embed to be working
-    </v-alert>
-
-    <v-tabs-items v-else v-model="tab">
+    <v-tabs-items v-model="tab">
       <v-tab-item eager>
+        <div
+          v-if="isHttps"
+          :style="{
+            height: `${height + 20}px`,
+            overflow: 'auto',
+          }"
+          ref="chat"
+          :key="messages[0] ? messages[0].timestamp : Date.now()"
+        >
+          <v-alert v-if="messages.length === 0" text>
+            Using simple Twitch Chat Log, because HTTPS is not available. Messages will appear here.
+          </v-alert>
+          <p v-for="message of messages" :key="message.timestamp" class="chat px-2">
+            {{ new Date(message.timestamp).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' }) }} <strong class="pl-1" :style="{ color: generateColorFromString(message.username) }">{{ message.username }}</strong>: <span class="pl-1" v-html="message.message" />
+          </p>
+        </div>
         <iframe
+          v-else
           class="enable-transition"
           frameborder="0"
           scrolling="no"
           :src="chatUrl"
           width="100%"
-          :height="height + 'px'"
+          :height="(height + 15) + 'px'"
         />
       </v-tab-item>
       <v-tab-item eager>
+        <v-alert
+          v-if="isHttps"
+          border="left"
+          color="red"
+          icon="mdi-exclamation-thick"
+          text
+          type="success"
+        >
+          You need to run bot on HTTPS on port 443 with valid certificate for this embed to be working
+        </v-alert>
         <iframe
+          v-else
           class="enable-transition"
           frameborder="0"
           scrolling="no"
           :src="videoUrl"
           width="100%"
-          :height="height + 'px'"
+          :height="(height + 15) + 'px'"
         />
       </v-tab-item>
     </v-tabs-items>
@@ -227,6 +244,13 @@ export default defineComponent({
       localStorage.monitorTab = String(val);
     });
 
+    const generateColorFromString = (stringInput: string) => {
+      const stringUniqueHash = [...stringInput].reduce((acc, char) => {
+        return char.charCodeAt(0) + ((acc << 5) - acc);
+      }, 0);
+      return `hsl(${stringUniqueHash % 360}, 80%, 60%)`;
+    };
+
     const isPopout = computed(() => location.href.includes('popout'));
     const dialog = ref(false);
     const list = ref([] as { username: string; timestamp: number }[]);
@@ -236,6 +260,7 @@ export default defineComponent({
     const message = ref('');
     const height = ref(600);
     const room = ref('');
+    const chat = ref(null);
     const timestamp = ref(0);
     const chatters = ref([] as string[]);
     const isHttps = computed(() => {
@@ -244,6 +269,9 @@ export default defineComponent({
       const isCorrectPort = ['', '443'].includes(window.location.port) && window.location.protocol === 'https:';
       return isLocalhost || (isSecureHttp && isCorrectPort);
     });
+    const messages = ref([] as {
+      username: string; message: string; timestamp: string; badges: any;
+    }[]);
     const chatUrl = computed(() => {
       return 'https://twitch.tv/embed/'
         + room.value
@@ -251,6 +279,7 @@ export default defineComponent({
         + '?darkpopout'
         + '&parent=' + window.location.hostname;
     });
+
     const videoUrl = computed(() => {
       return `${window.location.protocol}//player.twitch.tv/?channel=${room.value}&autoplay=true&muted=true&parent=${window.location.hostname}`;
     });
@@ -285,6 +314,13 @@ export default defineComponent({
         }
         room.value = val;
         refresh();
+      });
+
+      getSocket('/widgets/chat').on('message', (data: any) => {
+        messages.value = [...messages.value, data]
+        nextTick(() => {
+          chat.value.scroll(0, Number.MAX_SAFE_INTEGER);
+        })
       });
 
       getSocket('/widgets/joinpart').on('joinpart', (data) => {
@@ -343,6 +379,7 @@ export default defineComponent({
     return {
       isHttps,
       chatUrl,
+      messages,
       videoUrl,
       room,
       show,
@@ -360,8 +397,18 @@ export default defineComponent({
       isPopout,
       tab,
       translate,
+      chat,
       fab,
+      generateColorFromString,
     };
   },
 });
 </script>
+
+<style scoped>
+.chat {
+  min-height: 1.4rem !important;
+  line-height: 10px !important;
+  margin-bottom: 5px;
+}
+</style>
