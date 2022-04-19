@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [44.0.0](https://github.com/sogebot/ui-admin/compare/v43.0.4...v44.0.0) (2022-04-19)
+
+
+### Features
+
+* **chat:** add simpler widget ([d7c2b2c](https://github.com/sogebot/ui-admin/commit/d7c2b2c9659a1f0019a1cdf07ad1da8977fb3d41))
+
 ### [43.0.4](https://github.com/sogebot/ui-admin/compare/v43.0.3...v43.0.4) (2022-04-13)
 
 
