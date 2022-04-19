@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [44.0.2](https://github.com/sogebot/ui-admin/compare/v44.0.1...v44.0.2) (2022-04-19)
+
+
+### Bug Fixes
+
+* **chat:** update height of tab ([cdbd6bf](https://github.com/sogebot/ui-admin/commit/cdbd6bf1944be5ec238062c8781e4fe05050ac4c))
+
 ### [44.0.1](https://github.com/sogebot/ui-admin/compare/v44.0.0...v44.0.1) (2022-04-19)
 
 
