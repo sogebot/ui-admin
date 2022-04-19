@@ -138,7 +138,7 @@
     <v-tabs-items v-model="tab">
       <v-tab-item eager>
         <div
-          v-if="isHttps"
+          v-if="!isHttps"
           :style="{
             height: `${height + 20}px`,
             overflow: 'auto',
@@ -165,7 +165,7 @@
       </v-tab-item>
       <v-tab-item eager>
         <v-alert
-          v-if="isHttps"
+          v-if="!isHttps"
           border="left"
           color="red"
           icon="mdi-exclamation-thick"
