@@ -164,16 +164,26 @@
         />
       </v-tab-item>
       <v-tab-item eager>
-        <v-alert
+        <div
           v-if="!isHttps"
-          border="left"
-          color="red"
-          icon="mdi-exclamation-thick"
-          text
-          type="success"
+          :style="{
+            height: `${height + 20}px`,
+            overflow: 'auto',
+          }"
+          ref="chat"
+          :key="messages[0] ? messages[0].timestamp : Date.now()"
         >
-          You need to run bot on HTTPS on port 443 with valid certificate for this embed to be working
-        </v-alert>
+          <v-alert
+            v-if="!isHttps"
+            border="left"
+            color="red"
+            icon="mdi-exclamation-thick"
+            text
+            type="success"
+          >
+            You need to run bot on HTTPS on port 443 with valid certificate for this embed to be working
+          </v-alert>
+        </div>
         <iframe
           v-else
           class="enable-transition"
