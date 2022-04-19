@@ -10,7 +10,8 @@
     </v-toolbar>
     <v-card dark>
       <v-card-text>
-        <v-autocomplete dark :items="items" hide-details="auto" class="pa-4" style="width: 300px;" v-model="item"/>
+        <v-autocomplete label="Listener" dark :items="items" style="width: 300px;" v-model="item"/>
+        <drawflow-listener-command v-if="item === 'twitchCommand'" :value="data" @input="data = JSON.stringify($event)"/>
       </v-card-text>
     </v-card>
   </div>
@@ -23,6 +24,7 @@ import { capitalize } from 'lodash';
 import { EventBus } from '~/functions/event-bus';
 
 const item = ref('twitchChatMessage');
+const data = ref('{}');
 
 const availableListeners = ref([] as string[]);
 const items = computed(() => {
@@ -40,16 +42,17 @@ watch(pointer, (value) => {
   nodeId.value = value?.parentElement?.parentElement?.id ?? null;
 
   if (nodeId.value) {
-    EventBus.$emit('drawflow::node::value', nodeId.value, (val) => {
+    EventBus.$emit('drawflow::node::value', nodeId.value, (val, _data) => {
       item.value = val;
+      data.value = _data;
     })
     EventBus.$emit(`drawflow::node::redraw`, nodeId.value)
   }
 })
 
-watch(item, (value) => {
+watch([item, data], (value) => {
   if (nodeId.value) {
-    EventBus.$emit('drawflow::node::update', nodeId.value, value)
+    EventBus.$emit('drawflow::node::update', nodeId.value, value[0], value[1])
   }
 })
 
