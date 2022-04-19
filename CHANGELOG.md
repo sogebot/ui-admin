@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [44.0.1](https://github.com/sogebot/ui-admin/compare/v44.0.0...v44.0.1) (2022-04-19)
+
+
+### Bug Fixes
+
+* **chat:** fix https check ([be61a79](https://github.com/sogebot/ui-admin/commit/be61a795417460554b5293579abb8f1191151ba0))
+
 ## [44.0.0](https://github.com/sogebot/ui-admin/compare/v43.0.4...v44.0.0) (2022-04-19)
 
 
