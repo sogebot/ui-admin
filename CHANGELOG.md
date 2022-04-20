@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [45.0.0](https://github.com/sogebot/ui-admin/compare/v44.0.2...v45.0.0) (2022-04-20)
+
+
+### Features
+
+* **tiltify:** add tiltify config support ([#244](https://github.com/sogebot/ui-admin/issues/244)) ([03ca499](https://github.com/sogebot/ui-admin/commit/03ca4998bc7e10f8a1f4fb8518fbaa1bcbfc38ef))
+
 ### [44.0.2](https://github.com/sogebot/ui-admin/compare/v44.0.1...v44.0.2) (2022-04-19)
 
 
