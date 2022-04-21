@@ -344,7 +344,6 @@ export default defineComponent({
       switch (type) {
         case 'cheers':
         case 'subcommunitygifts':
-        case 'tips':
         case 'hosts':
         case 'raids':
           return [['username', 'string'], ['amount', 'number']];
@@ -358,6 +357,8 @@ export default defineComponent({
           return [['recipient', 'string'], ['amount', 'number'], ['name', 'string']];
         case 'rewardredeems':
           return [['recipient', 'string']];
+        case 'tips':
+          return [['username', 'string'], ['amount', 'number'], ['service', 'service']];
       }
       return [['username', 'string']];
     };

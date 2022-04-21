@@ -96,10 +96,16 @@
                       <v-col class="pr-2">
                         <template v-if="!['is-even', 'is-odd', 'pr'].includes(item.comparator)">
                           <v-select
-                            v-if="getRuleType(item.type) === 'tier'"
+                            v-if="getRuleType(item.type) === 'service'"
+                            v-model="item.value"
+                            :label="translate('registry.alerts.filter.value')"
+                            :items="['donationalerts', 'kofi', 'qiwi', 'streamelements', 'streamlabs', 'tiltify', 'tipeeestream']"
+                          />
+                          <v-select
+                            v-else-if="getRuleType(item.type) === 'tier'"
+                            v-model="item.value"
                             :label="translate('registry.alerts.filter.value')"
                             :items="['Prime', '1', '2', '3']"
-                            v-model="item.value"
                           />
                           <v-text-field
                             v-else-if="getRuleType(item.type) === 'number'"
@@ -162,12 +168,11 @@
 </template>
 
 <script lang="ts">
+import type { Filter } from '@entity/alert';
 import {
   computed, defineAsyncComponent, defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-
-import type { Filter } from '@entity/alert';
 
 type Props = {
   value: string,
@@ -176,10 +181,8 @@ type Props = {
   rules: [[string, string]]
 };
 export default defineComponent({
-  components: {
-    queryFilter: defineAsyncComponent(() => import('~/components/registry/alerts/inputs/query-filter.vue')),
-  },
-  props: {
+  components: { queryFilter: defineAsyncComponent(() => import('~/components/registry/alerts/inputs/query-filter.vue')) },
+  props:      {
     value:     String,
     rules:     Array,
     noInput:   Boolean,
@@ -203,6 +206,8 @@ export default defineComponent({
           return 0;
         case 'tier':
           return 'Prime';
+        case 'service':
+          return 'tiltify';
       }
     };
 
@@ -277,53 +282,37 @@ export default defineComponent({
     const generateComparators = (type: 'number' | 'string') => {
       const items = [];
 
+      if (getRuleType(type) === 'service') {
+        items.push({ value: 'eq', text: translate('registry.alerts.filter.equal') });
+        items.push({ value: 'neq', text: translate('registry.alerts.filter.notEqual') });
+        return items;
+      }
+
       if (getRuleType(type) === 'number') {
-        items.push({
-          value: 'is-even', text: translate('registry.alerts.filter.isEven'),
-        });
-        items.push({
-          value: 'is-odd', text: translate('registry.alerts.filter.isOdd'),
-        });
+        items.push({ value: 'is-even', text: translate('registry.alerts.filter.isEven') });
+        items.push({ value: 'is-odd', text: translate('registry.alerts.filter.isOdd') });
       }
 
       if (getRuleType(type) !== 'string') {
-        items.push({
-          value: 'lt', text: translate('registry.alerts.filter.lessThan'),
-        });
-        items.push({
-          value: 'lt-eq', text: translate('registry.alerts.filter.lessThanOrEqual'),
-        });
+        items.push({ value: 'lt', text: translate('registry.alerts.filter.lessThan') });
+        items.push({ value: 'lt-eq', text: translate('registry.alerts.filter.lessThanOrEqual') });
       }
 
       if (getRuleType(type) === 'string') {
-        items.push({
-          value: 'co', text: translate('registry.alerts.filter.contain'),
-        });
+        items.push({ value: 'co', text: translate('registry.alerts.filter.contain') });
       }
 
-      items.push({
-        value: 'eq', text: translate('registry.alerts.filter.equal'),
-      });
-      items.push({
-        value: 'neq', text: translate('registry.alerts.filter.notEqual'),
-      });
-      items.push({
-        value: 'pr', text: translate('registry.alerts.filter.present'),
-      });
+      items.push({ value: 'eq', text: translate('registry.alerts.filter.equal') });
+      items.push({ value: 'neq', text: translate('registry.alerts.filter.notEqual') });
+      items.push({ value: 'pr', text: translate('registry.alerts.filter.present') });
 
       if (getRuleType(type) === 'string') {
-        items.push({
-          value: 'includes', text: translate('registry.alerts.filter.includes'),
-        });
+        items.push({ value: 'includes', text: translate('registry.alerts.filter.includes') });
       }
 
       if (getRuleType(type) !== 'string') {
-        items.push({
-          value: 'gt', text: translate('registry.alerts.filter.greaterThan'),
-        });
-        items.push({
-          value: 'gt-eq', text: translate('registry.alerts.filter.greaterThanOrEqual'),
-        });
+        items.push({ value: 'gt', text: translate('registry.alerts.filter.greaterThan') });
+        items.push({ value: 'gt-eq', text: translate('registry.alerts.filter.greaterThanOrEqual') });
       }
 
       return items;
@@ -331,9 +320,7 @@ export default defineComponent({
 
     watch(_filter, (val) => {
       ctx.emit('input', JSON.stringify(val));
-    }, {
-      deep: true,
-    });
+    }, { deep: true });
 
     return {
       _filter,

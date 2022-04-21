@@ -45,7 +45,7 @@
     "@nuxtjs/vuetify": "^1.12.3",
     "graphql-tag": "^2.12.6",
     "@skjnldsv/vue-plyr": "^7.0.1-beta.0",
-    "@sogebot/ui-helpers": "^3.0.9",
+    "@sogebot/ui-helpers": "^3.0.10",
     "@types/chart.js": "^2.9.36",
     "@types/lodash": "^4.14.181",
     "@types/marked": "^4.0.3",

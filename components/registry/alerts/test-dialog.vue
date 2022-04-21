@@ -127,6 +127,23 @@
             />
           </v-col>
         </v-row>
+
+        <v-row v-if="haveService" class="py-1">
+          <v-col cols="auto" align-self="center">
+            <v-btn icon :color="isServiceRandomized ? 'success' : 'error'" @click="isServiceRandomized = !isServiceRandomized">
+              <v-icon>mdi-dice-multiple</v-icon>
+            </v-btn>
+          </v-col>
+          <v-col>
+            <v-select
+              v-model="service"
+              :disabled="isServiceRandomized"
+              hide-details
+              :label="translate('registry.alerts.testDlg.service')"
+              :items="services"
+            />
+          </v-col>
+        </v-row>
       </v-card-text>
 
       <v-divider />
@@ -210,6 +227,13 @@ export default defineComponent({
       }
     });
 
+    const services = ['donationalerts', 'kofi', 'qiwi', 'streamelements', 'streamlabs', 'tiltify', 'tipeeestream'] as const;
+    const service = ref('tiltify' as typeof services[number]);
+    const isServiceRandomized = ref(true);
+    const haveService = computed(() => {
+      return ['tips'].includes(event.value);
+    });
+
     const tiers = ['Prime', '1', '2', '3'] as const;
     const tier = ref('Prime' as typeof tiers[number]);
     const isTierRandomized = ref(true);
@@ -234,6 +258,7 @@ export default defineComponent({
             ? reward.value || ''
             : (isUsernameRandomized.value ? generateUsername() : username.value),
         tier:       isTierRandomized.value ? tiers[shuffle([0, 1, 2, 3])[0]] : tier.value,
+        service:    isServiceRandomized.value ? shuffle(services)[0] : service.value,
         recipient:  isRecipientRandomized.value ? generateUsername() : recipient.value,
         currency:   currency.value,
         message:    isMessageRandomized.value ? shuffle(messages)[0] : message.value,
@@ -272,6 +297,11 @@ export default defineComponent({
       tiers,
       haveTier,
       isTierRandomized,
+
+      service,
+      services,
+      haveService,
+      isServiceRandomized,
 
       message,
       isMessageRandomized,
