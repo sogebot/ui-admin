@@ -15,7 +15,7 @@
               :label="$t('integrations.lastfm.settings.username')"
             >
               <template #append-outer>
-                <v-btn color="primary" v-if="settings && settings.userName[0].length === 0" href="/credentials/tiltify">Authorize</v-btn>
+                <v-btn color="primary" v-if="settings && settings.userName[0].length === 0" href="/credentials/oauth/tiltify">Authorize</v-btn>
                 <v-btn color="error" v-else @click="revoke">Revoke</v-btn>
               </template>
             </v-text-field>
