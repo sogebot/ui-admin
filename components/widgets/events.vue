@@ -450,6 +450,9 @@ function prepareMessage (event: any) {
   let t = translate(`eventlist-events.${event.event}`);
 
   const values = JSON.parse(event.values_json);
+  if (event.event === 'tip' && values.charityCampaignName) {
+    t = translate(`eventlist-events.tipToCharity`);
+  }
   const formattedAmount = Intl.NumberFormat($store.state.configuration.lang, { style: 'currency', currency: get(values, 'currency', 'USD') }).format(get(values, 'amount', '0'));
   t = t.replace('$formatted_amount', '<strong style="font-size: 1rem">' + formattedAmount + '</strong>');
   t = t.replace('$viewers', '<strong style="font-size: 1rem">' + get(values, 'viewers', '0') + '</strong>');
@@ -462,6 +465,7 @@ function prepareMessage (event: any) {
   t = t.replace('$bits', '<strong style="font-size: 1rem">' + get(values, 'bits', '0') + '</strong>');
   t = t.replace('$count', '<strong style="font-size: 1rem">' + get(values, 'count', '0') + '</strong>');
   t = t.replace('$titleOfReward', '<strong style="font-size: 1rem">' + get(values, 'titleOfReward', '') + '</strong>');
+  t = t.replace('$campaignName', '<strong style="font-size: 1rem">' + get(values, 'charityCampaignName', '') + '</strong>');
 
   let output = `<span style="font-size:0.7rem; font-weight: normal">${t}</span>`;
   if (values.song_url && values.song_title) {
