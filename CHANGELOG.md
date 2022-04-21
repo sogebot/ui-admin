@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [45.1.0](https://github.com/sogebot/ui-admin/compare/v45.0.0...v45.1.0) (2022-04-21)
+
+
+### Features
+
+* **alerts:** add service filter and test ([98641a1](https://github.com/sogebot/ui-admin/commit/98641a17dd59ed75fe8189d8823b55d3d318ca5f))
+* **events:** add charity to events ([6e03961](https://github.com/sogebot/ui-admin/commit/6e03961271a533cb6bb4799c2e68a3bfd39efc2e))
+* **goals:** add tiltify campaign ([4ae87cc](https://github.com/sogebot/ui-admin/commit/4ae87cc80e8026bbc7d7505448d48d3fbf30cb86))
+
+
+### Bug Fixes
+
+* **tiltify:** fix incorret url ([46bf9f2](https://github.com/sogebot/ui-admin/commit/46bf9f27cd19fc4c0903436461f9efcb73c6baa8))
+
 ## [45.0.0](https://github.com/sogebot/ui-admin/compare/v44.0.2...v45.0.0) (2022-04-20)
 
 
