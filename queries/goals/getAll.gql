@@ -13,6 +13,7 @@ query GoalsGetAll {
       currentAmount
       endAfter
       endAfterIgnore
+      tiltifyCampaign
       customizationHtml
       customizationJs
       customizationCss

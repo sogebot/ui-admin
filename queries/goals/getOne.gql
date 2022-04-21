@@ -11,6 +11,7 @@ query GoalsGetOne($id: String!) {
       interval
       goalAmount
       currentAmount
+      tiltifyCampaign
       endAfter
       endAfterIgnore
       customizationHtml

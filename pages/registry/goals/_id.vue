@@ -153,47 +153,65 @@
                           :items="goalType"
                         />
 
-                        <v-expand-transition>
-                          <v-checkbox
-                            v-if="['tips', 'intervalTips'].includes(goal.type)"
-                            v-model="goal.countBitsAsTips"
-                            :label="translate('registry.goals.input.countBitsAsTips.title')"
-                          />
-                        </v-expand-transition>
-
-                        <v-expand-transition>
+                        <template v-if="goal.type === 'tiltifyCampaign'">
                           <v-select
-                            v-if="goal.type.includes('interval')"
-                            v-model="goal.interval"
-                            :label="translate('registry.goals.input.interval.title')"
-                            :items="intervalItems"
+                            v-if="goal.type === 'tiltifyCampaign'"
+                            v-model="goal.tiltifyCampaign"
+                            label="Tiltify Campaign"
+                            item-value="id"
+                            :items="tiltifyCampaigns"
+                          >
+                            <template #selection="data">
+                              {{data.item.id}} <strong class="pl-1">{{data.item.name}}</strong>
+                            </template>
+                            <template #item="data">
+                              {{data.item.id}} <strong class="pl-1">{{data.item.name}}</strong>
+                            </template>
+                          </v-select>
+                        </template>
+                        <template v-else>
+                          <v-expand-transition>
+                            <v-checkbox
+                              v-if="['tips', 'intervalTips'].includes(goal.type)"
+                              v-model="goal.countBitsAsTips"
+                              :label="translate('registry.goals.input.countBitsAsTips.title')"
+                            />
+                          </v-expand-transition>
+
+                          <v-expand-transition>
+                            <v-select
+                              v-if="goal.type.includes('interval')"
+                              v-model="goal.interval"
+                              :label="translate('registry.goals.input.interval.title')"
+                              :items="intervalItems"
+                            />
+                          </v-expand-transition>
+                          <v-text-field
+                            :id="goal.id + '|goalAmount'"
+                            v-model="goal.goalAmount"
+                            :rules="rules.goalAmount"
+                            :label="translate('registry.goals.input.goalAmount.title')"
                           />
-                        </v-expand-transition>
-                        <v-text-field
-                          :id="goal.id + '|goalAmount'"
-                          v-model="goal.goalAmount"
-                          :rules="rules.goalAmount"
-                          :label="translate('registry.goals.input.goalAmount.title')"
-                        />
 
-                        <v-text-field
-                          v-if="!goal.type.includes('current')"
-                          :id="goal.id + '|currentAmount'"
-                          v-model="goal.currentAmount"
-                          :readonly="goal.type.includes('interval')"
-                          :rules="rules.currentAmount"
-                          :label="translate('registry.goals.input.currentAmount.title')"
-                        />
+                          <v-text-field
+                            v-if="!goal.type.includes('current')"
+                            :id="goal.id + '|currentAmount'"
+                            v-model="goal.currentAmount"
+                            :readonly="goal.type.includes('interval')"
+                            :rules="rules.currentAmount"
+                            :label="translate('registry.goals.input.currentAmount.title')"
+                          />
 
-                        <v-checkbox
-                          v-model="goal.endAfterIgnore"
-                          :label="translate('registry.goals.input.endAfterIgnore.title')"
-                        />
-                        <v-expand-transition>
-                          <div v-show="!goal.endAfterIgnore">
-                            <form-datetime v-model.number="goal.endAfter" :label="translate('registry.goals.input.endAfter.title')" />
-                          </div>
-                        </v-expand-transition>
+                          <v-checkbox
+                            v-model="goal.endAfterIgnore"
+                            :label="translate('registry.goals.input.endAfterIgnore.title')"
+                          />
+                          <v-expand-transition>
+                            <div v-show="!goal.endAfterIgnore">
+                              <form-datetime :value="Number(goal.endAfter)" :label="translate('registry.goals.input.endAfter.title')" @input="goal.endAfter = $event" />
+                            </div>
+                          </v-expand-transition>
+                        </template>
                       </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>
@@ -322,6 +340,8 @@
 
 <script setup lang="ts">
 import { GoalGroupInterface, GoalInterface } from '@entity/goal';
+import type { tiltifyCampaign } from '@sogebot/backend/d.ts/src/helpers/socket';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import gql from 'graphql-tag';
 import { cloneDeep } from 'lodash';
@@ -366,8 +386,8 @@ onMounted(async () => {
     } else {
       item.value = cloneDeep(request.goals[0]);
     }
-    loading.value = false;
   }
+  loading.value = false;
 });
 
 const form1 = ref(null);
@@ -383,8 +403,10 @@ const intervalItems = ['hour', 'day', 'week', 'month', 'year'];
 const groupType = ['fade', 'multi'];
 const goalType = [
   'followers', 'currentFollowers', 'currentSubscribers', 'subscribers',
-  'tips', 'bits', 'intervalSubscribers', 'intervalFollowers', 'intervalTips', 'intervalBits'];
+  'tips', 'bits', 'intervalSubscribers', 'intervalFollowers', 'intervalTips', 'intervalBits', 'tiltifyCampaign'];
 const displayType = ['simple', 'full', 'custom'];
+
+const tiltifyCampaigns = ref([] as tiltifyCampaign[]);
 
 const rules = {
   name:                  [required],
@@ -428,6 +450,9 @@ watch(() => item.value.display.type, (val, old) => {
 
 onMounted(() => {
   $store.commit('panel/back', '/registry/goals');
+  setInterval(() => {
+    getSocket('/integrations/tiltify').emit('tiltify::campaigns', data => (tiltifyCampaigns.value = data));
+  }, 1000);
 });
 
 const addItem = () => {
@@ -436,9 +461,10 @@ const addItem = () => {
     goals: [
       ...item.value.goals,
       {
-        id:   v4(),
-        name: '',
-        type: 'followers',
+        id:              v4(),
+        name:            '',
+        type:            'followers',
+        tiltifyCampaign: null,
 
         display: 'full',
 
