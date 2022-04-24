@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [45.1.2](https://github.com/sogebot/ui-admin/compare/v45.1.1...v45.1.2) (2022-04-24)
+
+
+### Bug Fixes
+
+* **chat:** update visuals of simple chat ([6b27352](https://github.com/sogebot/ui-admin/commit/6b27352123ccb945972b0d58bc672412020e76a8))
+* **chat:** use ref simpleChatForced ([6d4aaf1](https://github.com/sogebot/ui-admin/commit/6d4aaf16afb8c1f4e59c10a884e003eedd98ba21))
+
 ### [45.1.1](https://github.com/sogebot/ui-admin/compare/v45.1.0...v45.1.1) (2022-04-24)
 
 ## [45.1.0](https://github.com/sogebot/ui-admin/compare/v45.0.0...v45.1.0) (2022-04-21)
