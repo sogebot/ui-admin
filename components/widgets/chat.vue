@@ -138,7 +138,7 @@
     <v-tabs-items v-model="tab">
       <v-tab-item eager>
         <div
-          v-if="!isHttps"
+          v-if="!isHttps || simpleChatForced"
           :style="{
             height: `${height + 20}px`,
             overflow: 'auto',
@@ -386,6 +386,10 @@ export default defineComponent({
       message.value = '';
     };
 
+    const simpleChatForced = () => {
+      return localStorage.simpleChat !== undefined;
+    };
+
     return {
       isHttps,
       chatUrl,
@@ -410,6 +414,7 @@ export default defineComponent({
       chat,
       fab,
       generateColorFromString,
+      simpleChatForced,
     };
   },
 });
