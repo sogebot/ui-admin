@@ -138,7 +138,7 @@
     <v-tabs-items v-model="tab">
       <v-tab-item eager>
         <div
-          v-if="!isHttps || simpleChatForced"
+          v-if="!isHttps || simpleChatForced()"
           :style="{
             height: `${height + 20}px`,
             overflow: 'auto',
@@ -420,10 +420,19 @@ export default defineComponent({
 });
 </script>
 
+<style>
+.simpleChatImage {
+  min-width: 32px;
+  min-height: 20px;
+  display: inline-block;
+}
+.simpleChatImage .emote {
+  position: absolute;
+}
+</style>
+
 <style scoped>
 .chat {
-  min-height: 1.4rem !important;
-  line-height: 10px !important;
   margin-bottom: 5px;
 }
 </style>
