@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [45.1.4](https://github.com/sogebot/ui-admin/compare/v45.1.3...v45.1.4) (2022-04-25)
+
+
+### Bug Fixes
+
+* **chat:** styling updates ([d2d6f94](https://github.com/sogebot/ui-admin/commit/d2d6f94b46fdb11a5d4d8ef28d429c42c3ba4d79))
+
 ### [45.1.3](https://github.com/sogebot/ui-admin/compare/v45.1.2...v45.1.3) (2022-04-25)
 
 
