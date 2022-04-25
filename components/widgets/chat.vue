@@ -425,7 +425,9 @@ export default defineComponent({
   min-width: 32px;
   min-height: 20px;
   display: inline-block;
+  position: relative;
 }
+
 .simpleChatImage .emote {
   position: absolute;
 }
