@@ -139,17 +139,18 @@
       <v-tab-item eager>
         <div
           v-if="!isHttps || simpleChatForced"
+          ref="chat"
+          :key="messages[0] ? messages[0].timestamp : Date.now()"
+          class="py-1"
           :style="{
             height: `${height + 20}px`,
             overflow: 'auto',
           }"
-          ref="chat"
-          :key="messages[0] ? messages[0].timestamp : Date.now()"
         >
           <v-alert v-if="messages.length === 0" text>
             Using simple Twitch Chat Log, because HTTPS is not available. Messages will appear here.
           </v-alert>
-          <p v-for="message of messages" :key="message.timestamp" class="chat px-2">
+          <p v-for="message of messages" :key="message.timestamp" class="chat px-2 mb-1">
             {{ new Date(message.timestamp).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' }) }} <strong class="pl-1" :style="{ color: generateColorFromString(message.username) }">{{ message.username }}</strong>: <span class="pl-1" v-html="message.message" />
           </p>
         </div>
@@ -166,12 +167,12 @@
       <v-tab-item eager>
         <div
           v-if="!isHttps"
+          ref="chat"
+          :key="messages[0] ? messages[0].timestamp : Date.now()"
           :style="{
             height: `${height + 20}px`,
             overflow: 'auto',
           }"
-          ref="chat"
-          :key="messages[0] ? messages[0].timestamp : Date.now()"
         >
           <v-alert
             v-if="!isHttps"
@@ -327,10 +328,10 @@ export default defineComponent({
       });
 
       getSocket('/widgets/chat').on('message', (data: any) => {
-        messages.value = [...messages.value, data]
+        messages.value = [...messages.value, data];
         nextTick(() => {
           chat.value.scroll(0, Number.MAX_SAFE_INTEGER);
-        })
+        });
       });
 
       getSocket('/widgets/joinpart').on('joinpart', (data) => {
@@ -423,13 +424,15 @@ export default defineComponent({
 <style>
 .simpleChatImage {
   min-width: 32px;
-  min-height: 20px;
+  min-height: 17px;
   display: inline-block;
   position: relative;
 }
 
 .simpleChatImage .emote {
   position: absolute;
+  margin-top: 50%;
+  transform: translateY(-50%);
 }
 </style>
 
