@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [45.1.3](https://github.com/sogebot/ui-admin/compare/v45.1.2...v45.1.3) (2022-04-25)
+
+
+### Bug Fixes
+
+* **chat:** fix position of emotes ([20cb3cc](https://github.com/sogebot/ui-admin/commit/20cb3ccaa17a3992b3b033e7b0187f4ad02ac309))
+
 ### [45.1.2](https://github.com/sogebot/ui-admin/compare/v45.1.1...v45.1.2) (2022-04-24)
 
 
