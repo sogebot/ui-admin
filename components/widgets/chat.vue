@@ -150,8 +150,8 @@
           <v-alert v-if="messages.length === 0" text>
             Using simple Twitch Chat Log, because HTTPS is not available. Messages will appear here.
           </v-alert>
-          <p v-for="message of messages" :key="message.timestamp" class="chat px-2 mb-1">
-            {{ new Date(message.timestamp).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' }) }} <strong class="pl-1" :style="{ color: generateColorFromString(message.username) }">{{ message.username }}</strong>: <span class="pl-1" v-html="message.message" />
+          <p v-for="message of messages" :key="message.timestamp" class="chat px-2 my-2">
+            <span :title="new Date(message.timestamp).toLocaleString()">{{ new Date(message.timestamp).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' }) }}</span> <strong class="pl-1" :style="{ color: generateColorFromString(message.username) }">{{ message.username }}</strong>: <span class="pl-1" v-html="message.message" />
           </p>
         </div>
         <iframe
@@ -315,6 +315,12 @@ export default defineComponent({
     onMounted(() => {
       setInterval(() => updateHeight(), 100);
 
+      if (localStorage.simpleChatMessages && localStorage.simpleChatMessagesUpdatedAt) {
+        if (Date.now() - Number(localStorage.simpleChatMessagesUpdatedAt) < 1000 * 60 * 60 * 12) {
+          messages.value = JSON.parse(localStorage.simpleChatMessages);
+        }
+      }
+
       interval = window.setInterval(() => {
         refresh();
       }, 60000);
@@ -329,7 +335,14 @@ export default defineComponent({
 
       getSocket('/widgets/chat').on('message', (data: any) => {
         messages.value = [...messages.value, data];
+
+        // keep only 1000 messages
+        while (messages.value.length > 1000) {
+          messages.value.shift();
+        }
+
         localStorage.simpleChatMessages = JSON.stringify(messages.value);
+        localStorage.simpleChatMessagesUpdatedAt = String(Date.now());
         nextTick(() => {
           chat.value.scroll(0, Number.MAX_SAFE_INTEGER);
         });
@@ -433,7 +446,7 @@ export default defineComponent({
 .simpleChatImage .emote {
   position: absolute;
   margin-top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-68%);
 }
 </style>
 
