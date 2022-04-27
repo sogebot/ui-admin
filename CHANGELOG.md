@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [45.1.6](https://github.com/sogebot/ui-admin/compare/v45.1.5...v45.1.6) (2022-04-27)
+
+
+### Bug Fixes
+
+* **chat:** reuse cache if newer than 12hours ([2d9bfcb](https://github.com/sogebot/ui-admin/commit/2d9bfcb109744d5be7925c3d7c677f6d55581f78))
+
 ### [45.1.5](https://github.com/sogebot/ui-admin/compare/v45.1.4...v45.1.5) (2022-04-27)
 
 
