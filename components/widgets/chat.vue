@@ -329,6 +329,7 @@ export default defineComponent({
 
       getSocket('/widgets/chat').on('message', (data: any) => {
         messages.value = [...messages.value, data];
+        localStorage.simpleChatMessages = JSON.stringify(messages.value);
         nextTick(() => {
           chat.value.scroll(0, Number.MAX_SAFE_INTEGER);
         });
