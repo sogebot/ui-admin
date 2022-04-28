@@ -11,7 +11,7 @@
     <v-card dark>
       <v-card-text>
         <v-text-field label="Variable name" placeholder="variableName" v-model="item"/>
-        <v-text-field label="Value" placeholder="5" v-model="value" hint="Value or eval"/>
+        <v-text-field label="Evaluate" placeholder="5" v-model="value"/>
       </v-card-text>
     </v-card>
   </div>
