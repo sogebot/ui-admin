@@ -5,28 +5,13 @@
         mdi-variable
       </v-icon>
       <v-toolbar-title class="text-button white--text">
-        Define variable
+        Load variable from database
       </v-toolbar-title>
     </v-toolbar>
     <v-card dark>
       <v-card-text>
         <v-text-field label="Variable name" placeholder="variableName" v-model="item"/>
-        <v-text-field label="Value" placeholder="5" v-model="value"/>
-        <v-checkbox
-          v-model="isShared"
-          dense
-          color="white"
-          hide-details="auto"
-          label="Shared variable"
-        />
-        <v-checkbox
-          v-if="isShared"
-          v-model="reset"
-          dense
-          color="white"
-          hide-details="auto"
-          label="Reset variable value"
-        />
+        <v-text-field label="Default Value" placeholder="5" v-model="value"/>
       </v-card-text>
     </v-card>
   </div>
@@ -39,8 +24,6 @@ const item = ref('');
 const data = ref('{}');
 
 const value = ref('');
-const isShared = ref(false);
-const reset = ref(false);
 
 const pointer = ref(null as null | HTMLElement);
 const nodeId = ref(null as null | string);
@@ -70,17 +53,13 @@ watch([item, data], (val) => {
     console.log(data.value)
     if (data.value) {
       value.value = JSON.parse(data.value).value || '';
-      isShared.value = JSON.parse(data.value).isShared || false;
-      reset.value = JSON.parse(data.value).reset || false;
     }
   }
 });
 
-watch([value, isShared, reset], (value) => {
+watch([value], (value) => {
   data.value = JSON.stringify({
     value: value[0],
-    isShared: value[1],
-    reset: value[2],
   })
 })
 </script>

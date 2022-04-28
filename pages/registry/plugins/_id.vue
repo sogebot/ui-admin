@@ -46,14 +46,19 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import Drawflow from 'drawflow';
 import Vue from 'vue';
 
-import comment from '~/components/drawflow/comment';
+import othersComment from '~/components/drawflow/others/comment';
+import othersIdle from '~/components/drawflow/others/idle';
 import filter from '~/components/drawflow/filter';
 import filterPermission from '~/components/drawflow/filter/permission';
 import listener from '~/components/drawflow/listener';
 import twitchBanUser from '~/components/drawflow/output/twitchBanUser';
 import twitchSendMessage from '~/components/drawflow/output/twitchSendMessage';
 import twitchTimeoutUser from '~/components/drawflow/output/twitchTimeoutUser';
-import variableDefineVariable from '~/components/drawflow/variable/defineVariable';
+import outputLog from '~/components/drawflow/output/log';
+
+import variableSetVariable from '~/components/drawflow/variable/setVariable';
+import variableLoadFromDatabase from '~/components/drawflow/variable/loadFromDatabase';
+import variableSaveToDatabase from '~/components/drawflow/variable/saveToDatabase';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
@@ -71,21 +76,35 @@ export default defineComponent({
     });
 
     const items = [
-      'comment',
+      { header: 'Input' },
       'listener',
-      'variableDefineVariable',
+      { header: 'Variables' },
+      'variableSetVariable', 'variableLoadFromDatabase', 'variableSaveToDatabase',
+      { header: 'Filters' },
       'filter', 'filterPermission',
-      'twitchSendMessage', 'twitchTimeoutUser', 'twitchBanUser',
+      { header: 'Output' },
+      'twitchSendMessage', 'twitchTimeoutUser', 'twitchBanUser', 'outputLog',
+      { header: 'Other' },
+      'comment', 'othersIdle',
     ];
     const selectedItem = ref('listener');
 
     const addItem = () => {
       switch (selectedItem.value) {
+        case 'othersIdle':
+          editor?.addNode('othersIdle', 1, 1, 100, 100, 'othersIdle', { value: '', data: '{}' }, 'othersIdle', 'vue');
+          break;
         case 'comment':
           editor?.addNode('comment', 0, 0, 100, 100, 'comment', { value: '', data: '{}' }, 'comment', 'vue');
           break;
-        case 'variableDefineVariable':
-          editor?.addNode('variableDefineVariable', 1, 1, 100, 100, 'variableDefineVariable', { value: '', data: '{}' }, 'variableDefineVariable', 'vue');
+        case 'variableSetVariable':
+          editor?.addNode('variableSetVariable', 1, 1, 100, 100, 'variableSetVariable', { value: '', data: '{}' }, 'variableSetVariable', 'vue');
+          break;
+        case 'variableLoadFromDatabase':
+          editor?.addNode('variableLoadFromDatabase', 0, 1, 100, 100, 'variableLoadFromDatabase', { value: '', data: '{}' }, 'variableLoadFromDatabase', 'vue');
+          break;
+        case 'variableSaveToDatabase':
+          editor?.addNode('variableSaveToDatabase', 1, 1, 100, 100, 'variableSaveToDatabase', { value: '', data: '{}' }, 'variableSaveToDatabase', 'vue');
           break;
         case 'listener':
           editor?.addNode('listener', 0, 1, 100, 100, 'listener', { value: '', data: '{}' }, 'listener', 'vue');
@@ -97,13 +116,16 @@ export default defineComponent({
           editor?.addNode('filterPermission', 1, 2, 100, 100, 'filterPermission', { value: ['0efd7b1c-e460-4167-8e06-8aaf2c170311'] }, 'filterPermission', 'vue');
           break;
         case 'twitchSendMessage':
-          editor?.addNode('twitchSendMessage', 1, 0, 100, 100, 'twitchSendMessage', { value: '' }, 'twitchSendMessage', 'vue');
+          editor?.addNode('twitchSendMessage', 1, 1, 100, 100, 'twitchSendMessage', { value: '' }, 'twitchSendMessage', 'vue');
           break;
         case 'twitchTimeoutUser':
-          editor?.addNode('twitchTimeoutUser', 1, 0, 100, 100, 'twitchTimeoutUser', { value: '' }, 'twitchTimeoutUser', 'vue');
+          editor?.addNode('twitchTimeoutUser', 1, 1, 100, 100, 'twitchTimeoutUser', { value: '' }, 'twitchTimeoutUser', 'vue');
           break;
         case 'twitchBanUser':
-          editor?.addNode('twitchBanUser', 1, 0, 100, 100, 'twitchBanUser', { value: '' }, 'twitchBanUser', 'vue');
+          editor?.addNode('twitchBanUser', 1, 1, 100, 100, 'twitchBanUser', { value: '' }, 'twitchBanUser', 'vue');
+          break;
+        case 'outputLog':
+          editor?.addNode('outputLog', 1, 1, 100, 100, 'outputLog', { value: '' }, 'outputLog', 'vue');
           break;
         default:
       }
@@ -240,9 +262,13 @@ export default defineComponent({
         editor.registerNode('filterPermission', filterPermission, {}, {});
         editor.registerNode('twitchSendMessage', twitchSendMessage, {}, {});
         editor.registerNode('twitchTimeoutUser', twitchTimeoutUser, {}, {});
-        editor.registerNode('variableDefineVariable', variableDefineVariable, {}, {});
         editor.registerNode('twitchBanUser', twitchBanUser, {}, {});
-        editor.registerNode('comment', comment, {}, {});
+        editor.registerNode('outputLog', outputLog, {}, {});
+        editor.registerNode('variableSaveToDatabase', variableSaveToDatabase, {}, {});
+        editor.registerNode('variableLoadFromDatabase', variableLoadFromDatabase, {}, {});
+        editor.registerNode('variableSetVariable', variableSetVariable, {}, {});
+        editor.registerNode('comment', othersComment, {}, {});
+        editor.registerNode('othersIdle', othersIdle, {}, {});
         editor.zoom_min = 0.3;
         editor.zoom_max = 1;
 

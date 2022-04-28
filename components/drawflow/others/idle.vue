@@ -2,15 +2,15 @@
   <div ref="pointer">
     <v-toolbar dense color="blue-grey darken-4">
       <v-icon color="white" left>
-        mdi-comment
+        mdi-timer
       </v-icon>
       <v-toolbar-title class="text-button white--text">
-        Send Twitch Message
+        Idle
       </v-toolbar-title>
     </v-toolbar>
     <v-card dark>
       <v-card-text>
-        <v-textarea label="Message" v-model="item" counter rows="1"></v-textarea>
+        <v-text-field label="Miliseconds" v-model="item" hint="Number or {variableName}"/>
       </v-card-text>
     </v-card>
   </div>

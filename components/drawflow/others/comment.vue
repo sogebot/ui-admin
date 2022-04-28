@@ -1,16 +1,8 @@
 <template>
   <div ref="pointer">
-    <v-toolbar dense color="blue-grey darken-4">
-      <v-icon color="white" left>
-        mdi-comment
-      </v-icon>
-      <v-toolbar-title class="text-button white--text">
-        Send Twitch Message
-      </v-toolbar-title>
-    </v-toolbar>
-    <v-card dark>
-      <v-card-text>
-        <v-textarea label="Message" v-model="item" counter rows="1"></v-textarea>
+    <v-card dark color="info">
+      <v-card-text class="pa-1">
+        <v-textarea v-model="item" dense hide-details="" filled auto-grow solo-inverted rows="1"></v-textarea>
       </v-card-text>
     </v-card>
   </div>
