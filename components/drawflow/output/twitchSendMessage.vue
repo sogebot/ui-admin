@@ -10,7 +10,7 @@
     </v-toolbar>
     <v-card dark>
       <v-card-text>
-        <v-textarea label="Message" v-model="item" counter rows="1"></v-textarea>
+        <v-textarea label="Message" v-model="item" counter auto-grow rows="1"></v-textarea>
       </v-card-text>
     </v-card>
   </div>
