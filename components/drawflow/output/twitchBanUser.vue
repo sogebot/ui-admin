@@ -26,26 +26,11 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 const pointer = ref(null as null | HTMLElement);
 const nodeId = ref(null as null | string);
 
-watch(nodeId, (val) => {
-  if (val) {
-    EventBus.$emit(`drawflow::node::redraw`, val);
-  }
-});
-
 watch(pointer, (value) => {
   nodeId.value = value?.parentElement?.parentElement?.id ?? null;
-
-  if (nodeId.value) {
-    EventBus.$emit(`drawflow::node::redraw`, nodeId.value);
-  }
 });
 
 const haveUserParam = ref(false);
-watch(haveUserParam, () => {
-  nextTick(() => {
-    EventBus.$emit(`drawflow::node::redraw`, nodeId.value);
-  });
-});
 
 // get all parents
 const interval = setInterval(() => {

@@ -47,12 +47,6 @@ watch(pointer, (value) => {
   nodeId.value = value?.parentElement?.parentElement?.id ?? null;
 });
 
-watch(nodeId, (val) => {
-  if (val) {
-    EventBus.$emit(`drawflow::node::redraw`, val);
-  }
-});
-
 // get all parents
 const interval = setInterval(() => {
   EventBus.$emit('drawflow::getCommonParents', nodeId.value, (err, parents) => {

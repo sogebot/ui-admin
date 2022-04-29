@@ -66,6 +66,8 @@ export default defineComponent({
     const { $store } = useNuxtApp();
     const route = useRoute();
 
+    let editor: Drawflow | null = null;
+
     const loading = ref(true);
     const saving = ref(false);
 
@@ -90,6 +92,7 @@ export default defineComponent({
     const selectedItem = ref('listener');
 
     const addItem = () => {
+      console.log({editor})
       switch (selectedItem.value) {
         case 'othersIdle':
           editor?.addNode('othersIdle', 1, 1, 100, 100, 'othersIdle', { value: '', data: '{}' }, 'othersIdle', 'vue');
@@ -133,22 +136,20 @@ export default defineComponent({
       item.value.workflow = JSON.stringify(editor?.export());
     };
 
-    let editor: Drawflow | null = null;
-
     const refresh = () => {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         getSocket('/core/plugins').emit('generic::getOne', item.value.id, (err, d) => {
           console.log('/core/plugins|generic::getOne', { err, d });
           loading.value = false;
           if (err) {
-            reject(err);
+            resolve(false);
             return console.error(err);
           }
 
           if (d) {
             item.value = d;
-            resolve(true);
           }
+          resolve(true);
         });
       });
     };
@@ -157,6 +158,7 @@ export default defineComponent({
     onMounted(async () => {
       $store.commit('panel/back', '/registry/plugins');
       await refresh();
+      initEditor();
       EventBus.$on('drawflow::getCommonParents', (id: string, cb: (err: any, attrs: any) => void) => {
         id = id.replace('node-', '');
 
@@ -226,10 +228,6 @@ export default defineComponent({
         }
         item.value.workflow = JSON.stringify(editor?.export());
       });
-      EventBus.$on('drawflow::node::redraw', (id: string) => {
-        console.log('Redraw', id);
-        editor?.updateConnectionNodes(id);
-      });
       EventBus.$on('drawflow::node::value', (id: string, cb: (value: any, data: any) => void) => {
         id = id.replace('node-', '');
         const node = editor?.getNodeFromId(id);
@@ -252,9 +250,12 @@ export default defineComponent({
 
         item.value.workflow = JSON.stringify(editor?.export());
       });
+    });
 
+    const initEditor = () => {
       const id = document.getElementById('drawflow');
       if (id) {
+        console.log('Editor initialized.');
         editor = new Drawflow(id, Vue, context.root);
         editor.draggable_inputs = false;
         editor.registerNode('listener', listener, {}, {});
@@ -311,8 +312,19 @@ export default defineComponent({
           console.error(err);
           console.log('Invalid Data');
         }
+
+        setInterval(() => {
+          if (editor) {
+            for (const i of Object.values(editor.export().drawflow.Home.data)) {
+              editor.updateConnectionNodes(`node-${i.id}`)
+            }
+          }
+        }, 100)
+      } else {
+        console.log('Editor not initialized yet.')
+        setTimeout(() => initEditor(), 100);
       }
-    });
+    };
 
     const save = () => {
       saving.value = true;

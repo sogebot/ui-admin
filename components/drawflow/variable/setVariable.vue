@@ -28,12 +28,6 @@ const value = ref('');
 const pointer = ref(null as null | HTMLElement);
 const nodeId = ref(null as null | string);
 
-watch(nodeId, (val) => {
-  if (val) {
-    EventBus.$emit(`drawflow::node::redraw`, val);
-  }
-});
-
 watch(pointer, (value) => {
   nodeId.value = value?.parentElement?.parentElement?.id ?? null;
 
@@ -42,7 +36,6 @@ watch(pointer, (value) => {
       item.value = val;
       data.value = _data;
     });
-    EventBus.$emit(`drawflow::node::redraw`, nodeId.value);
   }
 });
 

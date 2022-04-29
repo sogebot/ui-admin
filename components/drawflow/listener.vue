@@ -46,7 +46,6 @@ watch(pointer, (value) => {
       item.value = val;
       data.value = _data;
     })
-    EventBus.$emit(`drawflow::node::redraw`, nodeId.value)
   }
 })
 
