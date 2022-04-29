@@ -102,10 +102,10 @@
             </v-btn>
             <v-btn class="primary-hover" icon :disabled="copied===item.id" @click.stop="copied=item.id">
               <v-icon v-if="copied !== item.id">
-                mdi-clipboard
+                mdi-export
               </v-icon>
               <v-icon v-else>
-                mdi-clipboard-check
+                mdi-check
               </v-icon>
             </v-btn>
             <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
@@ -174,8 +174,16 @@ export default defineComponent({
 
     watch(copied, (val) => {
       if (val.length > 0) {
-        EventBus.$emit('snack', 'success', 'Link copied to clipboard.');
-        navigator.clipboard.writeText(`${document.location.protocol}//${document.location.host}/plugins/${val}`);
+        EventBus.$emit('snack', 'success', 'Plugin copied to clipboard.');
+        const item = items.value.find(o => o.id === val);
+        if (!item) {
+          return;
+        }
+
+        const buf = Buffer.from(item.workflow);
+        console.log(`Exported plugin ${val}`);
+        console.log(buf.toString('base64'));
+        navigator.clipboard.writeText(`${buf.toString('base64')}`);
         setTimeout(() => {
           copied.value = '';
         }, 1000);

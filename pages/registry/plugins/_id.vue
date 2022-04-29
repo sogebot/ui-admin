@@ -34,10 +34,53 @@
               </v-btn>
             </template>
           </v-autocomplete>
+
+          <v-dialog
+            v-model="dialog"
+            persistent
+            max-width="600px"
+          >
+            <template #activator="{ on, attrs }">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+              >
+                Import
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-text class="pa-2 pb-0">
+                <v-container>
+                  <v-textarea
+                    v-model="importString"
+                    outlined
+                    hide-details="auto"
+                    label="Insert import plugin string"
+                  />
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn
+                  text
+                  @click="dialog = false"
+                >
+                  Close
+                </v-btn>
+                <v-btn
+                  color="primary"
+                  text
+                  @click="importPlugin"
+                >
+                  Import
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-card-text>
       </v-sheet>
     </v-card>
-    <div id="drawflow" style="width: 100%; height: 100%;" />
+    <div id="drawflow" :key="item.id" style="width: 100%; height: 100%;" />
   </div>
 </template>
 
@@ -46,25 +89,31 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import Drawflow from 'drawflow';
 import Vue from 'vue';
 
-import othersComment from '~/components/drawflow/others/comment';
-import othersIdle from '~/components/drawflow/others/idle';
 import filter from '~/components/drawflow/filter';
 import filterPermission from '~/components/drawflow/filter/permission';
 import listener from '~/components/drawflow/listener';
+import othersComment from '~/components/drawflow/others/comment';
+import othersIdle from '~/components/drawflow/others/idle';
+import outputLog from '~/components/drawflow/output/log';
 import twitchBanUser from '~/components/drawflow/output/twitchBanUser';
 import twitchSendMessage from '~/components/drawflow/output/twitchSendMessage';
 import twitchTimeoutUser from '~/components/drawflow/output/twitchTimeoutUser';
-import outputLog from '~/components/drawflow/output/log';
-
-import variableSetVariable from '~/components/drawflow/variable/setVariable';
 import variableLoadFromDatabase from '~/components/drawflow/variable/loadFromDatabase';
 import variableSaveToDatabase from '~/components/drawflow/variable/saveToDatabase';
+import variableSetVariable from '~/components/drawflow/variable/setVariable';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
   setup (_, context) {
     const { $store } = useNuxtApp();
     const route = useRoute();
+
+    const dialog = ref(false);
+    const importString = ref('');
+
+    watch(dialog, () => {
+      importString.value = '';
+    });
 
     let editor: Drawflow | null = null;
 
@@ -92,7 +141,6 @@ export default defineComponent({
     const selectedItem = ref('listener');
 
     const addItem = () => {
-      console.log({editor})
       switch (selectedItem.value) {
         case 'othersIdle':
           editor?.addNode('othersIdle', 1, 1, 100, 100, 'othersIdle', { value: '', data: '{}' }, 'othersIdle', 'vue');
@@ -230,25 +278,35 @@ export default defineComponent({
       });
       EventBus.$on('drawflow::node::value', (id: string, cb: (value: any, data: any) => void) => {
         id = id.replace('node-', '');
-        const node = editor?.getNodeFromId(id);
-        console.log(`drawflow::node::value!!${id}`, { node });
-        if (node !== undefined) {
-          cb(node.data.value, node.data.data);
-        } else {
+        try {
+          const node = editor?.getNodeFromId(id);
+          console.log(`drawflow::node::value!!${id}`, { node });
+          if (typeof node !== 'undefined') {
+            cb(node.data.value, node.data.data);
+          } else {
+            cb(null, null);
+          }
+        } catch (e) {
+          console.debug(`Cannot get node ${id}`, e);
           cb(null, null);
         }
       });
-      EventBus.$on('drawflow::node::update', (id: string, update: Record<string, any>, data: string) => {
+      EventBus.$on('drawflow::node::update', (id: string, update: Record<string, any>, data: string | undefined) => {
+        data ??= '{}';
         id = id.replace('node-', '');
-        const node = editor?.getNodeFromId(id);
-        if (node !== undefined) {
-          editor?.updateNodeDataFromId(id, { value: update, data });
-          console.log(`drawflow::node::update!!${id}`, {
-            node, update, data,
-          });
-        }
+        try {
+          const node = editor?.getNodeFromId(id);
+          if (typeof node !== 'undefined') {
+            editor?.updateNodeDataFromId(id, { value: update, data });
+            console.log(`drawflow::node::update!!${id}`, {
+              node, update, data,
+            });
+          }
 
-        item.value.workflow = JSON.stringify(editor?.export());
+          item.value.workflow = JSON.stringify(editor?.export());
+        } catch (e) {
+          console.debug(`Cannot get node ${id}`, e);
+        }
       });
     });
 
@@ -316,12 +374,12 @@ export default defineComponent({
         setInterval(() => {
           if (editor) {
             for (const i of Object.values(editor.export().drawflow.Home.data)) {
-              editor.updateConnectionNodes(`node-${i.id}`)
+              editor.updateConnectionNodes(`node-${i.id}`);
             }
           }
-        }, 100)
+        }, 100);
       } else {
-        console.log('Editor not initialized yet.')
+        console.log('Editor not initialized yet.');
         setTimeout(() => initEditor(), 100);
       }
     };
@@ -340,7 +398,21 @@ export default defineComponent({
       });
     };
 
+    const importPlugin = () => {
+      if (importString.value !== null && importString.value.trim() !== '') {
+        const buf = Buffer.from(importString.value, 'base64');
+        try {
+          editor?.import(JSON.parse(buf.toString('ascii')));
+          EventBus.$emit('snack', 'success', 'Plugin imported.');
+          dialog.value = false;
+        } catch {
+          EventBus.$emit('snack', 'error', 'Something went wrong with plugin import.');
+        }
+      }
+    };
+
     return {
+      dialog,
       item,
       loading,
       saving,
@@ -348,6 +420,8 @@ export default defineComponent({
       items,
       selectedItem,
       save,
+      importPlugin,
+      importString,
     };
   },
 });
