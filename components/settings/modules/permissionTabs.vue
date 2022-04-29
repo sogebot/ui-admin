@@ -1,12 +1,14 @@
 <template>
-  <loading v-if="permissions.length === 0"/>
+  <loading v-if="permissions.length === 0" />
   <div v-else>
-    <v-tabs show-arrows v-model="tab" fixed-tabs>
-      <v-tab v-for="item of permissions.filter(o => !ignored.includes(o.id))" :key="item.id">{{item.name}}</v-tab>
+    <v-tabs v-model="tab" show-arrows fixed-tabs>
+      <v-tab v-for="item of permissions.filter(o => !(ignored || []).includes(o.id))" :key="item.id">
+        {{ item.name }}
+      </v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="tab">
-      <slot :permissions="permissions.filter(o => !ignored.includes(o.id))"/>
+      <slot :permissions="permissions.filter(o => !(ignored || []).includes(o.id))" />
     </v-tabs-items>
   </div>
 </template>
@@ -15,11 +17,10 @@
 import { PermissionsInterface } from '@entity/permissions';
 import gql from 'graphql-tag';
 
-defineProps({ ignored: [Array, Object] })
+defineProps({ ignored: [Array, Object] });
 const { $graphql } = useNuxtApp();
 const permissions = ref([] as PermissionsInterface[]);
 const tab = ref(0);
-
 
 onMounted(async () => {
   permissions.value = (await $graphql.default.request(gql`
@@ -27,5 +28,5 @@ onMounted(async () => {
     permissions { id name order }
   }
 `)).permissions;
-})
+});
 </script>
