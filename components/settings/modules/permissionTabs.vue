@@ -16,6 +16,7 @@
 <script setup lang="ts">
 import { PermissionsInterface } from '@entity/permissions';
 import gql from 'graphql-tag';
+import { orderBy } from 'lodash';
 
 defineProps({ ignored: [Array, Object] });
 const { $graphql } = useNuxtApp();
@@ -23,10 +24,10 @@ const permissions = ref([] as PermissionsInterface[]);
 const tab = ref(0);
 
 onMounted(async () => {
-  permissions.value = (await $graphql.default.request(gql`
+  permissions.value = orderBy((await $graphql.default.request(gql`
   query {
     permissions { id name order }
   }
-`)).permissions;
+`)).permissions, 'order', 'desc');
 });
 </script>
