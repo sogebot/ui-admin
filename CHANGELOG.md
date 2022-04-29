@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [45.1.7](https://github.com/sogebot/ui-admin/compare/v45.1.6...v45.1.7) (2022-04-29)
+
+
+### Bug Fixes
+
+* **permissionTabs:** change order of tabs to viewer set as first ([503493c](https://github.com/sogebot/ui-admin/commit/503493ca43c3125b213f95a9b6277701851d7ca8))
+* **permissionTabs:** set default ignored as empty array ([b4fa0c2](https://github.com/sogebot/ui-admin/commit/b4fa0c261302818a898a6e248f94bf6e755aabf3))
+
 ### [45.1.6](https://github.com/sogebot/ui-admin/compare/v45.1.5...v45.1.6) (2022-04-27)
 
 
