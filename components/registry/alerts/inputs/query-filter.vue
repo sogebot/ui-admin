@@ -249,7 +249,6 @@ export default defineComponent({
           if (i > 0) {
             output += ` ${operator} `;
           }
-
           output += '(' + itemsToStringifiedPart(item.items, item.operator) + ')';
         }
       }

@@ -159,10 +159,11 @@ export default defineComponent({
       $store.commit('panel/back', '/registry/plugins');
       await refresh();
       initEditor();
-      EventBus.$on('drawflow::getCommonParents', (id: string, cb: (err: any, attrs: any) => void) => {
+      EventBus.$on('drawflow::getCommonParents', (id: string, cb: (err: any, inputNodes: any[], allNodes: any[]) => void) => {
         id = id.replace('node-', '');
 
         const parentNodes: any[] = [];
+        const allNodes: any[] = [];
         const getParentNodeWithoutInputs = (childId: string | number) => {
           if (editor) {
             try {
@@ -171,6 +172,8 @@ export default defineComponent({
                 const connections = originalNode.inputs[key].connections;
                 for (const connection of connections) {
                   const childNode = editor.getNodeFromId(connection.node);
+
+                  allNodes.push(childNode);
                   if (Object.keys(childNode.inputs).length === 0) {
                     parentNodes.push(childNode);
                   } else {
@@ -179,12 +182,12 @@ export default defineComponent({
                 }
               }
             } catch (e) {
-              cb(e, []);
+              cb(e, [], []);
             }
           }
         };
         getParentNodeWithoutInputs(id);
-        cb(null, parentNodes);
+        cb(null, parentNodes, allNodes);
       });
       EventBus.$on('drawflow::node::output', (id: string, value: '+' | '-') => {
         id = id.replace('node-', '');

@@ -5,28 +5,12 @@
         mdi-filter
       </v-icon>
       <v-toolbar-title class="text-button white--text">
-        Event filter
+      Event filter
       </v-toolbar-title>
-      <v-menu
-        :close-on-content-click="false"
-      >
-        <template #activator="{ on, attrs }">
-          <v-btn
-            class="ml-4"
-            color="white"
-            icon
-            small
-            v-bind="attrs"
-            v-on="on"
-          >
-            <v-icon>mdi-dots-vertical</v-icon>
-          </v-btn>
-        </template>
-      </v-menu>
     </v-toolbar>
     <v-card dark>
       <v-card-text>
-        {{ attributes }}
+        <registry-alerts-inputs-query-filter v-model="item" :rules="Object.entries(attributes)" v-if="Object.entries(attributes).length > 0" />
       </v-card-text>
     </v-card>
   </div>
@@ -43,18 +27,41 @@ const pointer = ref(null as null | HTMLElement);
 const nodeId = ref(null as null | string);
 const attributes = ref({});
 
+const item = ref(null);
+watch(item, (value) => {
+  if (nodeId.value) {
+    EventBus.$emit('drawflow::node::update', nodeId.value, value);
+  }
+});
+
 watch(pointer, (value) => {
   nodeId.value = value?.parentElement?.parentElement?.id ?? null;
+
+  if (nodeId.value) {
+    EventBus.$emit('drawflow::node::value', nodeId.value, (val) => {
+      item.value = val;
+    });
+  }
 });
 
 // get all parents
 const interval = setInterval(() => {
-  EventBus.$emit('drawflow::getCommonParents', nodeId.value, (err, parents) => {
+  EventBus.$emit('drawflow::getCommonParents', nodeId.value, (err, parents, allNodes) => {
     if (err) {
       clearInterval(interval);
       return;
     }
     const commonAttributes: Record<string, any> = {};
+
+    // get variables
+    for (const node of allNodes) {
+      if (node.name === 'variableLoadFromDatabase') {
+        commonAttributes[node.data.value] = 'string';
+      }
+      if (node.name === 'variableSetVariable') {
+        commonAttributes[node.data.value] = 'string';
+      }
+    }
 
     // console.log(nodeId.value, parents);
     getSocket('/core/plugins').emit('listeners', (data) => {
