@@ -10,7 +10,7 @@
     </v-toolbar>
     <v-card dark>
       <v-card-text>
-        <registry-alerts-inputs-query-filter v-model="item" :rules="Object.entries(attributes)" v-if="Object.entries(attributes).length > 0" />
+        <registry-alerts-inputs-query-filter force-expand v-model="item" :rules="Object.entries(attributes)" v-if="Object.entries(attributes).length > 0" />
       </v-card-text>
     </v-card>
   </div>
@@ -29,6 +29,7 @@ const attributes = ref({});
 
 const item = ref(null);
 watch(item, (value) => {
+  console.log({value})
   if (nodeId.value) {
     EventBus.$emit('drawflow::node::update', nodeId.value, value);
   }
@@ -56,10 +57,10 @@ const interval = setInterval(() => {
     // get variables
     for (const node of allNodes) {
       if (node.name === 'variableLoadFromDatabase') {
-        commonAttributes[node.data.value] = 'string';
+        commonAttributes[node.data.value] = 'any';
       }
       if (node.name === 'variableSetVariable') {
-        commonAttributes[node.data.value] = 'string';
+        commonAttributes[node.data.value] = 'any';
       }
     }
 

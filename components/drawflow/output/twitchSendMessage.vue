@@ -5,7 +5,7 @@
         mdi-comment
       </v-icon>
       <v-toolbar-title class="text-button white--text">
-        Send Twitch Message
+        {{$t('registry.plugins.output.send-twtch-message.name')}}
       </v-toolbar-title>
     </v-toolbar>
     <v-card dark>

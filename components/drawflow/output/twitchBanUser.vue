@@ -5,13 +5,13 @@
         mdi-gavel
       </v-icon>
       <v-toolbar-title class="text-button white--text">
-        Ban user
+        {{$t('registry.plugins.output.ban-user.name')}}
       </v-toolbar-title>
     </v-toolbar>
     <v-card dark v-if="!haveUserParam" >
       <v-card-text>
         <v-alert type="error" color="red" class="ma-0">
-          This filter needs to be linked with listeners with sender attributes
+          {{$t('registry.plugins.common-errors.missing-sender-attributes')}}
         </v-alert>
       </v-card-text>
     </v-card>

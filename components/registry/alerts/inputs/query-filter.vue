@@ -4,7 +4,7 @@
       <v-col>
         <v-textarea v-model="stringifiedFilter" :label="translate('registry.alerts.filter.name')" auto-grow rows="1" readonly />
       </v-col>
-      <v-col cols="auto">
+      <v-col cols="auto" v-if="!forceExpand">
         <v-btn-toggle v-model="editationMode">
           <v-btn icon value="true">
             <v-icon>mdi-cog</v-icon>
@@ -176,6 +176,7 @@ import translate from '@sogebot/ui-helpers/translate';
 
 type Props = {
   value: string,
+  forceExpand: boolean,
   noInput: boolean,
   deletable: boolean,
   rules: [[string, string]]
@@ -183,10 +184,11 @@ type Props = {
 export default defineComponent({
   components: { queryFilter: defineAsyncComponent(() => import('~/components/registry/alerts/inputs/query-filter.vue')) },
   props:      {
-    value:     String,
-    rules:     Array,
-    noInput:   Boolean,
-    deletable: Boolean,
+    value:       String,
+    rules:       Array,
+    noInput:     Boolean,
+    forceExpand: Boolean,
+    deletable:   Boolean,
   },
   setup (props: Props, ctx) {
     const _filter = ref((props.value !== null
@@ -195,11 +197,12 @@ export default defineComponent({
         operator: 'and',
         items:    [],
       }) as Filter);
-    const editationMode = ref(props.noInput);
+    const editationMode = ref(props.noInput || props.forceExpand);
     const addRuleType = ref([props.rules[0][0]]);
 
     const getRuleDefaultValue = (type: string) => {
       switch (getRuleType(type)) {
+        case 'any':
         case 'string':
           return '';
         case 'number':
@@ -278,7 +281,7 @@ export default defineComponent({
       }
     };
 
-    const generateComparators = (type: 'number' | 'string') => {
+    const generateComparators = (type: 'number' | 'string' | 'any') => {
       const items = [];
 
       if (getRuleType(type) === 'service') {
@@ -287,17 +290,17 @@ export default defineComponent({
         return items;
       }
 
-      if (getRuleType(type) === 'number') {
+      if (getRuleType(type) === 'number' || getRuleType(type) === 'any') {
         items.push({ value: 'is-even', text: translate('registry.alerts.filter.isEven') });
         items.push({ value: 'is-odd', text: translate('registry.alerts.filter.isOdd') });
       }
 
-      if (getRuleType(type) !== 'string') {
+      if (getRuleType(type) !== 'string' || getRuleType(type) === 'any') {
         items.push({ value: 'lt', text: translate('registry.alerts.filter.lessThan') });
         items.push({ value: 'lt-eq', text: translate('registry.alerts.filter.lessThanOrEqual') });
       }
 
-      if (getRuleType(type) === 'string') {
+      if (getRuleType(type) === 'string' || getRuleType(type) === 'any') {
         items.push({ value: 'co', text: translate('registry.alerts.filter.contain') });
       }
 
@@ -305,11 +308,11 @@ export default defineComponent({
       items.push({ value: 'neq', text: translate('registry.alerts.filter.notEqual') });
       items.push({ value: 'pr', text: translate('registry.alerts.filter.present') });
 
-      if (getRuleType(type) === 'string') {
+      if (getRuleType(type) === 'string' || getRuleType(type) === 'any') {
         items.push({ value: 'includes', text: translate('registry.alerts.filter.includes') });
       }
 
-      if (getRuleType(type) !== 'string') {
+      if (getRuleType(type) !== 'string' || getRuleType(type) === 'any') {
         items.push({ value: 'gt', text: translate('registry.alerts.filter.greaterThan') });
         items.push({ value: 'gt-eq', text: translate('registry.alerts.filter.greaterThanOrEqual') });
       }

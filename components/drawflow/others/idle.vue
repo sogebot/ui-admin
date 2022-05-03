@@ -5,7 +5,7 @@
         mdi-timer
       </v-icon>
       <v-toolbar-title class="text-button white--text">
-        Idle
+        {{$t('registry.plugins.others.idle.name')}}
       </v-toolbar-title>
     </v-toolbar>
     <v-card dark>

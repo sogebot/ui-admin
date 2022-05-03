@@ -5,13 +5,13 @@
         mdi-gavel
       </v-icon>
       <v-toolbar-title class="text-button white--text">
-        Timeout user
+        {{$t('registry.plugins.output.timeout-user.name')}}
       </v-toolbar-title>
     </v-toolbar>
     <v-card dark>
       <v-card-text>
         <v-alert v-if="!haveUserParam" type="error" color="red" class="ma-0">
-          This filter needs to be linked with listeners with sender attributes
+          {{$t('registry.plugins.common-errors.missing-sender-attributes')}}
         </v-alert>
         <template v-else>
           <v-text-field label="Seconds" v-model="item"/>

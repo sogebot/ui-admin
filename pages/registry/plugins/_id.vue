@@ -113,7 +113,7 @@ export default defineComponent({
           editor?.addNode('listener', 0, 1, 100, 100, 'listener', { value: '', data: '{}' }, 'listener', 'vue');
           break;
         case 'filter':
-          editor?.addNode('filter', 1, 2, 100, 100, 'filter', { value: '' }, 'filter', 'vue');
+          editor?.addNode('filter', 1, 2, 100, 100, 'filter', { value: null }, 'filter', 'vue');
           break;
         case 'filterPermission':
           editor?.addNode('filterPermission', 1, 2, 100, 100, 'filterPermission', { value: ['0efd7b1c-e460-4167-8e06-8aaf2c170311'] }, 'filterPermission', 'vue');

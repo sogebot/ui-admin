@@ -5,7 +5,7 @@
         mdi-math-log
       </v-icon>
       <v-toolbar-title class="text-button white--text">
-        Log message
+        {{$t('registry.plugins.output.log.name')}}
       </v-toolbar-title>
     </v-toolbar>
     <v-card dark>
