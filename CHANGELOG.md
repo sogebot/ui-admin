@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [46.0.0](https://github.com/sogebot/ui-admin/compare/v45.1.8...v46.0.0) (2022-05-04)
+
+
+### Bug Fixes
+
+* **datetime:** handle correctly iso dates ([849723e](https://github.com/sogebot/ui-admin/commit/849723e61c787b565978b52c4ff2862df485892d))
+
 ### [45.1.8](https://github.com/sogebot/ui-admin/compare/v45.1.7...v45.1.8) (2022-05-04)
 
 
