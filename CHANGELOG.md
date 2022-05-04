@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [45.1.8](https://github.com/sogebot/ui-admin/compare/v45.1.7...v45.1.8) (2022-05-04)
+
+
+### Bug Fixes
+
+* **alerts:** show proper cloning progress ([d3f6e94](https://github.com/sogebot/ui-admin/commit/d3f6e94c9e17aaa1df7721bfb2aa0b1f89d4cfe4))
+* **overlays:** fix incorrect usage of ctx ([2d525c7](https://github.com/sogebot/ui-admin/commit/2d525c72eaa67eeefe9ea3cb91b3feec76f3f3ef))
+
 ### [45.1.7](https://github.com/sogebot/ui-admin/compare/v45.1.6...v45.1.7) (2022-04-29)
 
 
