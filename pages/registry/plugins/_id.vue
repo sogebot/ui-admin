@@ -32,7 +32,14 @@
               ? 'Plugin is enabled'
               : 'Plugin is disabled')"
           />
-          <v-autocomplete class="pt-2" v-model="selectedItem" outlined dense :items="items" label="Item to add">
+          <v-autocomplete
+            v-model="selectedItem"
+            class="pt-2"
+            outlined
+            dense
+            :items="items"
+            label="Item to add"
+          >
             <template #append-outer>
               <v-btn icon style="transform: translateY(-7px);" @click="addItem">
                 <v-icon color="white">
@@ -42,7 +49,8 @@
             </template>
           </v-autocomplete>
 
-          <PluginsImportDialog @import="importToEditor($event)"/>
+          <PluginsImportDialog @import="importToEditor($event)" />
+          <PluginsExportDialog />
         </v-card-text>
       </v-sheet>
     </v-card>
@@ -51,6 +59,7 @@
 </template>
 
 <script lang="ts">
+import type { Plugin } from '@entity/plugins';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import Drawflow from 'drawflow';
 import Vue from 'vue';
@@ -76,15 +85,17 @@ export default defineComponent({
 
     let editor: Drawflow | null = null;
 
+    const item = computed<Plugin>({
+      get () {
+        return $store.state.registryPlugins.item;
+      },
+      set (value) {
+        // $store.commit('registryPlugins/set', value);
+      },
+    });
+
     const loading = ref(true);
     const saving = ref(false);
-
-    const item = ref({
-      id:       route.params.id,
-      name:     '',
-      enabled:  true,
-      workflow: '',
-    });
 
     const items = [
       { header: 'Input' },
@@ -141,7 +152,7 @@ export default defineComponent({
         default:
       }
 
-      item.value.workflow = JSON.stringify(editor?.export());
+      $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
     };
 
     const refresh = () => {
@@ -155,7 +166,7 @@ export default defineComponent({
           }
 
           if (d) {
-            item.value = d;
+            $store.commit('registryPlugins/set', d);
           }
           resolve(true);
         });
@@ -165,6 +176,14 @@ export default defineComponent({
     // Pass render Vue
     onMounted(async () => {
       $store.commit('panel/back', '/registry/plugins');
+
+      $store.commit('registryPlugins/set', {
+        id:       route.params.id,
+        name:     '',
+        enabled:  true,
+        workflow: '',
+      });
+
       await refresh();
       initEditor();
       EventBus.$on('drawflow::getCommonParents', (id: string, cb: (err: any, inputNodes: any[], allNodes: any[]) => void) => {
@@ -209,14 +228,14 @@ export default defineComponent({
             if (outputs.length > 1) {
               editor?.removeNodeOutput(id, outputs[outputs.length - 1]);
             } else {
-              const item = node.outputs[outputs[0]];
-              if (item.connections.length > 0) {
-                editor?.removeSingleConnection(id, item.connections[0].node, `output_1`, (item.connections[0] as any).output);
+              const itemOutputs = node.outputs[outputs[0]];
+              if (itemOutputs.connections.length > 0) {
+                editor?.removeSingleConnection(id, itemOutputs.connections[0].node, `output_1`, (item.connections[0] as any).output);
               }
             }
           }
         }
-        item.value.workflow = JSON.stringify(editor?.export());
+        $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
       });
       EventBus.$on('drawflow::node::input', (id: string, value: '+' | '-') => {
         id = id.replace('node-', '');
@@ -237,7 +256,7 @@ export default defineComponent({
             }
           }
         }
-        item.value.workflow = JSON.stringify(editor?.export());
+        $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
       });
       EventBus.$on('drawflow::node::value', (id: string, cb: (value: any, data: any) => void) => {
         id = id.replace('node-', '');
@@ -266,7 +285,7 @@ export default defineComponent({
             });
           }
 
-          item.value.workflow = JSON.stringify(editor?.export());
+          $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         } catch (e) {
           console.debug(`Cannot get node ${id}`, e);
         }
@@ -295,32 +314,32 @@ export default defineComponent({
         editor.zoom_max = 1;
 
         editor.on('connectionCreated', () => {
-          item.value.workflow = JSON.stringify(editor?.export());
+          $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
 
         editor.on('connectionRemoved', () => {
-          item.value.workflow = JSON.stringify(editor?.export());
+          $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
 
         editor.on('nodeCreated', () => {
-          item.value.workflow = JSON.stringify(editor?.export());
+          $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
 
         editor.on('nodeMoved', () => {
-          item.value.workflow = JSON.stringify(editor?.export());
+          $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
 
         editor.on('nodeRemoved', (event) => {
           EventBus.$emit(`drawflow::nodeRemoved::node-${event}`);
-          item.value.workflow = JSON.stringify(editor?.export());
+          $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
 
         editor.on('nodeSelected', () => {
-          item.value.workflow = JSON.stringify(editor?.export());
+          $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
 
         editor.on('nodeUnselected', () => {
-          item.value.workflow = JSON.stringify(editor?.export());
+          $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
 
         editor.start();
@@ -363,11 +382,11 @@ export default defineComponent({
 
     const importToEditor = (workflow: string) => {
       editor?.import(workflow);
-    }
+    };
 
     return {
-      importToEditor,
       item,
+      importToEditor,
       loading,
       saving,
       addItem,
