@@ -22,10 +22,17 @@
           <v-text-field
             v-model="item.name"
             outlined
+            hide-details="auto"
             dense
             label="Name"
           />
-          <v-autocomplete v-model="selectedItem" outlined dense :items="items" label="Item to add">
+          <v-switch
+            v-model="item.enabled"
+            :label="(item.enabled
+              ? 'Plugin is enabled'
+              : 'Plugin is disabled')"
+          />
+          <v-autocomplete class="pt-2" v-model="selectedItem" outlined dense :items="items" label="Item to add">
             <template #append-outer>
               <v-btn icon style="transform: translateY(-7px);" @click="addItem">
                 <v-icon color="white">
@@ -75,6 +82,7 @@ export default defineComponent({
     const item = ref({
       id:       route.params.id,
       name:     '',
+      enabled:  true,
       workflow: '',
     });
 

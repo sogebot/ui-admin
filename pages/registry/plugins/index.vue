@@ -196,6 +196,9 @@ export default defineComponent({
       },
       { value: 'name', text: translate('name') },
       {
+        value: 'enabled', text: translate('enabled'), align: 'center',
+      },
+      {
         value: 'actions', text: '', sortable: false,
       },
     ];
