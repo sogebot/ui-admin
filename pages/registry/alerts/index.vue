@@ -8,7 +8,7 @@
       calculate-widths
       :show-select="selectable"
       :search="search"
-      :loading="loading || cloning"
+      :loading="loading"
       :headers="headers"
       :items-per-page="-1"
       :items="items"
@@ -146,6 +146,7 @@
         </v-hover>
         <v-hover v-slot="{ hover }">
           <v-btn
+            :loading="cloning.includes(item.id)"
             icon
             :color="hover ? 'primary' : 'secondary lighten-3'"
             @click.stop="clone(item.id)"
@@ -180,6 +181,7 @@ import REMOVE from '~/queries/alert/remove.gql';
 const { $graphql } = useNuxtApp();
 
 const loading = ref(true);
+const cloning = ref([] as string[]);
 const items = ref([] as AlertInterface[]);
 const refetch = async () => {
   const data = await $graphql.default.request(GET_ALL);
@@ -226,9 +228,11 @@ const deleteSelected = () => {
 };
 
 const clone = (id: string) => {
+  cloning.value = [...cloning.value, id];
   $graphql.default.request(CLONE, { id }).then(() => {
     EventBus.$emit('snack', 'success', 'Data cloned.');
     refetch();
+    cloning.value = cloning.value.filter(o => o !== id);
   });
 };
 </script>
