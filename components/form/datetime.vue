@@ -28,12 +28,12 @@ import { required } from '~/functions/validators';
 
 export default defineComponent({
   props: {
-    value: Number,
+    value: [Number, String],
     label: String,
     id:    String,
   },
   setup (props, ctx) {
-    const model = ref(props.value ?? 0);
+    const model = ref(new Date(props.value).getTime());
     const date = ref(`${dayjs(props.value ? props.value : Date.now()).format('LL')} ${dayjs(props.value ? props.value : Date.now()).format('LTS')}`);
     const menu = ref(false);
     const uuid = ref(v4());
@@ -46,7 +46,9 @@ export default defineComponent({
 
     watch(model, (val) => {
       date.value = `${dayjs(val).format('LL')} ${dayjs(val).format('LTS')}`;
-      ctx.emit('input', val);
+
+      // backwards compatible -> return timestamp if number
+      ctx.emit('input', typeof props.value === 'number' ? new Date(val).getTime() : new Date(val).toISOString());
     });
 
     return {

@@ -208,7 +208,7 @@
                           />
                           <v-expand-transition>
                             <div v-show="!goal.endAfterIgnore">
-                              <form-datetime :value="Number(goal.endAfter)" :label="translate('registry.goals.input.endAfter.title')" @input="goal.endAfter = $event" />
+                              <form-datetime :value="goal.endAfter" :label="translate('registry.goals.input.endAfter.title')" @input="goal.endAfter = $event" />
                             </div>
                           </v-expand-transition>
                         </template>
@@ -359,7 +359,7 @@ const { $graphql, $store } = useNuxtApp();
 
 const emptyItem: GoalGroupInterface = {
   goals:     [],
-  createdAt: Date.now(),
+  createdAt: new Date().toISOString(),
   name:      '',
   display:   {
     type:           'fade',
@@ -511,11 +511,11 @@ const addItem = () => {
                 + '\n\t\tbackground: black;'
               + '\n\t}'
               + '\n',
-        timestamp:       Date.now(),
+        timestamp:       new Date().toISOString(),
         goalAmount:      1000,
         currentAmount:   0,
         interval:        'hour',
-        endAfter:        Date.now() + 24 * 60 * 60 * 1000,
+        endAfter:        new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         endAfterIgnore:  true,
         countBitsAsTips: false,
       }],
