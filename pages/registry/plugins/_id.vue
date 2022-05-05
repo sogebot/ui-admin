@@ -64,7 +64,7 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import Drawflow from 'drawflow';
 import Vue from 'vue';
 
-import filter from '~/components/drawflow/filter';
+import filter from '~/components/drawflow/filter/filter';
 import filterPermission from '~/components/drawflow/filter/permission';
 import listener from '~/components/drawflow/listener';
 import othersComment from '~/components/drawflow/others/comment';

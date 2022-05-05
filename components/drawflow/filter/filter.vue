@@ -5,7 +5,7 @@
         mdi-filter
       </v-icon>
       <v-toolbar-title class="text-button white--text">
-      Event filter
+      Filter
       </v-toolbar-title>
     </v-toolbar>
     <v-card dark>
@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { getSocket } from '@sogebot/ui-helpers/socket';
 
-import { EventBus } from '../../functions/event-bus';
+import { EventBus } from '../../../functions/event-bus';
 
 import { flatten } from '~/functions/flatten';
 
@@ -29,7 +29,6 @@ const attributes = ref({});
 
 const item = ref(null);
 watch(item, (value) => {
-  console.log({value})
   if (nodeId.value) {
     EventBus.$emit('drawflow::node::update', nodeId.value, value);
   }
@@ -69,7 +68,11 @@ const interval = setInterval(() => {
       let initial = true;
       for (const parent of parents) {
         const listener = data[parent.data.value];
-        // console.log({listener, data, value: parent.data.value})
+
+        const parameters = JSON.parse(parent.data.data).parameters;
+        for (const param of parameters) {
+          commonAttributes[`parameters.${param.name}`] = param.type === 'number' ? 'number' : 'string';
+        }
         if (listener) {
           if (initial) {
             initial = false;

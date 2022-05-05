@@ -9,7 +9,7 @@
       </template>
     </v-text-field>
 
-    <v-subheader>{{$t('registry.plugings.listener.command.parameters')}} <small class="pl-2">({{$t('registry.plugings.listener.command.order-is-important')}})</small></v-subheader>
+    <v-subheader>{{$t('registry.plugins.listener.command.parameters')}} <small class="pl-2">({{$t('registry.plugins.listener.command.order-is-important')}})</small></v-subheader>
 
     <v-alert text color="info" dense v-if="parameters.length === 0">
       Not expecting any parameters.
@@ -24,7 +24,7 @@
     </div>
 
     <v-btn @click="addParam" dense class="mt-2" block>
-      {{$t('registry.plugings.listener.command.add-parameter')}}
+      {{$t('registry.plugins.listener.command.add-parameter')}}
     </v-btn>
   </div>
 </template>
