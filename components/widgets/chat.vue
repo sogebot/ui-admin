@@ -318,6 +318,10 @@ export default defineComponent({
       if (localStorage.simpleChatMessages && localStorage.simpleChatMessagesUpdatedAt) {
         if (Date.now() - Number(localStorage.simpleChatMessagesUpdatedAt) < 1000 * 60 * 60 * 12) {
           messages.value = JSON.parse(localStorage.simpleChatMessages);
+
+          nextTick(() => {
+            chat.value.scroll(0, Number.MAX_SAFE_INTEGER);
+          });
         }
       }
 
