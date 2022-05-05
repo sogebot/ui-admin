@@ -69,10 +69,6 @@ const interval = setInterval(() => {
       for (const parent of parents) {
         const listener = data[parent.data.value];
 
-        const parameters = JSON.parse(parent.data.data).parameters;
-        for (const param of parameters) {
-          commonAttributes[`parameters.${param.name}`] = param.type === 'number' ? 'number' : 'string';
-        }
         if (listener) {
           if (initial) {
             initial = false;
@@ -89,12 +85,22 @@ const interval = setInterval(() => {
               }
             }
             for (const key of Object.keys(commonAttributes)) {
+              if (key.startsWith('parameters.')) {
+                continue;
+              }
               // console.log('Checking common => lister', nodeId.value, key)
               if (commonAttributes[key] !== flatten(listener)[key]) {
                 // console.log('Removing', key)
                 delete commonAttributes[key];
               }
             }
+          }
+
+          // add all parameters
+          const parameters = JSON.parse(parent.data.data).parameters;
+          for (const param of parameters) {
+            console.log(`parameters.${param.name}`)
+            commonAttributes[`parameters.${param.name}`] = param.type === 'number' ? 'number' : 'string';
           }
         }
       }
