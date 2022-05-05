@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [46.0.1](https://github.com/sogebot/ui-admin/compare/v46.0.0...v46.0.1) (2022-05-05)
+
+
+### Bug Fixes
+
+* **chat:** scroll simple chat onMounted ([3b74d95](https://github.com/sogebot/ui-admin/commit/3b74d95766e54426c705deb9384590ae619b1b07))
+
 ## [46.0.0](https://github.com/sogebot/ui-admin/compare/v45.1.8...v46.0.0) (2022-05-04)
 
 
