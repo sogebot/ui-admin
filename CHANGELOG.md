@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [46.2.0](https://github.com/sogebot/ui-admin/compare/v46.1.0...v46.2.0) (2022-05-06)
+
+
+### Features
+
+* **discord:** add announce message ([baf2dae](https://github.com/sogebot/ui-admin/commit/baf2daea37a1c0254b504d7cc05e535caddc3bb1))
+
 ## [46.1.0](https://github.com/sogebot/ui-admin/compare/v46.0.1...v46.1.0) (2022-05-06)
 
 
