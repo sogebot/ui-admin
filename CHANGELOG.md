@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [46.2.1](https://github.com/sogebot/ui-admin/compare/v46.2.0...v46.2.1) (2022-05-06)
+
+
+### Bug Fixes
+
+* **uwidgets:** remove current views ([8c9d47c](https://github.com/sogebot/ui-admin/commit/8c9d47c0f547bcf21dd38047567b842307375ab7))
+
 ## [46.2.0](https://github.com/sogebot/ui-admin/compare/v46.1.0...v46.2.0) (2022-05-06)
 
 
