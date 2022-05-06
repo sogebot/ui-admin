@@ -94,20 +94,27 @@
       <v-tab-item eager>
         <v-card>
           <v-card-text>
-            <v-autocomplete
-              v-model="settings.bot.sendOnlineAnnounceToChannel[0]"
-              hide-selected
-              :items="channels"
-              dense
-              :label="translate('integrations.discord.settings.sendOnlineAnnounceToChannel')"
-            >
-              <template #selection="data">
-                <div v-html="data.item.text" />
-              </template>
-              <template #item="data">
-                <div v-html="data.item.text" />
-              </template>
-            </v-autocomplete>
+            <v-row>
+              <v-col>
+                <v-autocomplete
+                  v-model="settings.bot.sendOnlineAnnounceToChannel[0]"
+                  hide-selected
+                  :items="channels"
+                  dense
+                  :label="translate('integrations.discord.settings.sendOnlineAnnounceToChannel')"
+                >
+                  <template #selection="data">
+                    <div v-html="data.item.text" />
+                  </template>
+                  <template #item="data">
+                    <div v-html="data.item.text" />
+                  </template>
+                </v-autocomplete>
+              </v-col>
+              <v-col>
+                <v-text-field dense v-model="settings.bot.onlineAnnounceMessage[0]" :label="translate('integrations.discord.settings.onlineAnnounceMessage')" />
+              </v-col>
+            </v-row>
 
             <v-autocomplete
               v-for="key of Object.keys(settings.bot.sendAnnouncesToChannel[0])"
