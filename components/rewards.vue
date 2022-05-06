@@ -1,5 +1,5 @@
 <template>
-  <v-select
+  <v-autocomplete
     v-model="selectedReward"
     :outlined="outlined"
     :label="capitalize(translate('event'))"
@@ -15,7 +15,13 @@
         </v-icon>
       </v-btn>
     </template>
-  </v-select>
+    <template #selection="data">
+      <div v-html="data.item.text" />
+    </template>
+    <template #item="data">
+      <div v-html="data.item.text" />
+    </template>
+  </v-autocomplete>
 </template>
 
 <script lang="ts">
@@ -42,7 +48,7 @@ export default defineComponent({
     outlined: Boolean,
   },
   setup (props: Props, ctx) {
-    const redeemRewards = ref([] as string[]);
+    const redeemRewards = ref([] as { id: string, title: string }[]);
     const selectedReward = ref(props.value);
     const progress = ref({
       redeemRewards: ButtonStates.progress,
@@ -56,8 +62,8 @@ export default defineComponent({
           disabled: true,
         },
         ...redeemRewards.value.map(item => ({
-          text:     item,
-          value:    item,
+          text:     `<strong>${item.name}</strong> <small class="font-italic">${item.id}</small>`,
+          value:    item.id,
           disabled: false,
         })),
       ];
@@ -83,6 +89,7 @@ export default defineComponent({
 
     watch(selectedReward, (val) => {
       ctx.emit('input', val);
+      ctx.emit('name', redeemRewards.value.find(o => o.id === val)?.name);
     });
 
     return {

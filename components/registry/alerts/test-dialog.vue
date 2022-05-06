@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="dialog"
-    width="500"
+    width="600"
   >
     <template #activator="{ on, attrs }">
       <v-btn
@@ -46,7 +46,8 @@
         <v-row v-if="event === 'rewardredeems'" class="py-1">
           <v-col>
             <rewards
-              v-model="reward"
+              v-model="rewardId"
+              @name="rewardName = $event"
               :state="null"
             />
           </v-col>
@@ -186,7 +187,8 @@ export default defineComponent({
     const dialog = ref(false);
     const event = ref('follows' as typeof events[number]);
     const username = ref('');
-    const reward = ref(null as null | string);
+    const rewardId = ref(null as null | string);
+    const rewardName = ref(null as null | string);
     const isUsernameRandomized = ref(true);
 
     const recipient = ref('');
@@ -252,10 +254,11 @@ export default defineComponent({
       ];
 
       const emit: EmitData = {
-        amount: isAmountRandomized.value ? Math.floor(Math.random() * 1000) : amount.value,
+        amount:   isAmountRandomized.value ? Math.floor(Math.random() * 1000) : amount.value,
+        rewardId: rewardId.value,
         name:
           event.value === 'rewardredeems'
-            ? reward.value || ''
+            ? rewardName.value || ''
             : (isUsernameRandomized.value ? generateUsername() : username.value),
         tier:       isTierRandomized.value ? tiers[shuffle([0, 1, 2, 3])[0]] : tier.value,
         service:    isServiceRandomized.value ? shuffle(services)[0] : service.value,
@@ -279,7 +282,8 @@ export default defineComponent({
       events,
       eventItems,
 
-      reward,
+      rewardId,
+      rewardName,
       username,
       isUsernameRandomized,
 

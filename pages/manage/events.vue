@@ -23,28 +23,40 @@
                     </v-card-title>
 
                     <v-card-text>
-                      <v-data-table dense :items="selected" :headers="headersDelete" :items-per-page="-1"
-                        hide-default-header hide-default-footer>
-
+                      <v-data-table
+                        dense
+                        :items="selected"
+                        :headers="headersDelete"
+                        :items-per-page="-1"
+                        hide-default-header
+                        hide-default-footer
+                      >
                         <template #[`item.definitions`]="{item}">
-                          <span class="grey--text text--lighten-1" v-if="Object.keys(item.definitions).length === 0"/>
+                          <span v-if="Object.keys(item.definitions).length === 0" class="grey--text text--lighten-1" />
                           <div v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
                             {{ translate('events.definitions.' + key + '.label') }}:<code class="ml-2">{{ item.definitions[key] }}</code>
                           </div>
                         </template>
 
                         <template #[`item.operations`]="{item}">
-                          <span class="grey--text text--lighten-1" v-if="item.operations.length === 0">No operations set for this event</span>
+                          <span v-if="item.operations.length === 0" class="grey--text text--lighten-1">No operations set for this event</span>
                           <template v-for="operation of item.operations">
                             <div :key="operation.id + operation.name" class="pa-0 ma-0 grey--text text--lighten-1" style="line-height: 1rem;">
                               {{ capitalize(translate(operation.name)) }}
                             </div>
-                            <ul style="list-style-type: none;" class="text-truncate" :style="{
-                              'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
-                            }" :key="operation.id + key + 'ul'">
+                            <ul
+                              :key="operation.id + key + 'ul'"
+                              style="list-style-type: none;"
+                              class="text-truncate"
+                              :style="{
+                                'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
+                              }"
+                            >
                               <li
-                              v-for="key of Object.keys(operation.definitions)"
-                              :key="operation.id + key + 'li'">
+                                v-for="key of Object.keys(operation.definitions)"
+                                :key="operation.id + key + 'li'"
+                              >
+                                aa
                                 {{ translate('events.definitions.' + key + '.label') }}
                                 <code class="ml-2">{{ operation.definitions[key] }}</code>
                               </li>
@@ -146,13 +158,21 @@
           </template>
 
           <template #definitions>
-            <span class="grey--text text--lighten-1" v-if="Object.keys(item.definitions).length === 0"/>
+            <span v-if="Object.keys(item.definitions).length === 0" class="grey--text text--lighten-1" />
             <div v-for="key of Object.keys(item.definitions)" :key="item.id + key + '0'">
-              {{ translate('events.definitions.' + key + '.label') }}:<code class="ml-2">{{ item.definitions[key] }}</code>
+              <template v-if="key === 'rewardId'">
+                {{ translate('events.definitions.reward.label') }}:
+                <code class="ml-2" v-html="getReward(item.definitions[key])" />
+              </template>
+              <template v-else>
+                {{ translate('events.definitions.' + key + '.label') }}:<code class="ml-2">{{ item.definitions[key] }}</code>
+              </template>
             </div>
 
             <div v-if="item.filter.length > 0">
-              <v-icon left small>mdi-filter</v-icon>
+              <v-icon left small>
+                mdi-filter
+              </v-icon>
               <text-with-tags
                 class="d-inline-block"
                 :value="item.filter"
@@ -161,17 +181,23 @@
           </template>
 
           <template #operations>
-            <span class="grey--text text--lighten-1" v-if="item.operations.length === 0">No operations set for this event</span>
+            <span v-if="item.operations.length === 0" class="grey--text text--lighten-1">No operations set for this event</span>
             <template v-for="operation of item.operations">
               <div :key="operation.id + operation.name" class="pa-0 ma-0 grey--text text--lighten-1" style="line-height: 1rem;">
                 {{ capitalize(translate(operation.name)) }}
               </div>
-              <ul style="list-style-type: none;" class="text-truncate" :style="{
-                'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
-              }" :key="operation.id + operation.name + 'ul'">
+              <ul
+                :key="operation.id + operation.name + 'ul'"
+                style="list-style-type: none;"
+                class="text-truncate"
+                :style="{
+                  'max-width': $vuetify.breakpoint.mobile ? '400px' : 'inherit'
+                }"
+              >
                 <li
-                v-for="key of Object.keys(operation.definitions)"
-                :key="operation.id + key + 'li'">
+                  v-for="key of Object.keys(operation.definitions)"
+                  :key="operation.id + key + 'li'"
+                >
                   {{ translate('events.definitions.' + key + '.label') }}
                   <code class="ml-2">
                     <template v-if="operation.name === 'run-command' && key === 'timeout'">
@@ -193,6 +219,7 @@
 </template>
 
 <script lang="ts">
+import type { EventInterface, Events } from '@entity/event';
 import {
   computed,
   defineAsyncComponent, defineComponent, onMounted, ref,
@@ -202,7 +229,6 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, cloneDeep } from 'lodash';
 
-import type { EventInterface, Events } from '@entity/event';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -213,10 +239,12 @@ import {
 export default defineComponent({
   components: {
     'table-group-header': defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
-    'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
-    'events-edit':  defineAsyncComponent(() => import('~/components/manage/events/eventsEdit.vue')),
+    'table-mobile':       defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
+    'events-edit':        defineAsyncComponent(() => import('~/components/manage/events/eventsEdit.vue')),
   },
   setup () {
+    const redeemRewards = ref([] as { id: string, title: string }[]);
+
     const currentItems = ref([] as any[]);
     const saveCurrentItems = (value: any[]) => {
       currentItems.value = value;
@@ -230,8 +258,7 @@ export default defineComponent({
 
     const items = ref([] as EventInterface[]);
 
-    const definitions = ref({
-    } as any);
+    const definitions = ref({} as any);
     const eventsItems = computed(() => {
       return availableEvents.value
         .filter((item) => {
@@ -285,9 +312,7 @@ export default defineComponent({
       taskId:               [required],
     };
 
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
@@ -310,9 +335,7 @@ export default defineComponent({
       {
         value: 'isEnabled', text: translate('enabled'), align: 'center',
       },
-      {
-        value: 'actions', sortable: false,
-      },
+      { value: 'actions', sortable: false },
     ];
 
     const headersDelete = [
@@ -329,6 +352,15 @@ export default defineComponent({
 
     const refresh = async () => {
       await Promise.all([
+        new Promise<void>((resolve) => {
+          getSocket('/core/events').emit('events::getRedeemedRewards', (err, redeems: string[]) => {
+            if (err) {
+              return error(err);
+            }
+            redeemRewards.value = redeems;
+            resolve();
+          });
+        }),
         new Promise((resolve) => {
           getSocket('/core/events').emit('generic::getAll', (err, data: EventInterface[]) => {
             if (err) {
@@ -337,9 +369,7 @@ export default defineComponent({
             }
             items.value = data;
             console.groupCollapsed('events::generic::getAll');
-            console.debug({
-              data,
-            });
+            console.debug({ data });
             console.groupEnd();
             resolve(true);
           });
@@ -399,11 +429,7 @@ export default defineComponent({
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
-            console.log('Updating', {
-              itemToUpdate,
-            }, {
-              attr, value: item[attr],
-            });
+            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
             getSocket('/core/events').emit('events::save', {
               ...itemToUpdate,
               [attr]: item[attr], // save new value for all selected items
@@ -464,16 +490,13 @@ export default defineComponent({
     };
 
     const availableVariables = (name: string) => {
-      const variables = (availableEvents.value.find(o => o.id === name) || {
-        variables: [],
-      }).variables;
+      const variables = (availableEvents.value.find(o => o.id === name) || { variables: [] }).variables;
       return variables;
     };
 
     const getGroup = computed(() => {
       // set empty groups from aliases
-      const returnGroups: { [name: string]: any } = {
-      };
+      const returnGroups: { [name: string]: any } = {};
       for (const item of items.value) {
         if (item.name && !returnGroups[item.name]) {
           returnGroups[item.name] = {
@@ -485,9 +508,13 @@ export default defineComponent({
           };
         }
       }
-      console.log(returnGroups);
       return returnGroups;
     });
+
+    const getReward = (rewardId: string) => {
+      const reward = redeemRewards.value.find(o => o.id === rewardId);
+      return reward?.name ?? '<strong class="red--text">!!! unknown reward !!!</strong>';
+    }
 
     return {
       saveCurrentItems,
@@ -507,6 +534,7 @@ export default defineComponent({
       deleteSelected,
       translate,
       availableEvents,
+      getReward,
 
       selected,
       deleteDialog,

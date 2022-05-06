@@ -66,9 +66,17 @@
                     :label="translate(`events.definitions.${defKey}.label`)"
                   />
                   <rewards
-                    v-if="defKey === 'titleOfReward'"
+                    v-if="defKey === 'rewardId'"
                     v-model="item.definitions[defKey]"
                     :rules="rules"
+                  />
+                  <v-text-field
+                    v-else-if="typeof item.definitions[defKey] === 'string'"
+                    v-model="item.definitions[defKey]"
+                    :rules="rules[defKey]"
+                    :label="translate(`events.definitions.${defKey}.label`)"
+                    :hint="translate('events.definitions.' + defKey + '.placeholder')"
+                    persistent-hint
                   />
                   <v-text-field
                     v-else-if="typeof item.definitions[defKey] === 'string'"
