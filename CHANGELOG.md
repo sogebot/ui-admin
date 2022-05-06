@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [46.1.0](https://github.com/sogebot/ui-admin/compare/v46.0.1...v46.1.0) (2022-05-06)
+
+
+### Features
+
+* add rewardId support ([3bfcba6](https://github.com/sogebot/ui-admin/commit/3bfcba6aaed692691b04c833909dc06d74e3d6d5))
+
 ### [46.0.1](https://github.com/sogebot/ui-admin/compare/v46.0.0...v46.0.1) (2022-05-05)
 
 
