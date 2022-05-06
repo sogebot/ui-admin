@@ -53,9 +53,6 @@ export default defineComponent({
     'twitch-viewers': defineAsyncComponent({
       loader: () => import('~/components/microWidgets/twitch-viewers.vue'),
     }),
-    'twitch-views': defineAsyncComponent({
-      loader: () => import('~/components/microWidgets/twitch-views.vue'),
-    }),
     'twitch-max-viewers': defineAsyncComponent({
       loader: () => import('~/components/microWidgets/twitch-max-viewers.vue'),
     }),

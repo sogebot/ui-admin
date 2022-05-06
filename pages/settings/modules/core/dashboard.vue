@@ -173,7 +173,6 @@ export default defineComponent({
       'twitch|maxViewers',
       'twitch|newChatters',
       'twitch|chatMessages',
-      'twitch|views',
       'twitch|followers',
       'twitch|subscribers',
       'twitch|bits',

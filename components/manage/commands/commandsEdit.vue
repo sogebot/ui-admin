@@ -130,7 +130,7 @@
                                 >
                                   <template #append>
                                     <input-variables
-                                      :filters="['sender', 'source', 'param', 'haveParam', 'is.newchatter', 'is.moderator', 'is.subscriber', 'is.vip', 'is.follower', 'is.broadcaster', 'is.bot', 'is.owner', 'rank', 'game', 'language', 'title', 'views', 'followers', 'subscribers', 'isBotSubscriber']"
+                                      :filters="['sender', 'source', 'param', 'haveParam', 'is.newchatter', 'is.moderator', 'is.subscriber', 'is.vip', 'is.follower', 'is.broadcaster', 'is.bot', 'is.owner', 'rank', 'game', 'language', 'title', 'followers', 'subscribers', 'isBotSubscriber']"
                                       @input="item.responses[i].filter = item.responses[i].filter + $event"
                                     />
                                   </template>

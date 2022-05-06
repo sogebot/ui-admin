@@ -42,7 +42,7 @@ export default defineComponent({
     const menu = ref(false);
 
     const globalFilters = [
-      'title', 'game', 'viewers', 'views', 'followers',
+      'title', 'game', 'viewers', 'followers',
       'subscribers', 'spotifySong', 'ytSong', 'latestFollower',
       'latestSubscriber', 'latestSubscriberMonths', 'latestSubscriberStreak',
       'latestTipAmount', 'latestTipCurrency', 'latestTipMessage', 'latestTip',
