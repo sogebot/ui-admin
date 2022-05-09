@@ -2,60 +2,29 @@
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
     <alert-disabled system="timers" />
 
-    <h2 v-if="!$vuetify.breakpoint.mobile">
-      {{ translate('menu.timers') }}
-    </h2>
+    <v-expand-transition>
+      <v-app-bar v-if="selected.length > 0" color="blue-grey darken-4" fixed dense>
+        <v-row class="px-2" dense justify="end">
+          <v-col cols="auto" align-self="center">
+            {{ selected.length }} items selected
+          </v-col>
 
-    <v-data-table
-      v-model="selected"
-      calculate-widths
-      :show-select="selectable"
-      :search="search"
-      :loading="state.loading !== ButtonStates.success"
-      :headers="headers"
-      :items-per-page="-1"
-      :items="items"
-      @click:row="addToSelectedItem"
-      @current-items="saveCurrentItems"
-    >
-      <template #top>
-        <v-sheet
-          flat
-          color="dark"
-          class="my-2 pb-2 mt-0"
-        >
-          <v-row class="px-2" no-gutters>
-            <v-col cols="auto" align-self="center" class="pr-2">
-              <v-btn icon :color="selectable ? 'primary' : 'secondary'" @click="selectable = !selectable">
-                <v-icon>
-                  mdi-checkbox-multiple-marked-outline
-                </v-icon>
-              </v-btn>
-            </v-col>
-            <v-col align-self="center">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-                class="pa-0 ma-2"
-              />
-            </v-col>
-            <v-col cols="auto" align-self="center">
-              <template v-if="selected.length > 0">
-                <v-dialog
-                  v-model="deleteDialog"
-                  max-width="500px"
-                >
+          <v-col cols="auto" align-self="center">
+            <v-row dense>
+              <v-col v-if="selected.length > 0" cols="auto" class="pr-1">
+                <manage-timers-batch
+                  :length="selected.length"
+                  @save="batchUpdate($event)"
+                />
+              </v-col>
+              <v-col v-if="selected.length > 0" cols="auto">
+                <v-dialog v-model="deleteDialog" max-width="500px">
                   <template #activator="{ on, attrs }">
-                    <v-btn
-                      color="error"
-                      class="mr-1"
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      Delete {{ selected.length }} Item(s)
+                    <v-btn class="error" small v-bind="attrs" v-on="on">
+                      <v-icon left>
+                        mdi-delete-forever
+                      </v-icon>
+                      Delete
                     </v-btn>
                   </template>
 
@@ -76,150 +45,74 @@
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
-                      <v-btn
-                        text
-                        @click="deleteDialog = false"
-                      >
+                      <v-btn text @click="deleteDialog = false">
                         Cancel
                       </v-btn>
-                      <v-btn
-                        color="error"
-                        text
-                        @click="deleteSelected"
-                      >
+                      <v-btn color="error" text @click="deleteSelected">
                         Delete
                       </v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
-              </template>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-app-bar>
+    </v-expand-transition>
 
-              <v-dialog
-                v-model="newDialog"
-                max-width="500px"
-              >
-                <template #activator="{ on, attrs }">
-                  <v-btn
-                    color="primary"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    New item
-                  </v-btn>
-                </template>
-
-                <v-card>
-                  <v-card-title>
-                    <span class="headline">New item</span>
-                  </v-card-title>
-
-                  <v-card-text :key="timestamp">
-                    <new-item
-                      :rules="rules"
-                      @close="newDialog = false"
-                      @save="saveSuccess"
-                    />
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
-            </v-col>
-          </v-row>
-        </v-sheet>
+    <v-data-table
+      v-model="selected"
+      show-select
+      calculate-widths
+      :search="search"
+      :loading="loading"
+      :headers="headers"
+      :items-per-page="-1"
+      :items="items"
+      @current-items="saveCurrentItems"
+    >
+      <template #top>
+        <table-search-bar :search.sync="search">
+          <manage-timers-edit
+            :rules="rules"
+            @save="refetch()"
+          />
+        </table-search-bar>
       </template>
 
-      <template #[`item.name`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.name"
-          @save="update(item, false, 'name')"
-        >
-          {{ item.name }}
-          <template #input>
-            <v-text-field
-              v-model="item.name"
-              :rules="rules.name"
-              single-line
-              :clearable="true"
-              counter
+      <template #[`item`]="{ item }">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem(selected, 'id', currentItems)">
+          <template #actions>
+            <manage-timers-edit
+              :rules="rules"
+              :value="item"
+              @save="refetch()"
             />
+            <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
+              <v-icon>
+                mdi-delete-forever
+              </v-icon>
+            </v-btn>
           </template>
-        </v-edit-dialog>
-      </template>
 
-      <template #[`item.triggerEveryMessage`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.triggerEveryMessage"
-          @save="update(item, false, 'triggerEveryMessage')"
-        >
-          {{ item.triggerEveryMessage }}
-          <template #input>
-            <v-text-field
-              v-model.number="item.triggerEveryMessage"
-              type="number"
-              min="0"
-              :rules="rules.triggerEveryMessage"
-              single-line
-              :clearable="true"
-            />
+          <template #messages>
+            <ol>
+              <li v-for="message of item.messages" :key="message.id" :class="{
+                'grey--text': !message.isEnabled
+                }">
+                {{ message.response | truncate(150) }}
+              </li>
+            </ol>
           </template>
-        </v-edit-dialog>
-      </template>
-
-      <template #[`item.triggerEverySecond`]="{ item }">
-        <v-edit-dialog
-          persistent
-          large
-          :return-value.sync="item.triggerEverySecond"
-          @save="update(item, false, 'triggerEverySecond')"
-        >
-          {{ item.triggerEverySecond }}
-          <template #input>
-            <v-text-field
-              v-model.number="item.triggerEverySecond"
-              min="0"
-              type="number"
-              :rules="rules.triggerEverySecond"
-              single-line
-              :clearable="true"
-            />
-          </template>
-        </v-edit-dialog>
-      </template>
-
-      <template #[`item.messages`]="{ item }">
-        <responses
-          :responses="item.messages"
-          :name="item.name"
-          @save="item.messages = $event.map(item => ({...item, timestamp: item.order})); update(item, false, 'messages')"
-        />
-      </template>
-
-      <template #[`item.isEnabled`]="{ item }">
-        <v-simple-checkbox
-          v-model="item.isEnabled"
-          @click="update(item, true, 'isEnabled')"
-        />
-      </template>
-
-      <template #[`item.tickOffline`]="{ item }">
-        <v-simple-checkbox
-          v-model="item.tickOffline"
-          @click="update(item, true, 'tickOffline')"
-        />
+        </table-mobile>
       </template>
     </v-data-table>
   </v-container>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { TimerInterface } from '@entity/timer';
-import {
-  defineAsyncComponent, defineComponent, onMounted, ref, watch,
-} from '@nuxtjs/composition-api';
-import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { capitalize, orderBy } from 'lodash';
@@ -231,189 +124,135 @@ import {
   minLength, minValue, mustBeCompliant, required,
 } from '~/functions/validators';
 
-export default defineComponent({
-  components: {
-    'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/timers-newItem.vue') }),
-    responses:  defineAsyncComponent({ loader: () => import('~/components/timers-responses.vue') }),
+const rules = {
+  name:                [required, minLength(2), mustBeCompliant('a-zA-Z0-9_')],
+  triggerEveryMessage: [required, minValue(0)],
+  triggerEverySecond:  [required, minValue(0)],
+};
+
+const search = ref('');
+const loading = ref(true);
+const items = ref([] as Required<TimerInterface>[]);
+const selected = ref([] as TimerInterface[]);
+const currentItems = ref([] as TimerInterface[]);
+const saveCurrentItems = (value: TimerInterface[]) => {
+  currentItems.value = value;
+};
+
+const deleteDialog = ref(false);
+
+const headers = [
+  { value: 'name', text: translate('timers.dialog.name') },
+  {
+    value: 'tickOffline', text: translate('timers.dialog.tickOffline'), align: 'center',
   },
-  setup () {
-    const rules = {
-      name:                [required, minLength(2), mustBeCompliant('a-zA-Z0-9_')],
-      triggerEveryMessage: [required, minValue(0)],
-      triggerEverySecond:  [required, minValue(0)],
-    };
+  {
+    value: 'isEnabled', text: translate('enabled'), align: 'center',
+  },
+  // virtual attributes
+  { value: 'triggerEveryMessage', text: translate('messages'), align: 'right' },
+  { value: 'triggerEverySecond', text: capitalize(translate('seconds')), align: 'right' },
+  { value: 'messages', text: translate('timers.dialog.responses') },
+];
 
-    const search = ref('');
-    const items = ref([] as Required<TimerInterface>[]);
-    const selected = ref([] as TimerInterface[]);
-    const currentItems = ref([] as TimerInterface[]);
-    const saveCurrentItems = (value: TimerInterface[]) => {
-      currentItems.value = value;
-    };
-    const deleteDialog = ref(false);
-    const newDialog = ref(false);
-    const timestamp = ref(Date.now());
-    const selectable = ref(false);
-    watch(selectable, (val) => {
-      if (!val) {
-        selected.value = [];
-      }
-    });
+const headersDelete = [
+  { value: 'name', text: translate('timers.dialog.name') },
+];
 
-    const state = ref({ loading: ButtonStates.progress } as {
-      loading: number;
-    });
+const refetch = () => {
+  getSocket('/systems/timers').emit('generic::getAll', (err, _items: Required<TimerInterface>[]) => {
+    if (err) {
+      error(err);
+      return;
+    }
+    items.value.length = 0;
+    for (const item of _items) {
+      items.value.push({
+        ...item,
+        messages: orderBy(item.messages, 'timestamp', 'asc'),
+      });
+    }
+    // we also need to reset selection values
+    if (selected.value.length > 0) {
+      selected.value.forEach((selectedItem, index) => {
+        selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
+        selected.value[index] = selectedItem;
+      });
+    }
+    loading.value = false;
+  });
+};
 
-    watch(newDialog, () => {
-      timestamp.value = Date.now();
-    });
+onMounted(() => {
+  refetch();
+});
 
-    const headers = [
-      { value: 'name', text: translate('timers.dialog.name') },
-      {
-        value: 'tickOffline', text: translate('timers.dialog.tickOffline'), align: 'center',
-      },
-      {
-        value: 'isEnabled', text: translate('enabled'), align: 'center',
-      },
-      // virtual attributes
-      { value: 'triggerEveryMessage', text: translate('messages') },
-      { value: 'triggerEverySecond', text: capitalize(translate('seconds')) },
-      { value: 'messages', text: translate('timers.dialog.responses') },
-    ];
-
-    const headersDelete = [
-      { value: 'name', text: translate('timers.dialog.name') },
-    ];
-
-    const refresh = () => {
-      getSocket('/systems/timers').emit('generic::getAll', (err, _items: Required<TimerInterface>[]) => {
-        if (err) {
-          error(err);
+const deleteSelected = async () => {
+  deleteDialog.value = false;
+  await Promise.all(
+    selected.value.map((item) => {
+      return new Promise((resolve, reject) => {
+        if (!item.id) {
+          reject(error('Missing item id'));
           return;
         }
-        items.value.length = 0;
-        for (const item of _items) {
-          items.value.push({
-            ...item,
-            messages: orderBy(item.messages, 'timestamp', 'asc'),
-          });
-        }
-        state.value.loading = ButtonStates.success;
-        // we also need to reset selection values
-        if (selected.value.length > 0) {
-          selected.value.forEach((selectedItem, index) => {
-            selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
-            selected.value[index] = selectedItem;
-          });
-        }
-        state.value.loading = ButtonStates.success;
-      });
-    };
-
-    onMounted(() => {
-      refresh();
-    });
-
-    const saveSuccess = () => {
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
-      newDialog.value = false;
-    };
-
-    const deleteSelected = async () => {
-      deleteDialog.value = false;
-      await Promise.all(
-        selected.value.map((item) => {
-          return new Promise((resolve, reject) => {
-            if (!item.id) {
-              reject(error('Missing item id'));
-              return;
-            }
-            getSocket('/systems/timers').emit('generic::deleteById', item.id, (err) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
-          });
-        }),
-      );
-      refresh();
-
-      EventBus.$emit('snack', 'success', 'Data removed.');
-      selected.value = [];
-    };
-    const update = async (item: typeof items.value[number], multi = false, attr: keyof typeof items.value[number]) => {
-      // check validity
-      for (const key of Object.keys(rules)) {
-        for (const rule of (rules as any)[key]) {
-          const ruleStatus = rule((item as any)[key]);
-          if (ruleStatus === true) {
-            continue;
-          } else {
-            EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
-            refresh();
-            return;
+        getSocket('/systems/timers').emit('generic::deleteById', item.id, (err) => {
+          if (err) {
+            reject(error(err));
           }
+          resolve(true);
+        });
+      });
+    }),
+  );
+  refetch();
+
+  EventBus.$emit('snack', 'success', 'Data removed.');
+  selected.value = [];
+};
+const batchUpdate = (value: Record<string, any>) => {
+  // check validity
+  for (const toUpdate of selected.value) {
+    const item = items.value.find(o => o.id === toUpdate.id);
+    if (!item) {
+      continue;
+    }
+
+    let isValid = true;
+    for (const key of Object.keys(rules)) {
+      for (const rule of (rules as any)[key]) {
+        const ruleStatus = rule((toUpdate as any)[key]);
+        if (ruleStatus === true) {
+          continue;
+        } else {
+          EventBus.$emit('snack', 'red', `[${key}] - ${ruleStatus}`);
+          isValid = false;
         }
       }
+    }
 
-      // update all instantly
-      for (const i of [item, ...(multi ? selected.value : [])]) {
-        (i as any)[attr] = item[attr];
+    if (isValid) {
+      for (const key of Object.keys(value)) {
+        if (typeof value[key] !== 'undefined') {
+          (item as any)[key] = value[key];
+        }
       }
+      const { id, ...data } = item;
+      console.log('Updating', { id, data });
 
-      await Promise.all(
-        [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
-          return new Promise((resolve) => {
-            if (attr === 'messages') {
-              for (let i = 0; i < item[attr].length; i++) {
-                item[attr][i].timestamp = i;
-              }
-            }
-            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-            if (itemToUpdate.id) {
-              getSocket('/systems/timers').emit('generic::setById', {
-                id:   itemToUpdate.id,
-                item: {
-                  ...itemToUpdate,
-                  [attr]: item[attr], // save new value for all selected items
-                },
-              }, () => {
-                resolve(true);
-              });
-            }
-          });
-        }),
-      );
-      refresh();
-      EventBus.$emit('snack', 'success', 'Data updated.');
-    };
+      getSocket('/systems/timers').emit('generic::setById', { id, item: data }, (err) => {
+        if (err) {
+          return console.error(err);
+        }
+        saveSuccess();
+      });
+    }
+  }
+};
 
-    return {
-      addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
-      orderBy,
-      headers,
-      search,
-      items,
-      state,
-      deleteDialog,
-      selected,
-      selectable,
-      translate,
-      timestamp,
-      rules,
-      headersDelete,
-      newDialog,
-      saveSuccess,
-      deleteSelected,
-      update,
-      refresh,
-      capitalize,
-      ButtonStates,
-      saveCurrentItems,
-    };
-  },
-});
+const saveSuccess = () => {
+  refetch();
+  EventBus.$emit('snack', 'success', 'Data updated.');
+};
+
 </script>

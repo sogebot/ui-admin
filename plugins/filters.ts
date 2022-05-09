@@ -1,4 +1,6 @@
-import { DAY, HOUR, MINUTE, SECOND } from '@sogebot/ui-helpers/constants';
+import {
+  DAY, HOUR, MINUTE, SECOND,
+} from '@sogebot/ui-helpers/constants';
 import Vue from 'vue';
 
 Vue.filter('time', function (value: number) {
@@ -21,4 +23,12 @@ Vue.filter('time', function (value: number) {
     output += `${seconds}s `;
   }
   return output.trim();
+});
+
+Vue.filter('truncate', function (text: string, length: number, clamp: string) {
+  clamp = clamp || '...';
+  const node = document.createElement('div');
+  node.innerHTML = text;
+  const content = node.textContent ?? '';
+  return content.length > length ? content.slice(0, length) + clamp : content;
 });
