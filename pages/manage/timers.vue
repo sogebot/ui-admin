@@ -153,6 +153,7 @@ const headers = [
   { value: 'triggerEveryMessage', text: translate('messages'), align: 'right' },
   { value: 'triggerEverySecond', text: capitalize(translate('seconds')), align: 'right' },
   { value: 'messages', text: translate('timers.dialog.responses') },
+  { value: 'actions', sortable: false },
 ];
 
 const headersDelete = [
