@@ -98,9 +98,13 @@
 
           <template #messages>
             <ol>
-              <li v-for="message of item.messages" :key="message.id" :class="{
-                'grey--text': !message.isEnabled
-                }">
+              <li
+                v-for="message of item.messages"
+                :key="message.id"
+                :class="{
+                  'grey--text': !message.isEnabled
+                }"
+              >
                 {{ message.response | truncate(150) }}
               </li>
             </ol>
@@ -150,8 +154,12 @@ const headers = [
     value: 'isEnabled', text: translate('enabled'), align: 'center',
   },
   // virtual attributes
-  { value: 'triggerEveryMessage', text: translate('messages'), align: 'right' },
-  { value: 'triggerEverySecond', text: capitalize(translate('seconds')), align: 'right' },
+  {
+    value: 'triggerEveryMessage', text: translate('messages'), align: 'right',
+  },
+  {
+    value: 'triggerEverySecond', text: capitalize(translate('seconds')), align: 'right',
+  },
   { value: 'messages', text: translate('timers.dialog.responses') },
   { value: 'actions', sortable: false },
 ];
