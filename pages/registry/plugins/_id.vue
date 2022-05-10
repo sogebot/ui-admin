@@ -62,6 +62,7 @@
 import type { Plugin } from '@entity/plugins';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import Drawflow from 'drawflow';
+import cloneDeep from 'lodash/cloneDeep';
 import Vue from 'vue';
 
 import filter from '~/components/drawflow/filter/filter';
@@ -85,14 +86,13 @@ export default defineComponent({
 
     let editor: Drawflow | null = null;
 
-    const item = computed<Plugin>({
-      get () {
-        return $store.state.registryPlugins.item;
-      },
-      set (value) {
-        // $store.commit('registryPlugins/set', value);
-      },
-    });
+    const item = ref({
+      ...cloneDeep($store.state.registryPlugins.empty),
+      id: route.params.id ?? null,
+    } as Plugin);
+    watch(item, (val) => {
+      $store.commit('registryPlugins/set', val);
+    }, { immediate: true, deep: true });
 
     const loading = ref(true);
     const saving = ref(false);
@@ -132,7 +132,7 @@ export default defineComponent({
           editor?.addNode('listener', 0, 1, 100, 100, 'listener', { value: '', data: '{}' }, 'listener', 'vue');
           break;
         case 'filter':
-          editor?.addNode('filter', 1, 2, 100, 100, 'filter', { value: null }, 'filter', 'vue');
+          editor?.addNode('filter', 1, 2, 100, 100, 'filter', { value: null, data: '{}' }, 'filter', 'vue');
           break;
         case 'filterPermission':
           editor?.addNode('filterPermission', 1, 2, 100, 100, 'filterPermission', { value: ['0efd7b1c-e460-4167-8e06-8aaf2c170311'] }, 'filterPermission', 'vue');
@@ -166,7 +166,7 @@ export default defineComponent({
           }
 
           if (d) {
-            $store.commit('registryPlugins/set', d);
+            item.value = d;
           }
           resolve(true);
         });

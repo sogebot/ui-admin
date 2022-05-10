@@ -1,3 +1,5 @@
+export const strict = false; // https://nuxtjs.org/docs/directory-structure/store/#vuex-strict-mode
+
 export const state = () => ({
   loggedUser:        null,
   configuration:     null,

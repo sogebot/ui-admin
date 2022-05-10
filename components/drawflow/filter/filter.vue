@@ -5,12 +5,26 @@
         mdi-filter
       </v-icon>
       <v-toolbar-title class="text-button white--text">
-      Filter
+        Filter
       </v-toolbar-title>
     </v-toolbar>
     <v-card dark>
       <v-card-text>
-        <registry-alerts-inputs-query-filter force-expand v-model="item" :rules="Object.entries(attributes)" v-if="Object.entries(attributes).length > 0" />
+        <v-alert v-if="Object.entries(attributes).length == 0" type="error" color="red" class="ma-0">
+          Input must be linked to node
+        </v-alert>
+        <template v-else>
+          <v-switch v-model="advancedMode" label="Advanced" dense hide-details="auto" />
+          <registry-alerts-inputs-query-filter v-if="!advancedMode && isJSON" v-model="item" force-expand :rules="Object.entries(attributes)" />
+          <v-textarea
+            v-else
+            v-model="item"
+            label="Evaluate"
+            placeholder="5"
+            auto-grow
+            rows="1"
+          />
+        </template>
       </v-card-text>
     </v-card>
   </div>
@@ -19,18 +33,56 @@
 <script setup lang="ts">
 import { getSocket } from '@sogebot/ui-helpers/socket';
 
-import { EventBus } from '../../../functions/event-bus';
-
+import { EventBus } from '~/functions/event-bus';
 import { flatten } from '~/functions/flatten';
 
 const pointer = ref(null as null | HTMLElement);
 const nodeId = ref(null as null | string);
 const attributes = ref({});
 
-const item = ref(null);
-watch(item, (value) => {
+const item = ref(null as string | null);
+const data = ref('{}');
+const advancedMode = ref(false);
+
+const isJSON = computed(() => {
+  try {
+    if (item.value === null) {
+      return true;
+    }
+    JSON.parse(item.value);
+    return true
+  } catch {
+    return false;
+  }
+})
+
+watch([item, data], (val) => {
   if (nodeId.value) {
-    EventBus.$emit('drawflow::node::update', nodeId.value, value);
+    if (advancedMode.value) {
+      localStorage.setItem('drawflow::node::filter::advanced::' + nodeId.value, JSON.stringify(val[0]) ?? 'null')
+    } else {
+      localStorage.setItem('drawflow::node::filter::simple::' + nodeId.value, JSON.stringify(val[0]) ?? 'null')
+    }
+
+    EventBus.$emit('drawflow::node::update', nodeId.value, val[0], val[1]);
+  }
+});
+
+watch(data, (val) => {
+  advancedMode.value = JSON.parse(val).advancedMode ?? false;
+});
+watch(advancedMode, (val) => {
+  data.value = JSON.stringify({ advancedMode: val });
+
+  try {
+    if (val) {
+      item.value = JSON.parse(localStorage.getItem('drawflow::node::filter::advanced::' + nodeId.value) ?? 'null')
+    } else {
+      item.value = JSON.parse(localStorage.getItem('drawflow::node::filter::simple::' + nodeId.value) ?? 'null')
+    }
+  } catch (e) {
+    item.value = null;
+    console.error(e)
   }
 });
 
@@ -38,8 +90,13 @@ watch(pointer, (value) => {
   nodeId.value = value?.parentElement?.parentElement?.id ?? null;
 
   if (nodeId.value) {
-    EventBus.$emit('drawflow::node::value', nodeId.value, (val) => {
+    localStorage.removeItem('drawflow::node::filter::simple::' + nodeId.value)
+    localStorage.removeItem('drawflow::node::filter::advanced::' + nodeId.value)
+
+    EventBus.$emit('drawflow::node::value', nodeId.value, (val, _data) => {
+      advancedMode.value = JSON.parse(_data).advancedMode ?? false;
       item.value = val;
+      data.value = _data;
     });
   }
 });
@@ -68,7 +125,6 @@ const interval = setInterval(() => {
       let initial = true;
       for (const parent of parents) {
         const listener = data[parent.data.value];
-
         if (listener) {
           if (initial) {
             initial = false;
@@ -98,8 +154,8 @@ const interval = setInterval(() => {
 
           // add all parameters
           const parameters = JSON.parse(parent.data.data).parameters;
-          for (const param of parameters) {
-            console.log(`parameters.${param.name}`)
+          for (const param of parameters || []) {
+            console.log(`parameters.${param.name}`);
             commonAttributes[`parameters.${param.name}`] = param.type === 'number' ? 'number' : 'string';
           }
         }

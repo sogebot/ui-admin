@@ -1,4 +1,10 @@
 export const state = () => ({
+  empty: {
+    id:       null,
+    name:     '',
+    workflow: '',
+    enabled:  true,
+  },
   item: {
     id:       null,
     name:     '',
