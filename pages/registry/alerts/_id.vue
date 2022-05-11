@@ -223,7 +223,6 @@ import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 import GET_ONE from '~/queries/alert/getOne.gql';
 import SAVE from '~/queries/alert/save.gql';
-import UPLOAD from '~/queries/alert/upload.gql';
 
 const { $graphql, $store } = useNuxtApp()
 
@@ -545,24 +544,6 @@ const duplicateVariant = async (event: keyof typeof supportedEvents, idx: number
   const newVariant = cloneDeep((item.value as any)[event][idx]);
   newVariant.id = v4();
   newVariant.title = '';
-
-  // remap image and sound
-  const mediaMap = new Map<string, string>();
-  const soundId = newVariant.soundId;
-  const imageId = newVariant.imageId;
-  newVariant.soundId = v4();
-  newVariant.imageId = v4();
-  mediaMap.set(soundId, newVariant.soundId);
-  mediaMap.set(imageId, newVariant.imageId);
-
-  for (const mediaId of mediaMap.keys()) {
-    await new Promise<void>((resolve) => {
-      getBase64FromUrl(`/api/v2/registry/alerts/media/${mediaId}`).then((data) => {
-        $graphql.default.request(UPLOAD, { id: mediaMap.get(mediaId), data }).then(() => resolve());
-      });
-    });
-  }
-
   (item.value as any)[event].push(newVariant as any);
 };
 </script>
