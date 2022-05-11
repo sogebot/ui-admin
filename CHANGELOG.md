@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [46.2.3](https://github.com/sogebot/ui-admin/compare/v46.2.2...v46.2.3) (2022-05-11)
+
+
+### Bug Fixes
+
+* **alerts:** cloning variant should not try to use deprecated gql ([1d2afae](https://github.com/sogebot/ui-admin/commit/1d2afaef3d5db270492b32613819b4f5aa8350a1))
+* **timers:** add missing actions ([b561ffb](https://github.com/sogebot/ui-admin/commit/b561ffb4e56a8cbbc66113fc77664e43ac5ccbc3))
+
 ### [46.2.2](https://github.com/sogebot/ui-admin/compare/v46.2.1...v46.2.2) (2022-05-09)
 
 ### [46.2.1](https://github.com/sogebot/ui-admin/compare/v46.2.0...v46.2.1) (2022-05-06)
