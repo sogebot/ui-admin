@@ -1,4 +1,5 @@
 export const state = () => ({
+  errors: [],
   empty: {
     id:       null,
     name:     '',
@@ -14,6 +15,9 @@ export const state = () => ({
 });
 
 export const mutations = {
+  errors (storeState, val) {
+    storeState.errors = val;
+  },
   set (storeState, val) {
     storeState.item = val;
   },

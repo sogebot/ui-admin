@@ -6,7 +6,7 @@
         :text="!$vuetify.breakpoint.xs"
         :icon="$vuetify.breakpoint.xs"
         :loading="saving"
-        :disabled="loading"
+        :disabled="loading || $store.state.registryPlugins.errors.length > 0"
         @click="save"
       >
         <v-icon class="d-flex d-sm-none">
@@ -25,6 +25,7 @@
             hide-details="auto"
             dense
             label="Name"
+            :rules="[isValid('name')]"
           />
           <v-switch
             v-model="item.enabled"
@@ -60,8 +61,10 @@
 
 <script lang="ts">
 import type { Plugin } from '@entity/plugins';
+import { isValidationError } from '@sogebot/backend/src/helpers/errors';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import Drawflow from 'drawflow';
+import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import Vue from 'vue';
 
@@ -90,8 +93,17 @@ export default defineComponent({
       ...cloneDeep($store.state.registryPlugins.empty),
       id: route.params.id ?? null,
     } as Plugin);
+    const dirty = ref(false);
+
     watch(item, (val) => {
       $store.commit('registryPlugins/set', val);
+      console.log('/core/plugins|generic::validate', val);
+      if (dirty.value) {
+        getSocket('/core/plugins').emit('generic::validate', val, (err) => {
+          $store.commit('registryPlugins/errors', isValidationError(err) ? err : []);
+        });
+      }
+      dirty.value = true;
     }, { immediate: true, deep: true });
 
     const loading = ref(true);
@@ -373,6 +385,11 @@ export default defineComponent({
       getSocket('/core/plugins').emit('generic::save', item.value, (err) => {
         saving.value = false;
         if (err) {
+          if (isValidationError(err)) {
+            EventBus.$emit('snack', 'error', 'Data are invalid.', err);
+          } else {
+            EventBus.$emit('snack', 'error', 'Unknown error during save, please try again.');
+          }
           return console.error(err);
         }
         EventBus.$emit('snack', 'success', 'Data saved.');
@@ -384,7 +401,17 @@ export default defineComponent({
       editor?.import(workflow);
     };
 
+    const isValid = (property: string) => {
+      const error = $store.state.registryPlugins.errors.find(o => o.property === property);
+      if (!error) {
+        return true;
+      }
+      return capitalize(Object.values<any>(error.constraints)[0]); // return first error;
+    };
+
     return {
+      isValid,
+      dirty,
       item,
       importToEditor,
       loading,
