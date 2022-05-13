@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [48.0.1](https://github.com/sogebot/ui-admin/compare/v48.0.0...v48.0.1) (2022-05-13)
+
+
+### Bug Fixes
+
+* **randomizers:** fix infinite loading ([37f3fc4](https://github.com/sogebot/ui-admin/commit/37f3fc4bcfa7cea4aa2ed05e8a8cad05e2f5ee6d))
+
 ## [48.0.0](https://github.com/sogebot/ui-admin/compare/v46.2.3...v48.0.0) (2022-05-12)
 
 
