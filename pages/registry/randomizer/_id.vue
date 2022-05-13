@@ -197,8 +197,7 @@ export default defineComponent({
     onMounted(async () => {
       if (route.params.id !== 'new') {
         const request = await $graphql.default.request(GET_ONE, { id: route.params.id });
-
-        if (request.goals.length === 0) {
+        if (request.randomizers.length === 0) {
           EventBus.$emit('snack', 'error', 'Data not found.');
           router.push({ path: '/registry/randomizer' });
         } else {
@@ -207,6 +206,7 @@ export default defineComponent({
         }
         loading.value = false;
       }
+      loading.value = false;
     });
 
     const stepper = ref(1);
