@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [46.2.4](https://github.com/sogebot/ui-admin/compare/v46.2.3...v46.2.4) (2022-05-13)
+
+
+### Bug Fixes
+
+* **randomizers:** fix infinite loading ([1f3a416](https://github.com/sogebot/ui-admin/commit/1f3a416b1b3e3723fd741ef0be9d64a8c44179fd))
+
 ### [46.2.3](https://github.com/sogebot/ui-admin/compare/v46.2.2...v46.2.3) (2022-05-11)
 
 
