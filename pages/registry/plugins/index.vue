@@ -95,11 +95,6 @@
                 mdi-pencil
               </v-icon>
             </v-btn>
-            <v-btn class="primary-hover" icon :href="'/plugins/' + item.id" @click.stop>
-              <v-icon>
-                mdi-link
-              </v-icon>
-            </v-btn>
             <v-btn class="primary-hover" icon :disabled="copied===item.id" @click.stop="copied=item.id">
               <v-icon v-if="copied !== item.id">
                 mdi-export
