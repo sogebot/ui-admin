@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: install node v16
-      uses: actions/setup-node@v3.1.0
+      uses: actions/setup-node@v3.1.1
       with:
         node-version: 16
         check-latest: true
@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@master
-      - uses: actions/setup-node@v3.1.0
+      - uses: actions/setup-node@v3.1.1
         with:
           node-version: 16
       - name: Install latest npm
