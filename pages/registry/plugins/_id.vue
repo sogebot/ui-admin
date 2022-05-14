@@ -1,14 +1,8 @@
 <template>
   <div style="width: 100%; height: 100%;">
     <portal to="navbar">
-      <v-btn
-        small
-        :text="!$vuetify.breakpoint.xs"
-        :icon="$vuetify.breakpoint.xs"
-        :loading="saving"
-        :disabled="loading || $store.state.registryPlugins.errors.length > 0"
-        @click="save"
-      >
+      <v-btn small :text="!$vuetify.breakpoint.xs" :icon="$vuetify.breakpoint.xs" :loading="saving"
+        :disabled="loading || $store.state.registryPlugins.errors.length > 0" @click="save">
         <v-icon class="d-flex d-sm-none">
           mdi-floppy
         </v-icon>
@@ -19,36 +13,22 @@
     <v-card style="position: fixed; right: 20px; top: 60px; z-index: 9999;">
       <v-sheet color="blue-grey darken-4">
         <v-card-text>
-          <v-text-field
-            v-model="item.name"
-            outlined
-            hide-details="auto"
-            dense
-            label="Name"
-            :rules="[isValid('name')]"
-          />
-          <v-switch
-            v-model="item.enabled"
-            :label="(item.enabled
+          <v-form ref="form">
+            <v-text-field v-model="item.name" outlined hide-details="auto" dense label="Name"
+              :rules="[isValid('name')]" />
+            <v-switch v-model="item.enabled" :label="(item.enabled
               ? 'Plugin is enabled'
-              : 'Plugin is disabled')"
-          />
-          <v-autocomplete
-            v-model="selectedItem"
-            class="pt-2"
-            outlined
-            dense
-            :items="items"
-            label="Item to add"
-          >
-            <template #append-outer>
-              <v-btn icon style="transform: translateY(-7px);" @click="addItem">
-                <v-icon color="white">
-                  mdi-plus
-                </v-icon>
-              </v-btn>
-            </template>
-          </v-autocomplete>
+              : 'Plugin is disabled')" />
+            <v-autocomplete v-model="selectedItem" class="pt-2" outlined dense :items="items" label="Item to add">
+              <template #append-outer>
+                <v-btn icon style="transform: translateY(-7px);" @click="addItem">
+                  <v-icon color="white">
+                    mdi-plus
+                  </v-icon>
+                </v-btn>
+              </template>
+            </v-autocomplete>
+          </v-form>
 
           <PluginsImportDialog @import="importToEditor($event)" />
           <PluginsExportDialog />
@@ -88,6 +68,7 @@ export default defineComponent({
     const route = useRoute();
 
     let editor: Drawflow | null = null;
+    const form = ref(null);
 
     const item = ref({
       ...cloneDeep($store.state.registryPlugins.empty),
@@ -385,11 +366,13 @@ export default defineComponent({
       getSocket('/core/plugins').emit('generic::save', item.value, (err) => {
         saving.value = false;
         if (err) {
+          $store.commit('registryPlugins/errors', isValidationError(err) ? err : []);
           if (isValidationError(err)) {
             EventBus.$emit('snack', 'error', 'Data are invalid.', err);
           } else {
             EventBus.$emit('snack', 'error', 'Unknown error during save, please try again.');
           }
+          (form.value as unknown as HTMLFormElement).validate();
           return console.error(err);
         }
         EventBus.$emit('snack', 'success', 'Data saved.');
@@ -420,6 +403,7 @@ export default defineComponent({
       items,
       selectedItem,
       save,
+      form,
     };
   },
 });
