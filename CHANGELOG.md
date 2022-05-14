@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [48.0.2](https://github.com/sogebot/ui-admin/compare/v48.0.1...v48.0.2) (2022-05-14)
+
+
+### Bug Fixes
+
+* **plugins:** show error on save on inputs ([910b052](https://github.com/sogebot/ui-admin/commit/910b0521de5f9494ddb596f26c4c0238b4f51700))
+
 ### [48.0.1](https://github.com/sogebot/ui-admin/compare/v48.0.0...v48.0.1) (2022-05-13)
 
 
