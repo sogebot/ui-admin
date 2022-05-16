@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [48.0.5](https://github.com/sogebot/ui-admin/compare/v48.0.4...v48.0.5) (2022-05-16)
+
+
+### Bug Fixes
+
+* **plugins:** use prism for variable settings ([ccfb009](https://github.com/sogebot/ui-admin/commit/ccfb0092a276a70c0e11cd04eb7964de982f2575))
+
 ### [48.0.4](https://github.com/sogebot/ui-admin/compare/v48.0.3...v48.0.4) (2022-05-14)
 
 
