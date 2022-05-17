@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [48.1.0](https://github.com/sogebot/ui-admin/compare/v48.0.5...v48.1.0) (2022-05-17)
+
+
+### Features
+
+* **overlay:** add chat overlay ([b69ce53](https://github.com/sogebot/ui-admin/commit/b69ce53323ad74009f26c9fdfb012e52f68a1ec3))
+
 ### [48.0.5](https://github.com/sogebot/ui-admin/compare/v48.0.4...v48.0.5) (2022-05-16)
 
 
