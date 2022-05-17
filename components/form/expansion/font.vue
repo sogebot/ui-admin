@@ -3,7 +3,6 @@
     <slot />
 
     <v-checkbox v-if="isChild" v-model="isOverriden" :label="translate('registry.alerts.font.overrideGlobal')" />
-
     <v-expand-transition>
       <div v-if="!isChild || isChild && isOverriden">
         <v-autocomplete
@@ -14,13 +13,13 @@
           validate-on-blur
         />
         <v-select
-          v-if="model.align !== undefined"
+          v-if="model.align !== undefined && model.align !== null"
           v-model="model.align"
           :label="translate('registry.alerts.font.align.name')"
           :items="alignItems"
         />
         <v-slider
-          v-if="model.size !== undefined"
+          v-if="model.size !== undefined && model.size !== null"
           v-model="model.size"
           :label="translate('registry.alerts.font.size.name')"
           class="align-center"
@@ -52,7 +51,7 @@
           </template>
         </v-slider>
         <v-slider
-          v-if="model.borderPx !== undefined"
+          v-if="model.borderPx !== undefined && model.borderPx !== null"
           v-model="model.borderPx"
           :label="translate('registry.alerts.font.borderPx.name')"
           class="align-center"
@@ -68,25 +67,25 @@
           </template>
         </v-slider>
         <color
-          v-if="model.color !== undefined"
+          v-if="model.color !== undefined && model.color !== null"
           :id="id + '|fontcolor'"
           v-model="model.color"
           :label="translate('registry.alerts.font.color.name')"
         />
         <color
-          v-if="model.borderColor !== undefined"
+          v-if="model.borderColor !== undefined && model.borderColor !== null"
           :id="id + '|fontbordercolor'"
           v-model="model.borderColor"
           :label="translate('registry.alerts.font.borderColor.name')"
         />
         <color
-          v-if="model.highlightcolor !== undefined"
+          v-if="model.highlightcolor !== undefined && model.highlightcolor !== null"
           :id="id + '|fonthighlightcolor'"
           v-model="model.highlightcolor"
           :label="translate('registry.alerts.font.highlightcolor.name')"
         />
 
-        <v-card v-if="model.shadow !== undefined">
+        <v-card v-if="model.shadow !== undefined && model.shadow !== null">
           <v-card-text class="pa-0">
             <v-row no-gutters>
               <v-col cols="11">

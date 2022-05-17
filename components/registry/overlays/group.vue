@@ -245,6 +245,7 @@ import SAVE from '~/queries/overlays/save.gql';
 export default defineComponent({
   props:      { value: [Object, Array], id: String },
   components: {
+    chat:           () => import('~/components/registry/overlays/chat.vue'),
     media:           () => import('~/components/registry/overlays/media.vue'),
     alertsRegistry:  () => import('~/components/registry/overlays/alertsRegistry.vue'),
     countdown:       () => import('~/components/registry/overlays/countdown.vue'),
@@ -312,6 +313,7 @@ export default defineComponent({
     const overlayOptions = [
       { value: null, text: 'Please select an option' },
       { value: 'alertsRegistry', text: 'alerts registry' },
+      { value: 'chat', text: 'chat' },
       { value: 'textRegistry', text: 'text registry' },
       { value: 'goalRegistry', text: 'goal registry' },
       { value: 'media', text: 'media' },

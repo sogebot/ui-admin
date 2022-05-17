@@ -1,5 +1,32 @@
 query OverlayGet($id: String, $groupId: String, $allowGroups: Boolean) {
   overlays(id: $id, groupId: $groupId, allowGroups: $allowGroups) {
+    chat {
+      id
+      value
+      groupId
+      name
+      opts {
+        showTimestamp
+        hideMessageAfter
+        isHorizontal
+        font {
+          family
+          color
+          highlightcolor
+          size
+          weight
+          borderColor
+          borderPx
+          shadow {
+            shiftRight
+            shiftDown
+            blur
+            opacity
+            color
+          }
+        }
+      }
+    }
     reference {
       id
       value

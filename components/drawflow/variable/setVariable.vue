@@ -98,8 +98,9 @@ watch(value, (val) => {
 </script>
 
 <style>
-.editor-help, .editor {
-  background-color: rgb(45, 45, 45) !important;
+.editor-help,
+.editor {
+  background-color: rgb(45 45 45) !important;
   font-size: 12px;
   font-family: "Roboto Mono", monospace;
   max-height: 500px;
@@ -109,14 +110,16 @@ watch(value, (val) => {
   width: 500px;
 }
 
-.editor-help .prism-editor__textarea, .editor .prism-editor__textarea {
+.editor-help .prism-editor__textarea,
+.editor .prism-editor__textarea {
   outline: none !important;
   outline-width: 0 !important;
   border: 0 !important;
   padding: 5px;
 }
 
-.editor-help .prism-editor__container > *, .editor .prism-editor__container > * {
+.editor-help .prism-editor__container > *,
+.editor .prism-editor__container > * {
   padding: 5px;
 }
 </style>
