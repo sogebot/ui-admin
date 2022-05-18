@@ -1,8 +1,24 @@
 <template>
-  <div style="width: 100%; height: 100%;">
+  <div v-if="$vuetify.breakpoint.mobile">
+    <v-alert prominent color="info">
+      Plugins can be editable only from desktop. Sorry for inconvenience.<br>
+      <nuxt-link to="/registry/plugins">
+        Go back to Plugin registry.
+      </nuxt-link>
+    </v-alert>
+  </div>
+  <div v-else style="width: 100%; height: 100%;">
     <portal to="navbar">
-      <v-btn small :text="!$vuetify.breakpoint.xs" :icon="$vuetify.breakpoint.xs" :loading="saving"
-        :disabled="loading || $store.state.registryPlugins.errors.length > 0" @click="save">
+      <PluginsImportDialog @import="importToEditor($event)" />
+      <PluginsExportDialog />
+      <v-btn
+        small
+        :text="!$vuetify.breakpoint.xs"
+        :icon="$vuetify.breakpoint.xs"
+        :loading="saving"
+        :disabled="loading || $store.state.registryPlugins.errors.length > 0"
+        @click="save"
+      >
         <v-icon class="d-flex d-sm-none">
           mdi-floppy
         </v-icon>
@@ -10,32 +26,45 @@
       </v-btn>
     </portal>
 
-    <v-card style="position: fixed; right: 20px; top: 60px; z-index: 9999;">
-      <v-sheet color="blue-grey darken-4">
+    <v-card id="plugins-edit-card" style="position: fixed; top: 50px; z-index: 1; height: 100%; width: 300px;">
+      <v-sheet color="blue-grey darken-4" style="height: 100%;">
         <v-card-text>
           <v-form ref="form">
-            <v-text-field v-model="item.name" outlined hide-details="auto" dense label="Name"
-              :rules="[isValid('name')]" />
-            <v-switch v-model="item.enabled" :label="(item.enabled
-              ? 'Plugin is enabled'
-              : 'Plugin is disabled')" />
-            <v-autocomplete v-model="selectedItem" class="pt-2" outlined dense :items="items" label="Item to add">
-              <template #append-outer>
-                <v-btn icon style="transform: translateY(-7px);" @click="addItem">
-                  <v-icon color="white">
-                    mdi-plus
-                  </v-icon>
-                </v-btn>
-              </template>
-            </v-autocomplete>
-          </v-form>
+            <v-text-field
+              v-model="item.name"
+              outlined
+              hide-details="auto"
+              dense
+              label="Name"
+              :rules="[isValid('name')]"
+            />
+            <v-switch
+              v-model="item.enabled"
+              :label="(item.enabled
+                ? 'Plugin is enabled'
+                : 'Plugin is disabled')"
+            />
 
-          <PluginsImportDialog @import="importToEditor($event)" />
-          <PluginsExportDialog />
+            <v-list id="plugins-edit-list" style="background-color: transparent;">
+              <template v-for="(item, index) of items">
+                <v-subheader v-if="item.header" :key="item.header">
+                  {{ item.header }}
+                </v-subheader>
+                <v-list-item v-else :key="item" draggable="true" @dragstart="drag($event)" :data-node="item" style="cursor: grab;">
+                  {{ item }}
+                </v-list-item>
+
+                <v-divider
+                  v-if="index < items.length - 1 && !items[index+1].header && !items[index].header"
+                  :key="index"
+                />
+              </template>
+            </v-list>
+          </v-form>
         </v-card-text>
       </v-sheet>
     </v-card>
-    <div id="drawflow" :key="item.id" style="width: 100%; height: 100%;" />
+    <div id="drawflow" :key="item.id" style="width: 100%; height: 100%;" @drop="drop($event)" @dragover="allowDrop($event)" />
   </div>
 </template>
 
@@ -44,6 +73,7 @@ import type { Plugin } from '@entity/plugins';
 import { isValidationError } from '@sogebot/backend/src/helpers/errors';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import Drawflow from 'drawflow';
+import gsap from 'gsap';
 import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import Vue from 'vue';
@@ -66,6 +96,12 @@ export default defineComponent({
   setup (_, context) {
     const { $store } = useNuxtApp();
     const route = useRoute();
+
+    watch(() => $store.state.navbarMiniVariant, (val) => {
+      gsap.to('#plugins-edit-card', {
+        left: val ? 56 : 256, duration: 0.1, ease: 'none',
+      });
+    }, { immediate: true });
 
     let editor: Drawflow | null = null;
     const form = ref(null);
@@ -102,51 +138,6 @@ export default defineComponent({
       { header: 'Other' },
       'comment', 'othersIdle',
     ];
-    const selectedItem = ref('listener');
-
-    const addItem = () => {
-      switch (selectedItem.value) {
-        case 'othersIdle':
-          editor?.addNode('othersIdle', 1, 1, 100, 100, 'othersIdle', { value: '', data: '{}' }, 'othersIdle', 'vue');
-          break;
-        case 'comment':
-          editor?.addNode('comment', 0, 0, 100, 100, 'comment', { value: '', data: '{}' }, 'comment', 'vue');
-          break;
-        case 'variableSetVariable':
-          editor?.addNode('variableSetVariable', 1, 1, 100, 100, 'variableSetVariable', { value: '', data: '{}' }, 'variableSetVariable', 'vue');
-          break;
-        case 'variableLoadFromDatabase':
-          editor?.addNode('variableLoadFromDatabase', 0, 1, 100, 100, 'variableLoadFromDatabase', { value: '', data: '{}' }, 'variableLoadFromDatabase', 'vue');
-          break;
-        case 'variableSaveToDatabase':
-          editor?.addNode('variableSaveToDatabase', 1, 1, 100, 100, 'variableSaveToDatabase', { value: '', data: '{}' }, 'variableSaveToDatabase', 'vue');
-          break;
-        case 'listener':
-          editor?.addNode('listener', 0, 1, 100, 100, 'listener', { value: '', data: '{}' }, 'listener', 'vue');
-          break;
-        case 'filter':
-          editor?.addNode('filter', 1, 2, 100, 100, 'filter', { value: null, data: '{}' }, 'filter', 'vue');
-          break;
-        case 'filterPermission':
-          editor?.addNode('filterPermission', 1, 2, 100, 100, 'filterPermission', { value: ['0efd7b1c-e460-4167-8e06-8aaf2c170311'] }, 'filterPermission', 'vue');
-          break;
-        case 'twitchSendMessage':
-          editor?.addNode('twitchSendMessage', 1, 1, 100, 100, 'twitchSendMessage', { value: '' }, 'twitchSendMessage', 'vue');
-          break;
-        case 'twitchTimeoutUser':
-          editor?.addNode('twitchTimeoutUser', 1, 1, 100, 100, 'twitchTimeoutUser', { value: '' }, 'twitchTimeoutUser', 'vue');
-          break;
-        case 'twitchBanUser':
-          editor?.addNode('twitchBanUser', 1, 1, 100, 100, 'twitchBanUser', { value: '' }, 'twitchBanUser', 'vue');
-          break;
-        case 'outputLog':
-          editor?.addNode('outputLog', 1, 1, 100, 100, 'outputLog', { value: '' }, 'outputLog', 'vue');
-          break;
-        default:
-      }
-
-      $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
-    };
 
     const refresh = () => {
       return new Promise((resolve) => {
@@ -175,6 +166,19 @@ export default defineComponent({
         name:     '',
         enabled:  true,
         workflow: '',
+      });
+
+      nextTick(() => {
+        // set list height
+        const height = document.getElementById('plugins-edit-card')?.getBoundingClientRect().height ?? 0;
+        const list = document.getElementById('plugins-edit-list');
+        if (list) {
+          const newHeight = height - list.getBoundingClientRect().top;
+          console.log({
+            list, height, newHeight,
+          });
+          list.style.height = `${newHeight - 20}px`;
+        }
       });
 
       await refresh();
@@ -392,16 +396,83 @@ export default defineComponent({
       return capitalize(Object.values<any>(error.constraints)[0]); // return first error;
     };
 
+    const drag = (ev: any) => {
+      ev.dataTransfer.setData('node', ev.target.getAttribute('data-node'));
+    };
+
+    const drop = (ev: any) => {
+      ev.preventDefault();
+      const data = ev.dataTransfer.getData('node') ?? '';
+      console.log({data})
+      addNodeToDrawFlow(data, ev.clientX, ev.clientY);
+    };
+
+    function addNodeToDrawFlow (name: string, posX: number, posY: number) {
+      if (!editor) {
+        return;
+      }
+      posX = posX * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)) - (editor.precanvas.getBoundingClientRect().x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)));
+      posY = posY * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)) - (editor.precanvas.getBoundingClientRect().y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)));
+
+      switch (name) {
+        case 'othersIdle':
+          editor?.addNode('othersIdle', 1, 1, posX, posY, 'othersIdle', { value: '', data: '{}' }, 'othersIdle', 'vue');
+          break;
+        case 'comment':
+          editor?.addNode('comment', 0, 0, posX, posY, 'comment', { value: '', data: '{}' }, 'comment', 'vue');
+          break;
+        case 'variableSetVariable':
+          editor?.addNode('variableSetVariable', 1, 1, posX, posY, 'variableSetVariable', { value: '', data: '{}' }, 'variableSetVariable', 'vue');
+          break;
+        case 'variableLoadFromDatabase':
+          editor?.addNode('variableLoadFromDatabase', 0, 1, posX, posY, 'variableLoadFromDatabase', { value: '', data: '{}' }, 'variableLoadFromDatabase', 'vue');
+          break;
+        case 'variableSaveToDatabase':
+          editor?.addNode('variableSaveToDatabase', 1, 1, posX, posY, 'variableSaveToDatabase', { value: '', data: '{}' }, 'variableSaveToDatabase', 'vue');
+          break;
+        case 'listener':
+          editor?.addNode('listener', 0, 1, posX, posY, 'listener', { value: '', data: '{}' }, 'listener', 'vue');
+          break;
+        case 'filter':
+          editor?.addNode('filter', 1, 2, posX, posY, 'filter', { value: null, data: '{}' }, 'filter', 'vue');
+          break;
+        case 'filterPermission':
+          editor?.addNode('filterPermission', 1, 2, posX, posY, 'filterPermission', { value: ['0efd7b1c-e460-4167-8e06-8aaf2c170311'] }, 'filterPermission', 'vue');
+          break;
+        case 'twitchSendMessage':
+          editor?.addNode('twitchSendMessage', 1, 1, posX, posY, 'twitchSendMessage', { value: '' }, 'twitchSendMessage', 'vue');
+          break;
+        case 'twitchTimeoutUser':
+          editor?.addNode('twitchTimeoutUser', 1, 1, posX, posY, 'twitchTimeoutUser', { value: '' }, 'twitchTimeoutUser', 'vue');
+          break;
+        case 'twitchBanUser':
+          editor?.addNode('twitchBanUser', 1, 1, posX, posY, 'twitchBanUser', { value: '' }, 'twitchBanUser', 'vue');
+          break;
+        case 'outputLog':
+          editor?.addNode('outputLog', 1, 1, posX, posY, 'outputLog', { value: '' }, 'outputLog', 'vue');
+          break;
+        default:
+      }
+
+      $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
+    }
+
+    function allowDrop(ev: any) {
+      ev.preventDefault();
+    }
+
     return {
+      allowDrop,
+      drag,
+      drop,
+
       isValid,
       dirty,
       item,
       importToEditor,
       loading,
       saving,
-      addItem,
       items,
-      selectedItem,
       save,
       form,
     };

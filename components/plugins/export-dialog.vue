@@ -8,6 +8,9 @@
       <v-btn
         v-bind="attrs"
         v-on="on"
+        text
+        small
+        color="primary"
       >
         Export
       </v-btn>
