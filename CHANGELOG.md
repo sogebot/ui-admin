@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [48.2.2](https://github.com/sogebot/ui-admin/compare/v48.2.1...v48.2.2) (2022-05-18)
+
+
+### Bug Fixes
+
+* **plugins:** add overflow ([ee0ffb9](https://github.com/sogebot/ui-admin/commit/ee0ffb94874ce34db617b45a7c69b05bd7739a57))
+
 ### [48.2.1](https://github.com/sogebot/ui-admin/compare/v48.2.0...v48.2.1) (2022-05-18)
 
 
