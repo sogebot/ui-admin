@@ -64,10 +64,8 @@ import {
   DAY, HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
 import { getSocket } from '@sogebot/ui-helpers/socket';
+import { error } from '~/functions/error';
 
-import GET from '~/queries/overlays/get.gql';
-
-const { $graphql } = useNuxtApp();
 const props = defineProps<{
   item: Record<string, any>,
   dialog: boolean,
@@ -117,18 +115,20 @@ const time = computed(() => {
   return output;
 });
 
-const items = ref([]);
 const countdown = ref(null as null | OverlayMapperCountdown);
 
-onMounted(async () => {
-  const data = (await $graphql.default.request(GET, { id: props.item.options.countdownId })).overlays.countdown
-  items.value = [...data];
+const refetch = () => {
+  getSocket('/registries/overlays').emit('generic::getOne', props.item.options.countdownId, (err, result) => {
+    if (err) {
+      return error(err);
+    }
+    countdown.value = result as any ?? null;
+  });
+};
+
+onMounted(() => {
+  refetch();
 });
-watch(items, (val) => {
-  if (val.length > 0) {
-    countdown.value = val[0];
-  }
-}, { immediate: true, deep: true });
 
 const timeInput = computed({
   get () {

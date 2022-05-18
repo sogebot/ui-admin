@@ -59,16 +59,7 @@ export default defineComponent({
   props: { value: [Object, Array] },
   setup (props: any, ctx) {
     const model = ref(0);
-    const options = ref(
-      pick(
-        defaults(Array.isArray(props.value) ? null : props.value, {
-          emotesSize:              3,
-          numOfEmotesPerExplosion: 10,
-          animationTime:           1000,
-          numOfExplosions:         5,
-        }),
-        ['emotesSize', 'animationTime', 'numOfEmotesPerExplosion', 'numOfExplosions'],
-      ));
+    const options = ref(props.value);
 
     watch(options, (val: any) => {
       if (!isEqual(props.value, options.value)) {

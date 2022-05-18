@@ -1,3 +1,0 @@
-mutation OverlaysSave($data_json: String!) {
-  overlaysSave(data: $data_json)
-}

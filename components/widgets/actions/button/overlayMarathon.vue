@@ -55,10 +55,8 @@ import {
   DAY, HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
 import { getSocket } from '@sogebot/ui-helpers/socket';
+import { error } from '~/functions/error';
 
-import GET from '~/queries/overlays/get.gql';
-
-const { $graphql } = useNuxtApp();
 const props = defineProps<{
   item: Record<string, any>,
   dialog: boolean,
@@ -116,17 +114,15 @@ const time = () => {
   return output;
 };
 
-const items = ref([]);
-const refetch = async () => {
-  items.value = [...(await $graphql.default.request(GET, { id: props.item.options.marathonId })).overlays.marathon];
-};
 const marathon = ref(null as null | OverlayMapperMarathon);
-
-watch(items, (val) => {
-  if (val.length > 0) {
-    marathon.value = val[0];
-  }
-}, { immediate: true, deep: true });
+const refetch = () => {
+  getSocket('/registries/overlays').emit('generic::getOne', props.item.options.marathonId, (err, result) => {
+    if (err) {
+      return error(err);
+    }
+    marathon.value = result as any ?? null;
+  });
+};
 
 const timeInput = computed({
   get () {

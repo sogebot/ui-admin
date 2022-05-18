@@ -29,17 +29,7 @@ export default defineComponent({
   props:      { value: [Object, Array] },
   setup (props, ctx) {
     const model = ref(0);
-    const options = ref(
-      pick(
-        defaults(Array.isArray(props.value) ? null : props.value, {
-          voice:                          'UK English Female',
-          volume:                         50,
-          rate:                           1,
-          pitch:                          1,
-          triggerTTSByHighlightedMessage: false,
-        }),
-        ['voice', 'volume', 'rate', 'pitch', 'triggerTTSByHighlightedMessage'],
-      ));
+    const options = ref(props.value);
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {

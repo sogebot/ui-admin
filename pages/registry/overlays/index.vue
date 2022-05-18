@@ -142,18 +142,16 @@
 
 <script lang="ts">
 import type { OverlayMappers } from '@entity/overlay';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
+import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
-import GET from '~/queries/overlays/get.gql';
-import REMOVE from '~/queries/overlays/remove.gql';
 
 export default defineComponent({
   setup () {
-    const { $graphql } = useNuxtApp();
-
     const loading = ref(true);
 
     const router = useRouter();
@@ -208,35 +206,36 @@ export default defineComponent({
       refresh();
     });
 
-    const refresh = async () => {
+    const refresh = () => {
       loading.value = true;
-      const result = await $graphql.default.request(GET);
 
-      const outputData: OverlayMappers[] = [];
-      for (const key of Object.keys(result.overlays)) {
-        if (key.startsWith('__')) {
-          continue;
+      getSocket('/registries/overlays').emit('generic::getAll', (err, result) => {
+        if (err) {
+          return error(err);
         }
-        outputData.push(...result.overlays[key as any]);
-      }
-      // we also need to reset selection values
-      if (selected.value.length > 0) {
-        selected.value.forEach((selectedItem, index) => {
-          selectedItem = outputData.find(o => o.id === selectedItem.id) || selectedItem;
-          selected.value[index] = selectedItem;
-        });
-      }
+        // we also need to reset selection values
+        if (selected.value.length > 0) {
+          selected.value.forEach((selectedItem, index) => {
+            selectedItem = result.find(o => o.id === selectedItem.id) || selectedItem;
+            selected.value[index] = selectedItem;
+          });
+        }
 
-      items.value = outputData;
-      loading.value = false;
+        items.value = result.filter(o => !o.groupId);
+        loading.value = false;
+      });
     };
 
     const deleteSelected = async () => {
       deleteDialog.value = false;
-      await Promise.all(selected.value.map(async (item) => {
-        await $graphql.default.request(REMOVE, { id: item.id });
+      await Promise.all(selected.value.map((item) => {
+        return new Promise((resolve) => {
+          getSocket('/registries/overlays').emit('generic::deleteById', item.id, () => {
+            resolve(true);
+          });
+        });
       }));
-      selected.value.forEach(item => $graphql.default.request(REMOVE, { id: item.id }));
+
       selected.value = [];
       EventBus.$emit('snack', 'success', 'Data removed.');
       refresh();

@@ -118,11 +118,11 @@ import {
   defineComponent, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
 import {
-  DAY, MINUTE, SECOND,
+  DAY,
 } from '@sogebot/ui-helpers/constants';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defaultsDeep, isEqual, pick,
+  isEqual,
 } from 'lodash';
 
 export default defineComponent({
@@ -135,51 +135,7 @@ export default defineComponent({
     const store = useStore<any>();
     const currency = ref(store.state.configuration.currency);
     const model = ref([0]);
-    const options = ref(
-      pick(
-        defaultsDeep(props.value, {
-          showProgressGraph:      false,
-          disableWhenReachedZero: true,
-          endTime:                Date.now(),
-          maxEndTime:             null,
-          showMilliseconds:       false,
-          values:                 {
-            sub: {
-              tier1: (10 * MINUTE) / SECOND,
-              tier2: (15 * MINUTE) / SECOND,
-              tier3: (20 * MINUTE) / SECOND,
-            },
-            resub: {
-              tier1: (5 * MINUTE) / SECOND,
-              tier2: (7.5 * MINUTE) / SECOND,
-              tier3: (10 * MINUTE) / SECOND,
-            },
-            bits: {
-              addFraction: true,
-              bits:        100,
-              time:        MINUTE / SECOND,
-            },
-            tips: {
-              addFraction: true,
-              tips:        1,
-              time:        MINUTE / SECOND,
-            },
-          },
-          marathonFont: {
-            family:      'PT Sans',
-            size:        50,
-            borderPx:    1,
-            borderColor: '#000000',
-            weight:      '500',
-            color:       '#ffffff',
-            shadow:      [],
-          },
-        }),
-        [
-          'showProgressGraph', 'endTime', 'maxEndTime', 'showMilliseconds', 'values',
-          'marathonFont', 'disableWhenReachedZero',
-        ],
-      ));
+    const options = ref(props.value);
 
     const maxEndTimeEnabled = computed({
       get () {

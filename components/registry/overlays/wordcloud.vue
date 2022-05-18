@@ -35,21 +35,7 @@ export default defineComponent({
   props:      { value: [Object, Array] },
   setup (props, ctx) {
     const model = ref([0]);
-    const options = ref(
-      pick(
-        defaultsDeep(props.value, {
-          fadeOutInterval:     10,
-          fadeOutIntervalType: 'minutes',
-          wordFont:            {
-            family: 'PT Sans',
-            weight: '500',
-            color:  '#ffffff',
-          },
-        }),
-        [
-          'wordFont', 'fadeOutInterval', 'fadeOutIntervalType',
-        ],
-      ));
+    const options = ref(props.value);
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {

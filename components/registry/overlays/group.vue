@@ -144,8 +144,8 @@
                 :label="translate('name')"
                 @input="updateChildName(selectedItem.id, $event)"
               />
-              <v-text-field v-model.number="selectedParentItem.width" type="number" label="Width" min="1"/>
-              <v-text-field v-model.number="selectedParentItem.height" type="number" label="Height" min="1"/>
+              <v-text-field v-model.number="selectedParentItem.width" type="number" label="Width" min="1" />
+              <v-text-field v-model.number="selectedParentItem.height" type="number" label="Height" min="1" />
               <v-text-field v-model.number="selectedParentItem.alignX" type="number" label="X" min="0">
                 <template #append>
                   <v-btn icon @click="selectedParentItem.alignX = 0">
@@ -221,31 +221,28 @@
 </template>
 
 <script lang="ts">
-import type { OverlayMapperGroup, OverlayMappers } from '@entity/overlay';
+import type { OverlayMappers } from '@entity/overlay';
 import {
   computed,
   defineAsyncComponent, defineComponent, nextTick, onMounted, onUnmounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   cloneDeep,
-  defaultsDeep,
   isEqual,
-  pick,
 } from 'lodash';
 import { v4 } from 'uuid';
 
+import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { haveAnyOptions } from '~/pages/registry/overlays/_id.vue';
-import GET from '~/queries/overlays/get.gql';
-import REMOVE from '~/queries/overlays/remove.gql';
-import SAVE from '~/queries/overlays/save.gql';
 
 export default defineComponent({
   props:      { value: [Object, Array], id: String },
   components: {
-    chat:           () => import('~/components/registry/overlays/chat.vue'),
+    chat:            () => import('~/components/registry/overlays/chat.vue'),
     media:           () => import('~/components/registry/overlays/media.vue'),
     alertsRegistry:  () => import('~/components/registry/overlays/alertsRegistry.vue'),
     countdown:       () => import('~/components/registry/overlays/countdown.vue'),
@@ -269,7 +266,6 @@ export default defineComponent({
     item:            defineAsyncComponent(() => import('~/components/registry/overlays/item.vue')),
   },
   setup (props, ctx) {
-    const context = useContext();
     const loading = ref(true);
 
     const generateColorFromString = (stringInput: string) => {
@@ -284,16 +280,7 @@ export default defineComponent({
     const initialResize = ref(false);
     const dialog = ref(false);
 
-    const options = ref(
-      pick(
-        defaultsDeep(Array.isArray(props.value) ? null : props.value, {
-          canvas: {
-            height: 1080,
-            width:  1920,
-          },
-          items: [],
-        }),
-        ['canvas', 'items']) as OverlayMapperGroup['opts']);
+    const options = ref(props.value);
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {
@@ -439,7 +426,7 @@ export default defineComponent({
     const resizeListener = () => {
       resize(responsive.value);
     };
-    onMounted(async () => {
+    onMounted(() => {
       window.addEventListener('resize', resizeListener);
       nextTick(() => {
         setTimeout(() => {
@@ -450,20 +437,23 @@ export default defineComponent({
 
       // get children
       children.value = [];
-      const result = await (context as any).$graphql.default.request(GET, { groupId: props.id });
-      for (const key of Object.keys(result.overlays)) {
-        if (key.startsWith('__')) {
-          continue;
+
+      getSocket('/registries/overlays').emit('generic::getAll', (err, result) => {
+        if (err) {
+          return error(err);
         }
-        children.value.push(...result.overlays[key as any]);
-      }
 
-      // cleanup missing children from options
-      options.value.items = options.value.items.filter((o) => {
-        return children.value.map(child => child.id).includes(o.id);
+        for (const item of result.filter(o => o.groupId === props.id)) {
+          children.value.push(item);
+        }
+
+        // cleanup missing children from options
+        options.value.items = options.value.items.filter((o) => {
+          return children.value.map(child => child.id).includes(o.id);
+        });
+
+        loading.value = false;
       });
-
-      loading.value = false;
 
       EventBus.$on(`save::${props.id}`, async () => {
         console.log(`Catched event - save::${props.id}`);
@@ -475,10 +465,18 @@ export default defineComponent({
         for (const id of beforeIds) {
           if (afterIds.includes(id)) {
             console.log(`Updating child ${id}`);
-            await (context as any).$graphql.default.request(SAVE, { data_json: JSON.stringify(children.value.find(o => o.id === id)) });
+            await new Promise((resolve) => {
+              getSocket('/registries/overlays').emit('generic::save', children.value.find(o => o.id === id), () => {
+                resolve(true);
+              });
+            });
           } else {
             console.log(`Removing child ${id}`);
-            await (context as any).$graphql.default.request(REMOVE, { id });
+            await new Promise((resolve) => {
+              getSocket('/registries/overlays').emit('generic::deleteById', id, () => {
+                resolve(true);
+              });
+            });
           }
         }
       });

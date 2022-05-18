@@ -34,13 +34,13 @@
 
 <script setup lang="ts">
 import type { OverlayMappers, OverlayMapperStopwatch } from '@entity/overlay';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import { cloneDeep, pick } from 'lodash';
+import { error } from '~/functions/error';
 
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
-import GET from '~/queries/overlays/get.gql';
 
-const { $graphql } = useNuxtApp();
 const props = defineProps<{
   item: OverlayMappers
 }>();
@@ -51,9 +51,15 @@ const form = ref(null);
 
 const loading = ref(true);
 const overlays = ref([] as OverlayMapperStopwatch[]);
-const refetch = async () => {
-  overlays.value = [...(await $graphql.default.request(GET, { allowGroups: true })).overlays.stopwatch];
-  loading.value = false;
+
+const refetch = () => {
+  getSocket('/registries/overlays').emit('generic::getAll', (err, result) => {
+    if (err) {
+      return error(err);
+    }
+    overlays.value = result.filter(o => o.value === 'stopwatch') as any ?? null;
+    loading.value = false;
+  });
 };
 
 onMounted(() => {

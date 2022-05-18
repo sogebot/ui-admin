@@ -34,13 +34,7 @@ export default defineComponent({
   props: { value: [Object, Array] },
   setup (props: any, ctx) {
     const model = ref(0);
-    const options = ref(
-      pick(
-        defaults(Array.isArray(props.value) ? null : props.value, {
-          showEmoteInOverlayThreshold: 3,
-          hideEmoteInOverlayAfter:     30,
-        }),
-        ['showEmoteInOverlayThreshold', 'hideEmoteInOverlayAfter']));
+    const options = ref(props.value);
 
     watch(options, (val: any) => {
       if (!isEqual(props.value, options.value)) {

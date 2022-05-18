@@ -4,9 +4,9 @@
     <v-expansion-panel>
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
-        <v-switch v-model="options.isHorizontal" label="Horizontal" :persistent-hint="true" :hint="(options.isHorizontal ? 'Chat will be horizontal.' : 'Chat will be vertical (default).')" />
+        <v-select v-model="options.type" label="Type" :items="['vertical', 'horizontal', 'niconico']"/>
         <v-switch v-model="options.showTimestamp" label="Show timestamps" :persistent-hint="true" :hint="(options.showTimestamp ? 'Message will contain timestamp.' : 'Timestamp won\'t be visible.')" />
-        <form-x-time-input v-model.lazy="options.hideMessageAfter" label="Hide messages after" hide-details="auto" />
+        <form-x-time-input v-if="options.type !== 'niconico'" v-model.lazy="options.hideMessageAfter" label="Hide messages after" hide-details="auto" />
       </v-expansion-panel-content>
     </v-expansion-panel>
     <v-expansion-panel>
@@ -20,7 +20,9 @@
       <v-expansion-panel-content>
         <v-text-field v-model="test.username" label="Test username" />
         <v-text-field v-model="test.message" label="Test message" />
-        <v-btn @click="sendTestMessage">Test</v-btn>
+        <v-btn @click="sendTestMessage">
+          Test
+        </v-btn>
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-expansion-panels>
@@ -33,9 +35,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defaultsDeep, isEqual, pick,
-} from 'lodash';
+import { isEqual } from 'lodash';
 
 export default defineComponent({
   components: { font: defineAsyncComponent(() => import('~/components/form/expansion/font.vue')) },
@@ -44,28 +44,9 @@ export default defineComponent({
     const model = ref([0]);
     const test = ref({
       username: 'testuser',
-      message: 'This is testing message Kappa :)'
+      message:  'This is testing message Kappa :)',
     });
-    const options = ref(
-      pick(
-        defaultsDeep(props.value, {
-          isHorizontal:     false,
-          hideMessageAfter: 600000,
-          showTimestamp:    true,
-          font:             {
-            family:      'PT Sans',
-            size:        20,
-            borderPx:    1,
-            borderColor: '#000000',
-            weight:      '500',
-            color:       '#ffffff',
-            shadow:      [],
-          },
-        }),
-        [
-          'isHorizontal', 'hideMessageAfter', 'font', 'showTimestamp',
-        ],
-      ));
+    const options = ref(props.value);
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {
@@ -74,7 +55,7 @@ export default defineComponent({
     }, { deep: true, immediate: true });
 
     const sendTestMessage = () => {
-      getSocket('/overlays/chat').emit('test', { message: test.value.message, username: test.value.username })
+      getSocket('/overlays/chat').emit('test', { message: test.value.message, username: test.value.username });
     };
 
     return {

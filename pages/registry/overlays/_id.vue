@@ -51,14 +51,14 @@
 
 <script lang="ts">
 import type { OverlayMappers } from '@entity/overlay';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep } from 'lodash';
 
 import { EventBus } from '../../../functions/event-bus';
 
+import { error } from '~/functions/error';
 import { required } from '~/functions/validators';
-import GET from '~/queries/overlays/get.gql';
-import SAVE from '~/queries/overlays/save.gql';
 
 export const haveAnyOptions = (type: string) => {
   const withOpts = [
@@ -71,7 +71,7 @@ export const haveAnyOptions = (type: string) => {
 
 export default defineComponent({
   components: {
-    chat:           () => import('~/components/registry/overlays/chat.vue'),
+    chat:            () => import('~/components/registry/overlays/chat.vue'),
     media:           () => import('~/components/registry/overlays/media.vue'),
     countdown:       () => import('~/components/registry/overlays/countdown.vue'),
     stopwatch:       () => import('~/components/registry/overlays/stopwatch.vue'),
@@ -93,6 +93,7 @@ export default defineComponent({
   setup () {
     const { $graphql, $store } = useNuxtApp();
     const route = useRoute();
+    const router = useRouter();
 
     const loading = ref(true);
     const saving = ref(false);
@@ -135,32 +136,37 @@ export default defineComponent({
       { value: 'hypetrain', text: 'hypetrain' },
     ];
 
-    onMounted(async () => {
+    watch(item, () => {
+      $store.commit('settings/pending', true);
+    }, { deep: true });
+
+    onMounted(() => {
       $store.commit('panel/back', '/registry/overlays');
 
-      const result = await $graphql.default.request(GET, { id: route.params.id });
-
-      for (const key of Object.keys(result.overlays)) {
-        if (result.overlays[key].length > 0) {
-          item.value = cloneDeep(result.overlays[key][0]);
-          break;
+      getSocket('/registries/overlays').emit('generic::getOne', route.params.id, (err, result) => {
+        if (err) {
+          return error(err);
         }
-      }
-      loading.value = false;
 
-      watch(item, () => {
-        $store.commit('settings/pending', true);
-      }, { deep: true });
+        if (result) {
+          item.value = result;
+        }
+
+        loading.value = false;
+      });
     });
 
-    const save = async () => {
-      if (
-        (form1.value as unknown as HTMLFormElement).validate()
-      ) {
+    const save = () => {
+      if ((form1.value as unknown as HTMLFormElement).validate()) {
         EventBus.$emit(`save::${item.value.id}`);
-        await $graphql.default.request(SAVE, { data_json: JSON.stringify(item.value) });
-        EventBus.$emit('snack', 'success', 'Data saved.');
-        $store.commit('settings/pending', false);
+
+        getSocket('/registries/overlays').emit('generic::save', item.value, (err) => {
+          if (err) {
+            return error(err);
+          }
+          EventBus.$emit('snack', 'success', 'Data saved.');
+          $store.commit('settings/pending', false);
+        });
       }
     };
 

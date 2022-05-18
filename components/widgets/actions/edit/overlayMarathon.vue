@@ -34,11 +34,12 @@
 
 <script setup lang="ts">
 import type { OverlayMapperMarathon, OverlayMappers } from '@entity/overlay';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import { cloneDeep, pick } from 'lodash';
+import { error } from '~/functions/error';
 
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
-import GET from '~/queries/overlays/get.gql';
 
 const { $graphql } = useNuxtApp();
 const props = defineProps<{
@@ -51,9 +52,15 @@ const form = ref(null);
 
 const loading = ref(true);
 const overlays = ref([] as OverlayMapperMarathon[]);
-const refetch = async () => {
-  overlays.value = [...(await $graphql.default.request(GET, { allowGroups: true })).overlays.marathon];
-  loading.value = false;
+
+const refetch = () => {
+  getSocket('/registries/overlays').emit('generic::getAll', (err, result) => {
+    if (err) {
+      return error(err);
+    }
+    overlays.value = result.filter(o => o.value === 'marathon') as any ?? null;
+    loading.value = false;
+  });
 };
 onMounted(() => {
   refetch();

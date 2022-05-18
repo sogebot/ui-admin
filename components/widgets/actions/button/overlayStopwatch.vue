@@ -64,10 +64,8 @@ import {
   DAY, HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
 import { getSocket } from '@sogebot/ui-helpers/socket';
+import { error } from '~/functions/error';
 
-import GET from '~/queries/overlays/get.gql';
-
-const { $graphql } = useNuxtApp();
 const props = defineProps<{
   item: Record<string, any>,
   dialog: boolean,
@@ -116,17 +114,15 @@ const time = computed(() => {
   return output;
 });
 
-const items = ref([]);
-const refetch = async () => {
-  items.value = [...(await $graphql.default.request(GET, { id: props.item.options.stopwatchId })).overlays.stopwatch];
-};
 const stopwatch = ref(null as null | OverlayMapperStopwatch);
-
-watch(items, (val) => {
-  if (val.length > 0) {
-    stopwatch.value = val[0];
-  }
-}, { immediate: true, deep: true });
+const refetch = () => {
+  getSocket('/registries/overlays').emit('generic::getOne', props.item.options.stopwatchId, (err, result) => {
+    if (err) {
+      return error(err);
+    }
+    stopwatch.value = result as any ?? null;
+  });
+};
 
 const timeInput = computed({
   get () {

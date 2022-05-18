@@ -51,16 +51,7 @@ export default defineComponent({
   props: { value: [Object, Array] },
   setup (props: any, ctx) {
     const model = ref(0);
-    const options = ref(
-      pick(
-        defaults(Array.isArray(props.value) ? null : props.value, {
-          volume:       0,
-          customPeriod: 31,
-          numOfClips:   20,
-          animation:    'slide',
-        }),
-        ['volume', 'customPeriod', 'numOfClips', 'animation'],
-      ));
+    const options = ref(props.value);
 
     watch(options, (val: any) => {
       if (val.volume < 0) {

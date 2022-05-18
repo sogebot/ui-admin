@@ -1,6 +1,6 @@
 <template>
   <v-expansion-panels v-model="model">
-    <slot/>
+    <slot />
     <v-expansion-panel :readonly="typeof $slots.default === 'undefined'">
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
@@ -16,6 +16,7 @@
 </template>
 
 <script lang="ts">
+import type { TextInterface } from '@entity/text';
 import {
   computed,
   defineComponent, onMounted, ref, watch,
@@ -23,10 +24,9 @@ import {
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defaults, isEqual, pick,
+  isEqual,
 } from 'lodash';
 
-import type { TextInterface } from '@entity/text';
 import { error } from '~/functions/error';
 
 export default defineComponent({
@@ -43,11 +43,7 @@ export default defineComponent({
     });
 
     const model = ref(0);
-    const options = ref(
-      pick(
-        defaults(Array.isArray(props.value) ? null : props.value, { id: '' }),
-        ['id'],
-      ));
+    const options = ref(props.value);
 
     onMounted(() => {
       getSocket('/registries/text').emit('generic::getAll', (err, itemsGetAll: TextInterface[]) => {

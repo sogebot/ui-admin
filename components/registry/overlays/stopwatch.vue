@@ -27,7 +27,7 @@ import {
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defaultsDeep, isEqual, pick,
+  isEqual,
 } from 'lodash';
 
 export default defineComponent({
@@ -39,27 +39,7 @@ export default defineComponent({
   },
   setup (props, ctx) {
     const model = ref([0]);
-    const options = ref(
-      pick(
-        defaultsDeep(props.value, {
-          currentTime:           0,
-          isPersistent:          false,
-          isStartedOnSourceLoad: true,
-          showMilliseconds:      true,
-          stopwatchFont:         {
-            family:      'PT Sans',
-            size:        50,
-            borderPx:    1,
-            borderColor: '#000000',
-            weight:      '500',
-            color:       '#ffffff',
-            shadow:      [],
-          },
-        }),
-        [
-          'currentTime', 'stopwatchFont', 'isPersistent', 'isStartedOnSourceLoad', 'showMilliseconds',
-        ],
-      ));
+    const options = ref(props.value);
 
     watch(() => options.value.currentTime, (val) => {
       if (val < 0) {

@@ -75,17 +75,8 @@ import {
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  defaults, isEqual, isNull, omitBy, pick,
+  isEqual,
 } from 'lodash';
-
-const defaultValues = {
-  emotesSize:          3,
-  animation:           'fadeup',
-  animationTime:       1000,
-  maxEmotesPerMessage: 5,
-  maxRotation:         2250,
-  offsetX:             200,
-};
 
 export default defineComponent({
   props: {
@@ -93,12 +84,7 @@ export default defineComponent({
   },
   setup (props: any, ctx) {
     const model = ref(0);
-    const options = ref(
-      pick(
-        defaults(Array.isArray(props.value) ? null : omitBy(props.value, isNull), defaultValues),
-        Object.keys(defaultValues),
-      ),
-    );
+    const options = ref(props.value);
 
     watch(options, (val: any) => {
       if (!isEqual(props.value, options.value)) {

@@ -53,16 +53,7 @@ export default defineComponent({
   props: { value: [Object, Array] },
   setup (props, ctx) {
     const model = ref(0);
-    const options = ref(
-      pick(
-        defaults(Array.isArray(props.value) ? null : props.value, {
-          theme:               'light',
-          hideAfterInactivity: false,
-          inactivityTime:      5000,
-          align:               'top',
-        }),
-        ['theme', 'hideAfterInactivity', 'inactivityTime', 'align'],
-      ));
+    const options = ref(props.value);
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {

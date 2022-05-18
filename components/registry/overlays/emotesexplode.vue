@@ -54,15 +54,7 @@ export default defineComponent({
   props: { value: [Object, Array] },
   setup (props: any, ctx) {
     const model = ref(0);
-    const options = ref(
-      pick(
-        defaults(Array.isArray(props.value) ? null : props.value, {
-          emotesSize:    3,
-          animationTime: 1000,
-          numOfEmotes:   5,
-        }),
-        ['emotesSize', 'animationTime', 'numOfEmotes'],
-      ));
+    const options = ref(props.value);
 
     watch(options, (val: any) => {
       if (!isEqual(props.value, options.value)) {

@@ -34,11 +34,7 @@ export default defineComponent({
   setup (props, ctx) {
     const model = ref(0);
 
-    const options = ref(
-      pick(
-        defaults(Array.isArray(props.value) ? null : props.value, { allowedIPs: [] }),
-        ['allowedIPs'],
-      ));
+    const options = ref(props.value);
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {

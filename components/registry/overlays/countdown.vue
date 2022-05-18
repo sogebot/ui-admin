@@ -50,40 +50,7 @@ export default defineComponent({
   },
   setup (props, ctx) {
     const model = ref([0]);
-    const options = ref(
-      pick(
-        defaultsDeep(props.value, {
-          time:                       60000,
-          currentTime:                60000,
-          isPersistent:               false,
-          isStartedOnSourceLoad:      true,
-          showMilliseconds:           false,
-          messageWhenReachedZero:     '',
-          showMessageWhenReachedZero: false,
-          countdownFont:              {
-            family:      'PT Sans',
-            size:        50,
-            borderPx:    1,
-            borderColor: '#000000',
-            weight:      '500',
-            color:       '#ffffff',
-            shadow:      [],
-          },
-          messageFont: {
-            family:      'PT Sans',
-            size:        35,
-            borderPx:    1,
-            borderColor: '#000000',
-            weight:      '500',
-            color:       '#ffffff',
-            shadow:      [],
-          },
-        }),
-        [
-          'time', 'currentTime', 'countdownFont', 'messageFont', 'messageWhenReachedZero',
-          'showMessageWhenReachedZero', 'isPersistent', 'isStartedOnSourceLoad', 'showMilliseconds',
-        ],
-      ));
+    const options = ref(props.value);
 
     watch(() => options.value.time, (val) => {
       if (val < 0) {

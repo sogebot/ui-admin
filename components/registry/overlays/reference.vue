@@ -32,38 +32,28 @@ import type { OverlayMappers } from '@entity/overlay';
 import {
   defineComponent, onMounted, ref, useContext, watch,
 } from '@nuxtjs/composition-api';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import { defaults, pick, isEqual } from 'lodash';
-
-import GET from '~/queries/overlays/get.gql';
+import { error } from '~/functions/error';
 
 export default defineComponent({
   props: { value: [Object, Array] },
-  setup (props: any, ctx) {
+  setup (props: any) {
     const items = ref([] as OverlayMappers[]);
     const loading = ref(true);
-    const appCtx = useContext();
 
-    onMounted(async () => {
-      const result = await (appCtx as any).$graphql.default.request(GET);
-
-      const outputData: OverlayMappers[] = [];
-      for (const key of Object.keys(result.overlays)) {
-        if (key.startsWith('__') || key === 'group') {
-          continue;
+    onMounted(() => {
+      getSocket('/registries/overlays').emit('generic::getAll', (err, result) => {
+        if (err) {
+          return error(err);
         }
-        outputData.push(...result.overlays[key as any]);
-      }
-
-      items.value = outputData;
-      loading.value = false;
+        items.value = result.filter(o => o.value !== 'group');
+        loading.value = false;
+      });
     });
 
     const model = ref(0);
-    const options = ref(
-      pick(
-        defaults(Array.isArray(props.value) ? null : props.value, { overlayId: null }),
-        ['overlayId'],
-      ));
+    const options = ref(props.value);
 
     watch(options, (val: any) => {
       if (!isEqual(props.value, options.value)) {

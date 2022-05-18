@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import type { AlertInterface } from '@entity/alert';
 import {
-  defaults, isEqual, pick,
+  isEqual,
 } from 'lodash';
 
 import GET_ALL from '~/queries/alert/getAll.gql';
@@ -47,11 +47,7 @@ onMounted(() => {
 });
 
 const model = ref(0);
-const options = ref(
-  pick(
-    defaults(Array.isArray(props.value) ? null : props.value, { id: '' }),
-    ['id'],
-  ));
+const options = ref(props.value);
 
 watch(options, (val: any) => {
   if (!isEqual(props.value, options.value)) {
