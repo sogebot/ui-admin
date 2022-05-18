@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [48.2.0](https://github.com/sogebot/ui-admin/compare/v48.1.0...v48.2.0) (2022-05-18)
+
+
+### Features
+
+* **overlay:** add niconico chat ([001fc27](https://github.com/sogebot/ui-admin/commit/001fc27b44f0433672068d6295ae23f02b468ec6))
+
 ## [48.1.0](https://github.com/sogebot/ui-admin/compare/v48.0.5...v48.1.0) (2022-05-17)
 
 
