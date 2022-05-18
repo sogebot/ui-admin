@@ -45,7 +45,7 @@
                 : 'Plugin is disabled')"
             />
 
-            <v-list id="plugins-edit-list" style="background-color: transparent;">
+            <v-list id="plugins-edit-list" style="background-color: transparent; overflow: auto;">
               <template v-for="(item, index) of items">
                 <v-subheader v-if="item.header" :key="item.header">
                   {{ item.header }}
