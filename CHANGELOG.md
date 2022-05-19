@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [48.3.0](https://github.com/sogebot/ui-admin/compare/v48.2.2...v48.3.0) (2022-05-19)
+
+
+### Features
+
+* **media:** update media component to allow deletion ([fb95cb4](https://github.com/sogebot/ui-admin/commit/fb95cb42b309defd6ff7f60104c7c660b3720f8a))
+
 ### [48.2.2](https://github.com/sogebot/ui-admin/compare/v48.2.1...v48.2.2) (2022-05-18)
 
 
