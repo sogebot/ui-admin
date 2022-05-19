@@ -1,5 +1,59 @@
 <template>
   <div>
+    <v-dialog
+      v-model="deleteDialog"
+      width= "400px"
+    >
+      <v-card>
+        <v-card-title class="text-h6">
+          Delete this media?
+        </v-card-title>
+
+        <v-card-text v-if="deleteItem" class="py-0">
+          <v-img v-if="hoverItem(deleteItem).type.includes('image')" :src="hoverItem(deleteItem).link" class="player" max-height="300" max-width="300" />
+          <video
+            controls
+            v-if="hoverItem(deleteItem).type.includes('video')"
+            style="max-width: 300px; max-height: 300px;"
+          >
+            <source
+              :type="hoverItem(deleteItem).type"
+              :src="hoverItem(deleteItem).link"
+            >
+          </video>
+          <audio
+            v-if="hoverItem(deleteItem).type.includes('audio')"
+            style="max-width: 300px; max-height: 300px;"
+            controls
+          >
+            <source
+              :type="hoverItem(deleteItem).type"
+              :src="hoverItem(deleteItem).link"
+            >
+          </audio>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            text
+            @click="deleteMediaId = null"
+          >
+            Cancel
+          </v-btn>
+
+          <v-btn
+            color="red darken-1"
+            text
+            @click="removeFile()"
+          >
+            Yes, delete!
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+      </v-dialog>
+
     <v-treeview
       selection-type="independent"
       :items="itemsTree"
@@ -20,12 +74,13 @@
             <v-icon left>
               {{ files[item.file.split('/')[0]] }}
             </v-icon>
+            <v-icon left color="red" @click="deleteMediaId = item.id" v-if="item.id !== '_default_'">mdi-delete</v-icon>
             <v-simple-checkbox :value="model === item.id" @click="model === item.id ? model = null : model = item.id" />
           </div>
         </template>
       </template>
       <template #label="{ item }">
-        <v-tooltip v-if="hoverItem(item) && !hoverItem(item).type.includes('audio')" bottom>
+        <v-menu v-if="hoverItem(item)" offset-y open-on-hover>
           <template #activator="{ on, attrs }">
             <span v-bind="attrs" v-on="on">
               {{ item.name }}
@@ -36,32 +91,27 @@
             <video
               v-if="hoverItem(item).type.includes('video')"
               style="max-width: 300px; max-height: 300px;"
+              controls
             >
               <source
                 :type="hoverItem(item).type"
                 :src="hoverItem(item).link"
               >
             </video>
+            <audio
+              v-if="hoverItem(item).type.includes('audio')"
+              style="max-width: 300px; max-height: 300px;"
+              controls
+            >
+              <source
+                :type="hoverItem(item).type"
+                :src="hoverItem(item).link"
+              >
+            </audio>
           </div>
-        </v-tooltip>
+        </v-menu>
         <template v-else>
           {{ item.name }}
-
-          <template v-if="hoverItem(item) && hoverItem(item).type.includes('audio')">
-            <v-progress-circular v-if="!loadedItems.includes(item.id)" indeterminate size="16" />
-            <template v-else>
-              <v-btn icon small @click.stop="playItem(item)">
-                <v-icon v-if="playingItems.includes(item.id)">
-                  mdi-pause
-                </v-icon>
-                <v-icon v-else>
-                  mdi-play
-                </v-icon>
-              </v-btn>
-
-              <small class="secondary--text text--lighten-3">{{ Math.floor(audioData(item.id).duration * 100) / 100 }}s</small>
-            </template>
-          </template>
         </template>
       </template>
     </v-treeview>
@@ -177,6 +227,7 @@ import shortid from 'shortid';
 import { error } from '../../../../functions/error';
 
 import { GalleryInterface } from '@entity/gallery';
+import { EventBus } from '~/functions/event-bus';
 
 const defaultTypes = {
   image: 'image/gif',
@@ -208,6 +259,20 @@ export default defineComponent({
     const mediaType = ref(props.type as 'image' | 'video' | 'audio');
     const model = ref(props.value as string | null);
     const items = ref([] as GalleryInterface[]);
+
+    const deleteMediaId = ref(null as string | null);
+    const deleteDialog = ref(false);
+    const deleteItem = computed(() => {
+      return items.value.find(o => o.id === deleteMediaId.value)
+    })
+
+    watch(deleteMediaId, (val) => {
+      if (val) {
+        deleteDialog.value = true;
+      } else {
+        deleteDialog.value = false;
+      }
+    })
 
     const loadedItems = ref([] as string[]);
     const playingItems = ref([] as string[]);
@@ -535,6 +600,19 @@ export default defineComponent({
       }
     };
 
+    const removeFile = () => {
+      if (deleteMediaId.value) {
+        getSocket('/overlays/gallery').emit('generic::deleteById', deleteMediaId.value, (err) => {
+          if (err) {
+            error(err);
+          }
+          items.value = items.value.filter(o => o.id !== deleteMediaId.value);
+          EventBus.$emit('snack', 'success', 'Data removed.');
+          deleteMediaId.value = null;
+        });
+      }
+    };
+
     return {
       playItem,
       loading,
@@ -548,6 +626,7 @@ export default defineComponent({
       translate,
       model,
       showInfo,
+      items,
       itemsTree,
       _loop,
       src,
@@ -556,6 +635,11 @@ export default defineComponent({
       audioData,
       loadedItems,
       playingItems,
+
+      deleteMediaId,
+      deleteDialog,
+      deleteItem,
+      removeFile,
     };
   },
 });
