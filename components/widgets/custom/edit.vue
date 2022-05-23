@@ -83,6 +83,8 @@ const props = defineProps<{
 const emit = defineEmits(['update:dialog', 'save']);
 
 const loading = ref(true);
+const saving = ref(false);
+const removing = ref(false);
 const items = ref([] as Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[]);
 const refetch = async () => {
   items.value = (await $graphql.default.request(gql`
@@ -95,8 +97,9 @@ const dialogController = ref(props.dialog);
 const markedToDelete = ref([] as string[]);
 
 watch(dialogController, (val) => {
+  refetch();
   emit('update:dialog', val);
-});
+}, { immediate: true });
 
 const save = () => {
   markedToDelete.value.forEach((id) => {

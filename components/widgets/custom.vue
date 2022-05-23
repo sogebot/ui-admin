@@ -62,6 +62,8 @@
 import type { WidgetCustomInterface } from '@entity/widget';
 import gql from 'graphql-tag';
 
+defineProps({height: Number});
+const { $graphql } = useNuxtApp();
 const loading = ref(true);
 const items = ref([] as Pick<WidgetCustomInterface, 'id' | 'url' | 'name'>[]);
 
@@ -78,7 +80,7 @@ watch(dialog, (val) => {
   }
 });
 
-const refresh = async () => {
+const refetch = async () => {
   items.value = (await $graphql.default.request(gql`
       query { widgetCustomGet { id url name } }
     `)).widgetCustomGet;
@@ -86,7 +88,7 @@ const refresh = async () => {
 };
 
 onMounted(() => {
-  refresh();
+  refetch();
   setTimeout(() => {
     show.value = true;
   }, 100);
