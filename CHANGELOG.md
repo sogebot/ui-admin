@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [48.3.1](https://github.com/sogebot/ui-admin/compare/v48.3.0...v48.3.1) (2022-05-23)
+
+
+### Bug Fixes
+
+* **widget:** fix issues with loading of custom widget ([4505c30](https://github.com/sogebot/ui-admin/commit/4505c30fc441772cde702339eddafa7dd142b9b9))
+
 ## [48.3.0](https://github.com/sogebot/ui-admin/compare/v48.2.2...v48.3.0) (2022-05-19)
 
 
