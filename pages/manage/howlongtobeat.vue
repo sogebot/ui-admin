@@ -338,7 +338,7 @@ export default defineComponent({
         value: 'offset', text: '', sortable: false,
       },
       {
-        value: 'manual', text: translate('systems.howlongtobeat.offset'), sortable: false, align: 'end',
+        value: 'manual', text: translate('systems.howlongtobeat.offset'), sortable: false,
       },
     ];
 
