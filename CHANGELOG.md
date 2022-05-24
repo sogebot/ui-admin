@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [48.4.1](https://github.com/sogebot/ui-admin/compare/v48.4.0...v48.4.1) (2022-05-24)
+
+
+### Bug Fixes
+
+* **hltb:** fix offset align ([6a9cbf8](https://github.com/sogebot/ui-admin/commit/6a9cbf87aa45bbb5efaee5972d76ca5989a98d43))
+
 ## [48.4.0](https://github.com/sogebot/ui-admin/compare/v48.3.1...v48.4.0) (2022-05-24)
 
 
