@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [48.4.0](https://github.com/sogebot/ui-admin/compare/v48.3.1...v48.4.0) (2022-05-24)
+
+
+### Features
+
+* **plugins:** add debounce node ([4467b56](https://github.com/sogebot/ui-admin/commit/4467b565985886ebdf692d9d14719b0616f5f82f))
+
 ### [48.3.1](https://github.com/sogebot/ui-admin/compare/v48.3.0...v48.3.1) (2022-05-23)
 
 
