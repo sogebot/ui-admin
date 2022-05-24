@@ -79,6 +79,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Vue from 'vue';
 
 import filter from '~/components/drawflow/filter/filter';
+import debounce from '~/components/drawflow/filter/debounce';
 import filterPermission from '~/components/drawflow/filter/permission';
 import listener from '~/components/drawflow/listener';
 import othersComment from '~/components/drawflow/others/comment';
@@ -132,7 +133,7 @@ export default defineComponent({
       { header: 'Variables' },
       'variableSetVariable', 'variableLoadFromDatabase', 'variableSaveToDatabase',
       { header: 'Filters' },
-      'filter', 'filterPermission',
+      'filter', 'filterPermission', 'debounce',
       { header: 'Output' },
       'twitchSendMessage', 'twitchTimeoutUser', 'twitchBanUser', 'outputLog',
       { header: 'Other' },
@@ -298,6 +299,7 @@ export default defineComponent({
         editor.registerNode('listener', listener, {}, {});
         editor.registerNode('filter', filter, {}, {});
         editor.registerNode('filterPermission', filterPermission, {}, {});
+        editor.registerNode('debounce', debounce, {}, {});
         editor.registerNode('twitchSendMessage', twitchSendMessage, {}, {});
         editor.registerNode('twitchTimeoutUser', twitchTimeoutUser, {}, {});
         editor.registerNode('twitchBanUser', twitchBanUser, {}, {});
@@ -439,6 +441,9 @@ export default defineComponent({
         case 'filterPermission':
           editor?.addNode('filterPermission', 1, 2, posX, posY, 'filterPermission', { value: ['0efd7b1c-e460-4167-8e06-8aaf2c170311'] }, 'filterPermission', 'vue');
           break;
+        case 'debounce':
+          editor?.addNode('debounce', 1, 2, posX, posY, 'debounce', { value: null, data: '{}' }, 'debounce', 'vue');
+          break;
         case 'twitchSendMessage':
           editor?.addNode('twitchSendMessage', 1, 1, posX, posY, 'twitchSendMessage', { value: '' }, 'twitchSendMessage', 'vue');
           break;
@@ -519,11 +524,13 @@ export default defineComponent({
   border-color: var(--v-info-base) !important;
 }
 
+.drawflow-node.debounce > .outputs > .output_1,
 .drawflow-node.filterPermission > .outputs > .output_1,
 .drawflow-node.filter > .outputs > .output_1 {
   background-color: rgb(108 255 108);
 }
 
+.drawflow-node.debounce > .outputs > .output_2,
 .drawflow-node.filterPermission > .outputs > .output_2,
 .drawflow-node.filter > .outputs > .output_2 {
   background-color: rgb(255 93 93);
