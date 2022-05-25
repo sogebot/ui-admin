@@ -50,7 +50,14 @@
                 <v-subheader v-if="item.header" :key="item.header">
                   {{ item.header }}
                 </v-subheader>
-                <v-list-item v-else :key="item" draggable="true" @dragstart="drag($event)" :data-node="item" style="cursor: grab;">
+                <v-list-item
+                  v-else
+                  :key="item"
+                  draggable="true"
+                  :data-node="item"
+                  style="cursor: grab;"
+                  @dragstart="drag($event)"
+                >
                   {{ item }}
                 </v-list-item>
 
@@ -78,10 +85,12 @@ import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import Vue from 'vue';
 
-import filter from '~/components/drawflow/filter/filter';
+import gateCounter from '~/components/drawflow/filter/counter';
 import debounce from '~/components/drawflow/filter/debounce';
+import filter from '~/components/drawflow/filter/filter';
 import filterPermission from '~/components/drawflow/filter/permission';
 import listener from '~/components/drawflow/listener';
+import clearCounter from '~/components/drawflow/others/clearCounter';
 import othersComment from '~/components/drawflow/others/comment';
 import othersIdle from '~/components/drawflow/others/idle';
 import outputLog from '~/components/drawflow/output/log';
@@ -132,12 +141,12 @@ export default defineComponent({
       'listener',
       { header: 'Variables' },
       'variableSetVariable', 'variableLoadFromDatabase', 'variableSaveToDatabase',
-      { header: 'Filters' },
-      'filter', 'filterPermission', 'debounce',
+      { header: 'Gates' },
+      'filter', 'filterPermission', 'debounce', 'counter',
       { header: 'Output' },
       'twitchSendMessage', 'twitchTimeoutUser', 'twitchBanUser', 'outputLog',
       { header: 'Other' },
-      'comment', 'othersIdle',
+      'comment', 'othersIdle', 'clearCounter',
     ];
 
     const refresh = () => {
@@ -300,6 +309,8 @@ export default defineComponent({
         editor.registerNode('filter', filter, {}, {});
         editor.registerNode('filterPermission', filterPermission, {}, {});
         editor.registerNode('debounce', debounce, {}, {});
+        editor.registerNode('gateCounter', gateCounter, {}, {});
+        editor.registerNode('clearCounter', clearCounter, {}, {});
         editor.registerNode('twitchSendMessage', twitchSendMessage, {}, {});
         editor.registerNode('twitchTimeoutUser', twitchTimeoutUser, {}, {});
         editor.registerNode('twitchBanUser', twitchBanUser, {}, {});
@@ -405,7 +416,7 @@ export default defineComponent({
     const drop = (ev: any) => {
       ev.preventDefault();
       const data = ev.dataTransfer.getData('node') ?? '';
-      console.log({data})
+      console.log({ data });
       addNodeToDrawFlow(data, ev.clientX, ev.clientY);
     };
 
@@ -435,6 +446,12 @@ export default defineComponent({
         case 'listener':
           editor?.addNode('listener', 0, 1, posX, posY, 'listener', { value: '', data: '{}' }, 'listener', 'vue');
           break;
+        case 'clearCounter':
+          editor?.addNode('clearCounter', 1, 1, posX, posY, 'clearCounter', { value: null, data: '{}' }, 'clearCounter', 'vue');
+          break;
+        case 'counter':
+          editor?.addNode('gateCounter', 1, 2, posX, posY, 'gateCounter', { value: null, data: '{}' }, 'gateCounter', 'vue');
+          break;
         case 'filter':
           editor?.addNode('filter', 1, 2, posX, posY, 'filter', { value: null, data: '{}' }, 'filter', 'vue');
           break;
@@ -462,7 +479,7 @@ export default defineComponent({
       $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
     }
 
-    function allowDrop(ev: any) {
+    function allowDrop (ev: any) {
       ev.preventDefault();
     }
 
@@ -524,12 +541,33 @@ export default defineComponent({
   border-color: var(--v-info-base) !important;
 }
 
+.drawflow-node.clearCounter .outputs .output:nth-child(1)::before {
+  display: block;
+  content: "Link to Counter";
+  position: relative;
+  color: white;
+  top: 15px;
+  right: 40px;
+  width: max-content;
+  font-weight: bold;
+}
+
+.drawflow-node.clearCounter > .outputs > .output_1 {
+  background-color: rgb(70 70 70);
+  display: block;
+  position: absolute;
+  top: 50px;
+  right: 50%;
+}
+
+.drawflow-node.gateCounter > .outputs > .output_1,
 .drawflow-node.debounce > .outputs > .output_1,
 .drawflow-node.filterPermission > .outputs > .output_1,
 .drawflow-node.filter > .outputs > .output_1 {
   background-color: rgb(108 255 108);
 }
 
+.drawflow-node.gateCounter > .outputs > .output_2,
 .drawflow-node.debounce > .outputs > .output_2,
 .drawflow-node.filterPermission > .outputs > .output_2,
 .drawflow-node.filter > .outputs > .output_2 {
