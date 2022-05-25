@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [48.5.0](https://github.com/sogebot/ui-admin/compare/v48.4.1...v48.5.0) (2022-05-25)
+
+
+### Features
+
+* **plugins:** add gate and clear counter nodes ([1b2867b](https://github.com/sogebot/ui-admin/commit/1b2867b2f28bca608043e95ce04c517f2f991dde))
+
 ### [48.4.1](https://github.com/sogebot/ui-admin/compare/v48.4.0...v48.4.1) (2022-05-24)
 
 
