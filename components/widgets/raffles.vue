@@ -107,18 +107,87 @@
                 </v-btn>
               </div>
               <div v-else key="running-raffle-buttons" style="width: 100%;">
-                <v-btn
-                  key="close-raffle-button"
-                  color="error"
-                  class="mb-2"
-                  block
-                  @click="close"
+                <v-dialog
+                  v-model="closeDialog"
+                  width="500"
                 >
-                  Close raffle
-                </v-btn>
-                <v-btn block @click="pickWinner">
-                  Pick Winner
-                </v-btn>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      key="close-raffle-button"
+                      color="error"
+                      class="mb-2"
+                      block
+                      v-bind="attrs"
+                      v-on="on"
+                      >
+                      Close raffle
+                    </v-btn>
+                  </template>
+
+                  <v-card>
+                    <v-card-text class="pa-2">
+                      Do you want to close a raffle?
+                    </v-card-text>
+
+                    <v-divider></v-divider>
+
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        text
+                        @click="closeDialog = false"
+                      >
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        color="red"
+                        text
+                        @click="close"
+                      >
+                        Yes, close raffle!
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+                <v-dialog
+                  v-model="pickDialog"
+                  width="500"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      block
+                      v-bind="attrs"
+                      v-on="on"
+                      >
+                      Pick winner
+                    </v-btn>
+                  </template>
+
+                  <v-card>
+                    <v-card-text class="pa-2">
+                      Do you want to pick a new winner?
+                    </v-card-text>
+
+                    <v-divider></v-divider>
+
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        text
+                        @click="closeDialog = false"
+                      >
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        color="red"
+                        text
+                        @click="pickWinner"
+                      >
+                        Yes, pick winner!
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
               </div>
             </transition-group>
           </v-form>
@@ -245,6 +314,9 @@ export default defineComponent({
     const commandRule = [
       required, startsWith(['!']), minLength(2),
     ];
+
+    const closeDialog = ref(false);
+    const pickDialog = ref(false);
 
     const search = ref('');
     const valid = ref(true);
@@ -404,10 +476,12 @@ export default defineComponent({
     function close () {
       getSocket('/systems/raffles').emit('raffle::close');
       running.value = false;
+      closeDialog.value = false;
     }
     function pickWinner () {
       getSocket('/systems/raffles').emit('raffle::pick');
       tab.value = 2;
+      pickDialog.value = false;
     }
 
     return {
@@ -431,6 +505,9 @@ export default defineComponent({
       isLoading,
       eligibleItems,
       typeItems,
+
+      closeDialog,
+      pickDialog,
 
       // functions
       toggleEligibility,
