@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [48.5.2](https://github.com/sogebot/ui-admin/compare/v48.5.1...v48.5.2) (2022-05-26)
+
+
+### Bug Fixes
+
+* **raffles:** add confirmation dialogs ([f2e1db0](https://github.com/sogebot/ui-admin/commit/f2e1db05f1d852b053990f165b0cdadbda932d2b))
+
 ### [48.5.1](https://github.com/sogebot/ui-admin/compare/v48.5.0...v48.5.1) (2022-05-26)
 
 
