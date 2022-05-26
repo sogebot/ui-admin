@@ -61,10 +61,11 @@ const importPlugin = () => {
   if (model.value !== null && model.value.trim() !== '') {
     const buf = Buffer.from(model.value, 'base64');
     try {
-      emit('import', JSON.parse(buf.toString('ascii')));
+      emit('import', JSON.parse(buf.toString('utf-8')));
       EventBus.$emit('snack', 'success', 'Plugin imported.');
       dialog.value = false;
-    } catch {
+    } catch (e) {
+      console.error(e);
       EventBus.$emit('snack', 'error', 'Something went wrong with plugin import.');
     }
   }
