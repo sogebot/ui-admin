@@ -147,7 +147,7 @@
         <v-img
           :aspect-ratio="16/9"
           :width="60"
-          :src="'https://howlongtobeat.com' + item.imageUrl"
+          :src="`https://static-cdn.jtvnw.net/ttv-boxart/${encodeURIComponent(item.game)}-60x84.jpg`"
         />
       </template>
 
