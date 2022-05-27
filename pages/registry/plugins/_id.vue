@@ -85,6 +85,7 @@ import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import Vue from 'vue';
 
+import cron from '~/components/drawflow/cron';
 import gateCounter from '~/components/drawflow/filter/counter';
 import debounce from '~/components/drawflow/filter/debounce';
 import filter from '~/components/drawflow/filter/filter';
@@ -138,7 +139,7 @@ export default defineComponent({
 
     const items = [
       { header: 'Input' },
-      'listener',
+      'listener', 'cron',
       { header: 'Variables' },
       'variableSetVariable', 'variableLoadFromDatabase', 'variableSaveToDatabase',
       { header: 'Gates' },
@@ -305,6 +306,7 @@ export default defineComponent({
         console.log('Editor initialized.');
         editor = new Drawflow(id, Vue, context.root);
         editor.draggable_inputs = false;
+        editor.registerNode('cron', cron, {}, {});
         editor.registerNode('listener', listener, {}, {});
         editor.registerNode('filter', filter, {}, {});
         editor.registerNode('filterPermission', filterPermission, {}, {});
@@ -442,6 +444,9 @@ export default defineComponent({
           break;
         case 'variableSaveToDatabase':
           editor?.addNode('variableSaveToDatabase', 1, 1, posX, posY, 'variableSaveToDatabase', { value: '', data: '{}' }, 'variableSaveToDatabase', 'vue');
+          break;
+        case 'cron':
+          editor?.addNode('cron', 0, 1, posX, posY, 'cron', { value: '0 * * * * *', data: '{}' }, 'cron', 'vue');
           break;
         case 'listener':
           editor?.addNode('listener', 0, 1, posX, posY, 'listener', { value: '', data: '{}' }, 'listener', 'vue');
