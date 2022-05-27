@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [48.6.0](https://github.com/sogebot/ui-admin/compare/v48.5.2...v48.6.0) (2022-05-27)
+
+
+### Features
+
+* **plugins:** add cron node ([f7c91ee](https://github.com/sogebot/ui-admin/commit/f7c91ee17418aac7a6393d10531d466fb6253f6f))
+
 ### [48.5.2](https://github.com/sogebot/ui-admin/compare/v48.5.1...v48.5.2) (2022-05-26)
 
 
