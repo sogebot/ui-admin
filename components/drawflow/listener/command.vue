@@ -15,11 +15,15 @@
       Not expecting any parameters.
     </v-alert>
 
-    <div v-for="(parameter, idx) of parameters" :key="parameter.id" class="d-flex" style="align-items: center;">
-      <div class="pr-2">{{ idx + 1 }}</div>
-      <v-text-field v-model="parameter.name" label="Name" class="pr-1"/>
-      <v-select v-model="parameter.type" label="Type" :items="['number', 'word', 'sentence']"/>
-      <v-btn icon @click="removeParam(parameter.id)"><v-icon color="danger" >mdi-delete</v-icon></v-btn>
+    <div v-for="(parameter, idx) of parameters" :key="parameter.id" class="d-flex" style="align-items: normal;">
+      <v-text-field v-model="parameter.name" label="Name" class="pr-1" hide-details="auto">
+        <template #prepend>{{ idx + 1 }}</template>
+      </v-text-field>
+      <div class="pr-1">
+        <v-select v-model="parameter.type" label="Type" :items="['number', 'word', 'sentence', 'custom']" hide-details="auto"/>
+        <v-text-field label="Custom RegExp" v-model="parameter.regexp" v-if="parameter.type === 'custom'" hide-details="auto"/>
+      </div>
+      <v-btn icon @click="removeParam(parameter.id)" style="align-self: center;"><v-icon color="danger" >mdi-delete</v-icon></v-btn>
       <v-divider/>
     </div>
 
@@ -37,7 +41,7 @@ const emit = defineEmits(['input']);
 
 const command = ref('');
 const parameters = ref([] as {
-  id: string, name: string, type: 'number' | 'word' | 'sentence'
+  id: string, name: string, type: 'number' | 'word' | 'sentence' | 'custom', regexp?: string,
 }[]);
 
 watch(() => props.value ?? '', (val: string) => {
