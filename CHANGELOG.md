@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [49.0.0](https://github.com/sogebot/ui-admin/compare/v48.6.0...v49.0.0) (2022-05-30)
+
+
+### Features
+
+* **plugins:** add custom param regexp ([061366a](https://github.com/sogebot/ui-admin/commit/061366a4eedc741709ce89226b1410791c025946))
+
 ## [48.6.0](https://github.com/sogebot/ui-admin/compare/v48.5.2...v48.6.0) (2022-05-27)
 
 
