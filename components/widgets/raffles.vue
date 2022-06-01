@@ -174,7 +174,7 @@
                       <v-spacer></v-spacer>
                       <v-btn
                         text
-                        @click="closeDialog = false"
+                        @click="pickDialog = false"
                       >
                         Cancel
                       </v-btn>
