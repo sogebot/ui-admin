@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [49.0.1](https://github.com/sogebot/ui-admin/compare/v49.0.0...v49.0.1) (2022-06-01)
+
+
+### Bug Fixes
+
+* **raffles:** button should properly close dialog ([0dbbc37](https://github.com/sogebot/ui-admin/commit/0dbbc375134bb819acefcc611894282244e1b7f6))
+
 ## [49.0.0](https://github.com/sogebot/ui-admin/compare/v48.6.0...v49.0.0) (2022-05-30)
 
 
