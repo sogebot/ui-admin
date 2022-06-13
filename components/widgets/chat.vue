@@ -151,6 +151,7 @@
             Using simple Twitch Chat Log, because HTTPS is not available. Messages will appear here.
           </v-alert>
           <p v-for="message of messages" :key="message.timestamp" class="chat px-2 my-2">
+            <img :src="badge.url" v-for="badge of (message.badges || [])" :key="badge" :title="badge.title"/>
             <span :title="new Date(message.timestamp).toLocaleString()">{{ new Date(message.timestamp).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' }) }}</span> <strong class="pl-1" :style="{ color: generateColorFromString(message.username) }">{{ message.username }}</strong>: <span class="pl-1" v-html="message.message" />
           </p>
         </div>
@@ -281,7 +282,7 @@ export default defineComponent({
       return isLocalhost || (isSecureHttp && isCorrectPort);
     });
     const messages = ref([] as {
-      username: string; message: string; timestamp: string; badges: any;
+      username: string; message: string; timestamp: string; badges: string[];
     }[]);
     const chatUrl = computed(() => {
       return 'https://twitch.tv/embed/'
