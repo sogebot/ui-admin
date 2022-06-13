@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [50.0.0](https://github.com/sogebot/ui-admin/compare/v49.0.1...v50.0.0) (2022-06-13)
+
+
+### Features
+
+* **chat:** add badges support ([fdb65dd](https://github.com/sogebot/ui-admin/commit/fdb65dd75a1d3d084d00538dc73e190f79b7f8da))
+
 ### [49.0.1](https://github.com/sogebot/ui-admin/compare/v49.0.0...v49.0.1) (2022-06-01)
 
 
