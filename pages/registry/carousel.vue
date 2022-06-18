@@ -612,12 +612,7 @@ const update = (item: typeof items.value[number], multi = false, attr: keyof typ
   [item, ...(multi ? selected.value : [])].forEach((itemToUpdate) => {
     console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
 
-    $graphql.default.request(SAVE, {
-      data_json: JSON.stringify({
-        itemToUpdate,
-        [attr]: item[attr],
-      }),
-    })
+    $graphql.default.request(SAVE, { data_json: JSON.stringify({ id: item.id, [attr]: item[attr] }) })
       .then(() => EventBus.$emit('snack', 'success', 'Data saved.'));
   });
 };
