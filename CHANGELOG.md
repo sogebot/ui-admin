@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [50.0.1](https://github.com/sogebot/ui-admin/compare/v50.0.0...v50.0.1) (2022-06-18)
+
+
+### Bug Fixes
+
+* **carousel:** properly save data ([1d0d1b8](https://github.com/sogebot/ui-admin/commit/1d0d1b80f65d8eea1d1cac387e1a6ffbcd09582c))
+
 ## [50.0.0](https://github.com/sogebot/ui-admin/compare/v49.0.1...v50.0.0) (2022-06-13)
 
 
