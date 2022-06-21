@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [51.1.0](https://github.com/sogebot/ui-admin/compare/v51.0.0...v51.1.0) (2022-06-21)
+
+
+### Features
+
+* **discord:** add fields order / filter ([f4a32a0](https://github.com/sogebot/ui-admin/commit/f4a32a0ba4b6273132145bfb9e4bd908e45d5678))
+
 ## [51.0.0](https://github.com/sogebot/ui-admin/compare/v50.0.1...v51.0.0) (2022-06-21)
 
 
