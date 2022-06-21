@@ -101,6 +101,7 @@ import twitchTimeoutUser from '~/components/drawflow/output/twitchTimeoutUser';
 import variableLoadFromDatabase from '~/components/drawflow/variable/loadFromDatabase';
 import variableSaveToDatabase from '~/components/drawflow/variable/saveToDatabase';
 import variableSetVariable from '~/components/drawflow/variable/setVariable';
+import variableSetCustomVariable from '~/components/drawflow/variable/setCustomVariable';
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
@@ -127,6 +128,7 @@ export default defineComponent({
       $store.commit('registryPlugins/set', val);
       console.log('/core/plugins|generic::validate', val);
       if (dirty.value) {
+        val.workflow = val.workflow = val.workflow.length === 0 ? '"{"drawflow":{"Home":{"data":{}}}}"' : val.workflow;
         getSocket('/core/plugins').emit('generic::validate', val, (err) => {
           $store.commit('registryPlugins/errors', isValidationError(err) ? err : []);
         });
@@ -141,7 +143,7 @@ export default defineComponent({
       { header: 'Input' },
       'listener', 'cron',
       { header: 'Variables' },
-      'variableSetVariable', 'variableLoadFromDatabase', 'variableSaveToDatabase',
+      'variableSetVariable', 'variableLoadFromDatabase', 'variableSaveToDatabase', 'variableSetCustomVariable',
       { header: 'Gates' },
       'filter', 'filterPermission', 'debounce', 'counter',
       { header: 'Output' },
@@ -320,6 +322,7 @@ export default defineComponent({
         editor.registerNode('variableSaveToDatabase', variableSaveToDatabase, {}, {});
         editor.registerNode('variableLoadFromDatabase', variableLoadFromDatabase, {}, {});
         editor.registerNode('variableSetVariable', variableSetVariable, {}, {});
+        editor.registerNode('variableSetCustomVariable', variableSetCustomVariable, {}, {});
         editor.registerNode('comment', othersComment, {}, {});
         editor.registerNode('othersIdle', othersIdle, {}, {});
         editor.zoom_min = 0.3;
@@ -380,7 +383,7 @@ export default defineComponent({
 
     const save = () => {
       saving.value = true;
-
+      item.value.workflow = item.value.workflow.length === 0 ? '"{"drawflow":{"Home":{"data":{}}}}"' : item.value.workflow;
       console.log('/core/plugins|generic::save', item.value);
       getSocket('/core/plugins').emit('generic::save', item.value, (err) => {
         saving.value = false;
@@ -438,6 +441,9 @@ export default defineComponent({
           break;
         case 'variableSetVariable':
           editor?.addNode('variableSetVariable', 1, 1, posX, posY, 'variableSetVariable', { value: '', data: '{}' }, 'variableSetVariable', 'vue');
+          break;
+        case 'variableSetCustomVariable':
+          editor?.addNode('variableSetCustomVariable', 1, 1, posX, posY, 'variableSetCustomVariable', { value: '', data: '{}' }, 'variableSetCustomVariable', 'vue');
           break;
         case 'variableLoadFromDatabase':
           editor?.addNode('variableLoadFromDatabase', 0, 1, posX, posY, 'variableLoadFromDatabase', { value: '', data: '{}' }, 'variableLoadFromDatabase', 'vue');

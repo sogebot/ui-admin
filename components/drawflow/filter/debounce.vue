@@ -119,7 +119,6 @@ const interval = setInterval(() => {
           // add all parameters
           const parameters = JSON.parse(parent.data.data).parameters;
           for (const param of parameters || []) {
-            console.log(`parameters.${param.name}`);
             commonAttributes[`parameters.${param.name}`] = param.type === 'number' ? 'number' : 'string';
           }
         }
