@@ -116,6 +116,32 @@
               </v-col>
             </v-row>
 
+            <label class="v-label theme--dark">
+              {{ translate('systems.userinfo.settings.order') }}
+            </label>
+            <v-simple-table dense class="pb-4">
+              <template #default>
+                <tbody>
+                  <tr v-for="(item , idx) of settings.bot.fields[0]" :key="item">
+                    <td>
+                      <v-icon v-if="idx !== 0" @click.stop="swapOrder(idx, idx - 1)">
+                        mdi-chevron-up
+                      </v-icon>
+                      <v-icon v-if="idx !== settings.bot.fields[0].length - 1" @click.stop="swapOrder(idx, idx + 1)">
+                        mdi-chevron-down
+                      </v-icon>
+                    </td>
+                    <td>{{ item }}</td>
+                    <td>
+                      <v-icon @click="toggleVisibility(item)">
+                        {{ settings.bot.fieldsDisabled[0].includes(item) ? 'mdi-eye-off' : 'mdi-eye' }}
+                      </v-icon>
+                    </td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+
             <v-autocomplete
               v-for="key of Object.keys(settings.bot.sendAnnouncesToChannel[0])"
               :key="key"
@@ -192,7 +218,7 @@ import { PermissionsInterface } from '@entity/permissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import gql from 'graphql-tag';
-
+import xor from 'lodash/xor';
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
 
@@ -296,6 +322,22 @@ onMounted(() => {
       });
     });
 });
+const swapOrder = (order1: number, order2: number) => {
+  if (settings.value) {
+    const item1 = settings.value.bot.fields[0][order1];
+    const item2 = settings.value.bot.fields[0][order2];
+    if (item1 && item2) {
+      settings.value.bot.fields[0][order1] = item2;
+      settings.value.bot.fields[0][order2] = item1;
+      settings.value.bot.fields = [settings.value.bot.fields[0], settings.value.bot.fields[1]];
+    }
+  }
+};
+const toggleVisibility = (item: string) => {
+  if (settings.value) {
+    settings.value.bot.fieldsDisabled = [xor(settings.value.bot.fieldsDisabled[0], [item]), settings.value.bot.fieldsDisabled[1]];
+  }
+};
 
 const authorize = () => {
   getSocket('/integrations/discord').emit('discord::authorize', (err, op: any) => {
