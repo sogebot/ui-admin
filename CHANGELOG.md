@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [52.0.0](https://github.com/sogebot/ui-admin/compare/v51.1.0...v52.0.0) (2022-06-22)
+
+
+### Bug Fixes
+
+* remove gql calls ([2edbf74](https://github.com/sogebot/ui-admin/commit/2edbf74c5e3ea01a2a29160c91f01614a0c8800f))
+
 ## [51.1.0](https://github.com/sogebot/ui-admin/compare/v51.0.0...v51.1.0) (2022-06-21)
 
 
