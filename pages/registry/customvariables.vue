@@ -276,7 +276,6 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
@@ -287,18 +286,16 @@ import {
   minLength, required, restrictedChars, startsWith,
 } from '~/functions/validators';
 
-const { $graphql } = useNuxtApp()
-
 const loading = ref(false);
 const permissions = ref([] as PermissionsInterface[]);
-const refetch = async () => {
-  const data = await $graphql.default.request(gql`
-      query {
-        permissions { id name }
-      }
-    `);
-  permissions.value = data.permissions;
-  loading.value = false;
+const refetch = () => {
+  getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+    if (err) {
+      return console.error(err);
+    }
+    permissions.value = res;
+    loading.value = false;
+  });
 };
 const rules = { variableName: [required, startsWith(['$_']), minLength(3), restrictedChars([' '])] };
 

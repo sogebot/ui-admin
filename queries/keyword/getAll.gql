@@ -1,4 +1,0 @@
-query KeywordGetAll {
-  permissions { id name }
-  keywordGroup { name options { filter permission } }
-}

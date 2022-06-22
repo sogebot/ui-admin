@@ -135,6 +135,7 @@ import { PermissionsInterface } from '@entity/permissions';
 import { RandomizerInterface, RandomizerItemInterface } from '@entity/randomizer';
 import { getContrastColor, getRandomColor } from '@sogebot/ui-helpers/colors';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import gql from 'graphql-tag';
 import {
@@ -195,6 +196,16 @@ export default defineComponent({
     const item = ref(cloneDeep(emptyItem) as RandomizerInterface);
     const permissions = ref([] as PermissionsInterface[]);
     onMounted(async () => {
+      await new Promise<void>((resolve) => {
+        getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+          if (err) {
+            return console.error(err);
+          }
+          permissions.value = res;
+          resolve();
+        });
+      });
+
       if (route.params.id !== 'new') {
         const request = await $graphql.default.request(GET_ONE, { id: route.params.id });
         console.log({request})
@@ -203,7 +214,6 @@ export default defineComponent({
           router.push({ path: '/registry/randomizer' });
         } else {
           item.value = cloneDeep(request.randomizers[0]);
-          permissions.value = cloneDeep(request.permissions);
         }
         loading.value = false;
       }

@@ -72,8 +72,8 @@
 <script lang="ts">
 import type { PermissionsInterface } from '@entity/permissions';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import gql from 'graphql-tag';
 import { cloneDeep, sortBy } from 'lodash';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
@@ -174,30 +174,20 @@ function handleDragStart (e: DragEvent) {
 export default defineComponent({
   setup () {
     const loading = ref(true);
-    const { $graphql } = useNuxtApp();
-
     const permissions = ref([] as PermissionsInterface[]);
 
-    const refetch = async () => {
-      const request = await $graphql.default.request(gql`
-      query getPermissions {
-        permissions {
-          id name order isCorePermission isWaterfallAllowed automation userIds excludeUserIds
-          filters {
-            id
-            comparator
-            type
-            value
-          }
+    const refetch = () => {
+      getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+        if (err) {
+          return console.error(err);
         }
-      }
-    `);
-      permissions.value = cloneDeep(request.permissions);
+        permissions.value = res;
 
-      if (!route.params.id) {
-        router.replace('/settings/permissions/' + permissions.value[0].id);
-      }
-      loading.value = false;
+        if (!route.params.id) {
+          router.replace('/settings/permissions/' + permissions.value[0].id);
+        }
+        loading.value = false;
+      });
     };
 
     const route = useRoute();
@@ -263,14 +253,7 @@ export default defineComponent({
       }
 
       permissions.value.forEach((permission) => {
-        const { id, ...data } = permission;
-
-        $graphql.default.request(gql`
-          mutation permissionUpdate($id: String!, $data: PermissionInput!) {
-            permissionUpdate(id: $id, data: $data) {
-              id
-            }
-          }`, { id, data });
+        getSocket('/core/permissions').emit('permission::save', permission, () => {})
       });
     };
 

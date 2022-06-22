@@ -309,13 +309,12 @@ import type { PermissionsInterface } from '@entity/permissions';
 import type { VariableInterface } from '@entity/variable';
 import {
   computed,
-  defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import gql from 'graphql-tag';
 import { v4 } from 'uuid';
 
 import { error } from '~/functions/error';
@@ -333,7 +332,6 @@ export default defineComponent({
   components: { PrismEditor },
   props:      { rules: Object, item: Object },
   setup (props: Props, ctx) {
-    const context = useContext();
     const permissions = ref([] as PermissionsInterface[]);
     const computedRules = {
       runEveryX:    [required, minValue(0)],
@@ -449,12 +447,11 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      (context as any).$graphql.default.request(gql`
-        query {
-          permissions { id name }
+      getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+        if (err) {
+          return console.error(err);
         }
-      `).then((data: { permissions: PermissionsInterface[]}) => {
-        permissions.value = data.permissions;
+        permissions.value = res;
       });
       if (!props.item) {
         // fetch default evalValue

@@ -1,5 +1,4 @@
 query randomizerGetOne($id: String!) {
-  permissions { id name }
   randomizers(id: $id) {
     id
     createdAt

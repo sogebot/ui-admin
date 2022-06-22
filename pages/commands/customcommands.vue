@@ -149,7 +149,6 @@ import type { PermissionsInterface } from '@entity/permissions';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import gql from 'graphql-tag';
 import {
   capitalize, isEqual, orderBy,
 } from 'lodash';
@@ -161,7 +160,6 @@ import { getPermissionName } from '~/functions/getPermissionName';
 import {
   minLength, minValue, required, startsWith,
 } from '~/functions/validators';
-import GET_ALL from '~/queries/customCommands/getAll.gql';
 
 let count: {
   command: string; count: number;
@@ -169,24 +167,33 @@ let count: {
 
 export type CommandsInterfaceUI = CommandsInterface & { count: number };
 
-const { $graphql } = useNuxtApp();
-
 const loading = ref(true);
 const items = ref([] as CommandsInterfaceUI[]);
 const groups = ref([] as CommandsGroupInterface[]);
 const permissions = ref([] as PermissionsInterface[]);
 const refetch = async () => {
-  const data = await $graphql.default.request(GET_ALL);
-  // we also need to reset selection values
-  if (selected.value.length > 0) {
-    selected.value.forEach((selectedItem, index) => {
-      selectedItem = output.find(o => o.id === selectedItem.id) || selectedItem;
-      selected.value[index] = selectedItem;
-    });
-  }
-
-  groups.value = data.customCommandsGroup;
-  permissions.value = data.permissions;
+  await Promise.all([
+    new Promise<void>((resolve) => {
+      getSocket('/systems/customcommands').emit('generic::groups::getAll', (err, res) => {
+        if (err) {
+          resolve();
+          return console.error(err);
+        }
+        console.log({ res });
+        groups.value = res;
+        resolve();
+      });
+    }),
+    new Promise<void>((resolve) => {
+      getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+        if (err) {
+          return console.error(err);
+        }
+        permissions.value = res;
+        resolve();
+      });
+    }),
+  ]);
   loading.value = false;
 };
 
@@ -394,14 +401,11 @@ const getGroup = computed<{ [name: string]: CommandsGroupInterface }>({
     // go through groups and save only changed
     for (const groupName of Object.keys(getGroup.value)) {
       if (!isEqual(getGroup.value[groupName], value[groupName])) {
-        $graphql.default.request(gql`
-          mutation setCustomCommandsGroup($name: String!, $data: String!) {
-            setCustomCommandsGroup(name: $name, data: $data) {
-              name
-            }
-          }`, {
-          name: groupName,
-          data: JSON.stringify(value[groupName].options),
+        getSocket('/systems/customcommands').emit('generic::groups::save', value[groupName], (err) => {
+          if (err) {
+            console.error(err);
+          }
+          refetch();
         });
       }
     }

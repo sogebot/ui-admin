@@ -115,22 +115,22 @@
 import { nextTick } from 'process';
 
 import { useContext } from '@nuxtjs/composition-api';
+import { Alias } from '@sogebot/backend/src/database/entity/alias';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, ref, watch,
 } from '@vue/composition-api';
-import gql from 'graphql-tag';
 import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import { v4 } from 'uuid';
 
 import { error as errorLog } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
-import type { AliasInterfaceUI } from '~/pages/commands/alias.vue';
 
 type Props = {
-  value: AliasInterfaceUI;
+  value: Alias;
   rules: [];
 };
 
@@ -151,7 +151,6 @@ export default defineComponent({
     groupItems:      Array,
   },
   setup (props: Props, ctx) {
-    const context = useContext();
     const menu = ref(false);
     const item = ref(cloneDeep(props.value || newAlias));
     const valid = ref(true);
@@ -182,6 +181,13 @@ export default defineComponent({
     watch(menu, (val) => {
       if (val) {
         resetForm();
+
+        if (!item.value.id) {
+          item.value = {
+            ...item.value,
+            id: v4(),
+          };
+        }
       }
     });
 
@@ -199,23 +205,20 @@ export default defineComponent({
             }
           }
         }
-        const { __typename, id, ...data } = item.value;
-        console.log('Updating', { data });
+        console.log('Updating', item.value);
 
         saving.value = true;
-        try {
-          await (context as any).$graphql.default.request(gql`
-            mutation setAlias($id: String!, $data: AliasInput!) {
-              setAlias(id: $id, data: $data) {
-                id
-              }
-            }`, { id: id || v4(), data });
-          EventBus.$emit('snack', 'success', 'Data updated.');
-        } catch (e) {
-          if (e instanceof Error) {
-            errorLog(e);
-          }
-        }
+        await new Promise<void>((resolve) => {
+          getSocket('/systems/alias').emit('generic::save', item.value, (err) => {
+            if (err) {
+              errorLog(err);
+            } else {
+              EventBus.$emit('snack', 'success', 'Data updated.');
+            }
+            resolve();
+          });
+        });
+        EventBus.$emit('snack', 'success', 'Data updated.');
         saving.value = false;
 
         menu.value = false;

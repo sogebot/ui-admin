@@ -1,5 +1,4 @@
 query randomizerGetAll {
-  permissions { id name }
   randomizers {
     id
     createdAt

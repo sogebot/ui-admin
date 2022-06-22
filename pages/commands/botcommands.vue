@@ -54,7 +54,6 @@ import type { PermissionsInterface } from '@entity/permissions';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import gql from 'graphql-tag';
 import { capitalize } from 'lodash';
 
 import { error } from '~/functions/error';
@@ -62,8 +61,6 @@ import { getPermissionName } from '~/functions/getPermissionName';
 import {
   minLength, required, startsWith,
 } from '~/functions/validators';
-
-const { $graphql } = useNuxtApp();
 
 type CommandsInterface = {
   id: string,
@@ -110,12 +107,11 @@ const headers = [
 ];
 
 const refresh = () => {
-  $graphql.default.request(gql`
-      query {
-        permissions { id name }
-      }
-    `).then((data) => {
-    permissions.value = data.permissions;
+  getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+    if (err) {
+      return console.error(err);
+    }
+    permissions.value = res;
     loading.value = false;
   });
   getSocket('/core/general').emit('generic::getCoreCommands', (err, commands: Required<CommandsInterface>[]) => {

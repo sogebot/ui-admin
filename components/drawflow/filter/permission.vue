@@ -33,24 +33,21 @@
 <script setup lang="ts">
 import { PermissionsInterface } from '@sogebot/backend/src/database/entity/permissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import gql from 'graphql-tag';
 
 import { EventBus } from '~/functions/event-bus';
 import { flatten } from '~/functions/flatten';
 
 const loading = ref(true);
 
-const { $graphql } = useNuxtApp();
 const permissions = ref([] as PermissionsInterface[]);
 const item = ref([]);
 
 const refresh = () => {
-  $graphql.default.request(gql`
-      query {
-        permissions { id name }
-      }
-    `).then((data: any) => {
-    permissions.value = data.permissions;
+  getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+    if (err) {
+      return console.error(err);
+    }
+    permissions.value = res;
     loading.value = false;
   });
 };

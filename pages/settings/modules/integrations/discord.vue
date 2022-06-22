@@ -217,7 +217,6 @@
 import { PermissionsInterface } from '@entity/permissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import gql from 'graphql-tag';
 import xor from 'lodash/xor';
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
@@ -225,19 +224,18 @@ import { saveSettings } from '~/functions/settings';
 type Guild = { text: string, value: string };
 type Channel = { text: string, value: string };
 
-const { $graphql, $store } = useNuxtApp();
+const {$store } = useNuxtApp();
 
 const isLoading = ref(true);
 const permissions = ref([] as PermissionsInterface[]);
-const refetch = async () => {
-  const data = await $graphql.default.request(gql`
-      query {
-        permissions { id name }
-      }
-    `);
-
-  permissions.value = data.permissions;
-  isLoading.value = false;
+const refetch = () => {
+  getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+    if (err) {
+      return console.error(err);
+    }
+    permissions.value = res;
+    isLoading.value = false;
+  });
 };
 const settings = ref(null as Record<string, any> | null);
 const ui = ref(null as Record<string, any> | null);

@@ -89,6 +89,9 @@
 
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api';
+import { getSocket } from '@sogebot/ui-helpers/socket';
+import type { PermissionsInterface } from '@entity/permissions';
+import { getPermissionName } from '~/functions/getPermissionName';
 
 export default defineComponent({
   props: {
@@ -102,6 +105,20 @@ export default defineComponent({
     noFilter:             Boolean,
     noPermission:         Boolean,
   },
+  setup() {
+    const permissions = ref([] as PermissionsInterface[]);
+
+    onMounted(() => {
+      getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+        if (err) {
+          return console.error(err);
+        }
+        permissions.value = res;
+      });
+    })
+
+    return { getPermissionName, permissions }
+  }
 });
 </script>
 

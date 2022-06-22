@@ -152,10 +152,10 @@
 </template>
 
 <script setup lang="ts">
-import type { AliasGroupInterface, AliasInterface } from '@entity/alias';
 import type { PermissionsInterface } from '@entity/permissions';
+import { Alias, AliasGroup } from '@sogebot/backend/src/database/entity/alias';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import gql from 'graphql-tag';
 import {
   capitalize, isEqual, orderBy,
 } from 'lodash';
@@ -166,40 +166,63 @@ import { getPermissionName } from '~/functions/getPermissionName';
 import {
   minLength, required, startsWith,
 } from '~/functions/validators';
-import GET_ALL from '~/queries/alias/getAll.gql';
-
-export type AliasInterfaceUI = AliasInterface & { __typename: string };
-
-const { $graphql } = useNuxtApp()
 
 const loading = ref(true);
-const items = ref([] as AliasInterfaceUI[]);
-const groups = ref([] as AliasGroupInterface[]);
+const items = ref([] as Alias[]);
+const groups = ref([] as AliasGroup[]);
 const permissions = ref([] as PermissionsInterface[]);
 
 onMounted(() => refetch());
 
 const refetch = async () => {
-  const data = await $graphql.default.request(GET_ALL);
-  // we also need to reset selection values
-  if (selected.value.length > 0) {
-    selected.value.forEach((selectedItem, index) => {
-      selectedItem = data.find(o => o.id === selectedItem.id) || selectedItem;
-      selected.value[index] = selectedItem;
-    });
-  }
+  await Promise.all([
+    new Promise<void>((resolve) => {
+      getSocket('/systems/alias').emit('generic::getAll', (err, res) => {
+        if (err) {
+          resolve();
+          return console.error(err);
+        }
+        items.value = orderBy(res, 'alias', 'asc');
 
-  items.value = orderBy(data.aliases, 'alias', 'asc');
-  groups.value = data.aliasGroup;
-  permissions.value = data.permissions;
+        // we also need to reset selection values
+        if (selected.value.length > 0) {
+          selected.value.forEach((selectedItem, index) => {
+            selectedItem = res.find(o => o.id === selectedItem.id) || selectedItem;
+            selected.value[index] = selectedItem;
+          });
+        }
+        resolve();
+      });
+    }),
+    new Promise<void>((resolve) => {
+      getSocket('/systems/alias').emit('generic::groups::getAll', (err, res) => {
+        if (err) {
+          resolve();
+          return console.error(err);
+        }
+        console.log({ res });
+        groups.value = res;
+        resolve();
+      });
+    }),
+    new Promise<void>((resolve) => {
+      getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+        if (err) {
+          return console.error(err);
+        }
+        permissions.value = res;
+        resolve();
+      });
+    }),
+  ]);
   loading.value = false;
 };
 
-const selected = ref([] as AliasInterfaceUI[]);
+const selected = ref([] as Alias[]);
 const deleteDialog = ref(false);
 
-const currentItems = ref([] as AliasInterfaceUI[]);
-const saveCurrentItems = (value: AliasInterfaceUI[]) => {
+const currentItems = ref([] as Alias[]);
+const saveCurrentItems = (value: Alias[]) => {
   currentItems.value = value;
 };
 
@@ -272,7 +295,7 @@ const headersDelete = [
   { value: 'alias', text: translate('alias') },
   { value: 'command', text: translate('command') },
 ];
-const batchUpdate = (value: Record<string, any>) => {
+const batchUpdate = async (value: Record<string, any>) => {
   // check validity
   for (const toUpdate of selected.value) {
     const item = items.value.find(o => o.id === toUpdate.id);
@@ -299,14 +322,18 @@ const batchUpdate = (value: Record<string, any>) => {
           (item as any)[key] = value[key];
         }
       }
-      const { __typename, id, ...data } = item;
-      console.log('Updating', { data });
-      $graphql.default.request(gql`
-      mutation setAlias($id: String!, $data: AliasInput!) {
-        setAlias(id: $id, data: $data) {
-          id
-        }
-      }`, { id, data }).then(() => saveSuccess());
+      console.log('Updating', { item });
+
+      await new Promise<void>((resolve) => {
+        getSocket('/systems/alias').emit('generic::save', item, (err) => {
+          if (err) {
+            console.error(err);
+          } else {
+            saveSuccess();
+          }
+          resolve();
+        });
+      });
     }
   }
 };
@@ -314,10 +341,9 @@ const batchUpdate = (value: Record<string, any>) => {
 const deleteSelected = () => {
   deleteDialog.value = false;
   selected.value.forEach((item) => {
-    $graphql.default.request(gql`
-      mutation removeAlias($id: String!) {
-        removeAlias(id: $id)
-      }`, { id: item.id });
+    getSocket('/systems/alias').emit('generic::deleteById', item.id, () => {
+      saveSuccess();
+    });
   });
   saveSuccess();
   selected.value = [];
@@ -328,10 +354,10 @@ const saveSuccess = () => {
   EventBus.$emit('snack', 'success', 'Data updated.');
 };
 
-const getGroup = computed<{ [name: string]: AliasGroupInterface }>({
+const getGroup = computed<{ [name: string]: AliasGroup }>({
   get () {
     // set empty groups from aliases
-    const returnGroups: { [name: string]: AliasGroupInterface } = {};
+    const returnGroups: { [name: string]: AliasGroup } = {};
     for (const item of items.value) {
       if (item.group && !returnGroups[item.group]) {
         const group = groups.value.find(o => o.name === item.group);
@@ -346,19 +372,16 @@ const getGroup = computed<{ [name: string]: AliasGroupInterface }>({
     }
     return returnGroups;
   },
-  set (value: { [name: string]: AliasGroupInterface }) {
+  set (value: { [name: string]: AliasGroup }) {
     // go through groups and save only changed
     for (const groupName of Object.keys(getGroup.value)) {
       if (!isEqual(getGroup.value[groupName], value[groupName])) {
-        $graphql.default.request(gql`
-      mutation setAliasGroup($name: String!, $data: String!) {
-        setAliasGroup(name: $name, data: $data) {
-          name
-        }
-      }`, {
-          name: groupName,
-          data: JSON.stringify(value[groupName].options),
-        }).then(() => refetch());
+        getSocket('/systems/alias').emit('generic::groups::save', value[groupName], (err) => {
+          if (err) {
+            console.error(err);
+          }
+          refetch();
+        });
       }
     }
     return true;
