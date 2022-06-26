@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [52.0.1](https://github.com/sogebot/ui-admin/compare/v52.0.0...v52.0.1) (2022-06-26)
+
+
+### Bug Fixes
+
+* update default values ([23d1631](https://github.com/sogebot/ui-admin/commit/23d1631b81f80620983866a089aadbd36af400b0))
+
 ## [52.0.0](https://github.com/sogebot/ui-admin/compare/v51.1.0...v52.0.0) (2022-06-22)
 
 
