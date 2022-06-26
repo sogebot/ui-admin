@@ -20,6 +20,7 @@ import type { AlertInterface } from '@entity/alert';
 import {
   isEqual,
 } from 'lodash';
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 import GET_ALL from '~/queries/alert/getAll.gql';
 
@@ -47,7 +48,7 @@ onMounted(() => {
 });
 
 const model = ref(0);
-const options = ref(props.value);
+const options = ref(setDefaultOpts(props.value, 'alertsRegistry'));
 
 watch(options, (val: any) => {
   if (!isEqual(props.value, options.value)) {

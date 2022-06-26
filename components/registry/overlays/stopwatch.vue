@@ -39,7 +39,7 @@ export default defineComponent({
   },
   setup (props, ctx) {
     const model = ref([0]);
-    const options = ref(props.value);
+    const options = ref(setDefaultOpts(props.value, 'stopwatch'));
 
     watch(() => options.value.currentTime, (val) => {
       if (val < 0) {

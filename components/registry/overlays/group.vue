@@ -234,6 +234,7 @@ import {
   isEqual,
 } from 'lodash';
 import { v4 } from 'uuid';
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -280,7 +281,7 @@ export default defineComponent({
     const initialResize = ref(false);
     const dialog = ref(false);
 
-    const options = ref(props.value);
+    const options = ref(setDefaultOpts(props.value, 'group'));
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {

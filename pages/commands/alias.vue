@@ -153,11 +153,10 @@
 
 <script setup lang="ts">
 import type { PermissionsInterface } from '@entity/permissions';
-import { Alias, AliasGroup } from '@sogebot/backend/src/database/entity/alias';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
-  capitalize, isEqual, orderBy,
+  capitalize, isEqual,
 } from 'lodash';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
@@ -166,6 +165,10 @@ import { getPermissionName } from '~/functions/getPermissionName';
 import {
   minLength, required, startsWith,
 } from '~/functions/validators';
+
+export type AliasInterfaceUI = AliasInterface & { __typename: string };
+
+const { $graphql } = useNuxtApp();
 
 const loading = ref(true);
 const items = ref([] as Alias[]);
@@ -182,8 +185,6 @@ const refetch = async () => {
           resolve();
           return console.error(err);
         }
-        items.value = orderBy(res, 'alias', 'asc');
-
         // we also need to reset selection values
         if (selected.value.length > 0) {
           selected.value.forEach((selectedItem, index) => {
@@ -191,6 +192,7 @@ const refetch = async () => {
             selected.value[index] = selectedItem;
           });
         }
+        items.value = res;
         resolve();
       });
     }),
@@ -210,11 +212,12 @@ const refetch = async () => {
         if (err) {
           return console.error(err);
         }
-        permissions.value = res;
+        permissions.value = res
         resolve();
       });
     }),
   ]);
+
   loading.value = false;
 };
 

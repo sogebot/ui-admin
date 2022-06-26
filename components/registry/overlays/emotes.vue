@@ -77,6 +77,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import {
   isEqual,
 } from 'lodash';
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
   props: {
@@ -84,7 +85,7 @@ export default defineComponent({
   },
   setup (props: any, ctx) {
     const model = ref(0);
-    const options = ref(props.value);
+    const options = ref(setDefaultOpts(props.value, 'emotes'));
 
     watch(options, (val: any) => {
       if (!isEqual(props.value, options.value)) {

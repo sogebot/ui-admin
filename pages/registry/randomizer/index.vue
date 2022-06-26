@@ -148,16 +148,12 @@ export default defineComponent({
     const { $graphql } = useNuxtApp();
 
     const refetch = async () => {
-      await new Promise<void>((resolve) => {
-        getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
-          if (err) {
-            return console.error(err);
-          }
-          permissions.value = res;
-          resolve();
-        });
+      getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+        if (err) {
+          return console.error(err);
+        }
+        permissions.value = res;
       });
-
       const request = await $graphql.default.request(GET_ALL);
       if (selected.value.length > 0) {
         selected.value.forEach((selectedItem, index) => {

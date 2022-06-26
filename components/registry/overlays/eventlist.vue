@@ -43,7 +43,7 @@ export default defineComponent({
   props: { value: [Object, Array] },
   setup (props: any, ctx) {
     const model = ref(0);
-    const options = ref(props.value);
+    const options = ref(setDefaultOpts(props.value, 'eventlist'));
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {

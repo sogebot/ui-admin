@@ -4,7 +4,7 @@
     <v-expansion-panel>
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
-        <v-select v-model="options.type" label="Type" :items="['vertical', 'horizontal', 'niconico']"/>
+        <v-select v-model="options.type" label="Type" :items="['vertical', 'horizontal', 'niconico']" />
         <v-switch v-model="options.showTimestamp" label="Show timestamps" :persistent-hint="true" :hint="(options.showTimestamp ? 'Message will contain timestamp.' : 'Timestamp won\'t be visible.')" />
         <v-switch v-model="options.showBadges" label="Show badges" :persistent-hint="true" :hint="(options.showBadges ? 'Message will contain badges.' : 'Badges won\'t be visible.')" />
         <form-x-time-input v-if="options.type !== 'niconico'" v-model.lazy="options.hideMessageAfter" label="Hide messages after" hide-details="auto" />
@@ -34,6 +34,7 @@ import {
   defineAsyncComponent,
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
+import { setDefaultOpts } from '@sogebot/backend/src/helpers/overlaysDefaultValues';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { isEqual } from 'lodash';
@@ -47,9 +48,10 @@ export default defineComponent({
       username: 'testuser',
       message:  'This is testing message Kappa :)',
     });
-    const options = ref(props.value);
+    const options = ref(setDefaultOpts(props.value, 'chat'));
 
     watch(options, (val) => {
+      console.log({val})
       if (!isEqual(props.value, options.value)) {
         ctx.emit('input', val);
       }

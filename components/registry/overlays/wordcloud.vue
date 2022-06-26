@@ -29,13 +29,14 @@ import translate from '@sogebot/ui-helpers/translate';
 import {
   defaultsDeep, isEqual, pick,
 } from 'lodash';
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
   components: { font: defineAsyncComponent(() => import('~/components/form/expansion/font.vue')) },
   props:      { value: [Object, Array] },
   setup (props, ctx) {
     const model = ref([0]);
-    const options = ref(props.value);
+    const options = ref(setDefaultOpts(props.value, 'wordcloud'));
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {

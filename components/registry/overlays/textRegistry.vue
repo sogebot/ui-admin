@@ -26,6 +26,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import {
   isEqual,
 } from 'lodash';
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 import { error } from '~/functions/error';
 
@@ -43,7 +44,7 @@ export default defineComponent({
     });
 
     const model = ref(0);
-    const options = ref(props.value);
+    const options = ref(setDefaultOpts(props.value, 'textregistry'));
 
     onMounted(() => {
       getSocket('/registries/text').emit('generic::getAll', (err, itemsGetAll: TextInterface[]) => {

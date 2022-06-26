@@ -46,12 +46,13 @@ import translate from '@sogebot/ui-helpers/translate';
 import {
   defaults, isEqual, pick,
 } from 'lodash';
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
   props: { value: [Object, Array] },
   setup (props: any, ctx) {
     const model = ref(0);
-    const options = ref(props.value);
+    const options = ref(setDefaultOpts(props.value, 'clipscarousel'));
 
     watch(options, (val: any) => {
       if (val.volume < 0) {

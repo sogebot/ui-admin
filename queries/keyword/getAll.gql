@@ -1,0 +1,3 @@
+query KeywordGetAll {
+  keywordGroup { name options { filter permission } }
+}

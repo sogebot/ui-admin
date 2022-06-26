@@ -124,6 +124,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import {
   isEqual,
 } from 'lodash';
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
   components: {
@@ -135,7 +136,7 @@ export default defineComponent({
     const store = useStore<any>();
     const currency = ref(store.state.configuration.currency);
     const model = ref([0]);
-    const options = ref(props.value);
+    const options = ref(setDefaultOpts(props.value, 'marathon'));
 
     const maxEndTimeEnabled = computed({
       get () {

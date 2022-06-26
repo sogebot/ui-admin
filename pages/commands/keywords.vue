@@ -155,31 +155,6 @@ import {
 const loading = ref(true);
 const permissions = ref([] as PermissionsInterface[]);
 const groups = ref([] as KeywordGroupInterface[]);
-const refetch = async () => {
-  await Promise.all([
-    new Promise<void>((resolve) => {
-      getSocket('/systems/keywords').emit('generic::groups::getAll', (err, res) => {
-        if (err) {
-          resolve();
-          return console.error(err);
-        }
-        console.log({ res });
-        groups.value = res;
-        resolve();
-      });
-    }),
-    new Promise<void>((resolve) => {
-      getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
-        if (err) {
-          return console.error(err);
-        }
-        permissions.value = res;
-        resolve();
-      });
-    }),
-  ]);
-  loading.value = false;
-};
 
 const search = ref('');
 const items = ref([] as Required<KeywordInterface>[]);
@@ -219,7 +194,20 @@ const headersDelete = [
 ];
 
 const refresh = () => {
-  refetch();
+  getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+    if (err) {
+      return console.error(err);
+    }
+    permissions.value = res;
+    loading.value = false;
+  });
+  getSocket('/systems/keywords').emit('generic::groups::getAll', (err, res) => {
+    if (err) {
+      return console.error(err);
+    }
+    console.log({ res });
+    groups.value = res;
+  });
   getSocket('/systems/keywords').emit('generic::getAll', (err, keywordsGetAll: Required<KeywordInterface>[]) => {
     if (err) {
       return error(err);

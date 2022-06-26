@@ -34,6 +34,7 @@ import {
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import { defaults, pick, isEqual } from 'lodash';
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 import { error } from '~/functions/error';
 
 export default defineComponent({
@@ -53,7 +54,7 @@ export default defineComponent({
     });
 
     const model = ref(0);
-    const options = ref(props.value);
+    const options = ref(setDefaultOpts(props.value, 'reference'));
 
     watch(options, (val: any) => {
       if (!isEqual(props.value, options.value)) {

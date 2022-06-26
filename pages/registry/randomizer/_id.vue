@@ -195,20 +195,16 @@ export default defineComponent({
     const saving = ref(false);
     const item = ref(cloneDeep(emptyItem) as RandomizerInterface);
     const permissions = ref([] as PermissionsInterface[]);
-    onMounted(async () => {
-      await new Promise<void>((resolve) => {
-        getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
-          if (err) {
-            return console.error(err);
-          }
-          permissions.value = res;
-          resolve();
-        });
-      });
 
+    onMounted(async () => {
+      getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+        if (err) {
+          return console.error(err);
+        }
+        permissions.value = res;
+      });
       if (route.params.id !== 'new') {
         const request = await $graphql.default.request(GET_ONE, { id: route.params.id });
-        console.log({request})
         if (request.randomizers.length === 0) {
           EventBus.$emit('snack', 'error', 'Data not found.');
           router.push({ path: '/registry/randomizer' });

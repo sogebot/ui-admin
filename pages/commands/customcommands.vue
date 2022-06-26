@@ -171,31 +171,6 @@ const loading = ref(true);
 const items = ref([] as CommandsInterfaceUI[]);
 const groups = ref([] as CommandsGroupInterface[]);
 const permissions = ref([] as PermissionsInterface[]);
-const refetch = async () => {
-  await Promise.all([
-    new Promise<void>((resolve) => {
-      getSocket('/systems/customcommands').emit('generic::groups::getAll', (err, res) => {
-        if (err) {
-          resolve();
-          return console.error(err);
-        }
-        console.log({ res });
-        groups.value = res;
-        resolve();
-      });
-    }),
-    new Promise<void>((resolve) => {
-      getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
-        if (err) {
-          return console.error(err);
-        }
-        permissions.value = res;
-        resolve();
-      });
-    }),
-  ]);
-  loading.value = false;
-};
 
 const rules = {
   command: [startsWith(['!']), required, minLength(2)],
@@ -241,7 +216,20 @@ const headersDelete = [
 ];
 
 const refresh = () => {
-  refetch();
+  getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+    if (err) {
+      return console.error(err);
+    }
+    permissions.value = res;
+    loading.value = false;
+  });
+  getSocket('/systems/customcommands').emit('generic::groups::getAll', (err, res) => {
+    if (err) {
+      return console.error(err);
+    }
+    console.log({ res });
+    groups.value = res;
+  });
   getSocket('/systems/customcommands').emit('generic::getAll', (err, commands, countArg) => {
     if (err) {
       return error(err);
@@ -321,14 +309,6 @@ const isGroupSelected = (group: string) => {
     }
   }
   return true;
-};
-const toggleItemSelection = (item: typeof items.value[number]) => {
-  if (selected.value.find(o => o.id === item.id)) {
-    // deselect
-    selected.value = selected.value.filter(o => o.id !== item.id);
-  } else {
-    selected.value.push(item);
-  }
 };
 const toggleGroupSelection = (group: string) => {
   if (isGroupSelected(group)) {

@@ -217,14 +217,13 @@
 import { PermissionsInterface } from '@entity/permissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import xor from 'lodash/xor';
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
 
 type Guild = { text: string, value: string };
 type Channel = { text: string, value: string };
 
-const {$store } = useNuxtApp();
+const { $store } = useNuxtApp();
 
 const isLoading = ref(true);
 const permissions = ref([] as PermissionsInterface[]);
@@ -236,7 +235,7 @@ const refetch = () => {
     permissions.value = res;
     isLoading.value = false;
   });
-};
+}
 const settings = ref(null as Record<string, any> | null);
 const ui = ref(null as Record<string, any> | null);
 const valid = ref(true);

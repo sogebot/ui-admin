@@ -29,7 +29,7 @@ export default defineComponent({
   props:      { value: [Object, Array] },
   setup (props, ctx) {
     const model = ref(0);
-    const options = ref(props.value);
+    const options = ref(setDefaultOpts(props.value, 'tts'));
 
     watch(options, (val) => {
       if (!isEqual(props.value, options.value)) {

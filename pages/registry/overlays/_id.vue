@@ -91,9 +91,8 @@ export default defineComponent({
     wordcloud:       () => import('~/components/registry/overlays/wordcloud.vue'),
   },
   setup () {
-    const { $graphql, $store } = useNuxtApp();
+    const { $store } = useNuxtApp();
     const route = useRoute();
-    const router = useRouter();
 
     const loading = ref(true);
     const saving = ref(false);
@@ -142,12 +141,10 @@ export default defineComponent({
 
     onMounted(() => {
       $store.commit('panel/back', '/registry/overlays');
-
       getSocket('/registries/overlays').emit('generic::getOne', route.params.id, (err, result) => {
         if (err) {
           return error(err);
         }
-
         if (result) {
           item.value = result;
         }
