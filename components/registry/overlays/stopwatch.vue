@@ -29,6 +29,7 @@ import translate from '@sogebot/ui-helpers/translate';
 import {
   isEqual,
 } from 'lodash';
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
   components: {
