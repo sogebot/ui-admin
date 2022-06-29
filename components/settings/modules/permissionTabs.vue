@@ -15,19 +15,19 @@
 
 <script setup lang="ts">
 import { PermissionsInterface } from '@entity/permissions';
-import gql from 'graphql-tag';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import { orderBy } from 'lodash';
 
 defineProps({ ignored: [Array, Object] });
-const { $graphql } = useNuxtApp();
 const permissions = ref([] as PermissionsInterface[]);
 const tab = ref(0);
 
 onMounted(async () => {
-  permissions.value = orderBy((await $graphql.default.request(gql`
-  query {
-    permissions { id name order }
-  }
-`)).permissions, 'order', 'desc');
+  getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
+    if (err) {
+      return console.error(err);
+    }
+    permissions.value = orderBy(res, 'order', 'desc')
+  });
 });
 </script>
