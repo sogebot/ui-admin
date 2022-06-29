@@ -447,6 +447,10 @@ function emitSkipAlertEvent () {
 }
 
 function prepareMessage (event: any) {
+  if (event.event === 'rewardredeem') {
+    return '';
+  }
+
   let t = translate(`eventlist-events.${event.event}`);
 
   const values = JSON.parse(event.values_json);
