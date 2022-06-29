@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [52.0.4](https://github.com/sogebot/ui-admin/compare/v52.0.3...v52.0.4) (2022-06-29)
+
+
+### Bug Fixes
+
+* remove gql call from permissiontabs ([d7ced4a](https://github.com/sogebot/ui-admin/commit/d7ced4ad25f789d8c007c8655ff81a1c953f3da7))
+
 ### [52.0.3](https://github.com/sogebot/ui-admin/compare/v52.0.2...v52.0.3) (2022-06-29)
 
 
