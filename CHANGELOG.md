@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [52.0.3](https://github.com/sogebot/ui-admin/compare/v52.0.2...v52.0.3) (2022-06-29)
+
+
+### Bug Fixes
+
+* **events:** remove reward redeem locale ([4e25491](https://github.com/sogebot/ui-admin/commit/4e2549164a07adb27b599f4a2b342815834a20e1))
+
 ### [52.0.2](https://github.com/sogebot/ui-admin/compare/v52.0.1...v52.0.2) (2022-06-27)
 
 ### [52.0.1](https://github.com/sogebot/ui-admin/compare/v52.0.0...v52.0.1) (2022-06-26)
