@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [53.0.0](https://github.com/sogebot/ui-admin/compare/v52.0.4...v53.0.0) (2022-07-04)
+
+
+### Features
+
+* add url iframe overlay ([b85cbf3](https://github.com/sogebot/ui-admin/commit/b85cbf3e3625fa6d7c9fbdf33674f010134746e3))
+
 ### [52.0.4](https://github.com/sogebot/ui-admin/compare/v52.0.3...v52.0.4) (2022-06-29)
 
 
