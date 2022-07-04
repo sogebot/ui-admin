@@ -19,7 +19,7 @@
             </v-badge>
           </div>
         </template>
-        <span>{{ $t('menu.notifications') }}</span>
+        <span>{{ translate('menu.notifications') }}</span>
       </v-tooltip>
       <v-badge
         v-else
@@ -36,7 +36,7 @@
           <v-list-item-icon>
             <v-icon>mdi-bell-ring</v-icon>
           </v-list-item-icon>
-          <v-list-item-title>{{ $t('menu.notifications') }}</v-list-item-title>
+          <v-list-item-title>{{ translate('menu.notifications') }}</v-list-item-title>
         </v-list-item>
       </v-badge>
     </template>
@@ -53,10 +53,10 @@
         text
         transition="scroll-x-transition"
       >
-        <h5>{{ $t('errors.owner_and_broadcaster_oauth_is_not_set') }}</h5>
+        <h5>{{ translate('errors.owner_and_broadcaster_oauth_is_not_set') }}</h5>
         <div
           class="text-caption"
-          v-html="$t('errors.please_set_your_broadcaster_oauth_or_owners')"
+          v-html="translate('errors.please_set_your_broadcaster_oauth_or_owners')"
         />
       </v-alert>
       <v-alert
@@ -70,12 +70,25 @@
         text
         transition="scroll-x-transition"
       >
-        <h5>{{ $t('errors.new_update_available') }}</h5>
+        <h5>{{ translate('errors.new_update_available') }}</h5>
         <div
           class="text-caption"
-          v-html="$t('errors.new_bot_version_available_at', { version: $store.state.nextVersion })"
+          v-html="translate('errors.new_bot_version_available_at', { version: $store.state.nextVersion })"
         />
       </v-alert>
     </div>
   </v-menu>
 </template>
+
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api'
+import { translate } from '@sogebot/ui-helpers/translate'
+
+export default defineComponent({
+  setup() {
+    return {
+      translate
+    }
+  },
+})
+</script>

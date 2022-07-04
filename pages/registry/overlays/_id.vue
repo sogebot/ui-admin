@@ -65,7 +65,7 @@ export const haveAnyOptions = (type: string) => {
     'goalRegistry', 'alertsRegistry', 'textRegistry', 'group', 'eventlist',
     'media', 'credits', 'clips', 'obswebsocket', 'clipscarousel', 'tts',
     'polls', 'emotescombo', 'emotesfireworks', 'emotesexplode', 'emotes',
-    'countdown', 'stopwatch', 'marathon', 'wordcloud', 'reference', 'chat'];
+    'countdown', 'stopwatch', 'marathon', 'wordcloud', 'reference', 'chat', 'url'];
   return withOpts.includes(type);
 };
 

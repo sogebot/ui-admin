@@ -264,6 +264,7 @@ export default defineComponent({
     eventlist:       () => import('~/components/registry/overlays/eventlist.vue'),
     wordcloud:       () => import('~/components/registry/overlays/wordcloud.vue'),
     reference:       () => import('~/components/registry/overlays/reference.vue'),
+    url:             () => import('~/components/registry/overlays/url.vue'),
     item:            defineAsyncComponent(() => import('~/components/registry/overlays/item.vue')),
   },
   setup (props, ctx) {
@@ -300,6 +301,7 @@ export default defineComponent({
 
     const overlayOptions = [
       { value: null, text: 'Please select an option' },
+      { value: 'url', text: 'URL' },
       { value: 'alertsRegistry', text: 'alerts registry' },
       { value: 'chat', text: 'chat' },
       { value: 'textRegistry', text: 'text registry' },
