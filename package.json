@@ -13,13 +13,14 @@
     "release": "standard-version && git push --follow-tags origin main",
     "release:major": "standard-version -r major && git push --follow-tags origin main",
     "prepublishOnly": "npm run generate",
-    "dev": "npm run link-backend && cross-env PORT=3000 nuxi dev",
+    "dev": "npm run link-backend && cross-env PORT=3000 NODE_OPTIONS=--openssl-legacy-provider nuxi dev",
     "build": "npm run link-backend && nuxi generate",
     "start": "npm run link-backend && nuxi preview",
     "generate": "nuxt generate",
     "lint:js": "eslint --quiet --ext \".js,.vue\" --fix --ignore-path .gitignore .",
     "lint:style": "stylelint \"**/*.{vue,css,scss}\" --ignore-path .gitignore",
-    "lint": "npm run lint:js && npm run lint:style"
+    "lint": "npm run lint:js && npm run lint:style",
+    "type:vuetify": "node ./scripts/vuetify-type.mjs > ./d.ts/vuetify2.d.ts"
   },
   "lint-staged": {
     "*.{ts,js,vue}": "eslint --quiet --fix",

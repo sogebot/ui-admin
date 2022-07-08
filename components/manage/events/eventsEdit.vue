@@ -17,7 +17,7 @@
           New item
         </v-btn>
       </template>
-      <v-card outlined class="pt-3" :key="item.id + isFormReset">
+      <v-card outlined class="pt-3" :key="(item.id || '') + isFormReset">
         <v-card-text>
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-row dense>
@@ -69,14 +69,6 @@
                     v-if="defKey === 'rewardId'"
                     v-model="item.definitions[defKey]"
                     :rules="rules"
-                  />
-                  <v-text-field
-                    v-else-if="typeof item.definitions[defKey] === 'string'"
-                    v-model="item.definitions[defKey]"
-                    :rules="rules[defKey]"
-                    :label="translate(`events.definitions.${defKey}.label`)"
-                    :hint="translate('events.definitions.' + defKey + '.placeholder')"
-                    persistent-hint
                   />
                   <v-text-field
                     v-else-if="typeof item.definitions[defKey] === 'string'"

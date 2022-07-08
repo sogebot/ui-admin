@@ -81,8 +81,8 @@
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, useContext,
 } from '@nuxtjs/composition-api';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import gql from 'graphql-tag';
 
 type menuType = { category?: string; name: string; id: string; this: any | null }[];
 type menuWithEnabled = Omit<menuType[number], 'this'> & { enabled: boolean };
@@ -103,15 +103,10 @@ export default defineComponent({
     const menu = ref([] as menuWithEnabled[]);
 
     onMounted(() => {
-      (context as any).$graphql.default.request(gql`
-        query getPrivateMenu { menuPrivate { id name enabled category } }
-      `).then((data: { menuPrivate: menuWithEnabled[] }) => {
-        console.groupCollapsed('menu::menu');
-        console.log({ menu: data.menuPrivate });
-        console.groupEnd();
-        menu.value = data.menuPrivate.sort((a, b) => {
+      getSocket('/core/general').emit('menu::private', (items) => {
+        menu.value = items.sort((a: { name: string; }, b: { name: string; }) => {
           return translate('menu.' + a.name).localeCompare(translate('menu.' + b.name));
-        });
+        })
       });
     });
     const categories = ['commands', 'manage', 'settings', 'registry', /* 'logs', */ 'stats'];
