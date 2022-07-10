@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [53.0.2](https://github.com/sogebot/ui-admin/compare/v53.0.1...v53.0.2) (2022-07-10)
+
+
+### Bug Fixes
+
+* import setDefaultOpts where missing ([ad598bd](https://github.com/sogebot/ui-admin/commit/ad598bd12383101cb6c2dd89dc2b8206c066cecb))
+
 ### [53.0.1](https://github.com/sogebot/ui-admin/compare/v53.0.0...v53.0.1) (2022-07-08)
 
 
