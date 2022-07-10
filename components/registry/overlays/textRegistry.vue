@@ -23,11 +23,9 @@ import {
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  isEqual,
-} from 'lodash';
-import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
+import { isEqual } from 'lodash';
 
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 import { error } from '~/functions/error';
 
 export default defineComponent({

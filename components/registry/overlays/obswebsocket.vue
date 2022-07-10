@@ -4,15 +4,17 @@
     <v-expansion-panel :readonly="typeof $slots.default === 'undefined'">
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
-          <v-textarea
-            :value="options.allowedIPs.join('\n')"
-            rows="5"
-            :label="translate('registry.overlays.allowedIPs.name')"
-            :hint="translate('registry.overlays.allowedIPs.help')"
-            persistent-hint
-            @input="options.allowedIPs = $event.split('\n')"
-          />
-          <v-btn @click="addCurrentIP(options.allowedIPs)">Add current IP</v-btn>
+        <v-textarea
+          :value="options.allowedIPs.join('\n')"
+          rows="5"
+          :label="translate('registry.overlays.allowedIPs.name')"
+          :hint="translate('registry.overlays.allowedIPs.help')"
+          persistent-hint
+          @input="options.allowedIPs = $event.split('\n')"
+        />
+        <v-btn @click="addCurrentIP(options.allowedIPs)">
+          Add current IP
+        </v-btn>
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-expansion-panels>
@@ -25,9 +27,9 @@ import {
 } from '@nuxtjs/composition-api';
 import { getCurrentIP } from '@sogebot/ui-helpers/getCurrentIP';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defaults, isEqual, pick,
-} from 'lodash';
+import { isEqual } from 'lodash';
+
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
   props: { value: [Object, Array] },

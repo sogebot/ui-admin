@@ -1,6 +1,6 @@
 <template>
   <v-expansion-panels v-model="model">
-    <slot/>
+    <slot />
     <v-expansion-panel :readonly="typeof $slots.default === 'undefined'">
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
@@ -35,9 +35,9 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defaults, isEqual, pick,
-} from 'lodash';
+import { isEqual } from 'lodash';
+
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
   props: { value: [Object, Array] },

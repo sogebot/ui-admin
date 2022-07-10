@@ -11,7 +11,8 @@
           label="Time"
           class="pb-4"
           readonly
-          hide-details="auto"/>
+          hide-details="auto"
+        />
 
         <v-switch
           v-model="maxEndTimeEnabled"
@@ -19,7 +20,7 @@
           hide-details="auto"
         />
         <v-expand-transition>
-          <datetime v-model="options.maxEndTime" v-if="options.maxEndTime !== null"/>
+          <datetime v-if="options.maxEndTime !== null" v-model="options.maxEndTime" />
         </v-expand-transition>
 
         <v-switch v-model="options.showProgressGraph" label="Show progress graph" hide-details="auto" />
@@ -117,13 +118,10 @@ import {
   defineAsyncComponent,
   defineComponent, ref, useStore, watch,
 } from '@nuxtjs/composition-api';
-import {
-  DAY,
-} from '@sogebot/ui-helpers/constants';
+import { DAY } from '@sogebot/ui-helpers/constants';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  isEqual,
-} from 'lodash';
+import { isEqual } from 'lodash';
+
 import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({

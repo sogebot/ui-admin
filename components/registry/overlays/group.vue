@@ -234,8 +234,8 @@ import {
   isEqual,
 } from 'lodash';
 import { v4 } from 'uuid';
-import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { haveAnyOptions } from '~/pages/registry/overlays/_id.vue';

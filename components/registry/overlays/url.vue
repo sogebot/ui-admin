@@ -17,12 +17,10 @@
 <script lang="ts">
 import type { OverlayMappers } from '@entity/overlay';
 import {
-  defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import {
-  defaults, isEqual, pick,
-} from 'lodash';
+import { isEqual } from 'lodash';
 
 import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 import { error } from '~/functions/error';

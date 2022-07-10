@@ -26,9 +26,8 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defaultsDeep, isEqual, pick,
-} from 'lodash';
+import { isEqual } from 'lodash';
+
 import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({

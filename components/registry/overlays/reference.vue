@@ -11,15 +11,15 @@
           item-value="id"
           label="Overlay to link"
         >
-          <template v-slot:selection="data">
-            <strong v-if="data.item.name" class="text-button">{{data.item.name}}&nbsp;|&nbsp;</strong>
-            <span class="text-overline">{{data.item.value}}&nbsp;|&nbsp;</span>
-            <span class="text-caption">{{data.item.id}}</span>
+          <template #selection="data">
+            <strong v-if="data.item.name" class="text-button">{{ data.item.name }}&nbsp;|&nbsp;</strong>
+            <span class="text-overline">{{ data.item.value }}&nbsp;|&nbsp;</span>
+            <span class="text-caption">{{ data.item.id }}</span>
           </template>
-          <template v-slot:item="data">
-            <strong v-if="data.item.name" class="text-button">{{data.item.name}}&nbsp;|&nbsp;</strong>
-            <span class="text-overline">{{data.item.value}}&nbsp;|&nbsp;</span>
-            <span class="text-caption">{{data.item.id}}</span>
+          <template #item="data">
+            <strong v-if="data.item.name" class="text-button">{{ data.item.name }}&nbsp;|&nbsp;</strong>
+            <span class="text-overline">{{ data.item.value }}&nbsp;|&nbsp;</span>
+            <span class="text-caption">{{ data.item.id }}</span>
           </template>
         </v-autocomplete>
       </v-expansion-panel-content>
@@ -30,10 +30,11 @@
 <script lang="ts">
 import type { OverlayMappers } from '@entity/overlay';
 import {
-  defineComponent, onMounted, ref, useContext, watch,
+  defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import { defaults, pick, isEqual } from 'lodash';
+import { isEqual } from 'lodash';
+
 import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 import { error } from '~/functions/error';
 

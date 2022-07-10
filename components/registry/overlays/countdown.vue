@@ -4,10 +4,10 @@
     <v-expansion-panel>
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
-        <form-x-time-input v-model.lazy="options.currentTime" label="Countdown" hide-details="auto"/>
+        <form-x-time-input v-model.lazy="options.currentTime" label="Countdown" hide-details="auto" />
 
-        <v-switch label="Persistent" :persistent-hint="true" :hint="(options.isPersistent ? 'Countdown will keep value on browser source load, you will need to reset by dashboard\'s action button.' : 'Countdown will reset on browser source load.')" v-model="options.isPersistent"/>
-        <v-switch label="Start automatically" :persistent-hint="true" :hint="(options.isStartedOnSourceLoad ? 'Countdown will start automatically on browser source load.' : 'Countdown won\'t start on browser source load, you will need to start it by dashboard\'s action button.')" v-model="options.isStartedOnSourceLoad"/>
+        <v-switch v-model="options.isPersistent" label="Persistent" :persistent-hint="true" :hint="(options.isPersistent ? 'Countdown will keep value on browser source load, you will need to reset by dashboard\'s action button.' : 'Countdown will reset on browser source load.')" />
+        <v-switch v-model="options.isStartedOnSourceLoad" label="Start automatically" :persistent-hint="true" :hint="(options.isStartedOnSourceLoad ? 'Countdown will start automatically on browser source load.' : 'Countdown won\'t start on browser source load, you will need to start it by dashboard\'s action button.')" />
         <v-switch v-model="options.showMilliseconds" label="Show milliseconds" />
 
         <v-row align="center" class="pa-2 pt-4">
@@ -37,18 +37,13 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defaultsDeep, isEqual, pick,
-} from 'lodash';
+import { isEqual } from 'lodash';
+
 import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
-  components: {
-    font: defineAsyncComponent(() => import('~/components/form/expansion/font.vue')),
-  },
-  props: {
-    value: [Object, Array],
-  },
+  components: { font: defineAsyncComponent(() => import('~/components/form/expansion/font.vue')) },
+  props:      { value: [Object, Array] },
   setup (props, ctx) {
     const model = ref([0]);
     const options = ref(setDefaultOpts(props.value, 'countdown'));
@@ -64,9 +59,7 @@ export default defineComponent({
       if (!isEqual(props.value, options.value)) {
         ctx.emit('input', val);
       }
-    }, {
-      deep: true, immediate: true,
-    });
+    }, { deep: true, immediate: true });
 
     return {
       model,

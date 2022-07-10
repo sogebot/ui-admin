@@ -1,6 +1,6 @@
 <template>
   <v-expansion-panels v-model="model">
-    <slot/>
+    <slot />
     <tts v-model="options" :readonly="typeof $slots.default === 'undefined'">
       <template #append>
         <v-switch
@@ -20,9 +20,9 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  defaults, isEqual, pick,
-} from 'lodash';
+import { isEqual } from 'lodash';
+
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
   components: { tts: defineAsyncComponent(() => import('~/components/form/expansion/tts.vue')) },

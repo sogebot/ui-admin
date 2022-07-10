@@ -185,11 +185,11 @@
           v-model.number="options.clips.volume"
           :label="translate('registry.alerts.volume')"
           min="0"
-          @input="timestampUpdate()"
           max="100"
           step="1"
           :thumb-size="0"
           thumb-label="always"
+          @input="timestampUpdate()"
         >
           <template #thumb-label="{ value }">
             <div style="transform: translateY(-8px);">
@@ -199,28 +199,28 @@
         </v-slider>
 
         <v-select
-          @input="timestampUpdate()"
           v-model="options.clips.period"
           :label="translate('overlays.credits.settings.cClipsPeriod')"
           :items="['stream', 'custom']"
+          @input="timestampUpdate()"
         />
 
         <v-text-field
-          type="number"
-          @blur="timestampUpdate()"
           v-model.number="options.clips.periodValue"
+          type="number"
           :label="translate('overlays.credits.settings.cClipsCustomPeriodInDays')"
-          @input="options.clips.periodValue = $event"
           :min="0"
+          @blur="timestampUpdate()"
+          @input="options.clips.periodValue = $event"
         />
 
         <v-text-field
-          type="number"
-          @blur="timestampUpdate()"
           v-model.number="options.clips.numOfClips"
+          type="number"
           :label="translate('overlays.credits.settings.cClipsNumOfClips')"
-          @input="options.clips.numOfClips = $event"
           :min="1"
+          @blur="timestampUpdate()"
+          @input="options.clips.numOfClips = $event"
         />
       </v-expansion-panel-content>
     </v-expansion-panel>
@@ -271,83 +271,35 @@ import translate from '@sogebot/ui-helpers/translate';
 import { defaultsDeep, isEqual } from 'lodash';
 
 export default defineComponent({
-  props: {
-    value: [Object, Array],
-  },
+  props: { value: [Object, Array] },
   setup (props: any, ctx) {
     const timestamp = ref(Date.now());
     const customTextTypes: { value: string, text: string }[] = [
-      {
-        value: 'bigHeader', text: 'Big Header',
-      },
-      {
-        value: 'header', text: 'Header',
-      },
-      {
-        value: 'text', text: 'Text',
-      },
-      {
-        value: 'smallText', text: 'Small Text',
-      },
-      {
-        value: 'separator', text: 'Separator',
-      },
+      { value: 'bigHeader', text: 'Big Header' },
+      { value: 'header', text: 'Header' },
+      { value: 'text', text: 'Text' },
+      { value: 'smallText', text: 'Small Text' },
+      { value: 'separator', text: 'Separator' },
     ];
     const socialTypes: { value: string, text: string }[] = [
-      {
-        value: 'mdiDeviantart', text: 'DeviantArt',
-      },
-      {
-        value: 'mdiDiscord', text: 'Discord',
-      },
-      {
-        value: 'mdiFacebook', text: 'Facebook',
-      },
-      {
-        value: 'mdiGithub', text: 'GitHub',
-      },
-      {
-        value: 'mdiGoogle', text: 'Google',
-      },
-      {
-        value: 'mdiInstagram', text: 'Instagram',
-      },
-      {
-        value: 'mdiLinkedin', text: 'LinkedIn',
-      },
-      {
-        value: 'mdiSonyPlaystation', text: 'Playstation',
-      },
-      {
-        value: 'mdiPinterest', text: 'Pinterest',
-      },
-      {
-        value: 'mdiReddit', text: 'Reddit',
-      },
-      {
-        value: 'mdiSkype', text: 'Skype',
-      },
-      {
-        value: 'mdiSnapchat', text: 'Snapchat',
-      },
-      {
-        value: 'mdiSpotify', text: 'Spotify',
-      },
-      {
-        value: 'mdiSteam', text: 'Steam',
-      },
-      {
-        value: 'mdiTwitter', text: 'Twitter',
-      },
-      {
-        value: 'mdiMicrosoftWindows', text: 'Windows',
-      },
-      {
-        value: 'mdiMicrosoftXbox', text: 'XBox',
-      },
-      {
-        value: 'mdiYoutube', text: 'YouTube',
-      },
+      { value: 'mdiDeviantart', text: 'DeviantArt' },
+      { value: 'mdiDiscord', text: 'Discord' },
+      { value: 'mdiFacebook', text: 'Facebook' },
+      { value: 'mdiGithub', text: 'GitHub' },
+      { value: 'mdiGoogle', text: 'Google' },
+      { value: 'mdiInstagram', text: 'Instagram' },
+      { value: 'mdiLinkedin', text: 'LinkedIn' },
+      { value: 'mdiSonyPlaystation', text: 'Playstation' },
+      { value: 'mdiPinterest', text: 'Pinterest' },
+      { value: 'mdiReddit', text: 'Reddit' },
+      { value: 'mdiSkype', text: 'Skype' },
+      { value: 'mdiSnapchat', text: 'Snapchat' },
+      { value: 'mdiSpotify', text: 'Spotify' },
+      { value: 'mdiSteam', text: 'Steam' },
+      { value: 'mdiTwitter', text: 'Twitter' },
+      { value: 'mdiMicrosoftWindows', text: 'Windows' },
+      { value: 'mdiMicrosoftXbox', text: 'XBox' },
+      { value: 'mdiYoutube', text: 'YouTube' },
     ];
 
     const options = ref(
@@ -394,9 +346,7 @@ export default defineComponent({
       if (!isEqual(props.value, options.value)) {
         ctx.emit('input', options.value);
       }
-    }, {
-      deep: true, immediate: true,
-    });
+    }, { deep: true, immediate: true });
 
     const timestampUpdate = () => {
       setTimeout(() => {

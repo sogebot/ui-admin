@@ -74,15 +74,12 @@ import {
 } from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import {
-  isEqual,
-} from 'lodash';
+import { isEqual } from 'lodash';
+
 import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
-  props: {
-    value: [Object, Array],
-  },
+  props: { value: [Object, Array] },
   setup (props: any, ctx) {
     const model = ref(0);
     const options = ref(setDefaultOpts(props.value, 'emotes'));
@@ -91,9 +88,7 @@ export default defineComponent({
       if (!isEqual(props.value, options.value)) {
         ctx.emit('input', val);
       }
-    }, {
-      deep: true, immediate: true,
-    });
+    }, { deep: true, immediate: true });
 
     const test = () => {
       getSocket('/core/emotes').emit('test', () => {

@@ -17,11 +17,9 @@
 
 <script setup lang="ts">
 import type { AlertInterface } from '@entity/alert';
-import {
-  isEqual,
-} from 'lodash';
-import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
+import { isEqual } from 'lodash';
 
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 import GET_ALL from '~/queries/alert/getAll.gql';
 
 const { $graphql } = useNuxtApp();
