@@ -40,7 +40,7 @@ import { error } from '~/functions/error';
 
 export default defineComponent({
   props: { value: [Object, Array] },
-  setup (props: any) {
+  setup (props: any, ctx) {
     const items = ref([] as OverlayMappers[]);
     const loading = ref(true);
 

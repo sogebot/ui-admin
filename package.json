@@ -13,7 +13,7 @@
     "release": "standard-version && git push --follow-tags origin main",
     "release:major": "standard-version -r major && git push --follow-tags origin main",
     "prepublishOnly": "npm run generate",
-    "dev": "npm run link-backend && cross-env PORT=3000 NODE_OPTIONS=--openssl-legacy-provider nuxi dev",
+    "dev": "npm run link-backend && cross-env PORT=3000 nuxi dev",
     "build": "npm run link-backend && nuxi generate",
     "start": "npm run link-backend && nuxi preview",
     "generate": "nuxt generate",

@@ -42,7 +42,7 @@ export default defineComponent({
     });
 
     const model = ref(0);
-    const options = ref(setDefaultOpts(props.value, 'textregistry'));
+    const options = ref(setDefaultOpts(props.value, 'textRegistry'));
 
     onMounted(() => {
       getSocket('/registries/text').emit('generic::getAll', (err, itemsGetAll: TextInterface[]) => {
