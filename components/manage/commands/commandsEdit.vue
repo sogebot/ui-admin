@@ -54,6 +54,7 @@
               type="number"
               hide-details="auto"
               :rules="rules.count"
+              readonly
               append-outer-icon="mdi-restore"
               @click:append-outer="item.count = 0"
             />
@@ -294,6 +295,15 @@ export default defineComponent({
         });
 
         saving.value = true;
+
+        if (item.value.count === 0) {
+          console.log('Resetting count', item.value.command);
+          getSocket('/systems/customcommands').emit('commands::resetCountByCommand', item.value.command, (err) => {
+            if (err) {
+              console.log(err);
+            }
+          });
+        }
 
         getSocket('/systems/customcommands').emit('generic::setById', {
           id:   item.value.id ?? uuid(),
