@@ -8,7 +8,7 @@
       :fullscreen="$vuetify.breakpoint.mobile"
     >
       <template #activator="{ on, attrs }">
-        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" v-on="on" class="primary-hover">
+        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" class="primary-hover" v-on="on">
           <v-icon>
             mdi-pencil
           </v-icon>
@@ -49,6 +49,7 @@
             </v-row>
 
             <v-text-field
+              readonly
               :label="capitalize(translate('count'))"
               :value="item.count"
               type="number"
@@ -56,7 +57,7 @@
               :rules="rules.count"
               readonly
               append-outer-icon="mdi-restore"
-              @click:append-outer="item.count = 0"
+              @click:append-outer="() => { item.count = 0; resetCount = true }"
             />
 
             <v-row dense>
@@ -225,12 +226,8 @@ const newItem = {
 export default defineComponent({
   components: {
     draggable,
-    'input-variables': defineAsyncComponent({
-      loader: () => import('~/components/inputVariables.vue'),
-    }),
-    'input-permissions': defineAsyncComponent({
-      loader: () => import('~/components/inputPermissions.vue'),
-    }),
+    'input-variables':   defineAsyncComponent({ loader: () => import('~/components/inputVariables.vue') }),
+    'input-permissions': defineAsyncComponent({ loader: () => import('~/components/inputPermissions.vue') }),
   },
   props: {
     value:           Object,
@@ -246,6 +243,7 @@ export default defineComponent({
     const saving = ref(false);
     const form = ref(null);
     const group = ref();
+    const resetCount = ref(false);
 
     function saveSuccess () {
       EventBus.$emit('snack', 'success', 'Data updated.');
@@ -272,9 +270,7 @@ export default defineComponent({
       for (let i = 0; i < val.responses.length; i++) {
         item.value.responses[i].order = i;
       }
-    }, {
-      deep: true,
-    });
+    }, { deep: true });
 
     const save = () => {
       if ((form.value as unknown as HTMLFormElement).validate()) {
@@ -290,9 +286,12 @@ export default defineComponent({
             }
           }
         }
-        console.log('Updating', {
-          data: item.value,
-        });
+        console.log('Updating', { data: item.value });
+
+        if (resetCount.value) {
+          console.log('Resetting count value', item.value.command);
+          getSocket('/systems/customcommands').emit('commands::resetCountByCommand', item.value.command, err => err ? console.log(err) : null);
+        }
 
         saving.value = true;
 
