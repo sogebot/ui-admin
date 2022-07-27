@@ -1,5 +1,12 @@
 <template>
-  <v-menu :key="'notifications-' + $store.state.navbarMiniVariant" offset-x nudge-right="10" :rounded="false" :close-on-content-click="false" v-if="$store.state.notifications.length > 0">
+  <v-menu
+    v-if="$store.state.notifications.length > 0"
+    :key="'notifications-' + $store.state.navbarMiniVariant"
+    offset-x
+    nudge-right="10"
+    :rounded="false"
+    :close-on-content-click="false"
+  >
     <template #activator="{ on, attrs }">
       <v-tooltip v-if="$store.state.navbarMiniVariant && !$vuetify.breakpoint.mobile" right>
         <template #activator="{ on: on2, attrs: attrs2 }">
@@ -73,7 +80,7 @@
         <h5>{{ translate('errors.new_update_available') }}</h5>
         <div
           class="text-caption"
-          v-html="translate('errors.new_bot_version_available_at', { version: $store.state.nextVersion })"
+          v-html="$t('errors.new_bot_version_available_at', { version: $store.state.nextVersion })"
         />
       </v-alert>
     </div>
@@ -81,14 +88,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
-import { translate } from '@sogebot/ui-helpers/translate'
+import translate from '@sogebot/ui-helpers/translate';
+import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
-  setup() {
-    return {
-      translate
-    }
+  setup () {
+    return { translate };
   },
-})
+});
 </script>
