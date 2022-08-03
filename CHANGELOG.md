@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [54.0.0](https://github.com/sogebot/ui-admin/compare/v53.0.5...v54.0.0) (2022-08-03)
+
+
+### Features
+
+* add obswebsocket 5 ([ea2266a](https://github.com/sogebot/ui-admin/commit/ea2266afb46f9ab5de3a9be3b55471134725211e))
+
+
+### Bug Fixes
+
+* update incorrect translate import ([3c35a99](https://github.com/sogebot/ui-admin/commit/3c35a99753a647ac29b23a61eaba3d555531bd95))
+
 ### [53.0.5](https://github.com/sogebot/ui-admin/compare/v53.0.4...v53.0.5) (2022-07-26)
 
 
