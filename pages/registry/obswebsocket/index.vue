@@ -116,31 +116,31 @@
 
 <script setup lang="ts">
 import type { OBSWebsocketInterface } from '@entity/obswebsocket';
+import { getSocket } from '@sogebot/ui-helpers/socket.js';
 import translate from '@sogebot/ui-helpers/translate';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
-import GET_ALL from '~/queries/obsWebsocket/getAll.gql';
-import REMOVE from '~/queries/obsWebsocket/remove.gql';
-
-const { $graphql } = useNuxtApp();
 
 const loading = ref(true);
 const items = ref([] as OBSWebsocketInterface[]);
-const refetch = async () => {
-  const data = await $graphql.default.request(GET_ALL);
-
-  // we also need to reset selection values
-  if (selected.value.length > 0) {
-    selected.value.forEach((selectedItem, index) => {
-      selectedItem = data.OBSWebsocket.find(o => o.id === selectedItem.id) || selectedItem;
-      selected.value[index] = selectedItem;
-    });
-  }
-
-  items.value = data.OBSWebsocket;
-  loading.value = false;
+const refetch = () => {
+  getSocket('/').emit('integration::obswebsocket::generic::getAll', (err, data) => {
+    if (err) {
+      error(err);
+    } else {
+      // we also need to reset selection values
+      if (selected.value.length > 0) {
+        selected.value.forEach((selectedItem, index) => {
+          selectedItem = data.find(o => o.id === selectedItem.id) || selectedItem;
+          selected.value[index] = selectedItem;
+        });
+      }
+      items.value = data;
+    }
+    loading.value = false;
+  });
 };
 
 onMounted(() => {
@@ -188,10 +188,16 @@ const headersDelete = [
 
 const deleteSelected = async () => {
   deleteDialog.value = false;
-  await Promise.all(selected.value.map(async (item) => {
-    await $graphql.default.request(REMOVE, { id: item.id });
+  await Promise.all(selected.value.map((item) => {
+    return new Promise<void>((resolve) => {
+      getSocket('/').emit('integration::obswebsocket::generic::deleteById', item.id, (err) => {
+        if (err) {
+          error(err);
+        }
+        resolve();
+      });
+    });
   }));
-  selected.value.forEach(item => $graphql.default.request(REMOVE, { id: item.id }));
   selected.value = [];
   EventBus.$emit('snack', 'success', 'Data removed.');
   refetch();

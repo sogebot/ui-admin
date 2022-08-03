@@ -127,7 +127,6 @@ import {
 import { v4 as uuid } from 'uuid';
 
 import { error } from '~/functions/error';
-import GET_ALL from '~/queries/obsWebsocket/getAll.gql';
 
 export default defineComponent({
   props: {
@@ -151,8 +150,10 @@ export default defineComponent({
       }));
     });
 
-    const refresh = async () => {
-      obsWebsocketsTaskIds.value = (await (context as any).$graphql.default.request(GET_ALL)).OBSWebsocket;
+    const refresh = () => {
+      getSocket('/').emit('integration::obswebsocket::generic::getAll', (data) => {
+        obsWebsocketsTaskIds.value = data;
+      });
       setTimeout(() => refresh(), 5000);
     };
 
