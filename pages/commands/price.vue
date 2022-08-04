@@ -31,8 +31,14 @@
                     </v-card-title>
 
                     <v-card-text>
-                      <v-data-table dense :items="selected" :headers="headersDelete" :items-per-page="-1"
-                        hide-default-header hide-default-footer />
+                      <v-data-table
+                        dense
+                        :items="selected"
+                        :headers="headersDelete"
+                        :items-per-page="-1"
+                        hide-default-header
+                        hide-default-footer
+                      />
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
@@ -52,9 +58,18 @@
       </v-app-bar>
     </v-expand-transition>
 
-    <v-data-table v-model="selected" calculate-widths show-select sort-by="command" :search="search"
-      :loading="state.loading !== ButtonStates.success && state.loadingPrm !== ButtonStates.success" :headers="headers"
-      :items-per-page="-1" :items="items" @current-items="saveCurrentItems">
+    <v-data-table
+      v-model="selected"
+      calculate-widths
+      show-select
+      sort-by="command"
+      :search="search"
+      :loading="state.loading !== ButtonStates.success && state.loadingPrm !== ButtonStates.success"
+      :headers="headers"
+      :items-per-page="-1"
+      :items="items"
+      @current-items="saveCurrentItems"
+    >
       <template #top>
         <table-search-bar :search.sync="search">
           <edit :rules="rules" @save="refresh()" />
@@ -62,7 +77,7 @@
       </template>
 
       <template #[`item`]="{ item }">
-        <table-mobile :headers="headers" :selected="selected" :item="item" :addToSelectedItem="addToSelectedItem">
+        <table-mobile :headers="headers" :selected="selected" :item="item" :add-to-selected-item="addToSelectedItem">
           <template #actions>
             <edit :rules="rules" :value="item" @save="refresh()" />
             <v-btn class="danger-hover" icon @click="selected = [item]; deleteDialog = true;">
@@ -86,6 +101,7 @@
 </template>
 
 <script lang="ts">
+import type { PriceInterface } from '@entity/price';
 import {
   defineAsyncComponent,
   defineComponent, onMounted, ref, useStore,
@@ -94,9 +110,9 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getLocalizedName } from '@sogebot/ui-helpers/getLocalized';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import { capitalize, cloneDeep } from 'lodash';
 
-import type { PriceInterface } from '@entity/price';
 import {
   minLength, minValue, required, startsWith,
 } from '~/functions//validators';
@@ -106,8 +122,8 @@ import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
   components: {
-    edit:         defineAsyncComponent(() => import('~/components/manage/price/edit.vue')),
-    batch:        defineAsyncComponent(() => import('~/components/manage/price/batch.vue')),
+    edit:               defineAsyncComponent(() => import('~/components/manage/price/edit.vue')),
+    batch:              defineAsyncComponent(() => import('~/components/manage/price/batch.vue')),
     'table-search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
   },
   setup () {
@@ -123,9 +139,7 @@ export default defineComponent({
       currentItems.value = value;
     };
 
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
@@ -137,9 +151,7 @@ export default defineComponent({
     };
 
     const headers = [
-      {
-        value: 'command', text: translate('command'),
-      },
+      { value: 'command', text: translate('command') },
       {
         value: 'enabled', text: translate('enabled'), align: 'center',
       },
@@ -149,14 +161,10 @@ export default defineComponent({
       {
         value: 'price', text: capitalize(translate('systems.price.price.name')), align: 'right',
       },
-      {
-        value: 'actions', sortable: false,
-      },
+      { value: 'actions', sortable: false },
     ];
     const headersDelete = [
-      {
-        value: 'command', text: translate('command'),
-      },
+      { value: 'command', text: translate('command') },
     ];
 
     onMounted(() => {
@@ -164,42 +172,34 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/price').emit('generic::getAll', (err, itemsGetAll: PriceInterface[]) => {
-        if (err) {
-          return error(err);
-        }
-        items.value = itemsGetAll;
-        console.debug({
-          items: itemsGetAll,
-        });
+      axios.get('/api/systems/price', { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        .then(({ data }) => {
+          items.value = data.data;
+          console.debug(data);
 
-        // we also need to reset selection values
-        if (selected.value.length > 0) {
-          selected.value.forEach((val, index) => {
-            val = items.value.find(o => o.id === val.id) || val;
-            selected.value[index] = val;
-          });
-        }
+          // we also need to reset selection values
+          if (selected.value.length > 0) {
+            selected.value.forEach((val, index) => {
+              val = items.value.find(o => o.id === val.id) || val;
+              selected.value[index] = val;
+            });
+          }
 
-        state.value.loading = ButtonStates.success;
-      });
+          state.value.loading = ButtonStates.success;
+        }).catch(e => error(e));
     };
 
     const deleteSelected = async () => {
       deleteDialog.value = false;
       await Promise.all(
         selected.value.map((item) => {
-          return new Promise((resolve, reject) => {
+          return new Promise<void>((resolve, reject) => {
             if (!item.id) {
               reject(error('Missing item id'));
               return;
             }
-            getSocket('/systems/price').emit('generic::deleteById', item.id, (err) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
+            axios.delete('/api/systems/price/' + item.id, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+              .finally(() => resolve());
           });
         }),
       );
@@ -265,9 +265,7 @@ export default defineComponent({
 
         if (isValid) {
           console.log('Updating', merged);
-          getSocket('/systems/price').emit('price::save', {
-            ...merged,
-          }, () => {
+          getSocket('/admin').emit('systems|price|save', { ...merged }, () => {
             EventBus.$emit('snack', 'success', 'Data updated.');
             refresh();
           });

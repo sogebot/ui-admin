@@ -8,7 +8,7 @@
       :fullscreen="$vuetify.breakpoint.mobile"
     >
       <template #activator="{ on, attrs }">
-        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" v-on="on" class="primary-hover">
+        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" class="primary-hover" v-on="on">
           <v-icon>
             mdi-pencil
           </v-icon>
@@ -106,17 +106,17 @@
 </template>
 
 <script lang="ts">
+import type { PriceInterface } from '@entity/price';
 import { getLocalizedName } from '@sogebot/ui-helpers/getLocalized';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, ref, watch,
 } from '@vue/composition-api';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import { v4 } from 'uuid';
 
-import type { PriceInterface } from '@entity/price';
 import { EventBus } from '~/functions/event-bus';
 
 type Props = {
@@ -183,15 +183,15 @@ export default defineComponent({
         console.log('Updating', item.value);
 
         saving.value = true;
-        getSocket('/systems/price').emit('price::save', {
-          ...item.value,
-          id: item.value.id || v4(),
-        }, () => {
-          saving.value = false;
-          menu.value = false;
-          EventBus.$emit('snack', 'success', 'Data updated.');
-          ctx.emit('save');
-        });
+        axios.post('/api/systems/price',
+          { ...item.value, id: item.value.id || v4() },
+          { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(() => {
+            saving.value = false;
+            menu.value = false;
+            EventBus.$emit('snack', 'success', 'Data updated.');
+            ctx.emit('save');
+          });
       }
     };
 
