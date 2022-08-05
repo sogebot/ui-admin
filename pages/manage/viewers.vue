@@ -68,9 +68,6 @@
               />
             </v-col>
             <v-col cols="auto" align-self="center">
-              <filter-button :value="filter.followers" @save="value=>filter.followers=value">
-                followers
-              </filter-button>
               <filter-button :value="filter.subscribers" @save="value=>filter.subscribers=value">
                 subscribers
               </filter-button>
@@ -130,14 +127,6 @@
           <v-chip x-small :color="item.isVIP ? 'success' : 'error'">
             VIP
           </v-chip>
-          <div class="d-inline-flex">
-            <followers-chip
-              :key="item.userId + 'follow' + timestamp"
-              :item="item"
-              @save="item.isFollower = $event.isFollower; item.haveFollowerLock = $event.haveFollowerLock; update(item, true, 'isFollower')"
-              @close="timestamp = Date.now()"
-            />
-          </div>
           <div class="d-inline-flex">
             <subscribers-chip
               :key="item.userId + 'sub' + timestamp"
@@ -282,53 +271,6 @@
         </div>
       </template>
 
-      <template #[`item.followedAt`]="{ item }">
-        <div class="dividerEdit">
-          <v-edit-dialog
-            persistent
-            large
-            :return-value.sync="item.followedAt"
-            @open="lockBackup = item.haveFollowedAtLock"
-            @close="item.haveFollowedAtLock = lockBackup"
-            @save="update(item, true, 'followedAt')"
-          >
-            <template v-if="item.followedAt">
-              <v-icon v-if="item.haveFollowedAtLock" x-small>
-                mdi-lock
-              </v-icon>
-              {{ dayjs(String(item.followedAt)).format('LL') }} {{ dayjs(String(item.followedAt)).format('LTS') }}
-            </template>
-            <v-divider v-else class="px-4" />
-
-            <template #input>
-              <v-text-field
-                type="datetime-local"
-                step="1"
-                clearable
-                :value="item.followedAt ? dayjs(item.followedAt).format('YYYY-MM-DDTHH:mm') : null"
-                @input="item.followedAt = $event ? dayjs($event).toISOString() : null"
-              >
-                <template #prepend>
-                  <v-btn
-                    :color="item.haveFollowedAtLock ? 'success' : 'error'"
-                    icon
-                    @click="item.haveFollowedAtLock = !item.haveFollowedAtLock"
-                  >
-                    <v-icon>{{ item.haveFollowedAtLock ? 'mdi-lock' : 'mdi-lock-off' }}</v-icon>
-                  </v-btn>
-                  <v-btn icon :disabled="state.forceCheckFollowedAt !== ButtonStates.idle" @click="forceCheckFollowedAt(item)">
-                    <v-progress-circular v-if="state.forceCheckFollowedAt !== ButtonStates.idle" indeterminate />
-                    <v-icon v-else>
-                      mdi-refresh
-                    </v-icon>
-                  </v-btn>
-                </template>
-              </v-text-field>
-            </template>
-          </v-edit-dialog>
-        </div>
-      </template>
-
       <template #[`item.subscribedAt`]="{ item }">
         <div class="dividerEdit">
           <v-edit-dialog
@@ -449,7 +391,6 @@ export default defineComponent({
     timeToTime,
   },
   components: {
-    followersChip:   defineAsyncComponent({ loader: () => import('~/components/viewers/followersChip.vue') }),
     subscribersChip: defineAsyncComponent({ loader: () => import('~/components/viewers/subscribersChip.vue') }),
     tips:            defineAsyncComponent({ loader: () => import('~/components/viewers/tips.vue') }),
     bits:            defineAsyncComponent({ loader: () => import('~/components/viewers/bits.vue') }),
@@ -486,11 +427,9 @@ export default defineComponent({
     const timestamp = ref(new Date().toISOString());
     const state = ref({
       history:              ButtonStates.idle,
-      forceCheckFollowedAt: ButtonStates.idle,
       loading:              ButtonStates.progress,
     } as {
       history: number;
-      forceCheckFollowedAt: number;
       loading: number;
     });
 
@@ -524,7 +463,6 @@ export default defineComponent({
     });
 
     const filter = ref({
-      followers:   null,
       subscribers: null,
       vips:        null,
       active:      null,
@@ -564,7 +502,6 @@ export default defineComponent({
       { value: 'points', text: capitalize(translate('points')) },
       { value: 'watchedTime', text: capitalize(translate('watched-time')) },
       { value: 'seenAt', text: capitalize(translate('last-seen')) },
-      { value: 'followedAt', text: capitalize(translate('followed-since')) },
       { value: 'subscribedAt', text: capitalize(translate('subscribed-since')) },
       { value: 'sumTips', text: capitalize(translate('tips')) },
       { value: 'sumBits', text: capitalize(translate('bits')) },
@@ -636,15 +573,9 @@ export default defineComponent({
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             const toUpdate: Partial<UserInterface> = { [attr]: item[attr] };
-            if (attr === 'isFollower') {
-              toUpdate.isFollower = item.isFollower;
-              toUpdate.haveFollowerLock = item.haveFollowerLock;
-            } else if (attr === 'isSubscriber') {
+            if (attr === 'isSubscriber') {
               toUpdate.isSubscriber = item.isSubscriber;
               toUpdate.haveSubscriberLock = item.haveSubscriberLock;
-            } else if (attr === 'followedAt') {
-              toUpdate.followedAt = item.followedAt;
-              toUpdate.haveFollowedAtLock = item.haveFollowedAtLock;
             } else if (attr === 'subscribedAt') {
               toUpdate.subscribedAt = item.subscribedAt;
               toUpdate.haveSubscribedAtLock = item.haveSubscribedAtLock;
@@ -662,21 +593,6 @@ export default defineComponent({
       );
       refresh();
       EventBus.$emit('snack', 'success', 'Data updated.');
-    };
-
-    const forceCheckFollowedAt = (item: UserInterface) => {
-      state.value.forceCheckFollowedAt = ButtonStates.progress;
-      getSocket('/core/users').emit('viewers::followedAt', item.userId, (err, followedAt) => {
-        state.value.forceCheckFollowedAt = ButtonStates.idle;
-        if (err) {
-          if (typeof err === 'string' && err.includes('Not a follower') && item) {
-            (item.followedAt as any) = null;
-          }
-          return console.error(err);
-        } else if (item) {
-          item.followedAt = followedAt;
-        }
-      });
     };
 
     const resetPoints = () => {
@@ -767,7 +683,6 @@ export default defineComponent({
       refresh,
       capitalize,
       fItems,
-      forceCheckFollowedAt,
       timestamp,
       dayjs,
       lockBackup,

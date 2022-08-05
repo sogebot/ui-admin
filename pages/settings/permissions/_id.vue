@@ -124,7 +124,7 @@ watch(() => route.params.id, () => {
 const model = ref(null as PermissionsInterface | null);
 const valid = ref(true);
 
-const automationItems = ['none', 'casters', 'moderators', 'subscribers', 'vip', 'viewers', 'followers']
+const automationItems = ['none', 'casters', 'moderators', 'subscribers', 'vip', 'viewers']
   .map(o => ({ value: o, text: translate('core.permissions.' + o) }));
 
 const remove = async (id: string) => {

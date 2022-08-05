@@ -238,9 +238,6 @@
               {{ winner.userName }}
             </div>
             <v-row no-gutters class="m-auto text-center">
-              <v-col :class="{'text-decoration-line-through': !winner.isFollower }">
-                {{ translate('follower') }}
-              </v-col>
               <v-col :class="{'text-decoration-line-through': !winner.isSubscriber }">
                 {{ translate('subscriber') }}
               </v-col>
@@ -331,18 +328,17 @@ export default defineComponent({
     watch(eligible, (val, old) => {
       if ((val.includes('all') && !old.includes('all'))
         || val.length === 0) {
-        // we picked all, unselect subs and followers
+        // we picked all, unselect subs
         eligible.value = ['all'];
       }
-      if ((val.includes('followers') || val.includes('subscribers')) && old.includes('all')) {
-        // we picked all, unselect subs and followers
+      if (val.includes('subscribers') && old.includes('all')) {
+        // we picked all, unselect subs
         eligible.value = eligible.value.filter(o => o !== 'all');
       }
     });
 
     const eligibleItems = [
       { text: translate('everyone'), value: 'all' },
-      { text: translate('followers'), value: 'followers' },
       { text: translate('subscribers'), value: 'subscribers' },
     ];
     const typeItems = [
@@ -433,13 +429,10 @@ export default defineComponent({
             range.value[0] = raffle.minTickets ?? 0;
 
             // set eligibility
-            if (!raffle.forSubscribers && !raffle.forFollowers) {
+            if (!raffle.forSubscribers) {
               eligible.value = ['all'];
             } else {
               eligible.value = [];
-              if (raffle.forFollowers) {
-                eligible.value.push('followers');
-              }
               if (raffle.forSubscribers) {
                 eligible.value.push('subscribers');
               }
@@ -460,8 +453,8 @@ export default defineComponent({
     function open () {
       const out = [];
       out.push(keyword.value);
-      if (eligible.value.includes('followers') || eligible.value.includes('subscribers')) {
-        out.push('-for ' + (eligible.value.includes('followers') ? 'followers' : ' ') + (eligible.value.includes('subscribers') ? 'subscribers' : ' '));
+      if (eligible.value.includes('subscribers')) {
+        out.push('-for ' + (eligible.value.includes('subscribers') ? 'subscribers' : ' '));
       }
 
       if (!isTypeKeywords.value) {

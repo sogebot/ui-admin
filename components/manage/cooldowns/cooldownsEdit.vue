@@ -109,17 +109,6 @@
                     : 'Subscribers won\'t be affected with cooldown.')"
                 />
               </v-col>
-              <v-col>
-                <v-switch
-                  v-model="item.isFollowerAffected"
-                  :label="capitalize(translate('core.permissions.followers'))"
-                  persistent-hint
-                  hide-details="auto"
-                  :hint="(item.isFollowerAffected
-                    ? 'Followers will be affected with cooldown.'
-                    : 'Followers won\'t be affected with cooldown.')"
-                />
-              </v-col>
             </v-row>
           </v-form>
         </v-card-text>
@@ -160,14 +149,13 @@ type Props = {
 
 const newItem = {
   name:                 '',
-  miliseconds:                60000,
+  miliseconds:          60000,
   type:                 'global',
   isErrorMsgQuiet:      false,
   isEnabled:            true,
   isOwnerAffected:      false,
   isModeratorAffected:  false,
   isSubscriberAffected: false,
-  isFollowerAffected:   false,
 };
 
 export default defineComponent({

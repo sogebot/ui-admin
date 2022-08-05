@@ -174,9 +174,6 @@ export default defineComponent({
       {
         value: 'isSubscriberAffected', text: capitalize(translate('core.permissions.subscribers')), align: 'center',
       },
-      {
-        value: 'isFollowerAffected', text: capitalize(translate('core.permissions.followers')), align: 'center',
-      },
       { value: 'actions', sortable: false },
     ];
 

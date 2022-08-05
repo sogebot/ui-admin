@@ -65,7 +65,7 @@ export default defineComponent({
   setup (props: { value: Omit<PermissionFiltersInterface, 'permission'>[] }, ctx) {
     const model = ref(props.value);
     const typeItems = ref([
-      'level', 'ranks', 'points', 'watched', 'tips', 'bits', 'messages', 'subtier', 'subcumulativemonths', 'substreakmonths', 'followtime',
+      'level', 'ranks', 'points', 'watched', 'tips', 'bits', 'messages', 'subtier', 'subcumulativemonths', 'substreakmonths'
     ].map(o => ({
       value: o, text: translate('core.permissions.' + o),
     })),

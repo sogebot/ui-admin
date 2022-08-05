@@ -119,24 +119,6 @@
                 />
               </v-col>
             </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="auto" align-self="center">
-                <v-checkbox v-model="toggles" value="isFollowerAffected" />
-              </v-col>
-              <v-col>
-                <v-switch
-                  :disabled="!toggles.includes('isFollowerAffected')"
-                  v-model="isFollowerAffected"
-                  :label="capitalize(translate('core.permissions.followers'))"
-                  persistent-hint
-                  hide-details="auto"
-                  :hint="(isFollowerAffected
-                    ? 'Followers will be affected with cooldown.'
-                    : 'Followers won\'t be affected with cooldown.')"
-                />
-              </v-col>
-            </v-row>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -188,7 +170,6 @@ export default defineComponent({
     const isErrorMsgQuiet = ref(false);
     const isOwnerAffected = ref(false);
     const isSubscriberAffected = ref(false);
-    const isFollowerAffected = ref(false);
     const isModeratorAffected = ref(false);
 
     const save = () => {
@@ -208,9 +189,6 @@ export default defineComponent({
         isSubscriberAffected: toggles.value.includes('isSubscriberAffected')
           ? isSubscriberAffected.value
           : undefined,
-        isFollowerAffected: toggles.value.includes('isFollowerAffected')
-          ? isFollowerAffected.value
-          : undefined,
         isModeratorAffected: toggles.value.includes('isModeratorAffected')
           ? isModeratorAffected.value
           : undefined,
@@ -223,7 +201,6 @@ export default defineComponent({
       toggles,
       isEnabled,
       isErrorMsgQuiet,
-      isFollowerAffected,
       isOwnerAffected,
       isModeratorAffected,
       isSubscriberAffected,

@@ -250,13 +250,10 @@ export default defineComponent({
     };
 
     const getGroup: Record<string, any> = {};
-    for (const group of ['viewer', 'subscriber', 'follower']) {
+    for (const group of ['viewer', 'subscriber']) {
       let name = 'Watch';
       if (group === 'subscriber') {
         name = 'Sub';
-      }
-      if (group === 'follower') {
-        name = 'Follow'
       }
 
       getGroup[group] = {

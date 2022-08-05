@@ -22,9 +22,6 @@
                 ALL
               </v-btn>
               <v-btn text small>
-                FOLLOWERS
-              </v-btn>
-              <v-btn text small>
                 SUBSCRIBERS
               </v-btn>
             </v-btn-toggle>
@@ -111,7 +108,6 @@
                       <strong>{{ user.username }}</strong>
                     </v-col>
                     <v-col>
-                      <code v-if="user.isFollower">FOLLOWER</code>
                       <code v-if="user.isSubscriber">SUBSCRIBER</code>
                     </v-col>
                     <v-col>
@@ -149,7 +145,6 @@
                     <strong>{{ user.username }}</strong>
                   </v-col>
                   <v-col>
-                    <code v-if="user.isFollower">FOLLOWER</code>
                     <code v-if="user.isSubscriber">SUBSCRIBER</code>
                   </v-col>
                   <v-col>
@@ -222,11 +217,8 @@ export default defineComponent({
         if (data.eligibility.eligibilityAll[0] && !eligibility.value.includes(0)) {
           eligibility.value.push(0);
         }
-        if (data.eligibility.eligibilityFollowers[0] && !eligibility.value.includes(0)) {
-          eligibility.value.push(1);
-        }
         if (data.eligibility.eligibilitySubscribers[0] && !eligibility.value.includes(0)) {
-          eligibility.value.push(2);
+          eligibility.value.push(1);
         }
       });
       getSocket('/systems/queue').emit('get.value', 'locked', (err, locked2: boolean) => {
@@ -241,11 +233,11 @@ export default defineComponent({
     watch(eligibility, (val, old) => {
       if ((val.includes(0) && !old.includes(0))
         || val.length === 0) {
-        // we picked all, unselect subs and followers
+        // we picked all, unselect subs
         eligibility.value = [0];
       }
-      if ((val.includes(1) || val.includes(2)) && old.includes(0)) {
-        // we picked all, unselect subs and followers
+      if (val.includes(1) && old.includes(0)) {
+        // we picked all, unselect subs
         eligibility.value = eligibility.value.filter(o => o !== 0);
       }
     });
@@ -253,8 +245,7 @@ export default defineComponent({
       const data = {
         eligibility: {
           eligibilityAll:         eligibility.value.includes(0),
-          eligibilityFollowers:   eligibility.value.includes(1),
-          eligibilitySubscribers: eligibility.value.includes(2),
+          eligibilitySubscribers: eligibility.value.includes(1),
         },
       };
       getSocket('/systems/queue').emit('settings.update', data, () => {
@@ -270,11 +261,7 @@ export default defineComponent({
         return users.value;
       } else {
         let filteredUsers = users.value;
-        if (eligibility.value.includes(1) && eligibility.value.includes(2)) {
-          filteredUsers = filteredUsers.filter(o => o.isFollower || o.isSubscriber);
-        } else if (eligibility.value.includes(1)) {
-          filteredUsers = filteredUsers.filter(o => o.isFollower);
-        } else if (eligibility.value.includes(2)) {
+        if (eligibility.value.includes(1)) {
           filteredUsers = filteredUsers.filter(o => o.isSubscriber);
         }
         return filteredUsers.sort(o => -(new Date(o.createdAt).getTime()));

@@ -176,7 +176,7 @@ export default defineComponent({
     const viewer = ref(null as import('@sogebot/backend/d.ts/src/helpers/socket').ViewerReturnType | null);
     const viewerIs = computed(() => {
       const status: string[] = [];
-      const isArray = ['isFollower', 'isSubscriber', 'isVIP'] as const;
+      const isArray = ['isSubscriber', 'isVIP'] as const;
       isArray.forEach((item: typeof isArray[number]) => {
         if (viewer.value && viewer.value[item]) {
           status.push(item.replace('is', ''));

@@ -49,10 +49,6 @@
               :label="translate('systems.raffles.settings.subscribersPercent.title')" :rules="[required, minValue(0)]">
               <template #append>{{ translate('systems.raffles.settings.subscribersPercent.help') }}</template>
             </revert-text-field>
-            <revert-text-field class="pt-3" v-model="settings.luck.followersPercent" type="number" min="0"
-              :label="translate('systems.raffles.settings.followersPercent.title')" :rules="[required, minValue(0)]">
-              <template #append>{{ translate('systems.raffles.settings.followersPercent.help') }}</template>
-            </revert-text-field>
           </v-card-text>
         </v-card>
       </v-tab-item>
