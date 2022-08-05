@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [54.0.3](https://github.com/sogebot/ui-admin/compare/v54.0.2...v54.0.3) (2022-08-05)
+
+
+### Bug Fixes
+
+* permission setup should be functional ([1571379](https://github.com/sogebot/ui-admin/commit/1571379484bb9ba4cd88571f6a1d6ad679ef18ce))
+
 ### [54.0.2](https://github.com/sogebot/ui-admin/compare/v54.0.1...v54.0.2) (2022-08-05)
 
 ### [54.0.1](https://github.com/sogebot/ui-admin/compare/v54.0.0...v54.0.1) (2022-08-04)
