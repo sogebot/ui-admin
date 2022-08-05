@@ -44,7 +44,7 @@
                   </v-icon>
                 </template>
                 <v-icon left small>
-                  {{ permission.isWaterfallAllowed ? mdiGreaterThanOrEqual : mdiEqual }}
+                  {{ permission.isWaterfallAllowed ? 'mdi-greater-than-or-equal' : 'mdi-equal' }}
                 </v-icon>
                 <span :class="{ 'white--text': permission.isCorePermission }">{{ permission.name }}</span>
                 <template v-if="permission.automation">
@@ -252,9 +252,7 @@ export default defineComponent({
         permissions.value.push(viewers);
       }
 
-      permissions.value.forEach((permission) => {
-        getSocket('/core/permissions').emit('permission::save', permission, () => {})
-      });
+      getSocket('/core/permissions').emit('permission::save', permissions.value, () => {})
     };
 
     const addNewPermissionGroup = () => {
