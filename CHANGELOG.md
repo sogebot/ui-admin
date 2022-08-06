@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [54.0.4](https://github.com/sogebot/ui-admin/compare/v54.0.3...v54.0.4) (2022-08-06)
+
+
+### Bug Fixes
+
+* import is not working before name change ([cf2a08f](https://github.com/sogebot/ui-admin/commit/cf2a08ff936f3c11361064059cb43f824c55c2a2))
+
 ### [54.0.3](https://github.com/sogebot/ui-admin/compare/v54.0.2...v54.0.3) (2022-08-05)
 
 
