@@ -357,6 +357,11 @@ export default defineComponent({
           $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
 
+        editor.on('import', () => {
+          $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
+          item.value.workflow = JSON.stringify(editor?.export());
+        })
+
         editor.start();
 
         try {
