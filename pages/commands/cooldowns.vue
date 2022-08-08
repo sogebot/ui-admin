@@ -102,33 +102,33 @@
 </template>
 
 <script lang="ts">
-import type { CooldownInterface } from '@entity/cooldown';
+import type { Cooldown } from '@entity/cooldown';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import { capitalize } from 'lodash';
 
 import { error } from '~/functions//error';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
 import {
-  minLength, minValue, required,
+  minLength, required,
 } from '~/functions/validators';
 
 export default defineComponent({
   components: {
-    'cooldowns-edit':  defineAsyncComponent(() => import('~/components/manage/cooldowns/cooldownsEdit.vue')),
-    'cooldowns-batch': defineAsyncComponent(() => import('~/components/manage/cooldowns/cooldownsBatch.vue')),
-    'table-search-bar':      defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
-    'table-mobile':    defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
+    'cooldowns-edit':   defineAsyncComponent(() => import('~/components/manage/cooldowns/cooldownsEdit.vue')),
+    'cooldowns-batch':  defineAsyncComponent(() => import('~/components/manage/cooldowns/cooldownsBatch.vue')),
+    'table-search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    'table-mobile':     defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
   },
   setup () {
     const rules = { name: [required, minLength(2)], miliseconds: [required] };
 
-    const items = ref([] as CooldownInterface[]);
+    const items = ref([] as Cooldown[]);
     const typeItems = [
       {
         text:     translate('global'),
@@ -142,11 +142,11 @@ export default defineComponent({
     ];
     const search = ref('');
 
-    const selected = ref([] as CooldownInterface[]);
+    const selected = ref([] as Cooldown[]);
     const deleteDialog = ref(false);
 
-    const currentItems = ref([] as CooldownInterface[]);
-    const saveCurrentItems = (value: CooldownInterface[]) => {
+    const currentItems = ref([] as Cooldown[]);
+    const saveCurrentItems = (value: Cooldown[]) => {
       currentItems.value = value;
     };
 
@@ -186,21 +186,18 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/cooldown').emit('generic::getAll', (err, itemsGetAll) => {
-        if (err) {
-          return error(err);
-        }
-        console.debug('Loaded', itemsGetAll);
-        items.value = [...itemsGetAll];
+      axios.get(`${localStorage.server}/api/systems/cooldown`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        .then(({ data }) => {
         // we also need to reset selection values
-        if (selected.value.length > 0) {
-          selected.value.forEach((selectedItem, index) => {
-            selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
-            selected.value[index] = selectedItem;
-          });
-        }
-        state.value.loading = ButtonStates.success;
-      });
+          if (selected.value.length > 0) {
+            selected.value.forEach((selectedItem, index) => {
+              selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
+              selected.value[index] = selectedItem;
+            });
+          }
+          items.value = [...data.data];
+          state.value.loading = ButtonStates.success;
+        });
     };
     const batchUpdate = (value: Record<string, any>) => {
       // check validity
@@ -231,10 +228,13 @@ export default defineComponent({
           }
           console.log('Updating', { item });
 
-          getSocket('/systems/cooldown').emit('cooldown::save', item, () => {
-            EventBus.$emit('snack', 'success', 'Data updated.');
-            refresh();
-          });
+          axios.post(`${localStorage.server}/api/systems/cooldown`,
+            { ...item },
+            { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+            .then(() => {
+              EventBus.$emit('snack', 'success', 'Data updated.');
+              refresh();
+            });
         }
       }
     };
@@ -248,12 +248,8 @@ export default defineComponent({
               reject(error('Missing item id'));
               return;
             }
-            getSocket('/systems/cooldown').emit('generic::deleteById', item.id, (err) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
+            axios.delete(`${localStorage.server}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+              .finally(() => resolve(true));
           });
         }),
       );

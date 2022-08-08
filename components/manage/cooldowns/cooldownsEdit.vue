@@ -131,11 +131,11 @@
 import { nextTick } from 'process';
 
 import type { CooldownInterface } from '@entity/cooldown';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   defineComponent, ref, watch,
 } from '@vue/composition-api';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import { v4 } from 'uuid';
@@ -215,15 +215,18 @@ export default defineComponent({
         console.log('Updating', { data });
 
         saving.value = true;
-        getSocket('/systems/cooldown').emit('cooldown::save', {
-          ...data,
-          id: id || v4(),
-        }, () => {
-          saving.value = false;
-          menu.value = false;
-          EventBus.$emit('snack', 'success', 'Data updated.');
-          ctx.emit('save');
-        });
+        axios.post(`${localStorage.server}/api/systems/cooldown`,
+          {
+            ...data,
+            id: id || v4(),
+          },
+          { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(() => {
+            saving.value = false;
+            menu.value = false;
+            EventBus.$emit('snack', 'success', 'Data updated.');
+            ctx.emit('save');
+          });
       }
     };
 
