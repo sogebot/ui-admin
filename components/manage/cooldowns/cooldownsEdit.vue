@@ -215,7 +215,7 @@ export default defineComponent({
         console.log('Updating', { data });
 
         saving.value = true;
-        axios.post(`${localStorage.server}/api/systems/cooldown`,
+        axios.post(`/api/systems/cooldown`,
           {
             ...data,
             id: id || v4(),

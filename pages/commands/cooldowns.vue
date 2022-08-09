@@ -186,7 +186,7 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      axios.get(`${localStorage.server}/api/systems/cooldown`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+      axios.get(`/api/systems/cooldown`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
         .then(({ data }) => {
         // we also need to reset selection values
           if (selected.value.length > 0) {
@@ -228,7 +228,7 @@ export default defineComponent({
           }
           console.log('Updating', { item });
 
-          axios.post(`${localStorage.server}/api/systems/cooldown`,
+          axios.post(`/api/systems/cooldown`,
             { ...item },
             { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
             .then(() => {
@@ -248,7 +248,7 @@ export default defineComponent({
               reject(error('Missing item id'));
               return;
             }
-            axios.delete(`${localStorage.server}/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+            axios.delete(`/api/systems/cooldown/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
               .finally(() => resolve(true));
           });
         }),
