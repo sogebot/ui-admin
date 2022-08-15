@@ -88,15 +88,15 @@
                     :hint="translate('events.definitions.' + defKey + '.placeholder')"
                     persistent-hint
                   />
-
-                  <v-text-field
-                    readonly
-                    :value="'$triggerOperation(' + item.id +')'"
-                    persistent-hint
-                    title="Response filter"
-                    hint="Be careful, not all variables may be available if triggered by response filter"
-                  />
                 </div>
+                <v-text-field
+                  v-if="item.id"
+                  readonly
+                  :value="'$triggerOperation(' + item.id +')'"
+                  persistent-hint
+                  title="Response filter"
+                  hint="Be careful, not all variables may be available if triggered by response filter"
+                />
               </v-col>
               <v-col>
                 <operations
