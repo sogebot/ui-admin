@@ -6,6 +6,15 @@
     />
 
     <v-text-field
+      v-if="event === 'cmdredeems' && model.id && model.enabled"
+      readonly
+      :value="'$triggerAlert(' + model.id +')'"
+      persistent-hint
+      title="Response filter"
+      hint="Be careful, not all variables may be available if triggered by response filter"
+    />
+
+    <v-text-field
       v-model="model.title"
       :placeholder="translate('registry.alerts.title.placeholder')"
       :label="translate('registry.alerts.title.name')"
