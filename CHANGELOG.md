@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [55.0.0](https://github.com/sogebot/ui-admin/compare/v54.0.6...v55.0.0) (2022-08-15)
+
+
+### Features
+
+* add triggerAlert ([faf5dc1](https://github.com/sogebot/ui-admin/commit/faf5dc1a3379d2993f9406d2020de4757becc854))
+
+
+### Bug Fixes
+
+* **events:** should op trigger once and if available ([b020fa2](https://github.com/sogebot/ui-admin/commit/b020fa2309a6665b7a58255fa322132a8690cde4))
+
 ### [54.0.6](https://github.com/sogebot/ui-admin/compare/v54.0.5...v54.0.6) (2022-08-09)
 
 ### [54.0.5](https://github.com/sogebot/ui-admin/compare/v54.0.4...v54.0.5) (2022-08-08)
