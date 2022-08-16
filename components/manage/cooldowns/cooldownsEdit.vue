@@ -147,7 +147,7 @@ type Props = {
   rules: [];
 };
 
-const newItem = {
+const newItem: CooldownInterface = {
   name:                 '',
   miliseconds:          60000,
   type:                 'global',
@@ -219,6 +219,7 @@ export default defineComponent({
           {
             ...data,
             id: id || v4(),
+            timestamp: new Date().toISOString(),
           },
           { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
           .then(() => {
