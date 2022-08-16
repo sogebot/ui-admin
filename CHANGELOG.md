@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [56.0.0](https://github.com/sogebot/ui-admin/compare/v55.0.0...v56.0.0) (2022-08-16)
+
+
+### Features
+
+* update keywrods ([16e4a19](https://github.com/sogebot/ui-admin/commit/16e4a19a001ec3666a47ad1e855d4a12ae4da105))
+
+
+### Bug Fixes
+
+* fix incorrect icon ([1a06177](https://github.com/sogebot/ui-admin/commit/1a061777dc146f636c0984cca5857ad714620549))
+
 ## [55.0.0](https://github.com/sogebot/ui-admin/compare/v54.0.6...v55.0.0) (2022-08-15)
 
 
