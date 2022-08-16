@@ -149,7 +149,7 @@
               <v-text-field v-model.number="selectedParentItem.alignX" type="number" label="X" min="0">
                 <template #append>
                   <v-btn icon @click="selectedParentItem.alignX = 0">
-                    <v-icon>mdi-format-horizontal-align-Left }}</v-icon>
+                    <v-icon>mdi-format-horizontal-align-left }}</v-icon>
                   </v-btn>
                   <v-btn icon @click="selectedParentItem.alignX = options.canvas.width / 2 - selectedParentItem.width / 2">
                     <v-icon>mdi-format-horizontal-align-center</v-icon>
