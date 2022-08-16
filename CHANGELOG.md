@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [56.0.1](https://github.com/sogebot/ui-admin/compare/v56.0.0...v56.0.1) (2022-08-16)
+
+
+### Bug Fixes
+
+* add timestamp to cooldown ([c1435d4](https://github.com/sogebot/ui-admin/commit/c1435d4526f200e395e4f009a86e0efb64ead2f0))
+
 ## [56.0.0](https://github.com/sogebot/ui-admin/compare/v55.0.0...v56.0.0) (2022-08-16)
 
 
