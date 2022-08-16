@@ -2,7 +2,7 @@
   <div>
     <v-dialog v-model="menu" persistent max-width="1000" scrollable :fullscreen="$vuetify.breakpoint.mobile">
       <template #activator="{ on, attrs }">
-        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" v-on="on" class="primary-hover">
+        <v-btn v-if="item.id !== undefined" icon v-bind="attrs" class="primary-hover" v-on="on">
           <v-icon>
             mdi-pencil
           </v-icon>
@@ -14,14 +14,25 @@
       <v-card outlined class="pt-3">
         <v-card-text>
           <v-form ref="form" v-model="valid" lazy-validation>
-            <v-text-field v-model="item.keyword" :label="translate('keyword')" :rules="rules.keyword"
-              hide-details="auto" required />
+            <v-text-field
+              v-model="item.keyword"
+              :label="translate('keyword')"
+              :rules="rules.keyword"
+              hide-details="auto"
+              required
+            />
 
             <v-row dense>
               <v-col>
-                <v-combobox v-model="item.group" :label="translate('group')" hide-details="auto" clearable
-                  :search-input.sync="group" :return-object="false"
-                  :items="groupItems.filter(o => o.value !== null)">
+                <v-combobox
+                  v-model="item.group"
+                  :label="translate('group')"
+                  hide-details="auto"
+                  clearable
+                  :search-input.sync="group"
+                  :return-object="false"
+                  :items="groupItems.filter(o => o.value !== null)"
+                >
                   <template #no-data>
                     <v-list-item>
                       Create&nbsp;<strong>{{ group }}</strong>
@@ -33,10 +44,15 @@
 
             <v-row dense>
               <v-col>
-                <v-switch v-model="item.enabled" :label="translate('enabled')" persistent-hint hide-details="auto"
+                <v-switch
+                  v-model="item.enabled"
+                  :label="translate('enabled')"
+                  persistent-hint
+                  hide-details="auto"
                   :hint="(item.enabled
                     ? 'Keyword is enabled'
-                    : 'Keyword is disabled')" />
+                    : 'Keyword is disabled')"
+                />
               </v-col>
             </v-row>
 
@@ -51,32 +67,54 @@
                     </v-col>
                     <v-col>
                       <v-lazy>
-                        <v-textarea v-model="item.responses[i].response" hide-details="auto"
-                          :label="translate('response') + '#' + (i + 1)" :rows="1" counter auto-grow
-                          :autofocus="i === 0" @keydown.enter.prevent>
+                        <v-textarea
+                          v-model="item.responses[i].response"
+                          hide-details="auto"
+                          :label="translate('response') + '#' + (i + 1)"
+                          :rows="1"
+                          counter
+                          auto-grow
+                          :autofocus="i === 0"
+                          @keydown.enter.prevent
+                        >
                           <template #append>
-                            <input-variables :filters="['sender', 'param', '!param', 'touser']"
-                              @input="item.responses[i].response = item.responses[i].response + $event" />
+                            <input-variables
+                              :filters="['sender', 'param', '!param', 'touser']"
+                              @input="item.responses[i].response = item.responses[i].response + $event"
+                            />
                           </template>
                           <template #counter>
                             <v-row dense align="center">
                               <v-col>
-                                <v-text-field v-model="item.responses[i].filter" dense hide-details="auto" solo
-                                  :label="capitalize(translate('systems.customcommands.filter.name'))">
+                                <v-text-field
+                                  v-model="item.responses[i].filter"
+                                  dense
+                                  hide-details="auto"
+                                  solo
+                                  :label="capitalize(translate('systems.customcommands.filter.name'))"
+                                >
                                   <template #append>
                                     <input-variables
                                       :filters="['sender', 'source', 'param', 'haveParam', 'is.newchatter', 'is.moderator', 'is.subscriber', 'is.vip', 'is.broadcaster', 'is.bot', 'is.owner', 'rank', 'game', 'language', 'title', 'followers', 'subscribers', 'isBotSubscriber']"
-                                      @input="item.responses[i].filter = item.responses[i].filter + $event" />
+                                      @input="item.responses[i].filter = item.responses[i].filter + $event"
+                                    />
                                   </template>
                                 </v-text-field>
                               </v-col>
                               <v-col cols="auto">
-                                <input-permissions :permissions="permissions" :permission="item.responses[i].permission"
-                                  nullable @input="item.responses[i].permission = $event" />
+                                <input-permissions
+                                  :permissions="permissions"
+                                  :permission="item.responses[i].permission"
+                                  nullable
+                                  @input="item.responses[i].permission = $event"
+                                />
                               </v-col>
                               <v-col cols="auto">
-                                <v-btn small plain
-                                  @click="item.responses[i].stopIfExecuted = !item.responses[i].stopIfExecuted">
+                                <v-btn
+                                  small
+                                  plain
+                                  @click="item.responses[i].stopIfExecuted = !item.responses[i].stopIfExecuted"
+                                >
                                   {{ item.responses[i].stopIfExecuted ? translate('commons.stop-if-executed') : translate('commons.continue-if-executed') }}
                                 </v-btn>
                               </v-col>
@@ -97,8 +135,10 @@
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn text
-            @click="item.responses.push({ filter: '', order: item.responses.length, response: '', stopIfExecuted: false, permission: orderBy(permissions, 'order', 'asc').pop().id })">
+          <v-btn
+            text
+            @click="item.responses.push({ filter: '', order: item.responses.length, response: '', stopIfExecuted: false, permission: orderBy(permissions, 'order', 'asc').pop().id })"
+          >
             {{ translate('systems.customcommands.addResponse') }}
           </v-btn>
 
@@ -117,19 +157,18 @@
 </template>
 
 <script lang="ts">
-import { getSocket } from '@sogebot/ui-helpers/socket';
+import type { KeywordInterface } from '@entity/keyword.js';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent,
   defineComponent, ref, watch,
 } from '@vue/composition-api';
+import axios from 'axios';
 import { orderBy } from 'lodash';
 import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import { v4 as uuid } from 'uuid';
 import draggable from 'vuedraggable';
-
-import type { KeywordInterface } from '@entity/keyword.js';
 
 import { EventBus } from '~/functions/event-bus';
 
@@ -148,12 +187,8 @@ const newItem: KeywordInterface = {
 export default defineComponent({
   components: {
     draggable,
-    'input-variables': defineAsyncComponent({
-      loader: () => import('~/components/inputVariables.vue'),
-    }),
-    'input-permissions': defineAsyncComponent({
-      loader: () => import('~/components/inputPermissions.vue'),
-    }),
+    'input-variables':   defineAsyncComponent({ loader: () => import('~/components/inputVariables.vue') }),
+    'input-permissions': defineAsyncComponent({ loader: () => import('~/components/inputPermissions.vue') }),
   },
   props: {
     value:           Object,
@@ -195,9 +230,7 @@ export default defineComponent({
       for (let i = 0; i < val.responses.length; i++) {
         item.value.responses[i].order = i;
       }
-    }, {
-      deep: true,
-    });
+    }, { deep: true });
 
     const save = () => {
       if ((form.value as unknown as HTMLFormElement).validate()) {
@@ -213,21 +246,17 @@ export default defineComponent({
             }
           }
         }
-        console.log('Updating', {
-          data: item.value,
-        });
+        console.log('Updating', { data: item.value });
 
         saving.value = true;
 
-        getSocket('/systems/keywords').emit('generic::setById', {
-          id:   item.value.id ?? uuid(),
-          item: item.value,
-        }, () => {
-          saving.value = false;
-          menu.value = false;
-          saveSuccess();
-          ctx.emit('save');
-        });
+        axios.post(`/api/systems/keywords`, item.value, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(() => {
+            saving.value = false;
+            menu.value = false;
+            saveSuccess();
+            ctx.emit('save');
+          });
       }
     };
 

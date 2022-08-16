@@ -143,6 +143,7 @@ import type { PermissionsInterface } from '@entity/permissions';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import { isEqual, orderBy } from 'lodash';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
@@ -201,36 +202,31 @@ const refresh = () => {
     permissions.value = res;
     loading.value = false;
   });
-  getSocket('/systems/keywords').emit('generic::groups::getAll', (err, res) => {
-    if (err) {
-      return console.error(err);
-    }
-    console.log({ res });
-    groups.value = res;
-  });
-  getSocket('/systems/keywords').emit('generic::getAll', (err, keywordsGetAll: Required<KeywordInterface>[]) => {
-    if (err) {
-      return error(err);
-    }
-    items.value.length = 0;
-    for (const keyword of keywordsGetAll) {
-      items.value.push({
-        ...keyword,
-        responses: orderBy(keyword.responses, 'order', 'asc'),
-      });
-    }
-    console.debug({ keywordsGetAll, items: items.value });
+  axios.get(`/api/systems/keywords`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+    .then(({ data }) => {
+      items.value.length = 0;
+      for (const keyword of data.data) {
+        items.value.push({
+          ...keyword,
+          responses: orderBy(keyword.responses, 'order', 'asc'),
+        });
+      }
+      console.debug({ data, items: items.value });
 
-    // we also need to reset selection values
-    if (selected.value.length > 0) {
-      selected.value.forEach((selItem, index) => {
-        selItem = items.value.find(o => o.id === selItem.id) || selItem;
-        selected.value[index] = selItem;
-      });
-    }
+      // we also need to reset selection values
+      if (selected.value.length > 0) {
+        selected.value.forEach((selItem, index) => {
+          selItem = items.value.find(o => o.id === selItem.id) || selItem;
+          selected.value[index] = selItem;
+        });
+      }
 
-    state.value.loading = ButtonStates.success;
-  });
+      state.value.loading = ButtonStates.success;
+    });
+  axios.get(`${localStorage.server}/api/systems/keywords/groups`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+    .then(({ data }) => {
+      groups.value = data.data;
+    });
 };
 
 onMounted(() => {
@@ -246,12 +242,10 @@ const deleteSelected = async () => {
           reject(error('Missing item id'));
           return;
         }
-        getSocket('/systems/keywords').emit('generic::deleteById', item.id, (err) => {
-          if (err) {
-            reject(error(err));
-          }
-          resolve(true);
-        });
+        axios.delete(`/api/systems/keywords/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .finally(() => {
+            resolve(true);
+          });
       });
     }),
   );
@@ -288,12 +282,10 @@ const batchUpdate = (value: Record<string, any>) => {
         }
       }
       console.log('Updating', { item });
-      getSocket('/systems/keywords').emit('generic::setById', {
-        id: item.id,
-        item,
-      }, () => {
-        EventBus.$emit('snack', 'success', 'Data updated.');
-      });
+      axios.post(`/api/systems/keywords`, item, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        .then(() => {
+          EventBus.$emit('snack', 'success', 'Data updated.');
+        });
     }
   }
 };
@@ -364,12 +356,10 @@ const getGroup = computed<{ [name: string]: KeywordGroupInterface }>({
     // go through groups and save only changed
     for (const groupName of Object.keys(getGroup.value)) {
       if (!isEqual(getGroup.value[groupName], value[groupName])) {
-        getSocket('/systems/keywords').emit('generic::groups::save', value[groupName], (err) => {
-          if (err) {
-            console.error(err);
-          }
-          refetch();
-        });
+        axios.post(`/api/systems/keywords/group`, value[groupName], { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(() => {
+            refetch();
+          });
       }
     }
     return true;
