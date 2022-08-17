@@ -194,12 +194,12 @@
 </template>
 
 <script lang="ts">
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import {
   defineAsyncComponent,
   defineComponent, ref, watch,
 } from '@vue/composition-api';
+import axios from 'axios';
 import { orderBy } from 'lodash';
 import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
@@ -289,30 +289,22 @@ export default defineComponent({
         console.log('Updating', { data: item.value });
 
         if (resetCount.value) {
-          console.log('Resetting count value', item.value.command);
-          getSocket('/systems/customcommands').emit('commands::resetCountByCommand', item.value.command, err => err ? console.log(err) : null);
+          item.value.count = 0;
         }
 
         saving.value = true;
 
-        if (item.value.count === 0) {
-          console.log('Resetting count', item.value.command);
-          getSocket('/systems/customcommands').emit('commands::resetCountByCommand', item.value.command, (err) => {
-            if (err) {
-              console.log(err);
-            }
-          });
+        if (!item.value.id) {
+          item.value.id = uuid();
         }
 
-        getSocket('/systems/customcommands').emit('generic::setById', {
-          id:   item.value.id ?? uuid(),
-          item: item.value,
-        }, () => {
-          saving.value = false;
-          menu.value = false;
-          saveSuccess();
-          ctx.emit('save');
-        });
+        axios.post(`/api/systems/customcommands`, item.value, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(() => {
+            saving.value = false;
+            menu.value = false;
+            saveSuccess();
+            ctx.emit('save');
+          });
       }
     };
 

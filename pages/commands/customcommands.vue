@@ -149,21 +149,17 @@ import type { PermissionsInterface } from '@entity/permissions';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import {
   capitalize, isEqual, orderBy,
 } from 'lodash';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
-import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
 import {
   minLength, minValue, required, startsWith,
 } from '~/functions/validators';
-
-let count: {
-  command: string; count: number;
-}[] = [];
 
 export type CommandsInterfaceUI = CommandsInterface & { count: number };
 
@@ -223,36 +219,32 @@ const refresh = () => {
     permissions.value = res;
     loading.value = false;
   });
-  getSocket('/systems/customcommands').emit('generic::groups::getAll', (err, res) => {
-    if (err) {
-      return console.error(err);
-    }
-    console.log({ res });
-    groups.value = res;
-  });
-  getSocket('/systems/customcommands').emit('generic::getAll', (err, commands, countArg) => {
-    if (err) {
-      return error(err);
-    }
-    console.debug({ commands, count });
-    count = countArg || [];
-    items.value.length = 0;
-    for (const command of commands) {
-      items.value.push({
-        ...command,
-        responses: orderBy(command.responses, 'order', 'asc'),
-        count:     count.find(o => o.command === command.command)?.count || 0,
-      });
-    }
-    // we also need to reset selection values
-    if (selected.value.length > 0) {
-      selected.value.forEach((_selectedItem, index) => {
-        _selectedItem = items.value.find(o => o.id === _selectedItem.id) || _selectedItem;
-        selected.value[index] = _selectedItem;
-      });
-    }
-    state.value.loading = ButtonStates.success;
-  });
+  axios.get(`${localStorage.server}/api/systems/customcommands/groups`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+    .then(({ data }) => {
+      groups.value = data.data;
+    });
+  axios.get(`/api/systems/customcommands`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+    .then(({ data }) => {
+      items.value.length = 0;
+      for (const command of data.data) {
+        items.value.push({
+          ...command,
+          responses: orderBy(command.responses, 'order', 'asc'),
+          count:     data.count.find((o: any) => o.command === command.command)?.count || 0,
+        });
+      }
+      console.debug({ data, items: items.value });
+
+      // we also need to reset selection values
+      if (selected.value.length > 0) {
+        selected.value.forEach((selItem, index) => {
+          selItem = items.value.find(o => o.id === selItem.id) || selItem;
+          selected.value[index] = selItem;
+        });
+      }
+
+      state.value.loading = ButtonStates.success;
+    });
 };
 
 onMounted(() => {
@@ -263,13 +255,11 @@ const deleteSelected = async () => {
   deleteDialog.value = false;
   await Promise.all(
     selected.value.map((item) => {
-      return new Promise((resolve, reject) => {
-        getSocket('/systems/customcommands').emit('generic::deleteById', item.id, (err) => {
-          if (err) {
-            reject(error(err));
-          }
-          resolve(true);
-        });
+      return new Promise((resolve) => {
+        axios.delete(`/api/systems/customcommands/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .finally(() => {
+            resolve(true);
+          });
       });
     }),
   );
@@ -350,12 +340,10 @@ const batchUpdate = (value: Record<string, any>) => {
         }
       }
       console.log('Updating', { item });
-      getSocket('/systems/customcommands').emit('generic::setById', {
-        id: item.id,
-        item,
-      }, () => {
-        EventBus.$emit('snack', 'success', 'Data updated.');
-      });
+      axios.post(`/api/systems/customcommands`, item, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        .then(() => {
+          EventBus.$emit('snack', 'success', 'Data updated.');
+        });
     }
   }
 };
@@ -381,16 +369,13 @@ const getGroup = computed<{ [name: string]: CommandsGroupInterface }>({
     // go through groups and save only changed
     for (const groupName of Object.keys(getGroup.value)) {
       if (!isEqual(getGroup.value[groupName], value[groupName])) {
-        getSocket('/systems/customcommands').emit('generic::groups::save', value[groupName], (err) => {
-          if (err) {
-            console.error(err);
-          }
-          refetch();
-        });
+        axios.post(`/api/systems/customcommands/group`, value[groupName], { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(() => {
+            refresh();
+            EventBus.$emit('snack', 'success', 'Data updated.');
+          });
       }
     }
-    refresh();
-    EventBus.$emit('snack', 'success', 'Data updated.');
     return true;
   },
 });

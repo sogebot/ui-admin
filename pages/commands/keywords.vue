@@ -358,7 +358,8 @@ const getGroup = computed<{ [name: string]: KeywordGroupInterface }>({
       if (!isEqual(getGroup.value[groupName], value[groupName])) {
         axios.post(`/api/systems/keywords/group`, value[groupName], { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
           .then(() => {
-            refetch();
+            refresh();
+            EventBus.$emit('snack', 'success', 'Data updated.');
           });
       }
     }
