@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [57.0.0](https://github.com/sogebot/ui-admin/compare/v56.0.1...v57.0.0) (2022-08-17)
+
+
+### Features
+
+* add commands rest api ([75fac9e](https://github.com/sogebot/ui-admin/commit/75fac9e1bd9b36ad3cbd3ef6975b0d271bc3f538))
+
 ### [56.0.1](https://github.com/sogebot/ui-admin/compare/v56.0.0...v56.0.1) (2022-08-16)
 
 
