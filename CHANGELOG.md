@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [57.0.1](https://github.com/sogebot/ui-admin/compare/v57.0.0...v57.0.1) (2022-08-18)
+
+
+### Bug Fixes
+
+* **emotes:** update 7tv support to include emote-set ([ea16355](https://github.com/sogebot/ui-admin/commit/ea16355c1cef5c8072e69519bfcd696f88a4a79e))
+
 ## [57.0.0](https://github.com/sogebot/ui-admin/compare/v56.0.1...v57.0.0) (2022-08-17)
 
 
