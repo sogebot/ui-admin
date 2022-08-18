@@ -11,10 +11,16 @@
           <v-card-text>
             <v-switch class="mt-0" v-model="settings.bttv[0]" dense
               label="BetterTTV" />
-            <v-switch class="mt-0" v-model="settings['7tv'][0]" dense
-              label="7TV" />
             <v-switch class="mt-0" v-model="settings.ffz[0]" dense
               label="FrankerFaceZ" />
+
+            <v-text-field
+              v-model="settings['7tvEmoteSet'][0]"
+              dense
+              label="7TV emote set"
+              hint="Login into https://7tv.app/ and paste your emote-sets url like https://7tv.app/emote-sets/<id>"
+              persistent-hint
+            />
 
             <v-btn @click="removeEmoteCache">
               Remove emotes cache
