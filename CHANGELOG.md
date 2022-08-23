@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [58.1.0](https://github.com/sogebot/ui-admin/compare/v58.0.0...v58.1.0) (2022-08-23)
+
+
+### Features
+
+* **credits:** add support for toggeable game thumbnail ([8c02cc3](https://github.com/sogebot/ui-admin/commit/8c02cc316d1c074ae209f24ad98134a41aa2e8fa))
+
 ## [58.0.0](https://github.com/sogebot/ui-admin/compare/v57.0.1...v58.0.0) (2022-08-23)
 
 
