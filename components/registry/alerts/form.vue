@@ -363,7 +363,7 @@ export default defineComponent({
         case 'subgifts':
           return [['username', 'string'], ['recipient', 'string'], ['amount', 'number']];
         case 'cmdredeems':
-          return [['recipient', 'string'], ['amount', 'number'], ['name', 'string']];
+          return [['recipient', 'string'], ['amount', 'number'], ['name', 'string'], ['name', 'message']];
         case 'rewardredeems':
           return [['recipient', 'string']];
         case 'tips':

@@ -131,7 +131,7 @@
           TIPS<span v-if="item.tips.length > 0">({{ item.tips.length }})</span>
         </span>
         <span :class="{'primary--text': item.cmdredeems.length > 0, 'grey--text text--darken-3': item.cmdredeems.length === 0}">
-          CMDREDEEMS<span v-if="item.cmdredeems.length > 0">({{ item.cmdredeems.length }})</span>
+          CUSTOM<span v-if="item.cmdredeems.length > 0">({{ item.cmdredeems.length }})</span>
         </span>
         <span :class="{'primary--text': item.rewardredeems.length > 0, 'grey--text text--darken-3': item.rewardredeems.length === 0}">
           RWDREDEEMS<span v-if="item.rewardredeems.length > 0">({{ item.rewardredeems.length }})</span>
