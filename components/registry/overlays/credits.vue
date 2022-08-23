@@ -132,6 +132,10 @@
       <v-expansion-panel-header>Show</v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-switch
+          v-model="options.show.gameThumbnail"
+          :label="translate('overlays.credits.settings.cShowGameThumbnail')"
+        />
+        <v-switch
           v-model="options.show.follow"
           :label="translate('overlays.credits.settings.cShowFollowers')"
         />
@@ -268,7 +272,9 @@ import {
   defineComponent, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
-import { defaultsDeep, isEqual } from 'lodash';
+import { isEqual } from 'lodash';
+
+import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
   props: { value: [Object, Array] },
@@ -302,45 +308,7 @@ export default defineComponent({
       { value: 'mdiYoutube', text: 'YouTube' },
     ];
 
-    const options = ref(
-      defaultsDeep(props.value, {
-        speed:       'medium',
-        customTexts: [],
-        social:      [],
-        clips:       {
-          play:        true,
-          period:      'custom',
-          periodValue: 31,
-          numOfClips:  3,
-          volume:      20,
-        },
-        text: {
-          lastMessage:      'Thanks for watching',
-          lastSubMessage:   '~ see you on the next stream ~',
-          streamBy:         'Stream by',
-          follow:           'Followed by',
-          host:             'Hosted by',
-          raid:             'Raided by',
-          cheer:            'Cheered by',
-          sub:              'Subscribed by',
-          resub:            'Resubscribed by',
-          subgift:          'Subgifts by',
-          subcommunitygift: 'Community subgifts by',
-          tip:              'Tips by',
-        },
-        show: {
-          follow:           true,
-          host:             true,
-          raid:             true,
-          sub:              true,
-          subgift:          true,
-          subcommunitygift: true,
-          resub:            true,
-          cheer:            true,
-          clips:            true,
-          tip:              true,
-        },
-      }));
+    const options = ref(setDefaultOpts(props.value, 'credits'));
 
     watch([options, timestamp], () => {
       if (!isEqual(props.value, options.value)) {
