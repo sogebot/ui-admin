@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [58.0.0](https://github.com/sogebot/ui-admin/compare/v57.0.1...v58.0.0) (2022-08-23)
+
+
+### Features
+
+* **obswebsocket:** add obs input mute state ([9f4af46](https://github.com/sogebot/ui-admin/commit/9f4af46dc8790eb9ececcde9c090fbf078e7ba69))
+
 ### [57.0.1](https://github.com/sogebot/ui-admin/compare/v57.0.0...v57.0.1) (2022-08-18)
 
 
