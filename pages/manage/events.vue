@@ -56,7 +56,6 @@
                                 v-for="key of Object.keys(operation.definitions)"
                                 :key="operation.id + key + 'li'"
                               >
-                                aa
                                 {{ translate('events.definitions.' + key + '.label') }}
                                 <code class="ml-2">{{ operation.definitions[key] }}</code>
                               </li>
