@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [59.0.0](https://github.com/sogebot/ui-admin/compare/v58.2.0...v59.0.0) (2022-08-24)
+
+
+### Features
+
+* **alerts:** add promo alert support ([0babc88](https://github.com/sogebot/ui-admin/commit/0babc8882abb69126cc9d503fcff6db1ba6f1683))
+
 ## [58.2.0](https://github.com/sogebot/ui-admin/compare/v58.1.0...v58.2.0) (2022-08-23)
 
 
