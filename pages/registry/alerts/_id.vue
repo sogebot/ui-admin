@@ -217,14 +217,12 @@ import translate from '@sogebot/ui-helpers/translate';
 import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 
-import { getBase64FromUrl } from '../../../functions/getBase64FromURL';
-
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
 import GET_ONE from '~/queries/alert/getOne.gql';
 import SAVE from '~/queries/alert/save.gql';
 
-const { $graphql, $store } = useNuxtApp()
+const { $graphql, $store } = useNuxtApp();
 
 const emptyItem: AlertInterface = {
   id:                  v4(),
@@ -288,9 +286,10 @@ const emptyItem: AlertInterface = {
   subcommunitygifts: [],
   cmdredeems:        [],
   rewardredeems:     [],
+  promo:             [],
 };
 
-const supportedEvents = ['follows', 'cheers', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'tips', 'hosts', 'raids', 'cmdredeems', 'rewardredeems'] as const;
+const supportedEvents = ['follows', 'cheers', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'tips', 'hosts', 'raids', 'rewardredeems', 'cmdredeems', 'promo'] as const;
 
 const router = useRouter();
 const route = useRoute();
@@ -417,6 +416,23 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
   };
 
   switch (event) {
+    case 'promo':
+      item.value.promo.push({
+        ..._default,
+        messageTemplate: '{name} | {game}',
+        ttsTemplate:     '{message}',
+        message:         {
+          allowEmotes:     {
+            twitch: true, ffz: true, bttv: true,
+          },
+          font: null,
+        },
+        tts:             {
+          enabled:        false,
+          keepAlertShown: false,
+        },
+      });
+      break;
     case 'follows':
       item.value.follows.push({
         ..._default,
@@ -539,7 +555,7 @@ const removeVariant = (event: keyof typeof supportedEvents, idx: number) => {
   (item.value as any)[event].splice(idx, 1);
 };
 
-const duplicateVariant = async (event: keyof typeof supportedEvents, idx: number) => {
+const duplicateVariant = (event: keyof typeof supportedEvents, idx: number) => {
   console.log('Duplicating variant');
   const newVariant = cloneDeep((item.value as any)[event][idx]);
   newVariant.id = v4();

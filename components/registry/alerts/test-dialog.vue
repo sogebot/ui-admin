@@ -182,7 +182,7 @@ export default defineComponent({
   components: { rewards: defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }) },
   setup () {
     const store = useStore<any>();
-    const events = ['follows', 'cheers', 'tips', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'hosts', 'raids', 'cmdredeems', 'rewardredeems'] as const;
+    const events = ['follows', 'cheers', 'tips', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'hosts', 'raids', 'cmdredeems', 'rewardredeems', 'promo'] as const;
 
     const dialog = ref(false);
     const event = ref('follows' as typeof events[number]);
@@ -200,7 +200,7 @@ export default defineComponent({
     const message = ref('');
     const isMessageRandomized = ref(true);
     const haveMessage = computed(() => {
-      return ['tips', 'cheers', 'resubs', 'rewardredeems'].includes(event.value);
+      return ['tips', 'cheers', 'resubs', 'rewardredeems', 'promo'].includes(event.value);
     });
 
     const amount = ref(5);

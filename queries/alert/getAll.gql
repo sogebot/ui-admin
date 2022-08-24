@@ -13,5 +13,6 @@ query AlertGetAll {
     resubs { id }
     cmdredeems { id }
     rewardredeems { id }
+    promo { id }
   }
 }

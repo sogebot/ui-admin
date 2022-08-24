@@ -178,7 +178,7 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
       <tts v-model="model.tts"/>
-      <v-expansion-panel>
+      <v-expansion-panel v-if="event !== 'promo'">
         <v-expansion-panel-header>
           {{ translate('registry.alerts.image.setting') }}
         </v-expansion-panel-header>
@@ -351,6 +351,8 @@ export default defineComponent({
 
     const rules = (type: string) => {
       switch (type) {
+        case 'promo':
+          return [['username', 'string'], ['game', 'string'], ['message', 'string']];
         case 'cheers':
         case 'subcommunitygifts':
         case 'hosts':

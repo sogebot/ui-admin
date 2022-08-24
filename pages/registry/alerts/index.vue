@@ -136,6 +136,9 @@
         <span :class="{'primary--text': item.rewardredeems.length > 0, 'grey--text text--darken-3': item.rewardredeems.length === 0}">
           RWDREDEEMS<span v-if="item.rewardredeems.length > 0">({{ item.rewardredeems.length }})</span>
         </span>
+        <span :class="{'primary--text': item.promo.length > 0, 'grey--text text--darken-3': item.promo.length === 0}">
+          PROMO<span v-if="item.rewardredeems.length > 0">({{ item.promo.length }})</span>
+        </span>
       </template>
 
       <template #[`item.actions`]="{ item }">
