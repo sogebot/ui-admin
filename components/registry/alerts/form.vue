@@ -178,12 +178,13 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
       <tts v-model="model.tts"/>
-      <v-expansion-panel v-if="event !== 'promo'">
+      <v-expansion-panel>
         <v-expansion-panel-header>
           {{ translate('registry.alerts.image.setting') }}
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <media
+            v-if="event !== 'promo'"
             v-model="model.imageId"
             type="image"
             :volume="model.soundVolume"

@@ -422,12 +422,12 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
         messageTemplate: '{name} | {game}',
         ttsTemplate:     '{message}',
         message:         {
-          allowEmotes:     {
+          allowEmotes: {
             twitch: true, ffz: true, bttv: true,
           },
           font: null,
         },
-        tts:             {
+        tts: {
           enabled:        false,
           keepAlertShown: false,
         },
