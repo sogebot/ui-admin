@@ -218,7 +218,7 @@ export default defineComponent({
         axios.post(`/api/systems/cooldown`,
           {
             ...data,
-            id: id || v4(),
+            id:        id || v4(),
             timestamp: new Date().toISOString(),
           },
           { headers: { authorization: `Bearer ${localStorage.accessToken}` } })

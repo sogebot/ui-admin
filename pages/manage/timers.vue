@@ -116,9 +116,9 @@
 </template>
 
 <script setup lang="ts">
-import type { TimerInterface } from '@entity/timer';
-import { getSocket } from '@sogebot/ui-helpers/socket';
+import type { Timer } from '@entity/timer';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import { capitalize, orderBy } from 'lodash';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
@@ -136,10 +136,10 @@ const rules = {
 
 const search = ref('');
 const loading = ref(true);
-const items = ref([] as Required<TimerInterface>[]);
-const selected = ref([] as TimerInterface[]);
-const currentItems = ref([] as TimerInterface[]);
-const saveCurrentItems = (value: TimerInterface[]) => {
+const items = ref([] as Required<Timer>[]);
+const selected = ref([] as Timer[]);
+const currentItems = ref([] as Timer[]);
+const saveCurrentItems = (value: Timer[]) => {
   currentItems.value = value;
 };
 
@@ -169,27 +169,24 @@ const headersDelete = [
 ];
 
 const refetch = () => {
-  getSocket('/systems/timers').emit('generic::getAll', (err, _items: Required<TimerInterface>[]) => {
-    if (err) {
-      error(err);
-      return;
-    }
-    items.value.length = 0;
-    for (const item of _items) {
-      items.value.push({
-        ...item,
-        messages: orderBy(item.messages, 'timestamp', 'asc'),
-      });
-    }
+  axios.get(`/api/systems/timer`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+    .then(({ data }) => {
     // we also need to reset selection values
-    if (selected.value.length > 0) {
-      selected.value.forEach((selectedItem, index) => {
-        selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
-        selected.value[index] = selectedItem;
-      });
-    }
-    loading.value = false;
-  });
+      if (selected.value.length > 0) {
+        selected.value.forEach((selectedItem, index) => {
+          selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
+          selected.value[index] = selectedItem;
+        });
+      }
+      items.value.length = 0;
+      for (const item of data.data) {
+        items.value.push({
+          ...item,
+          messages: orderBy(item.messages, 'timestamp', 'asc'),
+        });
+      }
+      loading.value = false;
+    });
 };
 
 onMounted(() => {
@@ -205,12 +202,8 @@ const deleteSelected = async () => {
           reject(error('Missing item id'));
           return;
         }
-        getSocket('/systems/timers').emit('generic::deleteById', item.id, (err) => {
-          if (err) {
-            reject(error(err));
-          }
-          resolve(true);
-        });
+        axios.delete(`/api/systems/timer/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .finally(() => resolve(true));
       });
     }),
   );
@@ -249,12 +242,12 @@ const batchUpdate = (value: Record<string, any>) => {
       const { id, ...data } = item;
       console.log('Updating', { id, data });
 
-      getSocket('/systems/timers').emit('generic::setById', { id, item: data }, (err) => {
-        if (err) {
-          return console.error(err);
-        }
-        saveSuccess();
-      });
+      axios.post(`/api/systems/timer`,
+        { ...item },
+        { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        .then(() => {
+          saveSuccess();
+        });
     }
   }
 };

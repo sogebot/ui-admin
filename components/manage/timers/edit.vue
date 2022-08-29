@@ -66,7 +66,7 @@
             />
           </v-form>
 
-          <manage-timers-responses v-model="item.messages" :key="item.messages.length" />
+          <manage-timers-responses :key="item.messages.length" v-model="item.messages" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -84,9 +84,9 @@
 </template>
 
 <script setup lang="ts">
-import { TimerInterface } from '@sogebot/backend/src/database/entity/timer';
-import { getSocket } from '@sogebot/ui-helpers/socket';
+import { Timer } from '@sogebot/backend/dest/database/entity/timer';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import { v4 } from 'uuid';
@@ -94,18 +94,17 @@ import { v4 } from 'uuid';
 import { EventBus } from '~/functions/event-bus';
 
 type Props = {
-  value: TimerInterface;
+  value: Timer;
   rules: Record<string, any>;
 };
 
-const newItem: TimerInterface = {
-  name:                '',
-  isEnabled:           true,
-  tickOffline:         true,
-  triggerEveryMessage: 0,
-  triggerEverySecond:  0,
-  messages:            [],
-};
+const newItem = new Timer();
+newItem.name = '';
+newItem.isEnabled = true;
+newItem.tickOffline = true;
+newItem.triggerEveryMessage = 0;
+newItem.triggerEverySecond = 0;
+newItem.messages = [];
 
 const props = defineProps<Props>();
 const emit = defineEmits(['save']);
@@ -134,7 +133,7 @@ watch(menu, (val) => {
   }
 });
 
-const save = async () => {
+const save = () => {
   if ((form.value as unknown as HTMLFormElement).validate()) {
     // check validity
     for (const key of Object.keys(props.rules ?? {})) {
@@ -152,27 +151,27 @@ const save = async () => {
     const messages = item.value.messages.filter(o => o.response.trim().length > 0);
     item.value.messages = [];
     for (const [idx, message] of Object.entries(messages)) {
-      message.timestamp = Number(idx) * 100000;
+      message.timestamp = new Date(Number(idx) * 100000).toISOString();
       item.value.messages.push(message);
     }
 
     console.log('Updating', { data: item.value });
 
     saving.value = true;
-
-    getSocket('/systems/timers').emit('generic::setById', {
-      id:   item.value.id ?? v4(),
-      item: { ...item.value },
-    }, (err) => {
-      if (err) {
-        return console.error(err);
-      }
-
-      saving.value = false;
-      menu.value = false;
-      EventBus.$emit('snack', 'success', 'Data updated.');
-      emit('save');
-    });
+    const { id, ...data } = item.value;
+    axios.post(`/api/systems/timer`,
+      {
+        ...data,
+        id:        id || v4(),
+        timestamp: new Date().toISOString(),
+      },
+      { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+      .then(() => {
+        saving.value = false;
+        menu.value = false;
+        EventBus.$emit('snack', 'success', 'Data updated.');
+        emit('save');
+      });
   }
 };
 </script>
