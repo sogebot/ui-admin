@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [60.0.0](https://github.com/sogebot/ui-admin/compare/v59.0.2...v60.0.0) (2022-08-29)
+
+
+### Features
+
+* timer rest api ([f6ef697](https://github.com/sogebot/ui-admin/commit/f6ef6970d41f32ecc6cc136f7d51bcce0d131d79))
+
 ### [59.0.2](https://github.com/sogebot/ui-admin/compare/v59.0.1...v59.0.2) (2022-08-24)
 
 ### [59.0.1](https://github.com/sogebot/ui-admin/compare/v59.0.0...v59.0.1) (2022-08-24)
