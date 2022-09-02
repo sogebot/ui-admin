@@ -69,19 +69,18 @@
 </template>
 
 <script lang="ts">
-
+import { Quotes } from '@entity/quotes';
 import { useStore } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 import { getUsernameById } from '@sogebot/ui-helpers/userById';
 import {
   defineComponent, onMounted, ref, watch,
 } from '@vue/composition-api';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
-import { QuotesInterface } from '@entity/quotes';
 
 import { EventBus } from '~/functions/event-bus';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 
 const newItem = {
   createdAt: Date.now(),
@@ -92,8 +91,8 @@ const newItem = {
 
 type Props = {
   rules: Record<string, any>,
-  value: QuotesInterface,
-}
+  value: Quotes,
+};
 
 export default defineComponent({
   props: {
@@ -142,7 +141,7 @@ export default defineComponent({
       item.value.tags = val;
     });
 
-    const save = async () => {
+    const save = () => {
       if ((form.value as unknown as HTMLFormElement).validate()) {
         // check validity
         for (const key of Object.keys(props.rules)) {
@@ -159,21 +158,23 @@ export default defineComponent({
 
         saving.value = true;
         console.log('Updating', item.value);
-        getSocket('/systems/quotes').emit('generic::setById', { id: item.value.id, item: item.value }, (err) => {
-          saving.value = false;
-          if (err) {
-            EventBus.$emit('snack', 'error', err);
-          } else {
+        axios.post(`/api/systems/quotes`,
+          item.value,
+          { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(() => {
             EventBus.$emit('snack', 'success', 'Data updated.');
             ctx.emit('save');
             menu.value = false;
-          }
-        });
+          })
+          .catch((e) => {
+            EventBus.$emit('snack', 'error', e);
+          })
+          .finally(() => (saving.value = false));
       }
     };
 
     return {
-      menu, item, save, translate, capitalize, valid, saving, form, quotedByUsername, tagsInput, tagsSearch
+      menu, item, save, translate, capitalize, valid, saving, form, quotedByUsername, tagsInput, tagsSearch,
     };
   },
 });

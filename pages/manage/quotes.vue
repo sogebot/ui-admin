@@ -110,7 +110,7 @@
           </template>
           <template #quotedByName>
             <NuxtLink :to="'/manage/viewers/' + item.quotedBy">
-              {{ item.quotedByName }}&nbsp;<small>{{ item.quotedBy }}</small>
+              {{ (users.find(o => o[0] === item.quotedBy) || ['', 'unknown user'])[1] }}&nbsp;<small>{{ item.quotedBy }}</small>
             </NuxtLink>
           </template>
           <template #tags>
@@ -134,14 +134,14 @@
 </template>
 
 <script lang="ts">
-import type { QuotesInterface } from '@entity/quotes';
+import type { Quotes } from '@entity/quotes';
 import {
-  computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
+  computed, defineAsyncComponent, defineComponent, onMounted, ref,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import {
   capitalize, flatten, orderBy, uniq,
 } from 'lodash';
@@ -153,21 +153,22 @@ import { required } from '~/functions/validators';
 
 export default defineComponent({
   components: {
-    'table-search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
-    'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
-    'quotes-edit':  defineAsyncComponent(() => import('~/components/manage/quotes/quotesEdit.vue')),
+    'table-search-bar': defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
+    'table-mobile':     defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
+    'quotes-edit':      defineAsyncComponent(() => import('~/components/manage/quotes/quotesEdit.vue')),
   },
   setup () {
-    const selected = ref([] as QuotesInterface[]);
-    const currentItems = ref([] as QuotesInterface[]);
-    const saveCurrentItems = (value: QuotesInterface[]) => {
+    const selected = ref([] as Quotes[]);
+    const currentItems = ref([] as Quotes[]);
+    const saveCurrentItems = (value: Quotes[]) => {
       currentItems.value = value;
     };
     const deleteDialog = ref(false);
 
     const rules = { quote: [required] };
 
-    const items = ref([] as QuotesInterface[]);
+    const items = ref([] as Quotes[]);
+    const users = ref([] as [string, string][]);
     const search = ref('');
     const showTag = ref(null as null | string);
 
@@ -205,18 +206,23 @@ export default defineComponent({
     });
 
     const refresh = () => {
-      getSocket('/systems/quotes').emit('quotes:getAll', {}, (err, data) => {
-        if (err) {
-          error(err);
-          return;
-        }
-        items.value = data;
-        state.value.loading = ButtonStates.success;
-      });
+      axios.get(`/api/systems/quotes`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        .then(({ data }) => {
+        // we also need to reset selection values
+          if (selected.value.length > 0) {
+            selected.value.forEach((selectedItem, index) => {
+              selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
+              selected.value[index] = selectedItem;
+            });
+          }
+          items.value = [...data.data];
+          users.value = data.users;
+          state.value.loading = ButtonStates.success;
+        });
     };
 
     const fItems = computed(() => {
-      let quotesFilteredBySearch: QuotesInterface[] = [];
+      let quotesFilteredBySearch: Quotes[] = [];
       if (search.value.trim().length > 0) {
         for (const quote of items.value) {
           if (quote.quote.toLowerCase().includes(search.value)) {
@@ -229,7 +235,7 @@ export default defineComponent({
       if (showTag.value === null) {
         return quotesFilteredBySearch;
       } else {
-        const quotesFilteredByTags: QuotesInterface[] = [];
+        const quotesFilteredByTags: Quotes[] = [];
         for (const quote of quotesFilteredBySearch) {
           for (const tag of quote.tags) {
             if (showTag.value === tag) {
@@ -266,12 +272,8 @@ export default defineComponent({
               reject(error('Missing item id'));
               return;
             }
-            getSocket('/systems/quotes').emit('generic::deleteById', item.id, (err) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
+            axios.delete(`/api/systems/quotes/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+              .finally(() => resolve(true));
           });
         }),
       );
@@ -285,6 +287,7 @@ export default defineComponent({
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       saveCurrentItems,
       items,
+      users,
       fItems,
       tags,
       tagsItems,
