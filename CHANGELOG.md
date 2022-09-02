@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [62.0.0](https://github.com/sogebot/ui-admin/compare/v61.0.0...v62.0.0) (2022-09-02)
+
+
+### Features
+
+* **quotes:** rest api access ([91868d1](https://github.com/sogebot/ui-admin/commit/91868d1fced6c14d58881ab73d0f9425f00d146c))
+
 ## [61.0.0](https://github.com/sogebot/ui-admin/compare/v60.0.0...v61.0.0) (2022-08-29)
 
 ## [60.0.0](https://github.com/sogebot/ui-admin/compare/v59.0.2...v60.0.0) (2022-08-29)
