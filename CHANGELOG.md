@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [63.0.0](https://github.com/sogebot/ui-admin/compare/v62.0.0...v63.0.0) (2022-09-05)
+
+
+### Features
+
+* **lastfm:** add button notify switch ([e16f9b6](https://github.com/sogebot/ui-admin/commit/e16f9b633a69d099fb3b4427d480666be0e94855))
+
 ## [62.0.0](https://github.com/sogebot/ui-admin/compare/v61.0.0...v62.0.0) (2022-09-02)
 
 
