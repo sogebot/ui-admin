@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [63.1.0](https://github.com/sogebot/ui-admin/compare/v63.0.0...v63.1.0) (2022-09-06)
+
+
+### Features
+
+* **chat:** add show settings ([381d771](https://github.com/sogebot/ui-admin/commit/381d771ba632fa6cfeda57f32b1c1166dd33161f))
+
 ## [63.0.0](https://github.com/sogebot/ui-admin/compare/v62.0.0...v63.0.0) (2022-09-05)
 
 
