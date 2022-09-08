@@ -6,7 +6,6 @@ query AlertGetAll {
     subs { id }
     subgifts { id }
     subcommunitygifts { id }
-    hosts { id }
     raids { id }
     tips { id }
     cheers { id }

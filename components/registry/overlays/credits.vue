@@ -30,11 +30,6 @@
           @input="options.text.follow = $event"
         />
         <v-text-field
-          v-model="options.text.host"
-          :label="translate('overlays.credits.settings.cTextHost')"
-          @input="options.text.host = $event"
-        />
-        <v-text-field
           v-model="options.text.raid"
           :label="translate('overlays.credits.settings.cTextRaid')"
           @input="options.text.raid = $event"
@@ -138,10 +133,6 @@
         <v-switch
           v-model="options.show.follow"
           :label="translate('overlays.credits.settings.cShowFollowers')"
-        />
-        <v-switch
-          v-model="options.show.host"
-          :label="translate('overlays.credits.settings.cShowHosts')"
         />
         <v-switch
           v-model="options.show.raid"

@@ -182,7 +182,7 @@ export default defineComponent({
   components: { rewards: defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }) },
   setup () {
     const store = useStore<any>();
-    const events = ['follows', 'cheers', 'tips', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'hosts', 'raids', 'cmdredeems', 'rewardredeems', 'promo'] as const;
+    const events = ['follows', 'cheers', 'tips', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'raids', 'cmdredeems', 'rewardredeems', 'promo'] as const;
 
     const dialog = ref(false);
     const event = ref('follows' as typeof events[number]);
@@ -211,7 +211,6 @@ export default defineComponent({
     const currency = ref(store.state.configuration.currency);
     const amountLabel = computed(() => {
       switch (event.value) {
-        case 'hosts':
         case 'raids':
           return translate('registry.alerts.testDlg.amountOfViewers');
         case 'cheers':

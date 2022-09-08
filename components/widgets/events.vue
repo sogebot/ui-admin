@@ -39,7 +39,6 @@
                 <v-row>
                   <v-col>
                     <v-checkbox v-model="showFollows" label="Follows" class="pa-0 ma-0" hide-details />
-                    <v-checkbox v-model="showHosts" label="Hosts" class="pa-0 ma-0" hide-details />
                     <v-checkbox v-model="showBits" label="Bits" class="pa-0 ma-0" hide-details />
                     <v-checkbox v-model="showRaids" label="Raids" class="pa-0 ma-0" hide-details />
                     <v-checkbox v-model="showRedeems" label="Reward Redeems" class="pa-0 ma-0" hide-details />
@@ -240,12 +239,6 @@
                 <div v-if="item.event === 'follow'" class="red--text text--lighten-1 font-condensed" style="font-size: 1.2rem;">
                   follow
                 </div>
-                <div v-else-if="item.event === 'host'" class="orange--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
-                  <v-icon size="15" color="orange">
-                    mdi-account-group
-                  </v-icon>
-                  {{ JSON.parse(item.values_json).viewers }}
-                </div>
                 <div v-else-if="item.event === 'raid'" class="lime--text text--lighten-1 font-condensed" style="font-size: 1.5rem;">
                   <v-icon size="15" color="lime">
                     mdi-account-group
@@ -355,19 +348,17 @@ const showSubsTier2 = ref((localStorage.showSubsTier2 && localStorage.showSubsTi
 const showSubsTier3 = ref((localStorage.showSubsTier3 && localStorage.showSubsTier3 === 'true') ?? true);
 const showResubsMinimal = ref((localStorage.showResubsMinimal && localStorage.showResubsMinimal === 'true') ?? false);
 const showResubsMinimalAmount = ref(Number(localStorage.showResubsMinimalAmount || 50));
-const showHosts = ref((localStorage.showHosts && localStorage.showHosts === 'true') ?? true);
 const showBits = ref((localStorage.showBits && localStorage.showBits === 'true') ?? true);
 const showRaids = ref((localStorage.showRaids && localStorage.showRaids === 'true') ?? true);
 const showSubGifts = ref((localStorage.showSubGifts && localStorage.showSubGifts === 'true') ?? true);
 const showSubCommunityGifts = ref((localStorage.showSubCommunityGifts && localStorage.showSubCommunityGifts === 'true') ?? true);
 watch([
-  showFollows, showHosts, showBits, showRaids,
+  showFollows, showBits, showRaids,
   showTips, showTipsMinimal, showTipsMinimalAmount,
   showResubs, showResubsPrime, showResubsTier1, showResubsTier2, showResubsTier3, showResubsMinimal, showResubsMinimalAmount,
   showSubs, showSubsPrime, showSubsTier1, showSubsTier2, showSubsTier3, showRedeems, showSubGifts, showSubCommunityGifts,
 ], (val) => {
   localStorage.showFollows = String(val[0]);
-  localStorage.showHosts = String(val[1]);
   localStorage.showBits = String(val[2]);
   localStorage.showRaids = String(val[3]);
   localStorage.showTips = String(val[4]);
@@ -392,7 +383,6 @@ watch([
 
 function filter (event: EventListInterface & { sortAmount: number}) {
   const follow = showFollows.value && event.event === 'follow';
-  const host = showHosts.value && event.event === 'host';
   const raid = showRaids.value && event.event === 'raid';
   const bit = showBits.value && event.event === 'cheer';
   const redeem = showRedeems.value && event.event === 'rewardredeem';
@@ -420,7 +410,6 @@ function filter (event: EventListInterface & { sortAmount: number}) {
 
   return follow
         || redeem
-        || host
         || raid
         || (tip && tipMinimal)
         || bit

@@ -332,7 +332,7 @@
                 {{ dayjs(item.timestamp).format('LL') }} {{ dayjs(item.timestamp).format('LTS') }}
               </template>
               <template #[`item.info`]="{ item }">
-                <template v-if="item.event === 'raid' || item.event === 'host'">
+                <template v-if="item.event === 'raid'">
                   {{ translate('managers.viewers.hostAndRaidViewersCount').replace('$value', JSON.parse(item.values_json).viewers) }}
                 </template>
                 <template v-else-if="item.event === 'subcommunitygift'">

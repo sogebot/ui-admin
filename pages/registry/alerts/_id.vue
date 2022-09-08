@@ -276,7 +276,6 @@ const emptyItem: AlertInterface = {
   },
 
   follows:           [],
-  hosts:             [],
   raids:             [],
   cheers:            [],
   subs:              [],
@@ -289,7 +288,7 @@ const emptyItem: AlertInterface = {
   promo:             [],
 };
 
-const supportedEvents = ['follows', 'cheers', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'tips', 'hosts', 'raids', 'rewardredeems', 'cmdredeems', 'promo'] as const;
+const supportedEvents = ['follows', 'cheers', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'tips', 'raids', 'rewardredeems', 'cmdredeems', 'promo'] as const;
 
 const router = useRouter();
 const route = useRoute();
@@ -534,12 +533,6 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
           },
           font: null,
         },
-      });
-      break;
-    case 'hosts':
-      item.value.hosts.push({
-        ..._default,
-        messageTemplate: '{name} is now hosting my stream with {amount} viewers!',
       });
       break;
     case 'raids':

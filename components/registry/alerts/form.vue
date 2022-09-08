@@ -356,7 +356,6 @@ export default defineComponent({
           return [['username', 'string'], ['game', 'string'], ['message', 'string']];
         case 'cheers':
         case 'subcommunitygifts':
-        case 'hosts':
         case 'raids':
           return [['username', 'string'], ['amount', 'number']];
         case 'subs':

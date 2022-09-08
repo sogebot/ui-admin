@@ -106,9 +106,6 @@
         <span :class="{'primary--text': item.follows.length > 0, 'grey--text text--darken-3': item.follows.length === 0}">
           FOLLOW<span v-if="item.follows.length > 0">({{ item.follows.length }})</span>
         </span>
-        <span :class="{'primary--text': item.hosts.length > 0, 'grey--text text--darken-3': item.hosts.length === 0}">
-          HOSTS<span v-if="item.hosts.length > 0">({{ item.hosts.length }})</span>
-        </span>
         <span :class="{'primary--text': item.raids.length > 0, 'grey--text text--darken-3': item.raids.length === 0}">
           RAID<span v-if="item.raids.length > 0">({{ item.raids.length }})</span>
         </span>
