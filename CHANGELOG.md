@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [64.0.0](https://github.com/sogebot/ui-admin/compare/v63.1.0...v64.0.0) (2022-09-08)
+
+
+### Features
+
+* remove deprecated hosts ([35ca8a6](https://github.com/sogebot/ui-admin/commit/35ca8a6a51ab3110be6db6ee38e4534fb0c5dc14))
+
 ## [63.1.0](https://github.com/sogebot/ui-admin/compare/v63.0.0...v63.1.0) (2022-09-06)
 
 
