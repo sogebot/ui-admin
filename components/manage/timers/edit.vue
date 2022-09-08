@@ -84,7 +84,6 @@
 </template>
 
 <script setup lang="ts">
-import { Timer } from '@sogebot/backend/dest/database/entity/timer';
 import translate from '@sogebot/ui-helpers/translate';
 import axios from 'axios';
 import capitalize from 'lodash/capitalize';
@@ -94,11 +93,11 @@ import { v4 } from 'uuid';
 import { EventBus } from '~/functions/event-bus';
 
 type Props = {
-  value: Timer;
+  value: any;
   rules: Record<string, any>;
 };
 
-const newItem = new Timer();
+const newItem: any = {};
 newItem.name = '';
 newItem.isEnabled = true;
 newItem.tickOffline = true;
