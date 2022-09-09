@@ -1,5 +1,5 @@
 <template>
-  <loading v-if="!settings || isLoading"/>
+  <loading v-if="!settings || isLoading" />
   <v-form v-else v-model="valid" lazy-validation>
     <v-tabs v-model="tab">
       <v-tab>{{ translate('categories.general') }}</v-tab>
@@ -112,7 +112,7 @@
                 </v-autocomplete>
               </v-col>
               <v-col>
-                <v-text-field dense v-model="settings.bot.onlineAnnounceMessage[0]" :label="translate('integrations.discord.settings.onlineAnnounceMessage')" />
+                <v-text-field v-model="settings.bot.onlineAnnounceMessage[0]" dense :label="translate('integrations.discord.settings.onlineAnnounceMessage')" />
               </v-col>
             </v-row>
 
@@ -217,6 +217,8 @@
 import { PermissionsInterface } from '@entity/permissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import { xor } from 'lodash';
+
 import { error } from '~/functions/error';
 import { saveSettings } from '~/functions/settings';
 
@@ -235,7 +237,7 @@ const refetch = () => {
     permissions.value = res;
     isLoading.value = false;
   });
-}
+};
 const settings = ref(null as Record<string, any> | null);
 const ui = ref(null as Record<string, any> | null);
 const valid = ref(true);
