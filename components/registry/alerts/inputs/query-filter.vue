@@ -99,7 +99,7 @@
                             v-if="getRuleType(item.type) === 'service'"
                             v-model="item.value"
                             :label="translate('registry.alerts.filter.value')"
-                            :items="['donationalerts', 'kofi', 'qiwi', 'streamelements', 'streamlabs', 'tiltify', 'tipeeestream']"
+                            :items="['donatello', 'donationalerts', 'kofi', 'qiwi', 'streamelements', 'streamlabs', 'tiltify', 'tipeeestream']"
                           />
                           <v-select
                             v-else-if="getRuleType(item.type) === 'tier'"

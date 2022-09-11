@@ -228,7 +228,7 @@ export default defineComponent({
       }
     });
 
-    const services = ['donationalerts', 'kofi', 'qiwi', 'streamelements', 'streamlabs', 'tiltify', 'tipeeestream'] as const;
+    const services = ['donatello', 'donationalerts', 'kofi', 'qiwi', 'streamelements', 'streamlabs', 'tiltify', 'tipeeestream'] as const;
     const service = ref('tiltify' as typeof services[number]);
     const isServiceRandomized = ref(true);
     const haveService = computed(() => {
