@@ -5,12 +5,14 @@ export const state = () => ({
     name:     '',
     workflow: '',
     enabled:  true,
+    settings: [],
   },
   item: {
     id:       null,
     name:     '',
     workflow: '',
     enabled:  true,
+    settings: [],
   },
 });
 

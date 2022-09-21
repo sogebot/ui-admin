@@ -55,8 +55,9 @@ const dialog = ref(false);
 const model = ref();
 
 watch(dialog, () => {
+  const bufSettings = Buffer.from(JSON.stringify($store.state.registryPlugins.item.settings));
   const buf = Buffer.from($store.state.registryPlugins.item.workflow);
-  model.value = buf.toString('base64');
+  model.value = buf.toString('base64') + '%' + bufSettings.toString('base64');
 });
 
 const copy = () => {

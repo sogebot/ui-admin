@@ -26,28 +26,77 @@
       </v-btn>
     </portal>
 
-    <v-card id="plugins-edit-card" style="position: fixed; top: 50px; z-index: 1; height: 100%; width: 300px;">
+    <v-card
+      id="plugins-edit-card"
+      :style="{
+        position: 'fixed',
+        top: '50px',
+        zIndex: 1,
+        height: '100%',
+        width: '400px',
+      }"
+    >
       <v-sheet color="blue-grey darken-4" style="height: 100%;">
         <v-card-text>
           <v-form ref="form">
             <v-text-field
               v-model="item.name"
               outlined
-              hide-details="auto"
               dense
               label="Name"
               :rules="[isValid('name')]"
             />
             <v-switch
               v-model="item.enabled"
+              class="mt-0"
               :label="(item.enabled
                 ? 'Plugin is enabled'
                 : 'Plugin is disabled')"
             />
 
-            <v-list id="plugins-edit-list" style="background-color: transparent; overflow: auto;">
+            <v-btn-toggle
+              v-model="currentTab"
+              mandatory
+              class="mb-4"
+              style="width: 50%;"
+            >
+              <v-btn block>
+                Settings
+              </v-btn>
+              <v-btn block>
+                Nodes
+              </v-btn>
+            </v-btn-toggle>
+
+            <div v-if="currentTab === 0" id="plugins-edit-settings" style="background-color: transparent; overflow-y: auto;" :style="{ height: heightSettings }">
+              <template v-if="!settingsEditMode">
+                <div v-if="item.settings.length === 0">
+                  No settings for this plugin found.
+                </div>
+
+                <div v-for="(it, index) in item.settings" :key="index">
+                  <v-text-field :label="capitalize(it.name)" v-model="it.currentValue" :hint="it.description" persistent-hint/>
+                </div>
+
+              </template>
+              <template v-else>
+                <div v-for="(_i, index) in item.settings" :key="index">
+                  <SettingsVariableInput v-model="item.settings[index]" @click="removeSettingsVariable(index)" btnText="Remove variable" editation />
+                  <v-divider class="mb-2" />
+                </div>
+                <SettingsVariableInput v-model="settingsVariableNew" @click="addNewSettingsVariable" />
+              </template>
+            </div>
+
+            <div v-if="currentTab === 0" style="text-align: center;">
+              <v-btn text :color="settingsEditMode ? 'primary': 'error'" @click="settingsEditMode = !settingsEditMode">
+                {{ settingsEditMode ? 'Go back to normal mode' : 'Define settings (dev mode)' }}
+              </v-btn>
+            </div>
+
+            <v-list v-if="currentTab === 1" id="plugins-edit-list" style="background-color: transparent; overflow: auto;" :style="{ height: heightList }">
               <template v-for="(item, index) of items">
-                <v-subheader v-if="item.header" :key="item.header">
+                <v-subheader v-if="typeof item !== 'string'" :key="item.header">
                   {{ item.header }}
                 </v-subheader>
                 <v-list-item
@@ -62,7 +111,7 @@
                 </v-list-item>
 
                 <v-divider
-                  v-if="index < items.length - 1 && !items[index+1].header && !items[index].header"
+                  v-if="index < items.length - 1 && typeof items[index+1] === 'string' && typeof items[index] === 'string'"
                   :key="index"
                 />
               </template>
@@ -79,6 +128,7 @@
 import type { Plugin } from '@entity/plugins';
 import { isValidationError } from '@sogebot/backend/src/helpers/errors';
 import { getSocket } from '@sogebot/ui-helpers/socket';
+import plugin from 'dayjs/plugin/customParseFormat';
 import Drawflow from 'drawflow';
 import gsap from 'gsap';
 import capitalize from 'lodash/capitalize';
@@ -100,30 +150,57 @@ import twitchSendMessage from '~/components/drawflow/output/twitchSendMessage';
 import twitchTimeoutUser from '~/components/drawflow/output/twitchTimeoutUser';
 import variableLoadFromDatabase from '~/components/drawflow/variable/loadFromDatabase';
 import variableSaveToDatabase from '~/components/drawflow/variable/saveToDatabase';
-import variableSetVariable from '~/components/drawflow/variable/setVariable';
 import variableSetCustomVariable from '~/components/drawflow/variable/setCustomVariable';
+import variableSetVariable from '~/components/drawflow/variable/setVariable';
 import { EventBus } from '~/functions/event-bus';
+import SettingsVariableInput from '~/pages/registry/plugins/components/settingsVariableInput.vue';
 
 export default defineComponent({
+  components: { SettingsVariableInput },
   setup (_, context) {
     const { $store } = useNuxtApp();
     const route = useRoute();
+    const currentTab = ref(0);
+    const settingsEditMode = ref(false);
+    const settingsVariableNew = reactive({
+      name:         '',
+      currentValue: '',
+      defaultValue: '',
+      description:  '',
+      type:         'string',
+    } as Plugin['settings'][number]);
 
+    const removeSettingsVariable = (idx: number) => {
+      item.value.settings = [...item.value.settings.slice(0, idx), ...item.value.settings.slice(idx + 1)];
+    };
+
+
+    const addNewSettingsVariable = () => {
+      console.log({settingsVariableNew})
+      item.value.settings = [
+        ...item.value.settings,
+        cloneDeep(settingsVariableNew),
+      ];
+      settingsVariableNew.name = '';
+      settingsVariableNew.currentValue = '';
+      settingsVariableNew.defaultValue = '';
+      settingsVariableNew.description = '';
+      settingsVariableNew.type = 'string';
+    };
     watch(() => $store.state.navbarMiniVariant, (val) => {
       gsap.to('#plugins-edit-card', {
-        left: val ? 56 : 256, duration: 0.1, ease: 'none',
+        left:     val ? 56 : 256,
+        duration: 0.1,
+        ease:     'none',
       });
     }, { immediate: true });
-
     let editor: Drawflow | null = null;
     const form = ref(null);
-
     const item = ref({
       ...cloneDeep($store.state.registryPlugins.empty),
       id: route.params.id ?? null,
     } as Plugin);
     const dirty = ref(false);
-
     watch(item, (val) => {
       $store.commit('registryPlugins/set', val);
       console.log('/core/plugins|generic::validate', val);
@@ -135,23 +212,32 @@ export default defineComponent({
       }
       dirty.value = true;
     }, { immediate: true, deep: true });
-
     const loading = ref(true);
     const saving = ref(false);
-
     const items = [
       { header: 'Input' },
-      'listener', 'cron',
+      'listener',
+      'cron',
       { header: 'Variables' },
-      'variableSetVariable', 'variableLoadFromDatabase', 'variableSaveToDatabase', 'variableSetCustomVariable',
+      'variableSetVariable',
+      'variableLoadFromDatabase',
+      'variableSaveToDatabase',
+      'variableSetCustomVariable',
       { header: 'Gates' },
-      'filter', 'filterPermission', 'debounce', 'counter',
+      'filter',
+      'filterPermission',
+      'debounce',
+      'counter',
       { header: 'Output' },
-      'twitchSendMessage', 'twitchTimeoutUser', 'twitchBanUser', 'outputLog',
+      'twitchSendMessage',
+      'twitchTimeoutUser',
+      'twitchBanUser',
+      'outputLog',
       { header: 'Other' },
-      'comment', 'othersIdle', 'clearCounter',
+      'comment',
+      'othersIdle',
+      'clearCounter',
     ];
-
     const refresh = () => {
       return new Promise((resolve) => {
         getSocket('/core/plugins').emit('generic::getOne', item.value.id, (err, d) => {
@@ -161,7 +247,6 @@ export default defineComponent({
             resolve(false);
             return console.error(err);
           }
-
           if (d) {
             item.value = d;
           }
@@ -169,36 +254,45 @@ export default defineComponent({
         });
       });
     };
+    const heightSettings = ref('0px');
+    const setSettingsHeight = () => {
+      const elSettings = document.getElementById('plugins-edit-settings');
+      if (!elSettings || elSettings.getBoundingClientRect().top === 0) {
+        setTimeout(() => setSettingsHeight(), 10);
+        return;
+      }
+      const height = document.getElementById('plugins-edit-card')?.getBoundingClientRect().height ?? 0;
+      const newHeight = height - elSettings.getBoundingClientRect().top;
+      heightSettings.value = `${newHeight - 40}px`;
+    };
+    const heightList = ref('0px');
+    const setListHeight = () => {
+      const list = document.getElementById('plugins-edit-list');
+      if (!list || list.getBoundingClientRect().top === 0) {
+        setTimeout(() => setListHeight(), 10);
+        return;
+      }
+      const height = document.getElementById('plugins-edit-card')?.getBoundingClientRect().height ?? 0;
+      const newHeight = height - list.getBoundingClientRect().top;
+      heightList.value = `${newHeight - 10}px`;
+    };
 
     // Pass render Vue
     onMounted(async () => {
       $store.commit('panel/back', '/registry/plugins');
-
       $store.commit('registryPlugins/set', {
         id:       route.params.id,
         name:     '',
         enabled:  true,
         workflow: '',
+        settings: [],
       });
-
-      nextTick(() => {
-        // set list height
-        const height = document.getElementById('plugins-edit-card')?.getBoundingClientRect().height ?? 0;
-        const list = document.getElementById('plugins-edit-list');
-        if (list) {
-          const newHeight = height - list.getBoundingClientRect().top;
-          console.log({
-            list, height, newHeight,
-          });
-          list.style.height = `${newHeight - 20}px`;
-        }
-      });
-
+      setListHeight();
+      setSettingsHeight();
       await refresh();
       initEditor();
       EventBus.$on('drawflow::getCommonParents', (id: string, cb: (err: any, inputNodes: any[], allNodes: any[]) => void) => {
         id = id.replace('node-', '');
-
         const parentNodes: any[] = [];
         const allNodes: any[] = [];
         const getParentNodeWithoutInputs = (childId: string | number) => {
@@ -209,7 +303,6 @@ export default defineComponent({
                 const connections = originalNode.inputs[key].connections;
                 for (const connection of connections) {
                   const childNode = editor.getNodeFromId(connection.node);
-
                   allNodes.push(childNode);
                   if (Object.keys(childNode.inputs).length === 0) {
                     parentNodes.push(childNode);
@@ -291,17 +384,17 @@ export default defineComponent({
           if (typeof node !== 'undefined') {
             editor?.updateNodeDataFromId(id, { value: update, data });
             console.log(`drawflow::node::update!!${id}`, {
-              node, update, data,
+              node,
+              update,
+              data,
             });
           }
-
           $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         } catch (e) {
           console.debug(`Cannot get node ${id}`, e);
         }
       });
     });
-
     const initEditor = () => {
       const id = document.getElementById('drawflow');
       if (id) {
@@ -327,43 +420,33 @@ export default defineComponent({
         editor.registerNode('othersIdle', othersIdle, {}, {});
         editor.zoom_min = 0.3;
         editor.zoom_max = 1;
-
         editor.on('connectionCreated', () => {
           $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
-
         editor.on('connectionRemoved', () => {
           $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
-
         editor.on('nodeCreated', () => {
           $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
-
         editor.on('nodeMoved', () => {
           $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
-
         editor.on('nodeRemoved', (event) => {
           EventBus.$emit(`drawflow::nodeRemoved::node-${event}`);
           $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
-
         editor.on('nodeSelected', () => {
           $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
-
         editor.on('nodeUnselected', () => {
           $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
         });
-
         editor.on('import', () => {
           $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
           item.value.workflow = JSON.stringify(editor?.export());
-        })
-
+        });
         editor.start();
-
         try {
           if (item.value.workflow.length > 0) {
             editor.import(JSON.parse(item.value.workflow));
@@ -372,7 +455,6 @@ export default defineComponent({
           console.error(err);
           console.log('Invalid Data');
         }
-
         setInterval(() => {
           if (editor) {
             for (const i of Object.values(editor.export().drawflow.Home.data)) {
@@ -385,7 +467,6 @@ export default defineComponent({
         setTimeout(() => initEditor(), 100);
       }
     };
-
     const save = () => {
       saving.value = true;
       item.value.workflow = item.value.workflow.length === 0 ? '"{"drawflow":{"Home":{"data":{}}}}"' : item.value.workflow;
@@ -406,11 +487,14 @@ export default defineComponent({
         $store.commit('settings/pending', false);
       });
     };
-
-    const importToEditor = (workflow: string) => {
-      editor?.import(workflow);
+    const importToEditor = (data: { workflow: string, settings: any[] }) => {
+      console.log({data})
+      for (const it of data.settings) {
+        it.currentValue = it.defaultValue; // reset to default values
+      }
+      item.value.settings = data.settings;
+      editor?.import(data.workflow);
     };
-
     const isValid = (property: string) => {
       const error = $store.state.registryPlugins.errors.find(o => o.property === property);
       if (!error) {
@@ -418,25 +502,21 @@ export default defineComponent({
       }
       return capitalize(Object.values<any>(error.constraints)[0]); // return first error;
     };
-
     const drag = (ev: any) => {
       ev.dataTransfer.setData('node', ev.target.getAttribute('data-node'));
     };
-
     const drop = (ev: any) => {
       ev.preventDefault();
       const data = ev.dataTransfer.getData('node') ?? '';
       console.log({ data });
       addNodeToDrawFlow(data, ev.clientX, ev.clientY);
     };
-
     function addNodeToDrawFlow (name: string, posX: number, posY: number) {
       if (!editor) {
         return;
       }
       posX = posX * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)) - (editor.precanvas.getBoundingClientRect().x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)));
       posY = posY * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)) - (editor.precanvas.getBoundingClientRect().y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)));
-
       switch (name) {
         case 'othersIdle':
           editor?.addNode('othersIdle', 1, 1, posX, posY, 'othersIdle', { value: '', data: '{}' }, 'othersIdle', 'vue');
@@ -491,19 +571,23 @@ export default defineComponent({
           break;
         default:
       }
-
       $store.commit('registryPlugins/workflow', JSON.stringify(editor?.export()));
     }
-
     function allowDrop (ev: any) {
       ev.preventDefault();
     }
-
     return {
       allowDrop,
       drag,
       drop,
-
+      capitalize,
+      currentTab,
+      heightList,
+      heightSettings,
+      settingsEditMode,
+      settingsVariableNew,
+      addNewSettingsVariable,
+      removeSettingsVariable,
       isValid,
       dirty,
       item,

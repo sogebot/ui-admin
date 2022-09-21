@@ -59,9 +59,19 @@ watch(dialog, () => {
 
 const importPlugin = () => {
   if (model.value !== null && model.value.trim() !== '') {
-    const buf = Buffer.from(model.value, 'base64');
+    const [ workflow, settings ] = model.value.split('%');
+    const buf = Buffer.from(workflow, 'base64');
     try {
-      emit('import', JSON.parse(buf.toString('utf-8')));
+      let pluginSettings: any[] = []
+      if (settings) {
+        console.log('Settings found, loading');
+        pluginSettings = JSON.parse(Buffer.from(settings, 'base64').toString('utf-8'));
+      } else {
+        pluginSettings = [];
+      }
+      console.log({pluginSettings})
+      emit('import', { workflow: JSON.parse(buf.toString('utf-8')), settings: pluginSettings});
+
       EventBus.$emit('snack', 'success', 'Plugin imported.');
       dialog.value = false;
     } catch (e) {
