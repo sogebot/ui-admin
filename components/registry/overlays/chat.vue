@@ -7,7 +7,6 @@
         <v-select v-model="options.type" label="Type" :items="['vertical', 'horizontal', 'niconico']" />
         <v-switch v-model="options.showTimestamp" label="Show timestamps" :persistent-hint="true" :hint="(options.showTimestamp ? 'Message will contain timestamp.' : 'Timestamp won\'t be visible.')" />
         <v-switch v-model="options.showBadges" label="Show badges" :persistent-hint="true" :hint="(options.showBadges ? 'Message will contain badges.' : 'Badges won\'t be visible.')" />
-        <v-switch v-if="options.type !== 'niconico'" v-model="options.showFromTopOrLeft" :label="options.type === 'vertical' ? 'Start chat on top' : 'Start chat on left'" />
         <v-switch v-if="options.type !== 'niconico'" v-model="options.reverseOrder" label="Reverse chat flow" />
         <form-x-time-input v-if="options.type !== 'niconico'" v-model.lazy="options.hideMessageAfter" label="Hide messages after" hide-details="auto" />
       </v-expansion-panel-content>
