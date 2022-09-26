@@ -5,9 +5,66 @@
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-select v-model="options.type" label="Type" :items="['vertical', 'horizontal', 'niconico']" />
-        <v-switch v-model="options.showTimestamp" label="Show timestamps" :persistent-hint="true" :hint="(options.showTimestamp ? 'Message will contain timestamp.' : 'Timestamp won\'t be visible.')" />
-        <v-switch v-model="options.showBadges" label="Show badges" :persistent-hint="true" :hint="(options.showBadges ? 'Message will contain badges.' : 'Badges won\'t be visible.')" />
-        <v-switch v-if="options.type !== 'niconico'" v-model="options.reverseOrder" label="Reverse chat flow" />
+        <v-row>
+          <v-col>
+            <v-switch v-model="options.showTimestamp" label="Show timestamps" :persistent-hint="true" :hint="(options.showTimestamp ? 'Message will contain timestamp.' : 'Timestamp won\'t be visible.')" />
+          </v-col>
+          <v-col>
+            <v-switch v-model="options.useCustomEmoteSize" label="Use custom emotes size" :persistent-hint="true" :hint="(options.useCustomEmoteSize ? 'Custom emote size will be used' : 'Custom emote size won\'t be used.')" />
+          </v-col>
+          <v-col>
+            <v-text-field
+              class="mt-2"
+              v-model="options.customEmoteSize"
+              label="Custom emote size"
+              type="number"
+              :hide-details="true"
+              min="0"
+            >
+              <template #append>px</template>
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-switch v-model="options.showBadges" label="Show badges" :persistent-hint="true" :hint="(options.showBadges ? 'Message will contain badges.' : 'Badges won\'t be visible.')" />
+          </v-col>
+          <v-col>
+            <v-switch v-model="options.useCustomBadgeSize" label="Use custom badges size" :persistent-hint="true" :hint="(options.useCustomBadgeSize ? 'Custom badge size will be used' : 'Custom badge size won\'t be used.')" />
+          </v-col>
+          <v-col>
+            <v-text-field
+              class="mt-2"
+              v-model="options.customBadgeSize"
+              label="Custom badge size"
+              type="number"
+              :hide-details="true"
+              min="0"
+            >
+              <template #append>px</template>
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row  v-if="options.type !== 'niconico'">
+          <v-col>
+            <v-switch v-model="options.reverseOrder" label="Reverse chat flow" />
+          </v-col>
+          <v-col>
+            <v-switch v-model="options.useCustomLineHeight" label="Use custom line height" :persistent-hint="true" :hint="(options.useCustomLineHeight ? 'Custom line height will be used' : 'Custom line height won\'t be used.')" />
+          </v-col>
+          <v-col>
+            <v-text-field
+              class="mt-2"
+              v-model="options.customLineHeight"
+              label="Custom line height"
+              type="number"
+              :hide-details="true"
+              min="0"
+            >
+              <template #append>px</template>
+            </v-text-field>
+          </v-col>
+        </v-row>
         <form-x-time-input v-if="options.type !== 'niconico'" v-model.lazy="options.hideMessageAfter" label="Hide messages after" hide-details="auto" />
       </v-expansion-panel-content>
     </v-expansion-panel>
