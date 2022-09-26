@@ -70,18 +70,18 @@
 
             <div v-if="currentTab === 0" id="plugins-edit-settings" style="background-color: transparent; overflow-y: auto;" :style="{ height: heightSettings }">
               <template v-if="!settingsEditMode">
-                <div v-if="item.settings.length === 0">
+                <div v-if="(item.settings || []).length === 0">
                   No settings for this plugin found.
                 </div>
 
-                <div v-for="(it, index) in item.settings" :key="index">
+                <div v-for="(it, index) in (item.settings || [])" :key="index">
                   <v-text-field :label="capitalize(it.name)" v-model="it.currentValue" :hint="it.description" persistent-hint/>
                 </div>
 
               </template>
               <template v-else>
-                <div v-for="(_i, index) in item.settings" :key="index">
-                  <SettingsVariableInput v-model="item.settings[index]" @click="removeSettingsVariable(index)" btnText="Remove variable" editation />
+                <div v-for="(_i, index) in (item.settings || [])" :key="index">
+                  <SettingsVariableInput v-model="(item.settings || [])[index]" @click="removeSettingsVariable(index)" btnText="Remove variable" editation />
                   <v-divider class="mb-2" />
                 </div>
                 <SettingsVariableInput v-model="settingsVariableNew" @click="addNewSettingsVariable" />
@@ -171,14 +171,13 @@ export default defineComponent({
     } as Plugin['settings'][number]);
 
     const removeSettingsVariable = (idx: number) => {
-      item.value.settings = [...item.value.settings.slice(0, idx), ...item.value.settings.slice(idx + 1)];
+      item.value.settings = [...(item.value.settings || []).slice(0, idx), ...(item.value.settings || []).slice(idx + 1)];
     };
 
 
     const addNewSettingsVariable = () => {
-      console.log({settingsVariableNew})
       item.value.settings = [
-        ...item.value.settings,
+        ...(item.value.settings || []),
         cloneDeep(settingsVariableNew),
       ];
       settingsVariableNew.name = '';
@@ -488,11 +487,10 @@ export default defineComponent({
       });
     };
     const importToEditor = (data: { workflow: string, settings: any[] }) => {
-      console.log({data})
       for (const it of data.settings) {
         it.currentValue = it.defaultValue; // reset to default values
       }
-      item.value.settings = data.settings;
+      item.value.settings = data.settings || [];
       editor?.import(data.workflow);
     };
     const isValid = (property: string) => {
