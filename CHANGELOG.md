@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [65.0.3](https://github.com/sogebot/ui-admin/compare/v65.0.2...v65.0.3) (2022-09-26)
+
+
+### Bug Fixes
+
+* **plugins:** update settings expecting null ([3c14975](https://github.com/sogebot/ui-admin/commit/3c14975dc2079ba678d39ca87cd930e5cff7aceb))
+
 ### [65.0.2](https://github.com/sogebot/ui-admin/compare/v65.0.1...v65.0.2) (2022-09-26)
 
 
