@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [65.1.0](https://github.com/sogebot/ui-admin/compare/v65.0.3...v65.1.0) (2022-09-27)
+
+
+### Features
+
+* **plugins:** add array settings ([0665204](https://github.com/sogebot/ui-admin/commit/0665204f75323cbeeef9af454fb280abd7f239ce))
+
 ### [65.0.3](https://github.com/sogebot/ui-admin/compare/v65.0.2...v65.0.3) (2022-09-26)
 
 
