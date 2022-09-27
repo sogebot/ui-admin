@@ -74,17 +74,72 @@
                   No settings for this plugin found.
                 </div>
 
-                <div v-for="(it, index) in (item.settings || [])" :key="index">
-                  <v-text-field :label="capitalize(it.name)" v-model="it.currentValue" :hint="it.description" persistent-hint/>
+                <div v-for="(it, index) in (item.settings || [])" :key="index" class="pb-2">
+                  <template v-if="it.type === 'array' && Array.isArray(it.currentValue)">
+                    <v-banner single-line>
+                      {{capitalize(it.name)}}
+                      <template v-slot:actions>
+                        <v-btn icon @click="it.currentValue = [...it.currentValue, '']"><v-icon>mdi-plus</v-icon></v-btn>
+                      </template>
+                    </v-banner>
+                    <v-text-field
+                      v-for="(_it, index) of it.currentValue"
+                      :key="index"
+                      v-model="it.currentValue[index]"
+                      hide-details="auto"
+                    >
+                      <template #append>
+                        <v-btn icon @click="it.currentValue = ([...it.currentValue]).filter((_, idx) => idx !== index)"><v-icon>mdi-minus</v-icon></v-btn>
+                      </template>
+                    </v-text-field>
+                    <div v-if="it.description.length > 0" class="v-text-field__details pt-2">
+                      <div class="v-messages theme--dark">
+                        <div class="v-messages__wrapper">
+                          <div class="v-messages__message">{{it.description}}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                  <v-text-field v-else :label="capitalize(it.name)" v-model="it.currentValue" :hint="it.description" persistent-hint/>
                 </div>
 
               </template>
               <template v-else>
-                <div v-for="(_i, index) in (item.settings || [])" :key="index">
+                <v-simple-table>
+                  <tbody>
+                    <tr
+                      v-for="(it, index) in (item.settings || [])"
+                      :key="index"
+                    >
+                      <td>{{ it.name }}</td>
+                      <td>{{ it.type }}</td>
+                      <td>
+                        <v-dialog
+                          max-width="600"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              color="primary"
+                              v-bind="attrs"
+                              v-on="on"
+                              icon
+                            ><v-icon>mdi-pencil</v-icon></v-btn>
+                          </template>
+                          <template v-slot:default="dialog">
+                            <SettingsVariableInput @close="() => dialog.value = false" v-model="(item.settings || [])[index]" @click="removeSettingsVariable(index)" btnText="Remove variable" editation />
+                          </template>
+                        </v-dialog>
+                      </td>
+                    </tr>
+                  </tbody>
+                </v-simple-table>
+                <!--div v-for="(_i, index) in (item.settings || [])" :key="index">
+
                   <SettingsVariableInput v-model="(item.settings || [])[index]" @click="removeSettingsVariable(index)" btnText="Remove variable" editation />
                   <v-divider class="mb-2" />
-                </div>
-                <SettingsVariableInput v-model="settingsVariableNew" @click="addNewSettingsVariable" />
+                </div-->
+
+                <v-btn @click="addNewSettingsVariable" block>Add new variable</v-btn>
               </template>
             </div>
 
@@ -128,30 +183,30 @@
 import type { Plugin } from '@entity/plugins';
 import { isValidationError } from '@sogebot/backend/src/helpers/errors';
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import plugin from 'dayjs/plugin/customParseFormat';
 import Drawflow from 'drawflow';
 import gsap from 'gsap';
 import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
+import shortid from 'shortid';
 import Vue from 'vue';
 
-import cron from '~/components/drawflow/cron';
-import gateCounter from '~/components/drawflow/filter/counter';
-import debounce from '~/components/drawflow/filter/debounce';
-import filter from '~/components/drawflow/filter/filter';
-import filterPermission from '~/components/drawflow/filter/permission';
-import listener from '~/components/drawflow/listener';
-import clearCounter from '~/components/drawflow/others/clearCounter';
-import othersComment from '~/components/drawflow/others/comment';
-import othersIdle from '~/components/drawflow/others/idle';
-import outputLog from '~/components/drawflow/output/log';
-import twitchBanUser from '~/components/drawflow/output/twitchBanUser';
-import twitchSendMessage from '~/components/drawflow/output/twitchSendMessage';
-import twitchTimeoutUser from '~/components/drawflow/output/twitchTimeoutUser';
-import variableLoadFromDatabase from '~/components/drawflow/variable/loadFromDatabase';
-import variableSaveToDatabase from '~/components/drawflow/variable/saveToDatabase';
-import variableSetCustomVariable from '~/components/drawflow/variable/setCustomVariable';
-import variableSetVariable from '~/components/drawflow/variable/setVariable';
+import cron from '~/components/drawflow/cron.vue';
+import gateCounter from '~/components/drawflow/filter/counter.vue';
+import debounce from '~/components/drawflow/filter/debounce.vue';
+import filter from '~/components/drawflow/filter/filter.vue';
+import filterPermission from '~/components/drawflow/filter/permission.vue';
+import listener from '~/components/drawflow/listener.vue';
+import clearCounter from '~/components/drawflow/others/clearCounter.vue';
+import othersComment from '~/components/drawflow/others/comment.vue';
+import othersIdle from '~/components/drawflow/others/idle.vue';
+import outputLog from '~/components/drawflow/output/log.vue';
+import twitchBanUser from '~/components/drawflow/output/twitchBanUser.vue';
+import twitchSendMessage from '~/components/drawflow/output/twitchSendMessage.vue';
+import twitchTimeoutUser from '~/components/drawflow/output/twitchTimeoutUser.vue';
+import variableLoadFromDatabase from '~/components/drawflow/variable/loadFromDatabase.vue';
+import variableSaveToDatabase from '~/components/drawflow/variable/saveToDatabase.vue';
+import variableSetCustomVariable from '~/components/drawflow/variable/setCustomVariable.vue';
+import variableSetVariable from '~/components/drawflow/variable/setVariable.vue';
 import { EventBus } from '~/functions/event-bus';
 import SettingsVariableInput from '~/pages/registry/plugins/components/settingsVariableInput.vue';
 
@@ -162,29 +217,22 @@ export default defineComponent({
     const route = useRoute();
     const currentTab = ref(0);
     const settingsEditMode = ref(false);
-    const settingsVariableNew = reactive({
-      name:         '',
-      currentValue: '',
-      defaultValue: '',
-      description:  '',
-      type:         'string',
-    } as Plugin['settings'][number]);
 
     const removeSettingsVariable = (idx: number) => {
       item.value.settings = [...(item.value.settings || []).slice(0, idx), ...(item.value.settings || []).slice(idx + 1)];
     };
 
-
     const addNewSettingsVariable = () => {
       item.value.settings = [
         ...(item.value.settings || []),
-        cloneDeep(settingsVariableNew),
+        {
+          name:         shortid(),
+          currentValue: '',
+          defaultValue: '',
+          description:  '',
+          type:         'string',
+        }
       ];
-      settingsVariableNew.name = '';
-      settingsVariableNew.currentValue = '';
-      settingsVariableNew.defaultValue = '';
-      settingsVariableNew.description = '';
-      settingsVariableNew.type = 'string';
     };
     watch(() => $store.state.navbarMiniVariant, (val) => {
       gsap.to('#plugins-edit-card', {
@@ -583,7 +631,6 @@ export default defineComponent({
       heightList,
       heightSettings,
       settingsEditMode,
-      settingsVariableNew,
       addNewSettingsVariable,
       removeSettingsVariable,
       isValid,
