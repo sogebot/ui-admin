@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [65.1.1](https://github.com/sogebot/ui-admin/compare/v65.1.0...v65.1.1) (2022-09-30)
+
+
+### Bug Fixes
+
+* **ranks:** id should be unique every new rank ([2942b9f](https://github.com/sogebot/ui-admin/commit/2942b9f4ae6fbddbe38f362a1245063d88699cb8))
+
 ## [65.1.0](https://github.com/sogebot/ui-admin/compare/v65.0.3...v65.1.0) (2022-09-27)
 
 
