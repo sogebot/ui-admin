@@ -101,8 +101,6 @@ export default defineComponent({
     const group = ref('');
     const saving = ref(false);
 
-    let id: null | string = null;
-
     const resetForm = () => {
       valid.value = true;
       if (form.value as unknown) {
@@ -136,11 +134,11 @@ export default defineComponent({
           }
         }
 
-        id = item.value.id
+        const id = item.value.id
           ? item.value.id
-          : (id || v4());
+          : v4();
 
-        console.log('Updating', item.value);
+        console.log('Updating', { id, ...item.value });
         saving.value = true;
         getSocket('/systems/ranks').emit('ranks::save', { id, ...item.value }, (err) => {
           saving.value = false;
