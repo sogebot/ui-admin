@@ -77,9 +77,11 @@
                 <div v-for="(it, index) in (item.settings || [])" :key="index" class="pb-2">
                   <template v-if="it.type === 'array' && Array.isArray(it.currentValue)">
                     <v-banner single-line>
-                      {{capitalize(it.name)}}
-                      <template v-slot:actions>
-                        <v-btn icon @click="it.currentValue = [...it.currentValue, '']"><v-icon>mdi-plus</v-icon></v-btn>
+                      {{ capitalize(it.name) }}
+                      <template #actions>
+                        <v-btn icon @click="it.currentValue = [...it.currentValue, '']">
+                          <v-icon>mdi-plus</v-icon>
+                        </v-btn>
                       </template>
                     </v-banner>
                     <v-text-field
@@ -89,20 +91,23 @@
                       hide-details="auto"
                     >
                       <template #append>
-                        <v-btn icon @click="it.currentValue = ([...it.currentValue]).filter((_, idx) => idx !== index)"><v-icon>mdi-minus</v-icon></v-btn>
+                        <v-btn icon @click="it.currentValue = ([...it.currentValue]).filter((_, idx) => idx !== index)">
+                          <v-icon>mdi-minus</v-icon>
+                        </v-btn>
                       </template>
                     </v-text-field>
                     <div v-if="it.description.length > 0" class="v-text-field__details pt-2">
                       <div class="v-messages theme--dark">
                         <div class="v-messages__wrapper">
-                          <div class="v-messages__message">{{it.description}}</div>
+                          <div class="v-messages__message">
+                            {{ it.description }}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </template>
-                  <v-text-field v-else :label="capitalize(it.name)" v-model="it.currentValue" :hint="it.description" persistent-hint/>
+                  <v-text-field v-else v-model="it.currentValue" :label="capitalize(it.name)" :hint="it.description" persistent-hint />
                 </div>
-
               </template>
               <template v-else>
                 <v-simple-table>
@@ -117,16 +122,18 @@
                         <v-dialog
                           max-width="600"
                         >
-                          <template v-slot:activator="{ on, attrs }">
+                          <template #activator="{ on, attrs }">
                             <v-btn
                               color="primary"
                               v-bind="attrs"
-                              v-on="on"
                               icon
-                            ><v-icon>mdi-pencil</v-icon></v-btn>
+                              v-on="on"
+                            >
+                              <v-icon>mdi-pencil</v-icon>
+                            </v-btn>
                           </template>
-                          <template v-slot:default="dialog">
-                            <SettingsVariableInput @close="() => dialog.value = false" v-model="(item.settings || [])[index]" @click="removeSettingsVariable(index)" btnText="Remove variable" editation />
+                          <template #default="dialog">
+                            <SettingsVariableInput v-model="(item.settings || [])[index]" btn-text="Remove variable" editation @close="() => dialog.value = false" @click="removeSettingsVariable(index)" />
                           </template>
                         </v-dialog>
                       </td>
@@ -139,7 +146,9 @@
                   <v-divider class="mb-2" />
                 </div-->
 
-                <v-btn @click="addNewSettingsVariable" block>Add new variable</v-btn>
+                <v-btn block @click="addNewSettingsVariable">
+                  Add new variable
+                </v-btn>
               </template>
             </div>
 
@@ -203,6 +212,8 @@ import outputLog from '~/components/drawflow/output/log.vue';
 import twitchBanUser from '~/components/drawflow/output/twitchBanUser.vue';
 import twitchSendMessage from '~/components/drawflow/output/twitchSendMessage.vue';
 import twitchTimeoutUser from '~/components/drawflow/output/twitchTimeoutUser.vue';
+import overlaysEmoteExplosion from '~/components/drawflow/overlays/emoteExplosion.vue';
+import overlaysEmoteFirework from '~/components/drawflow/overlays/emoteFirework.vue';
 import variableLoadFromDatabase from '~/components/drawflow/variable/loadFromDatabase.vue';
 import variableSaveToDatabase from '~/components/drawflow/variable/saveToDatabase.vue';
 import variableSetCustomVariable from '~/components/drawflow/variable/setCustomVariable.vue';
@@ -231,7 +242,7 @@ export default defineComponent({
           defaultValue: '',
           description:  '',
           type:         'string',
-        }
+        },
       ];
     };
     watch(() => $store.state.navbarMiniVariant, (val) => {
@@ -284,6 +295,9 @@ export default defineComponent({
       'comment',
       'othersIdle',
       'clearCounter',
+      { header: 'Overlay' },
+      'overlaysEmoteFirework',
+      'overlaysEmoteExplosion',
     ];
     const refresh = () => {
       return new Promise((resolve) => {
@@ -455,6 +469,8 @@ export default defineComponent({
         editor.registerNode('debounce', debounce, {}, {});
         editor.registerNode('gateCounter', gateCounter, {}, {});
         editor.registerNode('clearCounter', clearCounter, {}, {});
+        editor.registerNode('overlaysEmoteFirework', overlaysEmoteFirework, {}, {});
+        editor.registerNode('overlaysEmoteExplosion', overlaysEmoteExplosion, {}, {});
         editor.registerNode('twitchSendMessage', twitchSendMessage, {}, {});
         editor.registerNode('twitchTimeoutUser', twitchTimeoutUser, {}, {});
         editor.registerNode('twitchBanUser', twitchBanUser, {}, {});
@@ -561,8 +577,8 @@ export default defineComponent({
       if (!editor) {
         return;
       }
-      posX = posX * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)) - (editor.precanvas.getBoundingClientRect().x * (editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)));
-      posY = posY * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)) - (editor.precanvas.getBoundingClientRect().y * (editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)));
+      posX = posX * ((editor as any).precanvas.clientWidth / ((editor as any).precanvas.clientWidth * (editor as any).zoom)) - ((editor as any).precanvas.getBoundingClientRect().x * ((editor as any).precanvas.clientWidth / ((editor as any).precanvas.clientWidth * (editor as any).zoom)));
+      posY = posY * ((editor as any).precanvas.clientHeight / ((editor as any).precanvas.clientHeight * (editor as any).zoom)) - ((editor as any).precanvas.getBoundingClientRect().y * ((editor as any).precanvas.clientHeight / ((editor as any).precanvas.clientHeight * (editor as any).zoom)));
       switch (name) {
         case 'othersIdle':
           editor?.addNode('othersIdle', 1, 1, posX, posY, 'othersIdle', { value: '', data: '{}' }, 'othersIdle', 'vue');
@@ -587,6 +603,12 @@ export default defineComponent({
           break;
         case 'listener':
           editor?.addNode('listener', 0, 1, posX, posY, 'listener', { value: '', data: '{}' }, 'listener', 'vue');
+          break;
+        case 'overlaysEmoteExplosion':
+          editor?.addNode('overlaysEmoteExplosion', 1, 0, posX, posY, 'overlaysEmoteExplosion', { value: null, data: '{}' }, 'overlaysEmoteExplosion', 'vue');
+          break;
+        case 'overlaysEmoteFirework':
+          editor?.addNode('overlaysEmoteFirework', 1, 0, posX, posY, 'overlaysEmoteFirework', { value: null, data: '{}' }, 'overlaysEmoteFirework', 'vue');
           break;
         case 'clearCounter':
           editor?.addNode('clearCounter', 1, 1, posX, posY, 'clearCounter', { value: null, data: '{}' }, 'clearCounter', 'vue');
