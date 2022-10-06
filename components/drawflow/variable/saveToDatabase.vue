@@ -41,8 +41,6 @@ watch(pointer, (value) => {
 watch([item, data], (val) => {
   if (nodeId.value) {
     EventBus.$emit('drawflow::node::update', nodeId.value, val[0], val[1]);
-
-    console.log(data.value)
     if (data.value) {
       value.value = JSON.parse(data.value).value || '';
     }

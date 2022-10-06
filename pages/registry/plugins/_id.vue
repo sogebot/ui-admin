@@ -77,7 +77,7 @@
                 <div v-for="(it, index) in (item.settings || [])" :key="index" class="pb-2">
                   <template v-if="it.type === 'array' && Array.isArray(it.currentValue)">
                     <v-banner single-line>
-                      {{ capitalize(it.name) }}
+                      {{ capitalize(camel2title(it.name)) }}
                       <template #actions>
                         <v-btn icon @click="it.currentValue = [...it.currentValue, '']">
                           <v-icon>mdi-plus</v-icon>
@@ -106,7 +106,7 @@
                       </div>
                     </div>
                   </template>
-                  <v-text-field v-else v-model="it.currentValue" :label="capitalize(it.name)" :hint="it.description" persistent-hint />
+                  <v-text-field v-else v-model="it.currentValue" :label="capitalize(camel2title(it.name))" :hint="it.description" persistent-hint />
                 </div>
               </template>
               <template v-else>
@@ -208,6 +208,7 @@ import listener from '~/components/drawflow/listener.vue';
 import clearCounter from '~/components/drawflow/others/clearCounter.vue';
 import othersComment from '~/components/drawflow/others/comment.vue';
 import othersIdle from '~/components/drawflow/others/idle.vue';
+import updateCounter from '~/components/drawflow/others/updateCounter.vue';
 import outputLog from '~/components/drawflow/output/log.vue';
 import twitchBanUser from '~/components/drawflow/output/twitchBanUser.vue';
 import twitchSendMessage from '~/components/drawflow/output/twitchSendMessage.vue';
@@ -220,6 +221,11 @@ import variableSetCustomVariable from '~/components/drawflow/variable/setCustomV
 import variableSetVariable from '~/components/drawflow/variable/setVariable.vue';
 import { EventBus } from '~/functions/event-bus';
 import SettingsVariableInput from '~/pages/registry/plugins/components/settingsVariableInput.vue';
+
+const camel2title = (camelCase: string) => camelCase
+  .replace(/([A-Z])/g, match => ` ${match}`)
+  .replace(/^./, match => match.toUpperCase())
+  .trim();
 
 export default defineComponent({
   components: { SettingsVariableInput },
@@ -285,7 +291,10 @@ export default defineComponent({
       'filter',
       'filterPermission',
       'debounce',
+      { header: 'Counter Gate' },
       'counter',
+      'clearCounter',
+      'updateCounter',
       { header: 'Output' },
       'twitchSendMessage',
       'twitchTimeoutUser',
@@ -294,7 +303,6 @@ export default defineComponent({
       { header: 'Other' },
       'comment',
       'othersIdle',
-      'clearCounter',
       { header: 'Overlay' },
       'overlaysEmoteFirework',
       'overlaysEmoteExplosion',
@@ -469,6 +477,7 @@ export default defineComponent({
         editor.registerNode('debounce', debounce, {}, {});
         editor.registerNode('gateCounter', gateCounter, {}, {});
         editor.registerNode('clearCounter', clearCounter, {}, {});
+        editor.registerNode('updateCounter', updateCounter, {}, {});
         editor.registerNode('overlaysEmoteFirework', overlaysEmoteFirework, {}, {});
         editor.registerNode('overlaysEmoteExplosion', overlaysEmoteExplosion, {}, {});
         editor.registerNode('twitchSendMessage', twitchSendMessage, {}, {});
@@ -613,6 +622,9 @@ export default defineComponent({
         case 'clearCounter':
           editor?.addNode('clearCounter', 1, 1, posX, posY, 'clearCounter', { value: null, data: '{}' }, 'clearCounter', 'vue');
           break;
+        case 'updateCounter':
+          editor?.addNode('updateCounter', 1, 1, posX, posY, 'updateCounter', { value: 0, data: '{}' }, 'updateCounter', 'vue');
+          break;
         case 'counter':
           editor?.addNode('gateCounter', 1, 2, posX, posY, 'gateCounter', { value: null, data: '{}' }, 'gateCounter', 'vue');
           break;
@@ -646,6 +658,7 @@ export default defineComponent({
     }
     return {
       allowDrop,
+      camel2title,
       drag,
       drop,
       capitalize,
@@ -708,7 +721,8 @@ export default defineComponent({
   border-color: var(--v-info-base) !important;
 }
 
-.drawflow-node.clearCounter .outputs .output:nth-child(1)::before {
+.drawflow-node.clearCounter .outputs .output:nth-child(1)::before,
+.drawflow-node.updateCounter .outputs .output:nth-child(1)::before {
   display: block;
   content: "Link to Counter";
   position: relative;
@@ -719,12 +733,17 @@ export default defineComponent({
   font-weight: bold;
 }
 
-.drawflow-node.clearCounter > .outputs > .output_1 {
+.drawflow-node.clearCounter > .outputs > .output_1,
+.drawflow-node.updateCounter > .outputs > .output_1 {
   background-color: rgb(70 70 70);
   display: block;
   position: absolute;
   top: 50px;
   right: 50%;
+}
+
+.drawflow-node.updateCounter > .outputs > .output_1 {
+  top: 155px;
 }
 
 .drawflow-node.gateCounter > .outputs > .output_1,

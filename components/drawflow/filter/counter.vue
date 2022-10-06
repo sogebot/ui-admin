@@ -8,7 +8,7 @@
         Counter
       </v-toolbar-title>
     </v-toolbar>
-    <v-card dark>
+    <v-card dark style="min-width: 400px;">
       <v-card-text>
         <v-alert v-if="Object.entries(attributes).length == 0" type="error" color="red" class="ma-0">
           Input must be linked to node
