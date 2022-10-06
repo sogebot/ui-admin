@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [65.2.0](https://github.com/sogebot/ui-admin/compare/v65.1.1...v65.2.0) (2022-10-06)
+
+
+### Features
+
+* **plugins:** add emote explosion/firework nodes ([c58b17a](https://github.com/sogebot/ui-admin/commit/c58b17a176d345b4a470e3d51b25e9b5d87ad631))
+
 ### [65.1.1](https://github.com/sogebot/ui-admin/compare/v65.1.0...v65.1.1) (2022-09-30)
 
 
