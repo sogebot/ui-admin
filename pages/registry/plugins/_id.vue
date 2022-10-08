@@ -776,6 +776,6 @@ export default defineComponent({
 }
 
 .drawflow-node.node .drawflow_content_node {
-  transform: translate(-2px,6px);
+  transform: translate(-2px, 6px);
 }
 </style>
