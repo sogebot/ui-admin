@@ -560,7 +560,7 @@ export default defineComponent({
       });
     };
     const importToEditor = (data: { workflow: string, settings: any[] }) => {
-      for (const it of data.settings) {
+      for (const it of (data.settings || [])) {
         it.currentValue = it.defaultValue; // reset to default values
       }
       item.value.settings = data.settings || [];
