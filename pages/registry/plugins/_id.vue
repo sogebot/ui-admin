@@ -199,6 +199,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import shortid from 'shortid';
 import Vue from 'vue';
 
+import nodeComponent from '~/components/drawflow/others/node.vue';
 import cron from '~/components/drawflow/cron.vue';
 import gateCounter from '~/components/drawflow/filter/counter.vue';
 import debounce from '~/components/drawflow/filter/debounce.vue';
@@ -221,6 +222,8 @@ import variableSetCustomVariable from '~/components/drawflow/variable/setCustomV
 import variableSetVariable from '~/components/drawflow/variable/setVariable.vue';
 import { EventBus } from '~/functions/event-bus';
 import SettingsVariableInput from '~/pages/registry/plugins/components/settingsVariableInput.vue';
+
+let interval = 0;
 
 const camel2title = (camelCase: string) => camelCase
   .replace(/([A-Z])/g, match => ` ${match}`)
@@ -302,6 +305,7 @@ export default defineComponent({
       'outputLog',
       { header: 'Other' },
       'comment',
+      'node',
       'othersIdle',
       { header: 'Overlay' },
       'overlaysEmoteFirework',
@@ -470,6 +474,7 @@ export default defineComponent({
         console.log('Editor initialized.');
         editor = new Drawflow(id, Vue, context.root);
         editor.draggable_inputs = false;
+        editor.registerNode('node', nodeComponent, {}, {});
         editor.registerNode('cron', cron, {}, {});
         editor.registerNode('listener', listener, {}, {});
         editor.registerNode('filter', filter, {}, {});
@@ -527,7 +532,9 @@ export default defineComponent({
           console.error(err);
           console.log('Invalid Data');
         }
-        setInterval(() => {
+
+        window.clearInterval(interval);
+        interval = window.setInterval(() => {
           if (editor) {
             for (const i of Object.values(editor.export().drawflow.Home.data)) {
               editor.updateConnectionNodes(`node-${i.id}`);
@@ -606,6 +613,9 @@ export default defineComponent({
           break;
         case 'variableSaveToDatabase':
           editor?.addNode('variableSaveToDatabase', 1, 1, posX, posY, 'variableSaveToDatabase', { value: '', data: '{}' }, 'variableSaveToDatabase', 'vue');
+          break;
+        case 'node':
+          editor?.addNode('node', 1, 1, posX, posY, 'node', { value: '', data: '{}' }, 'node', 'vue');
           break;
         case 'cron':
           editor?.addNode('cron', 0, 1, posX, posY, 'cron', { value: '0 * * * * *', data: '{}' }, 'cron', 'vue');
@@ -758,5 +768,14 @@ export default defineComponent({
 .drawflow-node.filterPermission > .outputs > .output_2,
 .drawflow-node.filter > .outputs > .output_2 {
   background-color: rgb(255 93 93);
+}
+
+.drawflow-node.node {
+  border: 0;
+  background-color: transparent !important;
+}
+
+.drawflow-node.node .drawflow_content_node {
+  transform: translate(-2px,6px);
 }
 </style>
