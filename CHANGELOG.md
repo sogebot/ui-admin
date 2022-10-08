@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [66.1.0](https://github.com/sogebot/ui-admin/compare/v66.0.2...v66.1.0) (2022-10-08)
+
+
+### Features
+
+* add empty node ([ad6669a](https://github.com/sogebot/ui-admin/commit/ad6669a2a175c4ecf296b54025049013ed482679))
+
+
+### Bug Fixes
+
+* eslint ([7896a90](https://github.com/sogebot/ui-admin/commit/7896a90ee62fbcfaed0232597299c62a405fb185))
+
 ### [66.0.2](https://github.com/sogebot/ui-admin/compare/v66.0.1...v66.0.2) (2022-10-08)
 
 
