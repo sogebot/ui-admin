@@ -112,7 +112,8 @@ watch(pointer, (value) => {
         item.value = val;
       }
       data.value = _data;
-      body.value = JSON.parse(_data).body;
+      body.value = JSON.parse(_data).body || '';
+      javascript.value = JSON.parse(_data).javascript || '';
     });
   }
 });

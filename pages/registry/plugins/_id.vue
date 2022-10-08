@@ -217,6 +217,7 @@ import twitchTimeoutUser from '~/components/drawflow/output/twitchTimeoutUser.vu
 import overlaysEmoteExplosion from '~/components/drawflow/overlays/emoteExplosion.vue';
 import overlaysEmoteFirework from '~/components/drawflow/overlays/emoteFirework.vue';
 import overlaysCustom from '~/components/drawflow/overlays/customOverlay.vue';
+import runJavascriptOnCustomOverlay from '~/components/drawflow/overlays/runJavascriptOnCustomOverlay.vue';
 import variableLoadFromDatabase from '~/components/drawflow/variable/loadFromDatabase.vue';
 import variableSaveToDatabase from '~/components/drawflow/variable/saveToDatabase.vue';
 import variableSetCustomVariable from '~/components/drawflow/variable/setCustomVariable.vue';
@@ -310,6 +311,7 @@ export default defineComponent({
       'othersIdle',
       { header: 'Overlay' },
       'customOverlay',
+      'runJavascriptOnCustomOverlay',
       'overlaysEmoteFirework',
       'overlaysEmoteExplosion',
     ];
@@ -486,6 +488,7 @@ export default defineComponent({
         editor.registerNode('clearCounter', clearCounter, {}, {});
         editor.registerNode('updateCounter', updateCounter, {}, {});
         editor.registerNode('customOverlay', overlaysCustom, {}, {});
+        editor.registerNode('runJavascriptOnCustomOverlay', runJavascriptOnCustomOverlay, {}, {});
         editor.registerNode('overlaysEmoteFirework', overlaysEmoteFirework, {}, {});
         editor.registerNode('overlaysEmoteExplosion', overlaysEmoteExplosion, {}, {});
         editor.registerNode('twitchSendMessage', twitchSendMessage, {}, {});
@@ -628,6 +631,9 @@ export default defineComponent({
           break;
         case 'overlaysEmoteExplosion':
           editor?.addNode('overlaysEmoteExplosion', 1, 0, posX, posY, 'overlaysEmoteExplosion', { value: null, data: '{}' }, 'overlaysEmoteExplosion', 'vue');
+          break;
+        case 'runJavascriptOnCustomOverlay':
+          editor?.addNode('runJavascriptOnCustomOverlay', 1, 1, posX, posY, 'runJavascriptOnCustomOverlay', { value: '', data: '""' }, 'runJavascriptOnCustomOverlay', 'vue');
           break;
         case 'customOverlay':
           editor?.addNode('customOverlay', 0, 0, posX, posY, 'customOverlay', { value: shortid(), data: '{ body: "" }' }, 'customOverlay', 'vue');
