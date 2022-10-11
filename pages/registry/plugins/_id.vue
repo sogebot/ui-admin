@@ -636,7 +636,7 @@ export default defineComponent({
           editor?.addNode('runJavascriptOnCustomOverlay', 1, 1, posX, posY, 'runJavascriptOnCustomOverlay', { value: '', data: '""' }, 'runJavascriptOnCustomOverlay', 'vue');
           break;
         case 'customOverlay':
-          editor?.addNode('customOverlay', 0, 0, posX, posY, 'customOverlay', { value: shortid(), data: '{ body: "" }' }, 'customOverlay', 'vue');
+          editor?.addNode('customOverlay', 0, 0, posX, posY, 'customOverlay', { value: shortid(), data: '{ body: "", javascript: "", css: "" }' }, 'customOverlay', 'vue');
           break;
         case 'overlaysEmoteFirework':
           editor?.addNode('overlaysEmoteFirework', 1, 0, posX, posY, 'overlaysEmoteFirework', { value: null, data: '{}' }, 'overlaysEmoteFirework', 'vue');

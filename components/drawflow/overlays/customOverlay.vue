@@ -45,23 +45,47 @@
           </template>
           <v-card>
             <v-card-text class="pa-4">
-              HTML
-              <prism-editor
-                v-model="body"
-                class="overlayEditor"
-                :tab-size="4"
-                :highlight="highlighterHTML"
-                line-numbers
-                @click="focusTextarea"
-              />
-              JAVASCRIPT (all persistent variables are available in variables object)
-              <prism-editor
-                v-model="javascript"
-                class="overlayEditor"
-                :tab-size="4"
-                :highlight="highlighterJS"
-                line-numbers
-              />
+              <v-row justify="center">
+                <v-expansion-panels accordion>
+                  <v-expansion-panel>
+                    <v-expansion-panel-header>HTML - inside &#60;body	&#62;</v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                      <prism-editor
+                        v-model="body"
+                        class="overlayEditor"
+                        :tab-size="4"
+                        :highlight="highlighterHTML"
+                        line-numbers
+                      />
+                    </v-expansion-panel-content>
+                  </v-expansion-panel>
+                  <v-expansion-panel>
+                    <v-expansion-panel-header>JAVASCRIPT - initialized on start</v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                      <p>All variables from database are available in variables and settings objects.</p>
+                      <prism-editor
+                        v-model="javascript"
+                        class="overlayEditor"
+                        :tab-size="4"
+                        :highlight="highlighterJS"
+                        line-numbers
+                      />
+                    </v-expansion-panel-content>
+                  </v-expansion-panel>
+                  <v-expansion-panel>
+                    <v-expansion-panel-header>CSS</v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                      <prism-editor
+                        v-model="css"
+                        class="overlayEditor"
+                        :tab-size="4"
+                        :highlight="highlighterCSS"
+                        line-numbers
+                      />
+                    </v-expansion-panel-content>
+                  </v-expansion-panel>
+                </v-expansion-panels>
+              </v-row>
             </v-card-text>
             <v-card-actions>
               <v-spacer />
@@ -79,16 +103,17 @@
 <script setup lang="ts">
 import { EventBus } from '~/functions/event-bus';
 import {
-  highlighterHTML, highlighterJS, PrismEditor,
+  highlighterCSS, highlighterHTML, highlighterJS, PrismEditor,
 } from '~/functions/prismjs';
 
 const route = useRoute();
 const item = ref('');
 const dialog = ref(false);
-const data = ref('{ body: "", javascript: "" }');
+const data = ref('{ body: "", javascript: "", css: "" }');
 
 const body = ref('');
 const javascript = ref('');
+const css = ref('');
 
 const pointer = ref(null as null | HTMLElement);
 const nodeId = ref(null as null | string);
@@ -106,13 +131,20 @@ watch(pointer, (value) => {
   nodeId.value = value?.parentElement?.parentElement?.id ?? null;
 
   if (nodeId.value) {
-    EventBus.$emit('drawflow::node::value', nodeId.value, (val: string, _data: string) => {
+    EventBus.$emit('drawflow::node::value', nodeId.value, (val: string, _data: any) => {
       if (val) {
         item.value = val;
       }
       data.value = _data;
-      body.value = JSON.parse(_data).body || '';
-      javascript.value = JSON.parse(_data).javascript || '';
+      try {
+        body.value = JSON.parse(_data).body || '';
+        javascript.value = JSON.parse(_data).javascript || '';
+        css.value = JSON.parse(_data).css || '';
+      } catch {
+        body.value = '';
+        javascript.value = '';
+        css.value = '';
+      }
     });
   }
 });
@@ -123,8 +155,8 @@ watch([item, data], (val) => {
   }
 });
 
-watch([body, javascript], (val) => {
-  data.value = JSON.stringify({ body: val[0], javascript: val[1] });
+watch([body, javascript, css], (val) => {
+  data.value = JSON.stringify({ body: val[0], javascript: val[1], css: val[2] });
 });
 </script>
 
