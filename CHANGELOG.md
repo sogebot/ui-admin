@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [67.0.0](https://github.com/sogebot/ui-admin/compare/v66.1.0...v67.0.0) (2022-10-11)
+
+
+### Features
+
+* **plugins:** add custom overlay ([#374](https://github.com/sogebot/ui-admin/issues/374)) ([a7d46aa](https://github.com/sogebot/ui-admin/commit/a7d46aabd26be6b76cd82531469e776f64265eac))
+
 ## [66.1.0](https://github.com/sogebot/ui-admin/compare/v66.0.2...v66.1.0) (2022-10-08)
 
 
