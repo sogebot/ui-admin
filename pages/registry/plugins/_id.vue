@@ -199,7 +199,6 @@ import cloneDeep from 'lodash/cloneDeep';
 import shortid from 'shortid';
 import Vue from 'vue';
 
-import nodeComponent from '~/components/drawflow/others/node.vue';
 import cron from '~/components/drawflow/cron.vue';
 import gateCounter from '~/components/drawflow/filter/counter.vue';
 import debounce from '~/components/drawflow/filter/debounce.vue';
@@ -209,6 +208,7 @@ import listener from '~/components/drawflow/listener.vue';
 import clearCounter from '~/components/drawflow/others/clearCounter.vue';
 import othersComment from '~/components/drawflow/others/comment.vue';
 import othersIdle from '~/components/drawflow/others/idle.vue';
+import nodeComponent from '~/components/drawflow/others/node.vue';
 import updateCounter from '~/components/drawflow/others/updateCounter.vue';
 import outputLog from '~/components/drawflow/output/log.vue';
 import twitchBanUser from '~/components/drawflow/output/twitchBanUser.vue';
@@ -216,6 +216,8 @@ import twitchSendMessage from '~/components/drawflow/output/twitchSendMessage.vu
 import twitchTimeoutUser from '~/components/drawflow/output/twitchTimeoutUser.vue';
 import overlaysEmoteExplosion from '~/components/drawflow/overlays/emoteExplosion.vue';
 import overlaysEmoteFirework from '~/components/drawflow/overlays/emoteFirework.vue';
+import overlaysCustom from '~/components/drawflow/overlays/customOverlay.vue';
+import runJavascriptOnCustomOverlay from '~/components/drawflow/overlays/runJavascriptOnCustomOverlay.vue';
 import variableLoadFromDatabase from '~/components/drawflow/variable/loadFromDatabase.vue';
 import variableSaveToDatabase from '~/components/drawflow/variable/saveToDatabase.vue';
 import variableSetCustomVariable from '~/components/drawflow/variable/setCustomVariable.vue';
@@ -308,6 +310,8 @@ export default defineComponent({
       'node',
       'othersIdle',
       { header: 'Overlay' },
+      'customOverlay',
+      'runJavascriptOnCustomOverlay',
       'overlaysEmoteFirework',
       'overlaysEmoteExplosion',
     ];
@@ -483,6 +487,8 @@ export default defineComponent({
         editor.registerNode('gateCounter', gateCounter, {}, {});
         editor.registerNode('clearCounter', clearCounter, {}, {});
         editor.registerNode('updateCounter', updateCounter, {}, {});
+        editor.registerNode('customOverlay', overlaysCustom, {}, {});
+        editor.registerNode('runJavascriptOnCustomOverlay', runJavascriptOnCustomOverlay, {}, {});
         editor.registerNode('overlaysEmoteFirework', overlaysEmoteFirework, {}, {});
         editor.registerNode('overlaysEmoteExplosion', overlaysEmoteExplosion, {}, {});
         editor.registerNode('twitchSendMessage', twitchSendMessage, {}, {});
@@ -625,6 +631,12 @@ export default defineComponent({
           break;
         case 'overlaysEmoteExplosion':
           editor?.addNode('overlaysEmoteExplosion', 1, 0, posX, posY, 'overlaysEmoteExplosion', { value: null, data: '{}' }, 'overlaysEmoteExplosion', 'vue');
+          break;
+        case 'runJavascriptOnCustomOverlay':
+          editor?.addNode('runJavascriptOnCustomOverlay', 1, 1, posX, posY, 'runJavascriptOnCustomOverlay', { value: '', data: '""' }, 'runJavascriptOnCustomOverlay', 'vue');
+          break;
+        case 'customOverlay':
+          editor?.addNode('customOverlay', 0, 0, posX, posY, 'customOverlay', { value: shortid(), data: '{ body: "", javascript: "", css: "" }' }, 'customOverlay', 'vue');
           break;
         case 'overlaysEmoteFirework':
           editor?.addNode('overlaysEmoteFirework', 1, 0, posX, posY, 'overlaysEmoteFirework', { value: null, data: '{}' }, 'overlaysEmoteFirework', 'vue');
