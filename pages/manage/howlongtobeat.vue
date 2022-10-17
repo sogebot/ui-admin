@@ -117,13 +117,13 @@
         </v-sheet>
       </template>
       <template #[`item.main`]="{ item }">
-        {{ timeToReadable(timestampToObject(getStreamsTimestamp(item.id, 'main') + +item.offset + getStreamsOffset(item.id, 'main'))) }} <span v-if="item.gameplayMain">/ {{ timeToReadable(timestampToObject(item.gameplayMain * 3600000)) }}</span>
+        {{ timeToReadable(timestampToObject(getStreamsTimestamp(item, 'main') + +item.offset + getStreamsOffset(item, 'main'))) }} <span v-if="item.gameplayMain">/ {{ timeToReadable(timestampToObject(item.gameplayMain * 3600000)) }}</span>
       </template>
       <template #[`item.extra`]="{ item }">
-        {{ timeToReadable(timestampToObject(getStreamsTimestamp(item.id, 'extra') + +item.offset + getStreamsOffset(item.id, 'extra'))) }} <span v-if="item.gameplayMain">/ {{ timeToReadable(timestampToObject(item.gameplayMainExtra * 3600000)) }}</span>
+        {{ timeToReadable(timestampToObject(getStreamsTimestamp(item, 'extra') + +item.offset + getStreamsOffset(item, 'extra'))) }} <span v-if="item.gameplayMain">/ {{ timeToReadable(timestampToObject(item.gameplayMainExtra * 3600000)) }}</span>
       </template>
       <template #[`item.completionist`]="{ item }">
-        {{ timeToReadable(timestampToObject(getStreamsTimestamp(item.id, 'completionist') + +item.offset + getStreamsOffset(item.id, 'completionist'))) }} <span v-if="item.gameplayMain">/ {{ timeToReadable(timestampToObject(item.gameplayCompletionist * 3600000)) }}</span>
+        {{ timeToReadable(timestampToObject(getStreamsTimestamp(item, 'completionist') + +item.offset + getStreamsOffset(item, 'completionist'))) }} <span v-if="item.gameplayMain">/ {{ timeToReadable(timestampToObject(item.gameplayCompletionist * 3600000)) }}</span>
       </template>
 
       <template #[`item.offset`]="{ item }">
@@ -159,7 +159,7 @@
           <v-container>
             <v-data-table
               dense
-              :items="streams.filter(o => o.hltb_id === item.id)"
+              :items="item.streams"
               :headers="headersOffset"
               :sort-desc="true"
               sort-by="createdAt"
@@ -223,15 +223,15 @@
 </template>
 
 <script lang="ts">
-import { HowLongToBeatGameInterface, HowLongToBeatGameItemInterface } from '@entity/howLongToBeatGame';
+import { HowLongToBeatGame } from '@entity/howLongToBeatGame';
 import {
   computed, defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getTime, timestampToObject } from '@sogebot/ui-helpers/getTime';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import { cloneDeep, debounce } from 'lodash';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
@@ -243,14 +243,12 @@ export default defineComponent({
   components: { timeInput: defineAsyncComponent({ loader: () => import('~/components/time.vue') }) },
   setup () {
     const timestamp = ref(Date.now());
-    const items = ref([] as Required<HowLongToBeatGameInterface>[]);
-    const streams = ref([] as HowLongToBeatGameItemInterface[]);
-    const oldStreams = ref([] as HowLongToBeatGameItemInterface[]);
+    const items = ref([] as Required<HowLongToBeatGame>[]);
     const searchForGameOpts = ref([] as string[]);
     const deleteDialog = ref(false);
-    const selected = ref([] as Required<HowLongToBeatGameInterface>[]);
-    const currentItems = ref([] as Required<HowLongToBeatGameInterface>[]);
-    const saveCurrentItems = (value: Required<HowLongToBeatGameInterface>[]) => {
+    const selected = ref([] as Required<HowLongToBeatGame>[]);
+    const currentItems = ref([] as Required<HowLongToBeatGame>[]);
+    const saveCurrentItems = (value: Required<HowLongToBeatGame>[]) => {
       currentItems.value = value;
     };
 
@@ -261,7 +259,7 @@ export default defineComponent({
       }
     });
 
-    const expanded = ref([] as HowLongToBeatGameItemInterface[]);
+    const expanded = ref([] as HowLongToBeatGame['streams']);
     const gameToAdd = ref('');
     const state = ref({
       loading: ButtonStates.progress, add: ButtonStates.idle, search: ButtonStates.idle,
@@ -274,15 +272,15 @@ export default defineComponent({
 
     const rules = { offset: [required, minValue(0)] };
 
-    const getStreamsOffset = (hltbId: string, type: 'extra' | 'main' | 'completionist') => {
-      return streams.value
-        .filter(o => o.hltb_id === hltbId && ((type === 'main' && o.isMainCounted) || (type === 'completionist' && o.isCompletionistCounted) || (type === 'extra' && o.isExtraCounted)))
+    const getStreamsOffset = (item: HowLongToBeatGame, type: 'extra' | 'main' | 'completionist') => {
+      return item.streams
+        .filter(o => ((type === 'main' && o.isMainCounted) || (type === 'completionist' && o.isCompletionistCounted) || (type === 'extra' && o.isExtraCounted)))
         .reduce((a, b) => a + b.offset, 0);
     };
 
-    const getStreamsTimestamp = (hltbId: string, type: 'extra' | 'main' | 'completionist') => {
-      return streams.value
-        .filter(o => o.hltb_id === hltbId && ((type === 'main' && o.isMainCounted) || (type === 'completionist' && o.isCompletionistCounted) || (type === 'extra' && o.isExtraCounted)))
+    const getStreamsTimestamp = (item: HowLongToBeatGame, type: 'extra' | 'main' | 'completionist') => {
+      return item.streams
+        .filter(o => ((type === 'main' && o.isMainCounted) || (type === 'completionist' && o.isCompletionistCounted) || (type === 'extra' && o.isExtraCounted)))
         .reduce((a, b) => a + b.timestamp, 0);
     };
 
@@ -346,16 +344,12 @@ export default defineComponent({
       refresh();
     });
     const refresh = () => {
-      getSocket('/systems/howlongtobeat').emit('generic::getAll', (err, _games, _streams) => {
-        if (err) {
-          return error(err);
-        }
-        items.value = cloneDeep(_games);
-        streams.value = cloneDeep(_streams);
-        oldStreams.value = cloneDeep(_streams);
-        console.debug('Loaded', { _games, _streams });
-        state.value.loading = ButtonStates.success;
-      });
+      axios.get(`/api/systems/hltb`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        .then(({ data }) => {
+          items.value = cloneDeep(data.data);
+          console.debug('Loaded', { data });
+          state.value.loading = ButtonStates.success;
+        });
     };
 
     const timeToReadable = (data: { days: number; hours: number; minutes: number; seconds: number}) => {
@@ -402,9 +396,10 @@ export default defineComponent({
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
             console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
-            getSocket('/systems/howlongtobeat').emit('hltb::save', itemToUpdate, () => {
-              resolve(true);
-            });
+            axios.post(`/api/systems/hltb/${itemToUpdate.id}`, itemToUpdate, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+              .then(() => {
+                resolve(true);
+              });
           });
         }),
       );
@@ -412,36 +407,23 @@ export default defineComponent({
       EventBus.$emit('snack', 'success', 'Data updated.');
     };
 
-    watch(streams, debounce((val) => {
-      for (const stream of val) {
-        // find stream and check if changed
-        const oldStream = oldStreams.value.find(o => o.id === stream.id);
-        if (oldStream
-          && (oldStream.isMainCounted !== stream.isMainCounted
-            || oldStream.isCompletionistCounted !== stream.isCompletionistCounted
-            || oldStream.isExtraCounted !== stream.isExtraCounted
-            || oldStream.offset !== stream.offset)) {
-          getSocket('/systems/howlongtobeat').emit('hltb::saveStreamChange', stream, (err) => {
-            if (err) {
-              error(err);
-            }
-            EventBus.$emit('snack', 'success', 'Data updated.');
-          });
-        }
+    watch(items, () => {
+      for (const item of items.value) {
+        axios.post(`/api/systems/hltb/${item.id}`, item, { headers: { authorization: `Bearer ${localStorage.accessToken}` } });
       }
-      oldStreams.value = cloneDeep(streams.value);
-    }, 1000), { deep: true });
+    }, { deep: true });
 
     watch(search, debounce((value: string | null) => {
       if (value && value.trim().length !== 0) {
         state.value.search = ButtonStates.progress;
-        getSocket('/systems/howlongtobeat').emit('hltb::getGamesFromHLTB', value, (err, val) => {
-          if (err) {
-            return error(err);
-          }
-          searchForGameOpts.value = val;
-          state.value.search = ButtonStates.idle;
-        });
+        axios.post(`/api/systems/hltb?search=${value}`, undefined, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(({ data }) => {
+            searchForGameOpts.value = data.data;
+            state.value.search = ButtonStates.idle;
+          })
+          .catch(() => {
+            state.value.search = ButtonStates.idle;
+          });
       } else {
         searchForGameOpts.value = [];
       }
@@ -454,18 +436,13 @@ export default defineComponent({
       }
       if (state.value.add === 0) {
         state.value.add = 1;
-        getSocket('/systems/howlongtobeat').emit('hltb::addNewGame', gameToAdd.value, (err) => {
-          if (err) {
-            gameToAdd.value = '';
-            state.value.add = 0;
-            return error(err);
-          } else {
+        axios.post(`/api/systems/hltb`, gameToAdd.value, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(() => {
             state.value.add = 0;
             refresh();
             gameToAdd.value = '';
             EventBus.$emit('snack', 'success', 'Game added to list.');
-          }
-        });
+          });
       }
     };
 
@@ -478,12 +455,9 @@ export default defineComponent({
               reject(error('Missing item id'));
               return;
             }
-            getSocket('/systems/howlongtobeat').emit('generic::deleteById', item.id, (err) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
+            axios.delete(`/api/systems/hltb/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+              .then(resolve)
+              .catch(resolve);
           });
         }),
       );
@@ -497,7 +471,6 @@ export default defineComponent({
       addToSelectedItem: addToSelectedItem(selected, 'id', currentItems),
       saveCurrentItems,
       items,
-      streams,
       headers,
       expanded,
       state,
