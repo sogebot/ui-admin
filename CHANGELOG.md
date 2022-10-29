@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [67.0.2](https://github.com/sogebot/ui-admin/compare/v67.0.1...v67.0.2) (2022-10-29)
+
+
+### Bug Fixes
+
+* **polls:** update polls to latest backend ([5b3667d](https://github.com/sogebot/ui-admin/commit/5b3667d11585635842a631f2c5c2738908a7009d))
+* update ranks to new backend ([cc41f9b](https://github.com/sogebot/ui-admin/commit/cc41f9bc1378f39da625684b988a060158a403de))
+* **viewers:** update new filters ([f252228](https://github.com/sogebot/ui-admin/commit/f2522289da6394562d615fdb143007423b3d08d2))
+
 ### [67.0.1](https://github.com/sogebot/ui-admin/compare/v67.0.0...v67.0.1) (2022-10-17)
 
 ## [67.0.0](https://github.com/sogebot/ui-admin/compare/v66.1.0...v67.0.0) (2022-10-11)
