@@ -109,7 +109,7 @@
 
             <v-stepper-content :step="2">
               <v-textarea
-                v-model="item.libraries"
+                v-model="libraries"
                 label="External libraries"
                 hint="Separated by new-line, e.g. https://code.jquery.com/jquery-3.6.0.slim.min.js"
                 persistent-hint
@@ -191,6 +191,8 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
 
+    const libraries = ref('');
+
     const presets = ref([] as string[]);
     const presetSelector = ref(null as null | string);
     const presetLoading = ref(false);
@@ -220,8 +222,8 @@ export default defineComponent({
 
     const save = () => {
       isSaving.value = true;
-      console.log('Saving', item.value);
-      getSocket('/registries/text').emit('text::save', item.value, (err) => {
+      console.log('Saving', { ...item.value, external: libraries.value.split('\n') });
+      getSocket('/registries/text').emit('text::save', { ...item.value, external: libraries.value.split('\n') }, (err) => {
         if (err) {
           return error(err);
         }
@@ -251,6 +253,7 @@ export default defineComponent({
             return error(err);
           }
           item.value = data;
+          libraries.value = data.external.join('\n');
           isLoading.value = false;
         });
       } else {
@@ -287,6 +290,7 @@ export default defineComponent({
     return {
       e1,
       rules,
+      libraries,
       isSaving,
       isLoading,
       translate,
