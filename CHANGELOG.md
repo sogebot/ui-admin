@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [67.0.3](https://github.com/sogebot/ui-admin/compare/v67.0.2...v67.0.3) (2022-10-29)
+
+
+### Bug Fixes
+
+* properly save external libraries ([13cfd75](https://github.com/sogebot/ui-admin/commit/13cfd75c13e5e6df15895191c3d492d4bb855901))
+
 ### [67.0.2](https://github.com/sogebot/ui-admin/compare/v67.0.1...v67.0.2) (2022-10-29)
 
 
