@@ -27,8 +27,8 @@
             required
           />
           <v-text-field
-            type="number"
             v-model.number="item.value"
+            type="number"
             min="0"
             :label="capitalize($t(item.type === 'viewer' ? 'hours' : 'months'))"
             :rules="rules.value"
@@ -36,8 +36,8 @@
           />
 
           <v-select
-            :label="capitalize($t('type'))"
             v-model="item.type"
+            :label="capitalize($t('type'))"
             :items="Object.keys(types || {})"
             item-value="name"
           >
@@ -65,10 +65,13 @@
 </template>
 
 <script lang="ts">
-import type { RankInterface } from '@entity/rank';
-import { defineComponent, ref, watch } from '@nuxtjs/composition-api';
+import type { Rank } from '@entity/rank';
+import {
+  defineComponent, ref, watch,
+} from '@nuxtjs/composition-api';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
 import { v4 } from 'uuid';
@@ -76,12 +79,12 @@ import { v4 } from 'uuid';
 import { EventBus } from '~/functions/event-bus';
 
 type Props = {
-  value: RankInterface;
+  value: Rank;
   rules: [];
   types: Record<string, any>;
 };
 
-const newItem: RankInterface = {
+const newItem: Rank = {
   value: 0,
   rank:  '',
   type:  'viewer',
@@ -138,20 +141,20 @@ export default defineComponent({
           ? item.value.id
           : v4();
 
-        console.log('Updating', { id, ...item.value });
+        console.log('Updating', { ...item.value, id });
         saving.value = true;
-        getSocket('/systems/ranks').emit('ranks::save', { id, ...item.value }, (err) => {
-          saving.value = false;
-          if (err) {
-            if (typeof err === 'string' && err.includes('UNIQUE constraint failed')) {
-              EventBus.$emit('snack', 'error', 'Type and hours/months must be unique.');
-            }
-          } else {
+        axios.post(`/api/systems/ranks`,
+          { ...item.value, id },
+          { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(() => {
             EventBus.$emit('snack', 'success', 'Data updated.');
             ctx.emit('save');
             menu.value = false;
-          }
-        });
+          })
+          .catch(() => {
+            EventBus.$emit('snack', 'error', 'Type and hours/months must be unique.');
+          })
+          .finally(() => (saving.value = false));
       }
     };
 

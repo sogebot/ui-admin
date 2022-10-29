@@ -37,7 +37,7 @@
                         hide-default-footer
                       >
                         <template #[`item.type`]="{item}">
-                          {{getGroup[item.type].name}} time
+                          {{ getGroup[item.type].name }} time
                         </template>
                       </v-data-table>
                     </v-card-text>
@@ -94,7 +94,7 @@
           :items="items"
         >
           <template #headerText="{ group }">
-            {{getGroup[group].name}} time
+            {{ getGroup[group].name }} time
           </template>
         </table-group-header>
       </template>
@@ -125,15 +125,14 @@
 </template>
 
 <script lang="ts">
-import type { RankInterface } from '@entity/rank';
+import type { Rank } from '@entity/rank';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import { capitalize } from 'lodash';
-
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
@@ -142,20 +141,20 @@ import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
   components: {
-    'ranks-edit':   defineAsyncComponent(() => import('~/components/manage/ranks/ranksEdit.vue')),
+    'ranks-edit':         defineAsyncComponent(() => import('~/components/manage/ranks/ranksEdit.vue')),
     'table-group-header': defineAsyncComponent(() => import('~/components/table/groupHeader.vue')),
     'table-search-bar':   defineAsyncComponent(() => import('~/components/table/searchBar.vue')),
-    'table-mobile': defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
+    'table-mobile':       defineAsyncComponent(() => import('~/components/table/tableMobile.vue')),
   },
   setup () {
     const rules = { value: [required, minValue(0)], rank: [required] };
 
-    const items = ref([] as RankInterface[]);
+    const items = ref([] as Rank[]);
     const search = ref('');
 
-    const selected = ref([] as RankInterface[]);
-    const currentItems = ref([] as RankInterface[]);
-    const saveCurrentItems = (value: RankInterface[]) => {
+    const selected = ref([] as Rank[]);
+    const currentItems = ref([] as Rank[]);
+    const saveCurrentItems = (value: Rank[]) => {
       currentItems.value = value;
     };
     const selectable = ref(false);
@@ -186,22 +185,20 @@ export default defineComponent({
 
     const refresh = () => {
       state.value.loading = true;
-      getSocket('/systems/ranks').emit('generic::getAll', (err, itemsGetAll: RankInterface[]) => {
-        if (err) {
-          return error(err);
-        }
-        items.value = [...itemsGetAll, ...JSON.parse(sessionStorage.getItem('ranks-pending') ?? '[]')];
-        console.debug('Loaded', items.value);
+      axios.get(`/api/systems/ranks`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        .then(({ data }) => {
+          items.value = [...data.data, ...JSON.parse(sessionStorage.getItem('ranks-pending') ?? '[]')];
+          console.debug('Loaded', items.value);
 
-        // we also need to reset selection values
-        if (selected.value.length > 0) {
-          selected.value.forEach((selectedItem, index) => {
-            selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
-            selected.value[index] = selectedItem;
-          });
-        }
-        state.value.loading = false;
-      });
+          // we also need to reset selection values
+          if (selected.value.length > 0) {
+            selected.value.forEach((selectedItem, index) => {
+              selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
+              selected.value[index] = selectedItem;
+            });
+          }
+          state.value.loading = false;
+        });
     };
 
     const deleteSelected = async () => {
@@ -213,12 +210,10 @@ export default defineComponent({
               reject(error('Missing item id'));
               return;
             }
-            getSocket('/systems/ranks').emit('ranks::remove', item.id, (err) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
+            axios.delete(`/api/systems/ranks/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+              .finally(() => {
+                resolve(true);
+              });
           });
         }),
       );
