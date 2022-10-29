@@ -68,13 +68,13 @@
               />
             </v-col>
             <v-col cols="auto" align-self="center">
-              <filter-button :value="filter.subscribers" @save="value=>filter.subscribers=value">
+              <filter-button :value="getFilter('isSubscriber')" @save="value=>setFilters('isSubscriber', value)">
                 subscribers
               </filter-button>
-              <filter-button :value="filter.vips" @save="value=>filter.vips=value">
+              <filter-button :value="getFilter('isSubscriber')" @save="value=>setFilters('isVIP', value)">
                 vips
               </filter-button>
-              <filter-button :value="filter.active" @save="value=>filter.active=value">
+              <filter-button :value="getFilter('isSubscriber')" @save="value=>setFilters('isOnline', value)">
                 active
               </filter-button>
 
@@ -426,8 +426,8 @@ export default defineComponent({
 
     const timestamp = ref(new Date().toISOString());
     const state = ref({
-      history:              ButtonStates.idle,
-      loading:              ButtonStates.progress,
+      history: ButtonStates.idle,
+      loading: ButtonStates.progress,
     } as {
       history: number;
       loading: number;
@@ -462,11 +462,11 @@ export default defineComponent({
       }
     });
 
-    const filter = ref({
-      subscribers: null,
-      vips:        null,
-      active:      null,
-    });
+    const filter = ref<{
+      columnName: string;
+      operation: string;
+      value: any;
+    }[]>([]);
 
     const fItems = computed(() => {
       if (search.value === '') {
@@ -659,7 +659,31 @@ export default defineComponent({
       item.watchedTime = Number(String(value).replace(/\s/g, '')) * 1000 * 60 * 60;
     }
 
+    const setFilters = (columnName: 'isSubscriber' | 'isVIP' | 'isOnline', value: any) => {
+      const f = filter.value.find(o => o.columnName === columnName)
+      if (f) {
+        if (f.value) {
+          f.value = false
+        } else {
+          filter.value = filter.value.filter(o => o.columnName !== columnName)
+        }
+      } else {
+        filter.value.push({
+          columnName,
+          operation: 'equal',
+          value: Boolean(value),
+        })
+      }
+    }
+
+    const getFilter = (columnName: 'isSubscriber' | 'isVIP' | 'isOnline') => {
+      const f = filter.value.find(o => o.columnName === columnName)
+      return f?.value || null;
+    }
+
     return {
+      setFilters,
+      getFilter,
       addToSelectedItem: addToSelectedItem(selected, 'userId', currentItems),
       selectable,
       orderBy,
