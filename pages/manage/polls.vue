@@ -1,6 +1,6 @@
 <template>
   <v-container fluid :class="{ 'pa-4': !$vuetify.breakpoint.mobile }">
-    <alert-disabled system="polls"/>
+    <alert-disabled system="polls" />
 
     <v-data-table
       v-model="selected"
@@ -166,7 +166,7 @@
 
       <template #[`item.closedAt`]="{ item }">
         <span
-          v-if="item.isOpened"
+          v-if="item.closedAt === null"
           class="green--text text--lighten-1"
         >{{ translate('systems.polls.activeFor') }} <strong>{{ dayjs().from(dayjs(activeTime(item)), true) }}</strong></span>
         <span
@@ -177,9 +177,9 @@
 
       <template #[`item.buttons`]="{ item }">
         <v-btn
-          v-if="item.isOpened"
+          v-if="item.closedAt === null"
           icon
-          @click="stop(item)"
+          @click="stop()"
         >
           <v-icon>mdi-stop</v-icon>
         </v-btn>
@@ -197,18 +197,18 @@
 </template>
 
 <script lang="ts">
+import type { Poll } from '@entity/poll';
 import {
   computed,
   defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
-import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import type { PollInterface } from '@entity/poll';
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { error } from '~/functions/error';
 import { EventBus } from '~/functions/event-bus';
@@ -217,26 +217,20 @@ import { expectedValuesCount, required } from '~/functions/validators';
 let interval: number;
 
 export default defineComponent({
-  components: {
-    'new-item': defineAsyncComponent({
-      loader: () => import('~/components/new-item/polls-newItem.vue'),
-    }),
-  },
+  components: { 'new-item': defineAsyncComponent({ loader: () => import('~/components/new-item/polls-newItem.vue') }) },
   setup () {
-    const rules = {
-      title: [required], options: [expectedValuesCount(2)],
-    };
+    const rules = { title: [required], options: [expectedValuesCount(2)] };
 
-    const items = ref([] as PollInterface[]);
+    const items = ref([] as Poll[]);
     const isRunning = computed(() => {
-      const running = items.value.find(o => typeof o !== 'string' && o.isOpened);
+      const running = items.value.find(o => typeof o !== 'string' && o.closedAt === null);
       return typeof running !== 'undefined';
     });
     const search = ref('');
 
-    const selected = ref([] as PollInterface[]);
-    const currentItems = ref([] as PollInterface[]);
-    const saveCurrentItems = (value: PollInterface[]) => {
+    const selected = ref([] as Poll[]);
+    const currentItems = ref([] as Poll[]);
+    const saveCurrentItems = (value: Poll[]) => {
       currentItems.value = value;
     };
     const selectable = ref(false);
@@ -248,10 +242,10 @@ export default defineComponent({
     const deleteDialog = ref(false);
     const newDialog = ref(false);
 
-    const timestamp = ref(Date.now());
+    const timestamp = ref(new Date().toISOString());
 
     watch(newDialog, () => {
-      timestamp.value = Date.now();
+      timestamp.value = new Date().toISOString();
     });
 
     onMounted(() => {
@@ -264,62 +258,53 @@ export default defineComponent({
       window.clearInterval(interval);
     });
 
-    const state = ref({
-      loading: ButtonStates.progress,
-    } as {
+    const state = ref({ loading: ButtonStates.progress } as {
       loading: number;
     });
 
     const headers = [
-      {
-        value: 'title', text: translate('systems.polls.title'),
-      },
-      {
-        value: 'type', text: translate('systems.polls.votingBy'),
-      },
+      { value: 'title', text: translate('systems.polls.title') },
+      { value: 'type', text: translate('systems.polls.votingBy') },
       {
         value: 'votes', text: '', width: '20rem', sortable: false,
       },
       {
         value: 'totalVotes', text: translate('systems.polls.totalVotes'), align: 'align-center',
       },
-      {
-        value: 'closedAt', text: '',
-      },
+      { value: 'closedAt', text: '' },
       {
         value: 'buttons', text: '', sortable: false,
       },
     ];
 
     const headersDelete = [
-      {
-        value: 'title', text: '',
-      },
-      {
-        value: 'closedAt', text: '',
-      },
+      { value: 'title', text: '' },
+      { value: 'closedAt', text: '' },
     ];
 
     onMounted(() => {
       refresh();
     });
 
-    const refresh = () => {
-      getSocket('/systems/polls').emit('generic::getAll', (err, itemsGetAll: PollInterface[]) => {
-        if (err) {
-          return error(err);
-        }
-        console.debug('Loaded', itemsGetAll);
-        items.value = itemsGetAll;
-        // we also need to reset selection values
-        if (selected.value.length > 0) {
-          selected.value.forEach((selectedItem, index) => {
-            selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
-            selected.value[index] = selectedItem;
-          });
-        }
-        state.value.loading = ButtonStates.success;
-      });
+    const refresh = async () => {
+      await Promise.all([
+        new Promise<void>((resolve) => {
+          axios.get(`/api/systems/polls`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+            .then(({ data }) => {
+              console.debug('Loaded', data.data);
+              items.value = data.data;
+              // we also need to reset selection values
+              if (selected.value.length > 0) {
+                selected.value.forEach((selectedItem, index) => {
+                  selectedItem = items.value.find(o => o.id === selectedItem.id) || selectedItem;
+                  selected.value[index] = selectedItem;
+                });
+              }
+              resolve();
+            });
+        }),
+      ]);
+      state.value.loading = ButtonStates.success;
     };
 
     const saveSuccess = () => {
@@ -350,17 +335,16 @@ export default defineComponent({
       await Promise.all(
         [item, ...(multi ? selected.value : [])].map((itemToUpdate) => {
           return new Promise((resolve) => {
-            console.log('Updating', {
-              itemToUpdate,
-            }, {
-              attr, value: item[attr],
-            });
-            getSocket('/systems/polls').emit('polls::save', {
+            console.log('Updating', { itemToUpdate }, { attr, value: item[attr] });
+
+            axios.post(`/api/systems/polls`, {
               ...itemToUpdate,
               [attr]: item[attr], // save new value for all selected items
-            }, () => {
-              resolve(true);
-            });
+            }, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+              .then(() => {
+                refresh();
+                resolve(true);
+              });
           });
         }),
       );
@@ -377,12 +361,10 @@ export default defineComponent({
               reject(error('Missing item id'));
               return;
             }
-            getSocket('/systems/polls').emit('generic::deleteById', item.id, (err) => {
-              if (err) {
-                reject(error(err));
-              }
-              resolve(true);
-            });
+            axios.delete(`/api/systems/polls/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+              .finally(() => {
+                resolve(true);
+              });
           });
         }),
       );
@@ -392,16 +374,16 @@ export default defineComponent({
       selected.value = [];
     };
 
-    const totalVotes = (item: PollInterface) => {
+    const totalVotes = (item: Poll) => {
       const votes = (item.votes ?? []).reduce((a, b) => b.votes + a, 0);
       return item.type === 'tips' ? Number(votes.toFixed(1)) : votes;
     };
 
-    const activeTime = (item: PollInterface) => {
-      return new Date(item.openedAt || Date.now()).getTime();
+    const activeTime = (item: Poll) => {
+      return new Date(item.openedAt || new Date().toISOString()).getTime();
     };
 
-    const getPercentage = (item: PollInterface, index: number, toFixed: number): string => {
+    const getPercentage = (item: Poll, index: number, toFixed: number): string => {
       let numOfVotes = 0;
       if (item.votes) {
         for (let i = 0, length = item.votes.length; i < length; i++) {
@@ -412,27 +394,24 @@ export default defineComponent({
       }
       return Number((100 / totalVotes(item)) * numOfVotes || 0).toFixed(toFixed || 0);
     };
-    const copy = (item: PollInterface) => {
+    const copy = (item: Poll) => {
       console.log('Copying', item);
       const clone = cloneDeep(item);
       clone.id = uuid();
       clone.votes = [];
-      clone.isOpened = true;
-      clone.openedAt = Date.now();
-      getSocket('/systems/polls').emit('polls::save', clone, () => {
-        refresh();
-      });
+      clone.openedAt = new Date().toISOString();
+      axios.post(`/api/systems/polls`, clone, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        .then(() => {
+          refresh();
+        });
       EventBus.$emit('snack', 'success', 'Data copied.');
     };
-    const stop = (item: PollInterface) => {
-      item.isOpened = false;
-      item.closedAt = Date.now();
-      getSocket('/systems/polls').emit('polls::close', item, (err) => {
-        if (err) {
-          console.error(err);
-        }
-      });
-      EventBus.$emit('snack', 'success', 'Data updated.');
+    const stop = () => {
+      axios.delete(`/api/systems/polls/`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        .then(() => {
+          refresh();
+          EventBus.$emit('snack', 'success', 'Data updated.');
+        });
     };
 
     return {

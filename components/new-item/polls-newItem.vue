@@ -51,14 +51,22 @@
 </template>
 
 <script lang="ts">
+import { type } from 'os';
+import { title } from 'process';
+
 import {
   computed, defineComponent, ref,
 } from '@nuxtjs/composition-api';
-import { getSocket } from '@sogebot/ui-helpers/socket';
+import options from '@nuxtjs/vuetify/dist/options';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import { capitalize } from 'lodash';
+import { v4 } from 'uuid';
+import {
+  VBtn, VForm, VSelect, VTextField,
+} from 'vuetify/lib';
 
-import type { PollInterface } from '@entity/poll';
+import { rules } from '~/stylelint.config';
 
 export default defineComponent({
   props: { tags: Array, rules: Object },
@@ -113,20 +121,20 @@ export default defineComponent({
       if ((form.value as unknown as HTMLFormElement).validate() && validOptions.value === true) {
         newItemSaving.value = true;
         await new Promise((resolve) => {
-          const item: PollInterface = {
-            id:       undefined,
+          const item = {
+            id:       v4(),
             type:     (type.value as any),
             title:    title.value,
             options:  options.value.filter(o => o.length > 0),
-            isOpened: true,
-            openedAt: Date.now(),
+            openedAt: new Date().toISOString(),
           };
           console.log('Saving', { item });
-          getSocket('/systems/polls').emit('polls::save', item, () => {
-            resolve(true);
-            ctx.emit('save');
-            newItemSaving.value = false;
-          });
+          axios.post(`/api/systems/polls`, item, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+            .then(() => {
+              resolve(true);
+              ctx.emit('save');
+              newItemSaving.value = false;
+            });
         });
       }
     };
