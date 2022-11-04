@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [68.0.0](https://github.com/sogebot/ui-admin/compare/v67.0.3...v68.0.0) (2022-11-04)
+
+
+### Features
+
+* **plugins:** add runScript node ([e0d2566](https://github.com/sogebot/ui-admin/commit/e0d256696f272dc67b62f1f182d383f55571fe91))
+
 ### [67.0.3](https://github.com/sogebot/ui-admin/compare/v67.0.2...v67.0.3) (2022-10-29)
 
 
