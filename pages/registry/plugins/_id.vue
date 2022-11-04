@@ -74,7 +74,7 @@
                   No settings for this plugin found.
                 </div>
 
-                <div v-for="(it, index) in (item.settings || [])" :key="index" class="pb-2">
+                <div v-for="(it, index) in item.settings || []" :key="index" class="pb-2">
                   <template v-if="it.type === 'array' && Array.isArray(it.currentValue)">
                     <v-banner single-line>
                       {{ capitalize(camel2title(it.name)) }}
@@ -113,7 +113,7 @@
                 <v-simple-table>
                   <tbody>
                     <tr
-                      v-for="(it, index) in (item.settings || [])"
+                      v-for="(it, index) in item.settings || []"
                       :key="index"
                     >
                       <td>{{ it.name }}</td>
@@ -196,6 +196,7 @@ import Drawflow from 'drawflow';
 import gsap from 'gsap';
 import capitalize from 'lodash/capitalize';
 import cloneDeep from 'lodash/cloneDeep';
+import orderBy from 'lodash/orderBy';
 import shortid from 'shortid';
 import Vue from 'vue';
 
@@ -210,6 +211,7 @@ import othersComment from '~/components/drawflow/others/comment.vue';
 import othersIdle from '~/components/drawflow/others/idle.vue';
 import nodeComponent from '~/components/drawflow/others/node.vue';
 import updateCounter from '~/components/drawflow/others/updateCounter.vue';
+import runScript from '~/components/drawflow/others/runScript.vue';
 import outputLog from '~/components/drawflow/output/log.vue';
 import twitchBanUser from '~/components/drawflow/output/twitchBanUser.vue';
 import twitchSendMessage from '~/components/drawflow/output/twitchSendMessage.vue';
@@ -306,6 +308,7 @@ export default defineComponent({
       'twitchBanUser',
       'outputLog',
       { header: 'Other' },
+      'runScript',
       'comment',
       'node',
       'othersIdle',
@@ -325,7 +328,10 @@ export default defineComponent({
             return console.error(err);
           }
           if (d) {
-            item.value = d;
+            item.value = {
+              ...d,
+              settings: orderBy(d.settings || [], 'name', 'asc'),
+            };
           }
           resolve(true);
         });
@@ -487,6 +493,7 @@ export default defineComponent({
         editor.registerNode('gateCounter', gateCounter, {}, {});
         editor.registerNode('clearCounter', clearCounter, {}, {});
         editor.registerNode('updateCounter', updateCounter, {}, {});
+        editor.registerNode('runScript', runScript, {}, {});
         editor.registerNode('customOverlay', overlaysCustom, {}, {});
         editor.registerNode('runJavascriptOnCustomOverlay', runJavascriptOnCustomOverlay, {}, {});
         editor.registerNode('overlaysEmoteFirework', overlaysEmoteFirework, {}, {});
@@ -644,6 +651,9 @@ export default defineComponent({
         case 'clearCounter':
           editor?.addNode('clearCounter', 1, 1, posX, posY, 'clearCounter', { value: null, data: '{}' }, 'clearCounter', 'vue');
           break;
+        case 'runScript':
+          editor?.addNode('runScript', 1, 2, posX, posY, 'runScript', { value: 0, data: '{}' }, 'runScript', 'vue');
+          break;
         case 'updateCounter':
           editor?.addNode('updateCounter', 1, 1, posX, posY, 'updateCounter', { value: 0, data: '{}' }, 'updateCounter', 'vue');
           break;
@@ -768,6 +778,7 @@ export default defineComponent({
   top: 155px;
 }
 
+.drawflow-node.runScript > .outputs > .output_1,
 .drawflow-node.gateCounter > .outputs > .output_1,
 .drawflow-node.debounce > .outputs > .output_1,
 .drawflow-node.filterPermission > .outputs > .output_1,
@@ -775,6 +786,7 @@ export default defineComponent({
   background-color: rgb(108 255 108);
 }
 
+.drawflow-node.runScript > .outputs > .output_2,
 .drawflow-node.gateCounter > .outputs > .output_2,
 .drawflow-node.debounce > .outputs > .output_2,
 .drawflow-node.filterPermission > .outputs > .output_2,
