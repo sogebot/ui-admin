@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [68.1.0](https://github.com/sogebot/ui-admin/compare/v68.0.0...v68.1.0) (2022-11-06)
+
+
+### Features
+
+* add boolean switch to plugins ([85de00e](https://github.com/sogebot/ui-admin/commit/85de00e6de8260471d2159f072e6644730314b33))
+
 ## [68.0.0](https://github.com/sogebot/ui-admin/compare/v67.0.3...v68.0.0) (2022-11-04)
 
 
