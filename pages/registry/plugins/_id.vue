@@ -106,6 +106,11 @@
                       </div>
                     </div>
                   </template>
+                  <v-switch
+                    v-else-if="it.type === 'boolean'"
+                    v-model="it.currentValue"
+                    :label="capitalize(camel2title(it.name))" :hint="it.description" persistent-hint
+                  />
                   <v-text-field v-else v-model="it.currentValue" :label="capitalize(camel2title(it.name))" :hint="it.description" persistent-hint />
                 </div>
               </template>
@@ -140,11 +145,6 @@
                     </tr>
                   </tbody>
                 </v-simple-table>
-                <!--div v-for="(_i, index) in (item.settings || [])" :key="index">
-
-                  <SettingsVariableInput v-model="(item.settings || [])[index]" @click="removeSettingsVariable(index)" btnText="Remove variable" editation />
-                  <v-divider class="mb-2" />
-                </div-->
 
                 <v-btn block @click="addNewSettingsVariable">
                   Add new variable

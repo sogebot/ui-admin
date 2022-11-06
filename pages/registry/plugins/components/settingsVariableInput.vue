@@ -8,7 +8,7 @@
         hide-details="auto"
         small
         label="Variable Type"
-        :items="['string', 'number', 'array']"
+        :items="['string', 'number', 'array', 'boolean']"
       />
       <v-textarea
         v-model="item.description"
@@ -19,6 +19,13 @@
         hide-details="auto"
         small
         label="Variable Description"
+      />
+
+      <v-switch
+        v-if="item.type === 'boolean'"
+        v-model="item.defaultValue"
+        label="Default Value"
+        @change="() => item.currentValue = item.defaultValue"
       />
 
       <v-text-field
@@ -101,6 +108,10 @@ const closeDialog = () => {
 
 watch(() => item.value.type, (val) => {
   console.log({val})
+  if (val === 'boolean') {
+    item.value.currentValue = Boolean(item.value.currentValue);
+    item.value.defaultValue = Boolean(item.value.defaultValue);
+  }
   if (val === 'number') {
     item.value.currentValue = isNaN(Number(item.value.currentValue)) ? 0 : Number(item.value.currentValue);
     item.value.defaultValue = isNaN(Number(item.value.defaultValue)) ? 0 : Number(item.value.defaultValue);
