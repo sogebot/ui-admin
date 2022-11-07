@@ -17,26 +17,6 @@
       <v-textarea class="mt-3 pt-3" outlined rows="5" persistent-hint :label="translate('core.tmi.settings.ignorelist')"
         :value="_settings.chat.ignorelist[0].filter(String).join('\n')" :hint="translate('one-record-per-line')"
         @input="_settings.chat.ignorelist[0] = $event.split('\n').filter(String); $store.commit('settings/pending', true);" />
-      <v-autocomplete v-model="_settings.chat.globalIgnoreListExclude[0]"
-        :label="translate('core.tmi.settings.globalIgnoreListExclude')"
-        :items="Object.keys(globalIgnoreList).map(k => k)" cache-items multiple :filter="customFilter"
-        @input="$store.commit('settings/pending', true)">
-        <template v-slot:selection="data">
-          <v-chip v-bind="data.attrs" :input-value="data.selected" close small @click:close="remove(data.item)">
-            <strong class='text-caption pr-2'>{{ data.item }}</strong>
-            {{globalIgnoreList[data.item].known_aliases[0]}}
-          </v-chip>
-        </template>
-        <template v-slot:item="data">
-          <v-list-item-content>
-            <v-list-item-title><strong class='text-caption'>id:</strong> {{data.item}}</v-list-item-title>
-            <v-list-item-subtitle><strong class='text-caption'>Known as:</strong>
-              {{globalIgnoreList[data.item].known_aliases.join(', ')}} </v-list-item-subtitle>
-            <v-list-item-subtitle><strong class='text-caption'>Reason:</strong>
-              {{globalIgnoreList[data.item].reason}}</v-list-item-subtitle>
-          </v-list-item-content>
-        </template>
-      </v-autocomplete>
     </v-card-text>
   </v-card>
 </template>
@@ -81,21 +61,10 @@ export default defineComponent({
         });
     });
 
-    const remove = (item: string) => {
-      if (!_settings.value) {
-        return;
-      }
-      const index = _settings.value.chat.globalIgnoreListExclude[0].indexOf(item);
-      if (index >= 0) {
-        _settings.value.chat.globalIgnoreListExclude[0].splice(index, 1);
-      }
-    };
-
     return {
       _settings,
       translate,
       globalIgnoreList,
-      remove,
       customFilter,
 
       // validators
