@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [68.1.1](https://github.com/sogebot/ui-admin/compare/v68.1.0...v68.1.1) (2022-11-07)
+
+
+### Bug Fixes
+
+* remove globalIgnoreListExclude ([d61dcdb](https://github.com/sogebot/ui-admin/commit/d61dcdb723693a60e206f5f47a923c6cf8ed4395))
+
 ## [68.1.0](https://github.com/sogebot/ui-admin/compare/v68.0.0...v68.1.0) (2022-11-06)
 
 
