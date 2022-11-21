@@ -17,6 +17,24 @@
       </v-expansion-panel-content>
     </v-expansion-panel>
     <v-expansion-panel>
+      <v-expansion-panel-header>REST calls</v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <v-alert type="info" border="bottom">List of available calls, all calls need to have authorization token.</v-alert>
+        <pre class="pb-4">POST http://localhost:3000/api/overlays/countdown/{{id}}/start
+Authorization: Bearer &lt;socketToken&gt;</pre>
+        <pre class="pb-4">POST http://localhost:3000/api/overlays/countdown/{{id}}/stop
+Authorization: Bearer &lt;socketToken&gt;</pre>
+        <pre class="pb-4">POST http://localhost:3000/api/overlays/countdown/{{id}}/toggle
+Authorization: Bearer &lt;socketToken&gt;</pre>
+        <template v-if="!options.isPersistent">
+          <pre class="pb-4">POST http://localhost:3000/api/overlays/countdown/{{id}}/resetAndStop
+Authorization: Bearer &lt;socketToken&gt;</pre>
+          <pre>POST http://localhost:3000/api/overlays/countdown/{{id}}/reset
+Authorization: Bearer &lt;socketToken&gt;</pre>
+        </template>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+    <v-expansion-panel>
       <v-expansion-panel-header>Countdown font</v-expansion-panel-header>
       <v-expansion-panel-content>
         <font v-model="options.countdownFont" />
@@ -43,9 +61,10 @@ import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
   components: { font: defineAsyncComponent(() => import('~/components/form/expansion/font.vue')) },
-  props:      { value: [Object, Array] },
+  props:      { value: [Object, Array], id: String },
   setup (props, ctx) {
     const model = ref([0]);
+    const id = ref(props.id!);
     const options = ref(setDefaultOpts(props.value, 'countdown'));
 
     watch(() => options.value.time, (val) => {

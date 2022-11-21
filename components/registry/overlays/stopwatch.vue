@@ -12,6 +12,22 @@
       </v-expansion-panel-content>
     </v-expansion-panel>
     <v-expansion-panel>
+      <v-expansion-panel-header>REST calls</v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <v-alert type="info" border="bottom">List of available calls, all calls need to have authorization token.</v-alert>
+        <pre class="pb-4">POST http://localhost:3000/api/overlays/stopwatch/{{id}}/start
+Authorization: Bearer &lt;socketToken&gt;</pre>
+        <pre class="pb-4">POST http://localhost:3000/api/overlays/stopwatch/{{id}}/stop
+Authorization: Bearer &lt;socketToken&gt;</pre>
+        <pre class="pb-4">POST http://localhost:3000/api/overlays/stopwatch/{{id}}/toggle
+Authorization: Bearer &lt;socketToken&gt;</pre>
+        <pre class="pb-4">POST http://localhost:3000/api/overlays/stopwatch/{{id}}/resetAndStop
+Authorization: Bearer &lt;socketToken&gt;</pre>
+        <pre>POST http://localhost:3000/api/overlays/stopwatch/{{id}}/reset
+Authorization: Bearer &lt;socketToken&gt;</pre>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+    <v-expansion-panel>
       <v-expansion-panel-header>Stopwatch font</v-expansion-panel-header>
       <v-expansion-panel-content>
         <font v-model="options.stopwatchFont" />
@@ -32,9 +48,10 @@ import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
   components: { font: defineAsyncComponent(() => import('~/components/form/expansion/font.vue')) },
-  props:      { value: [Object, Array] },
+  props:      { value: [Object, Array], id: String },
   setup (props, ctx) {
     const model = ref([0]);
+    const id = ref(props.id!);
     const options = ref(setDefaultOpts(props.value, 'stopwatch'));
 
     watch(() => options.value.currentTime, (val) => {

@@ -134,6 +134,7 @@
           v-if="haveAnyOptions(selectedItem.value)"
           :value="selectedItem.opts"
           class="overlayItem"
+          :id="selectedItem.id"
           @input="updateChildOpts(selectedItem.id, $event)"
         >
           <v-expansion-panel>
