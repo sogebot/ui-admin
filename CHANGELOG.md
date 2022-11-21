@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [68.2.0](https://github.com/sogebot/ui-admin/compare/v68.1.1...v68.2.0) (2022-11-21)
+
+
+### Features
+
+* **overlays:** add countdown and stopwatch rest api ([b633564](https://github.com/sogebot/ui-admin/commit/b6335649bc6d4eb85a87e3389e25a7a964f992bf))
+
 ### [68.1.1](https://github.com/sogebot/ui-admin/compare/v68.1.0...v68.1.1) (2022-11-07)
 
 
