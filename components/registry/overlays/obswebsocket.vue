@@ -4,6 +4,15 @@
     <v-expansion-panel :readonly="typeof $slots.default === 'undefined'">
       <v-expansion-panel-header>Settings</v-expansion-panel-header>
       <v-expansion-panel-content>
+        <v-text-field
+          v-model="options.address"
+          :label="translate('integrations.obswebsocket.settings.address')"
+        />
+        <v-text-field
+          v-model="options.password"
+          type="password"
+          :label="translate('integrations.obswebsocket.settings.password')"
+        />
         <v-textarea
           :value="options.allowedIPs.join('\n')"
           rows="5"
