@@ -12,7 +12,10 @@
             <v-text-field v-model="settings.accessToken[0]" type="password" dense
               :label="translate('integrations.streamlabs.settings.accessToken.title')"
               :hint="translate('integrations.streamlabs.settings.accessToken.help')" persistent-hint />
-            <v-btn class="mt-4" href="https://credentials.sogebot.xyz/streamlabs">
+            <v-text-field v-model="settings.socketToken[0]" type="password" dense class="pt-4"
+              :label="translate('integrations.streamlabs.settings.socketToken.title')"
+              :hint="translate('integrations.streamlabs.settings.socketToken.help')" persistent-hint />
+            <v-btn class="mt-4" href="https://www.sogebot.xyz/integrations/#StreamLabs">
               {{ translate('integrations.streamlabs.settings.accessTokenBtn') }}</v-btn>
           </v-card-text>
         </v-card>
