@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [69.1.0](https://github.com/sogebot/ui-admin/compare/v69.0.0...v69.1.0) (2022-11-30)
+
+
+### Features
+
+* remove obswebsocket direct connection ([7a297fa](https://github.com/sogebot/ui-admin/commit/7a297fa1f76ce1d908e22b395a9d80c80793c489))
+
+
+### Bug Fixes
+
+* remove bot/caster clientId ([540e6b7](https://github.com/sogebot/ui-admin/commit/540e6b72352b18db040efa50194fafb1458f431f))
+* remove socketToken and update generation endpoint ([0be3582](https://github.com/sogebot/ui-admin/commit/0be358206c87beb1e192e2000f8a494156690820))
+
 ## [69.0.0](https://github.com/sogebot/ui-admin/compare/v68.2.0...v69.0.0) (2022-11-28)
 
 ## [68.2.0](https://github.com/sogebot/ui-admin/compare/v68.1.1...v68.2.0) (2022-11-21)
