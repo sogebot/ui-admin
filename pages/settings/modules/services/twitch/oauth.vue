@@ -78,7 +78,6 @@
               :label="translate('core.oauth.settings.botRefreshToken')"
               type="password"
             />
-            <v-text-field v-model="_settings.bot.botClientId[0]" label="Client ID" />
             <v-text-field
               v-model="_settings.bot.botUsername[0]"
               :label="translate('core.oauth.settings.botUsername')"
@@ -103,7 +102,6 @@
               :label="translate('core.oauth.settings.channelRefreshToken')"
               type="password"
             />
-            <v-text-field v-model="_settings.broadcaster.broadcasterClientId[0]" label="Client ID" />
             <v-text-field
               v-model="_settings.broadcaster.broadcasterUsername[0]"
               :label="translate('core.oauth.settings.channelUsername')"
