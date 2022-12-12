@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [70.0.0](https://github.com/sogebot/ui-admin/compare/v69.1.0...v70.0.0) (2022-12-12)
+
+
+### Bug Fixes
+
+* fix incorrectly shown user ([bcc1827](https://github.com/sogebot/ui-admin/commit/bcc18272fe5529f6f78e3552ce90afcf35ca39e2))
+
 ## [69.1.0](https://github.com/sogebot/ui-admin/compare/v69.0.0...v69.1.0) (2022-11-30)
 
 
