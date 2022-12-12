@@ -212,7 +212,7 @@ export default defineComponent({
         return;
       }
       const socket = getSocket('/core/users', true);
-      socket.emit('viewers::findOne', (context.root as any).$store.state.loggedUser.id, (err, recvViewer) => {
+      socket.emit('viewers::findOneBy', (context.root as any).$store.state.loggedUser.id, (err, recvViewer) => {
         if (err) {
           return console.error(err);
         }
