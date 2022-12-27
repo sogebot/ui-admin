@@ -3,16 +3,12 @@
   <v-form v-else v-model="valid" lazy-validation>
     <v-tabs v-model="tab">
       <v-tab>{{translate('categories.oauth')}}</v-tab>
-      <v-tab>{{translate('categories.eventsub')}}</v-tab>
       <v-tab>{{translate('categories.general')}}</v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="tab">
       <v-tab-item eager>
         <oauth :settings="settings" @update="settings = $event"/>
-      </v-tab-item>
-      <v-tab-item eager>
-        <eventsub :settings="settings" @update="settings = $event"/>
       </v-tab-item>
       <v-tab-item eager>
         <general :settings="settings" @update="settings = $event"/>
@@ -37,7 +33,6 @@ import { minValue, required } from '~/functions/validators';
 export default defineComponent({
   components: {
     oauth:    defineAsyncComponent(() => import('./twitch/oauth.vue')),
-    eventsub: defineAsyncComponent(() => import('./twitch/eventsub.vue')),
     general:  defineAsyncComponent(() => import('./twitch/general.vue')),
   },
   setup () {
