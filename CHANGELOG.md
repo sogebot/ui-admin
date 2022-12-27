@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [71.0.0](https://github.com/sogebot/ui-admin/compare/v70.0.0...v71.0.0) (2022-12-27)
+
+
+### Features
+
+* remove eventsub ([69bf5fb](https://github.com/sogebot/ui-admin/commit/69bf5fb2dc6f2d83452707a7fb21ea69e524bdbc))
+
 ## [70.0.0](https://github.com/sogebot/ui-admin/compare/v69.1.0...v70.0.0) (2022-12-12)
 
 
