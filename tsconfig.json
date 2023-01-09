@@ -8,7 +8,7 @@
       "ESNext",
       "ESNext.AsyncIterable",
       "DOM",
-      "DOM.Iterable",
+      "DOM.Iterable"
     ],
     "esModuleInterop": true,
     "removeComments": true,
@@ -22,7 +22,9 @@
     "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
-      "typeorm": ["./node_modules/typeorm/typeorm-model-shim.js"],
+      "typeorm": [
+        "./node_modules/typeorm/typeorm-model-shim.js"
+      ],
       "~/*": [
         "./*"
       ],
@@ -38,7 +40,9 @@
       "@nuxtjs/axios",
       "@types/node",
       "@nuxtjs/vuetify"
-    ]
+    ],
+    "incremental": true,
+    "isolatedModules": true
   },
   "exclude": [
     "node_modules",

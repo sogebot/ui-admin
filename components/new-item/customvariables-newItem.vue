@@ -147,24 +147,22 @@
               </template>
             </v-text-field>
 
-            <v-select
-              v-model="runEveryType"
-              :items="availableRunEvery"
-              :label="translate('registry.customvariables.runScript.name')"
-            >
-              <template #append-outer>
-                <v-text-field
-                  v-if="runEveryType !== 'isUsed'"
-                  v-model="runEveryX"
-                  :rules="computedRules.runEveryX"
-                  class="pa-0 ma-0"
-                  style="position: relative; top: -4px;"
-                  label="Value"
-                  type="number"
-                  min="0"
-                />
-              </template>
-            </v-select>
+            <v-col cols="12">
+              <v-subheader class="pl-0">
+                {{ translate('registry.customvariables.run-script') }}:
+                <template v-if="runEvery === 0">
+                  {{ translate('registry.customvariables.runEvery.isUsed') }}
+                </template>
+                <template v-else>
+                  {{ humanizeDuration(runEvery) }}
+                </template>
+              </v-subheader>
+              <v-slider
+                v-model="runEvery"
+                :max="7 * DAY"
+                :step="30000"
+              />
+            </v-col>
           </template>
         </v-form>
       </v-stepper-content>
@@ -312,9 +310,11 @@ import {
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
+import { DAY } from '@sogebot/ui-helpers/constants';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import humanizeDuration from 'humanize-duration';
 import { v4 } from 'uuid';
 
 import { error } from '~/functions/error';
@@ -334,7 +334,7 @@ export default defineComponent({
   setup (props: Props, ctx) {
     const permissions = ref([] as PermissionsInterface[]);
     const computedRules = {
-      runEveryX:    [required, minValue(0)],
+      runEvery:     [required, minValue(0)],
       variableName: [
         ...props.rules.variableName,
         () => states.value.isUnique === ButtonStates.progress || states.value.isUnique === ButtonStates.success || translate('registry.customvariables.variable.error.isNotUnique'),
@@ -379,8 +379,7 @@ export default defineComponent({
     const responseType = ref(props.item ? props.item.responseType : 0);
     const responseText = ref(props.item ? props.item.responseText : '');
     const evalValue = ref(props.item ? props.item.evalValue : '');
-    const runEveryType = ref(props.item ? props.item.runEveryType : 'isUsed');
-    const runEveryX = ref(props.item ? (props.item.runEvery ?? 0) / (props.item.runEvery || 1) : 0);
+    const runEvery = ref(props.item ? (props.item.runEvery ?? 0) / (props.item.runEvery || 1) : 0);
 
     const optionSearch = ref('');
 
@@ -428,24 +427,6 @@ export default defineComponent({
       }));
     });
 
-    const availableRunEvery = [
-      {
-        seconds: 0, text: translate('registry.customvariables.runEvery.isUsed'), value: 'isUsed',
-      },
-      {
-        seconds: 1000, text: translate('registry.customvariables.runEvery.seconds'), value: 'seconds',
-      },
-      {
-        seconds: 1000 * 60, text: translate('registry.customvariables.runEvery.minutes'), value: 'minutes',
-      },
-      {
-        seconds: 1000 * 60 * 60, text: translate('registry.customvariables.runEvery.hours'), value: 'hours',
-      },
-      {
-        seconds: 1000 * 60 * 60 * 24, text: translate('registry.customvariables.runEvery.days'), value: 'days',
-      },
-    ];
-
     onMounted(() => {
       getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
         if (err) {
@@ -470,26 +451,21 @@ export default defineComponent({
         newItemSaving.value = true;
         await new Promise(() => {
           const item: VariableInterface = {
-            id:                id.value,
-            variableName:      variableName.value,
-            history:           history.value,
-            currentValue:      currentValue.value,
-            urls:              (urls.value as any),
-            permission:        permission.value,
-            readOnly:          readOnly.value,
-            usableOptions:     usableOptions.value,
-            runAt:             runAt.value,
-            type:              type.value,
-            description:       description.value,
-            responseType:      responseType.value,
-            responseText:      responseText.value,
-            evalValue:         evalValue.value,
-            runEveryType:      runEveryType.value,
-            runEveryTypeValue: availableRunEvery.find(o => o.value === runEveryType.value)?.seconds ?? 0,
-            runEvery:          (() => {
-              const value = availableRunEvery.find(o => o.value === runEveryType.value)?.seconds ?? 0;
-              return Number(runEveryX.value * value);
-            })(),
+            id:            id.value,
+            variableName:  variableName.value,
+            history:       history.value,
+            currentValue:  currentValue.value,
+            urls:          (urls.value as any),
+            permission:    permission.value,
+            readOnly:      readOnly.value,
+            usableOptions: usableOptions.value,
+            runAt:         runAt.value,
+            type:          type.value,
+            description:   description.value,
+            responseType:  responseType.value,
+            responseText:  responseText.value,
+            evalValue:     evalValue.value,
+            runEvery:      runEvery.value,
           };
           console.log('Saving', { item });
           getSocket('/core/customvariables').emit('customvariables::save', item, () => {
@@ -577,8 +553,7 @@ export default defineComponent({
       currentValue,
       newItem,
       optionSearch,
-      runEveryX,
-      runEveryType,
+      runEvery,
       e1,
       translate,
       newItemSaving,
@@ -596,7 +571,6 @@ export default defineComponent({
 
       availableTypes,
       availableValues,
-      availableRunEvery,
       setCurrentValueOption,
       removeOption,
 
@@ -613,6 +587,8 @@ export default defineComponent({
       urlsHeaders,
       origin,
       highlighterJS,
+      humanizeDuration,
+      DAY,
     };
   },
 });

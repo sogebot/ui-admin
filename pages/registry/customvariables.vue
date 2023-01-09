@@ -193,11 +193,11 @@
       <template #[`item.additionalInfo`]="{ item }">
         <span v-if="item.type === 'eval'">
           <strong>{{ translate('registry.customvariables.run-script') }}:</strong>
-          <template v-if="item.runEveryTypeValue > 0">
-            {{ item.runEvery / item.runEveryTypeValue }} {{ translate('registry.customvariables.runEvery.' + item.runEveryType) }}
+          <template v-if="item.runEvery > 0">
+            {{ humanizeDuration(item.runEvery, { language: $store.state.configuration.lang }) }}
           </template>
           <template v-else>
-            {{ translate('registry.customvariables.runEvery.' + item.runEveryType) }}
+            {{ translate('registry.customvariables.runEvery.isUsed') }}
           </template>
           <div>
             {{ translate('registry.customvariables.last-run') }} <strong>{{ item.runAt ? new Date(item.runAt).toLocaleString() : translate('commons.never') }}</strong>
@@ -276,6 +276,7 @@ import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { dayjs } from '@sogebot/ui-helpers/dayjsHelper';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+import humanizeDuration from 'humanize-duration';
 import { v4 } from 'uuid';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
