@@ -159,7 +159,7 @@ export default defineComponent({
         return '';
       }
 
-      const scope = 'scope=channel:edit:commercial channel:moderate channel:read:hype_train channel:read:redemptions channel:read:subscriptions channel_editor chat:edit chat:read moderation:read user:read:broadcast channel:manage:broadcast user:edit:broadcast moderator:read:chatters';
+      const scope = 'scope=channel:edit:commercial channel:manage:polls channel:manage:predictions channel:moderate channel:read:hype_train channel:read:polls channel:read:redemptions channel:read:subscriptions channel_editor chat:edit chat:read moderation:read moderator:read:chatters user:edit:broadcast user:read:broadcast';
       const clientId = _settings.value.general.tokenServiceCustomClientId[0];
       const clientSecret = _settings.value.general.tokenServiceCustomClientSecret[0];
 
