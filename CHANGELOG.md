@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [72.0.1](https://github.com/sogebot/ui-admin/compare/v72.0.0...v72.0.1) (2023-01-11)
+
+
+### Bug Fixes
+
+* **oauth:** add missing scopes ([e9e108d](https://github.com/sogebot/ui-admin/commit/e9e108dcfbd3aaa2335b0b4df4cb5656de02ca57))
+
 ## [72.0.0](https://github.com/sogebot/ui-admin/compare/v71.0.0...v72.0.0) (2023-01-09)
 
 ## [71.0.0](https://github.com/sogebot/ui-admin/compare/v70.0.0...v71.0.0) (2022-12-27)
