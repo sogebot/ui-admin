@@ -35,19 +35,11 @@
               <v-card-title :key="timestamp" class="px-1 py-0 text-truncate" style="font-size: 1rem;">
                 <span v-if="tags.length === 0">{{ capitalize($t('not-available')) }}</span>
                 <small
-                  v-for="(tag, idx) of filterTags(true)"
-                  :key="tag.name"
-                  :class="{ 'grey--text': tag.is_auto }"
+                  v-for="(tag, idx) of tags"
+                  :key="tag"
                 >
-                  {{ tag.name }}<span v-if="(idx + 1) < tags.length" class="white--text">,&nbsp;</span>
+                  {{ tag }}<span v-if="(idx + 1) < tags.length" class="white--text">,&nbsp;</span>
                 </small>
-                <span
-                  v-for="(tag, idx) of filterTags(false)"
-                  :key="tag.name"
-                  :class="{ 'grey--text': tag.is_auto }"
-                >
-                  {{ tag.name }}<span v-if="(idx + 1 + filterTags(true).length) < tags.length" class="white--text">,&nbsp;</span>
-                </span>
               </v-card-title>
               <v-card-subtitle class="pa-1 pt-2 text-caption text-truncate">
                 {{ capitalize($t('tags')) }}
@@ -93,24 +85,9 @@ export default defineComponent({
     const game = ref(null as null | string);
     const title = ref(null as null | string);
     const cachedTitle = ref('');
-    const tags = ref([] as { is_auto: boolean; localization_names: { [x:string]: string } }[]);
+    const tags = ref([] as string[]);
     const isLoaded = ref(false);
     const store = useStore<any>();
-
-    const filterTags = (is_auto: boolean) => {
-      return tags.value.filter(o => !!o.is_auto === is_auto).map((o) => {
-        const key = Object.keys(o.localization_names).find(key2 => key2.includes(store.state.configuration.lang));
-        return { name: o.localization_names[key || 'en-us'], is_auto: !!o.is_auto };
-      }).sort((a, b) => {
-        if ((a || { name: '' }).name < (b || { name: '' }).name) { // sort string ascending
-          return -1;
-        }
-        if ((a || { name: '' }).name > (b || { name: '' }).name) {
-          return 1;
-        }
-        return 0; // default return value (no sorting)
-      });
-    };
 
     const loadCustomVariableValue = (variable: string) => {
       return new Promise<string>((resolve) => {
@@ -164,7 +141,7 @@ export default defineComponent({
       });
     });
     return {
-      getTime, capitalize, game, title, tags, filterTags, isLoaded, dialog,
+      getTime, capitalize, game, title, tags, isLoaded, dialog,
     };
   },
 });
