@@ -143,7 +143,7 @@ export default defineComponent({
     });
 
     const botUrl = computed(() => {
-      const scope = 'scope=channel:edit:commercial channel:moderate chat:edit chat:read clips:edit user:edit:broadcast user:read:broadcast whispers:edit whispers:read channel:manage:broadcast';
+      const scope = 'scope=channel:edit:commercial channel:moderate chat:edit chat:read clips:edit user:edit:broadcast user:read:broadcast whispers:edit whispers:read channel:manage:broadcast moderator:manage:announcements';
       const clientId = _settings.value.general.tokenServiceCustomClientId[0];
       const clientSecret = _settings.value.general.tokenServiceCustomClientSecret[0];
 
