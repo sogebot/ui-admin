@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [74.0.0](https://github.com/sogebot/ui-admin/compare/v73.0.1...v74.0.0) (2023-01-19)
+
+
+### Features
+
+* update randomizer calls ([5f0d8f5](https://github.com/sogebot/ui-admin/commit/5f0d8f55a708eaae58fc6b3e54298eb5d661f8d5))
+
 ### [73.0.1](https://github.com/sogebot/ui-admin/compare/v73.0.0...v73.0.1) (2023-01-17)
 
 
