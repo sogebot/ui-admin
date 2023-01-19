@@ -105,6 +105,7 @@
 
 <script setup lang="ts">
 import { VariableInterface } from '@entity/variable';
+import { getSocket } from '@sogebot/ui-helpers/socket';
 import gql from 'graphql-tag';
 import { debounce } from 'lodash';
 
@@ -119,13 +120,19 @@ const props = defineProps<{
 const loading = ref(true);
 const customVariable = ref(null as VariableInterface | null);
 const refresh = async () => {
-  customVariable.value = (await $graphql.default.request(gql`
-      query customVariable($name: String!) {
-        customVariable(name: $name) { id currentValue type }
-      }
-    `, { name: props.item.options.customvariable })).customVariable[0];
-  loading.value = false;
-  setTimeout(() => refresh(), 5000);
+  getSocket('/core/customvariables').emit('customvariables::list', (err, items) => {
+    if (err) {
+      return console.error(err);
+    }
+
+    const foundItem = items.find(o => o.variableName === props.item.options.customvariable);
+    setTimeout(() => refresh(), 5000);
+    loading.value = false;
+    if (!foundItem) {
+      return;
+    }
+    customVariable.value = foundItem;
+  });
 };
 
 onMounted(() => {
@@ -133,7 +140,7 @@ onMounted(() => {
 });
 
 const selected = ref(props.item.selected);
-const emit = defineEmits(['select', 'unselect', 'update:dialog'])
+const emit = defineEmits(['select', 'unselect', 'update:dialog']);
 watch(selected, (val) => {
   emit(val ? 'select' : 'unselect');
 });
@@ -156,7 +163,7 @@ const trigger = (ev: MouseEvent, value?: string) => {
         mutation quickActionTrigger($id: String!, $value: String!) {
           quickActionTrigger(id: $id, value: $value)
         }`, { id: props.item.id, value: value.trim() });
-      }
+    }
   } else if (customVariable.value && customVariable.value.type === 'number') {
     // determinate which part of button is pushed
     const card = document.getElementById(`quickaction-${props.item.id}`) as HTMLElement;

@@ -24,23 +24,23 @@
 
 <script setup lang="ts">
 import type { RandomizerItem } from '@entity/dashboard';
-import { RandomizerInterface } from '@entity/randomizer';
+import { Randomizer } from '@entity/randomizer';
+import axios from 'axios';
 import { cloneDeep, pick } from 'lodash';
 
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
-import GET_ALL from '~/queries/randomizer/getAll.gql';
 
-const { $graphql } = useNuxtApp();
 const props = defineProps<{
   item: RandomizerItem
 }>();
 const emit = defineEmits(['update:item', 'update:valid']);
 
 const loading = ref(true);
-const randomizers = ref([] as RandomizerInterface[]);
+const randomizers = ref([] as Randomizer[]);
 const refetch = async () => {
-  randomizers.value = (await $graphql.default.request(GET_ALL)).randomizers;
+  const res = await axios.get('/api/registries/randomizer/', { headers: { authorization: `Bearer ${localStorage.accessToken}` } });
+  randomizers.value = res.data;
   loading.value = false;
 };
 

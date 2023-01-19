@@ -109,15 +109,21 @@ import {
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getLocalizedName } from '@sogebot/ui-helpers/getLocalized';
 import { getSocket } from '@sogebot/ui-helpers/socket';
-import translate from '@sogebot/ui-helpers/translate';
-import axios from 'axios';
-import { capitalize, cloneDeep } from 'lodash';
 
 import {
   minLength, minValue, required, startsWith,
 } from '~/functions//validators';
+
+import translate from '@sogebot/ui-helpers/translate';
+
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
+
+import axios from 'axios';
+
 import { error } from '~/functions/error';
+
+import { capitalize, cloneDeep } from 'lodash';
+
 import { EventBus } from '~/functions/event-bus';
 
 export default defineComponent({
@@ -265,10 +271,13 @@ export default defineComponent({
 
         if (isValid) {
           console.log('Updating', merged);
-          getSocket('/admin').emit('systems|price|save', { ...merged }, () => {
-            EventBus.$emit('snack', 'success', 'Data updated.');
-            refresh();
-          });
+          axios.post(`${JSON.parse(localStorage.server)}/api/systems/price`,
+            { ...merged },
+            { headers: { authorization: `Bearer ${localStorage.accessToken}` } },
+          )
+            .then(() => {
+              EventBus.$emit('snack', 'success', 'Data updated.');
+            });
         }
       }
     };

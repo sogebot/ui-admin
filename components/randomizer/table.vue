@@ -87,13 +87,13 @@
 </template>
 
 <script lang="ts">
+import type { Randomizer } from '@entity/randomizer';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 import { orderBy } from 'lodash';
 
-import type { RandomizerItemInterface } from '@entity/randomizer';
 import { EventBus } from '~/functions/event-bus';
 import {
   isHexColor, minValue, required,
@@ -102,11 +102,11 @@ import {
 const originalWidths: string[] = [];
 const originalHeight: number[] = []; // needed for grouped elements
 
-function handleDragStart (_e: DragEvent, id: string, items: Required<RandomizerItemInterface>[]) {
+function handleDragStart (_e: DragEvent, id: string, items: Required<Randomizer['items'][number]>[]) {
   EventBus.$emit(`randomizer::dragstart`);
 
   const getChildren = (parentId: string) => {
-    const groupedChildren: Required<RandomizerItemInterface>[] = [];
+    const groupedChildren: Required<Randomizer['items'][number]>[] = [];
 
     const children = items.filter(o => o.groupId === parentId);
     if (children.length === 0) {
@@ -198,13 +198,9 @@ function handleDragStart (_e: DragEvent, id: string, items: Required<RandomizerI
     if (parent2) {
       try {
         const offsetId = parent2.children[0].children[0].id.replace('drag|', '');
-        EventBus.$emit(`randomizer::dragdrop`, {
-          items: [parent, ...children], offsetId,
-        });
+        EventBus.$emit(`randomizer::dragdrop`, { items: [parent, ...children], offsetId });
       } catch {
-        EventBus.$emit(`randomizer::dragdrop`, {
-          items: [parent, ...children],
-        });
+        EventBus.$emit(`randomizer::dragdrop`, { items: [parent, ...children] });
       }
     }
     for (const element of elements) {
@@ -219,15 +215,9 @@ function handleDragStart (_e: DragEvent, id: string, items: Required<RandomizerI
 }
 
 export default defineComponent({
-  props: {
-    value: Array,
-  },
-  components: {
-    color: defineAsyncComponent({
-      loader: () => import('~/components/form/color.vue'),
-    }),
-  },
-  setup (props: { value: RandomizerItemInterface[] }, ctx) {
+  props:      { value: Array },
+  components: { color: defineAsyncComponent({ loader: () => import('~/components/form/color.vue') }) },
+  setup (props: { value: Randomizer['items'][number][] }, ctx) {
     const model = ref(props.value);
     const isDragging = ref(false);
 
@@ -239,27 +229,13 @@ export default defineComponent({
     };
 
     const headers = [
-      {
-        value: 'drag', text: '',
-      },
-      {
-        value: 'name', text: translate('registry.randomizer.form.name'),
-      },
-      {
-        value: 'color', text: translate('registry.randomizer.form.color'),
-      },
-      {
-        value: 'numOfDuplicates', text: translate('registry.randomizer.form.numOfDuplicates'),
-      },
-      {
-        value: 'minimalSpacing', text: translate('registry.randomizer.form.minimalSpacing'),
-      },
-      {
-        value: 'groupBtn', text: '',
-      },
-      {
-        value: 'delBtn', text: '',
-      },
+      { value: 'drag', text: '' },
+      { value: 'name', text: translate('registry.randomizer.form.name') },
+      { value: 'color', text: translate('registry.randomizer.form.color') },
+      { value: 'numOfDuplicates', text: translate('registry.randomizer.form.numOfDuplicates') },
+      { value: 'minimalSpacing', text: translate('registry.randomizer.form.minimalSpacing') },
+      { value: 'groupBtn', text: '' },
+      { value: 'delBtn', text: '' },
     ];
 
     const rmOption = (id: string) => {
@@ -284,7 +260,7 @@ export default defineComponent({
       EventBus.$on(`randomizer::dragstop`, () => {
         isDragging.value = false;
       });
-      EventBus.$on(`randomizer::dragdrop`, (data: {items: RandomizerItemInterface[], offsetId?: string}) => {
+      EventBus.$on(`randomizer::dragdrop`, (data: {items: Randomizer['items'][number][], offsetId?: string}) => {
         // reorder model
         // remove id
         for (const item of data.items) {
@@ -313,9 +289,7 @@ export default defineComponent({
         } else {
           // save as last item
           for (const item of data.items) {
-            model.value.push({
-              ...item, order: model.value.length,
-            });
+            model.value.push({ ...item, order: model.value.length });
           }
         }
         // reorder
@@ -327,9 +301,7 @@ export default defineComponent({
 
     watch(model, (val) => {
       ctx.emit('input', val);
-    }, {
-      deep: true,
-    });
+    }, { deep: true });
 
     return {
       // ref

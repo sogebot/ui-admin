@@ -104,7 +104,7 @@
           </v-hover>
 
           <v-hover v-slot="{ hover }">
-            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" :disabled="spin" @click.stop="startSpin">
+            <v-btn icon :color="hover ? 'primary' : 'secondary lighten-3'" :disabled="spin" @click.stop="() => startSpin(item.id)">
               <v-icon v-if="!spin">
                 mdi-play
               </v-icon>
@@ -124,56 +124,63 @@
 </template>
 
 <script lang="ts">
-import { PermissionsInterface } from '@entity/permissions';
-import type { RandomizerInterface } from '@entity/randomizer';
+import { Permissions } from '@entity/permissions';
+import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import gql from 'graphql-tag';
-import { cloneDeep, orderBy } from 'lodash';
-import { v4 } from 'uuid';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
+
+import axios from 'axios';
+
 import { error } from '~/functions/error';
+
+import { orderBy } from 'lodash';
+
 import { EventBus } from '~/functions/event-bus';
+
+import { v4 } from 'uuid';
+
 import { getPermissionName } from '~/functions/getPermissionName';
-import GET_ALL from '~/queries/randomizer/getAll.gql';
-import REMOVE from '~/queries/randomizer/remove.gql';
-import SAVE from '~/queries/randomizer/save.gql';
 
 export default defineComponent({
   setup () {
     const loading = ref(true);
-    const items = ref([] as RandomizerInterface[]);
-    const permissions = ref([] as PermissionsInterface[]);
-    const { $graphql } = useNuxtApp();
+    const items = ref([] as Randomizer[]);
+    const permissions = ref([] as Permissions[]);
 
-    const refetch = async () => {
+    const refetch = () => {
       getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
         if (err) {
           return console.error(err);
         }
         permissions.value = res;
       });
-      const request = await $graphql.default.request(GET_ALL);
-      if (selected.value.length > 0) {
-        selected.value.forEach((selectedItem, index) => {
-          selectedItem = request.randomizers.find(o => o.id === selectedItem.id) || selectedItem;
-          selected.value[index] = selectedItem;
-        });
-      }
+      axios.get('/api/registries/randomizer', { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        .then(({ data }) => {
+          items.value = data.data;
+          console.debug(data);
 
-      items.value = cloneDeep(request.randomizers);
-      loading.value = false;
+          // we also need to reset selection values
+          if (selected.value.length > 0) {
+            selected.value.forEach((val, index) => {
+              val = items.value.find(o => o.id === val.id) || val;
+              selected.value[index] = val;
+            });
+          }
+
+          loading.value = false;
+        }).catch(e => error(e));
     };
 
     const search = ref('');
 
-    const selected = ref([] as RandomizerInterface[]);
-    const currentItems = ref([] as RandomizerInterface[]);
+    const selected = ref([] as Randomizer[]);
+    const currentItems = ref([] as Randomizer[]);
     const deleteDialog = ref(false);
     const spin = ref(false);
     const selectable = ref(false);
-    const saveCurrentItems = (value: RandomizerInterface[]) => {
+    const saveCurrentItems = (value: Randomizer[]) => {
       currentItems.value = value;
     };
     watch(selectable, (val) => {
@@ -207,59 +214,62 @@ export default defineComponent({
 
     const deleteSelected = async () => {
       deleteDialog.value = false;
-      await Promise.all(selected.value.map(async (item) => {
-        await $graphql.default.request(REMOVE, { id: item.id });
-      }));
-      selected.value.forEach(item => $graphql.default.request(REMOVE, { id: item.id }));
+      await Promise.all(
+        selected.value.map((item) => {
+          return new Promise<void>((resolve, reject) => {
+            if (!item.id) {
+              reject(error('Missing item id'));
+              return;
+            }
+            axios.delete('/api/registries/randomizer/' + item.id, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+              .finally(() => resolve());
+          });
+        }),
+      );
       selected.value = [];
       EventBus.$emit('snack', 'success', 'Data removed.');
       refetch();
     };
 
-    const clone = (item: Required<RandomizerInterface>) => {
-      const clonedItemId = v4();
-
-      const clonedItemsRemapId = new Map();
-      // remap items ids
-      const clonedItems = item.items.map((o) => {
-        clonedItemsRemapId.set(o.id, v4());
-        return { ...o, id: clonedItemsRemapId.get(o.id) };
-      });
-
+    const clone = (item: Required<Randomizer>) => {
       const clonedItem = {
         ...item,
         isShown: false, // forcefully hide
-        id:      clonedItemId,
+        id:      v4(),
         name:    item.name + ' (clone)',
         command: `!${Math.random().toString(36).substr(2, 5)}`,
-        // we need to do another .map as we need to find groupId
-        items:   clonedItems.map(o => ({ ...o, groupId: o.groupId === null ? o.groupId : clonedItemsRemapId.get(o.groupId) })),
       };
 
-      $graphql.default.request(SAVE, { data_json: JSON.stringify(clonedItem) })
-        .then(() => EventBus.$emit('snack', 'success', 'Data saved.'))
-        .catch((e: any) => error(e))
-        .finally(() => refetch());
+      axios.post(`/api/registries/randomizer`,
+        clonedItem,
+        { headers: { authorization: `Bearer ${localStorage.accessToken}` } },
+      )
+        .then(() => {
+          EventBus.$emit('snack', 'success', 'Data saved.');
+          refetch();
+        });
     };
 
-    const toggleVisibility = (item: Required<RandomizerInterface>) => {
+    const toggleVisibility = (item: Required<Randomizer>) => {
       item.isShown = !item.isShown;
 
-      $graphql.default.request(gql`mutation randomizerSetVisibility($id: String!, $value: Boolean!) { randomizerSetVisibility(id: $id, value: $value) }`, {
-        id:    item.id,
-        value: item.isShown,
-      })
-        .then(() => EventBus.$emit('snack', 'success', 'Visibility changed.'))
-        .catch((e: any) => error(e))
-        .finally(() => refetch());
+      if (item.isShown) {
+        axios.post(`/api/registries/randomizer/${item.id}/show`, null, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(refetch);
+      } else {
+        axios.post(`/api/registries/randomizer/hide`, null, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(refetch);
+      }
     };
 
-    const startSpin = () => {
+    const startSpin = (id: string) => {
       spin.value = true;
-      getSocket('/registries/randomizer').emit('randomizer::startSpin');
-      setTimeout(() => {
-        spin.value = false;
-      }, 5000);
+      axios.post(`/api/registries/randomizer/${id}/spin`, null, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+        .then(() => {
+          setTimeout(() => {
+            spin.value = false;
+          }, 5000);
+        });
     };
 
     return {

@@ -83,7 +83,7 @@
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <randomizer-table v-model="item.items" />
+              <randomizer-table :key="item.items.map(o=>o.id).join()" v-model="item.items" />
             </v-expansion-panel-content>
           </v-expansion-panel>
           <v-expansion-panel>
@@ -131,31 +131,35 @@
 </template>
 
 <script lang="ts">
-import { PermissionsInterface } from '@entity/permissions';
-import { RandomizerInterface, RandomizerItemInterface } from '@entity/randomizer';
+import { Permissions } from '@entity/permissions';
+import { Randomizer } from '@sogebot/backend/dest/database/entity/randomizer';
 import { getContrastColor, getRandomColor } from '@sogebot/ui-helpers/colors';
 import { defaultPermissions } from '@sogebot/ui-helpers/permissions/defaultPermissions';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import gql from 'graphql-tag';
+
+import { error } from '~/functions/error';
+
+import axios from 'axios';
+
+import { EventBus } from '~/functions/event-bus';
+
 import {
   cloneDeep, isEqual, orderBy,
 } from 'lodash';
-import { v4 } from 'uuid';
 
-import { error } from '~/functions/error';
-import { EventBus } from '~/functions/event-bus';
 import {
   minLength, required, startsWith,
 } from '~/functions/validators';
-import GET_ONE from '~/queries/randomizer/getOne.gql';
 
-const emptyItem: RandomizerInterface = {
+import { v4 } from 'uuid';
+
+const emptyItem = {
   id:             v4(),
   name:           '',
   command:        '',
   items:          [],
-  createdAt:      Date.now(),
+  createdAt:      new Date().toISOString(),
   permissionId:   defaultPermissions.CASTERS,
   isShown:        false,
   shouldPlayTick: false,
@@ -183,20 +187,20 @@ const emptyItem: RandomizerInterface = {
     borderPx:    1,
     shadow:      [],
   },
-};
+} as Partial<Randomizer>;
 
 export default defineComponent({
   setup () {
-    const { $graphql, $store } = useNuxtApp();
+    const { $store } = useNuxtApp();
     const route = useRoute();
     const router = useRouter();
 
     const loading = ref(true);
     const saving = ref(false);
-    const item = ref(cloneDeep(emptyItem) as RandomizerInterface);
-    const permissions = ref([] as PermissionsInterface[]);
+    const item = ref(new Randomizer(emptyItem));
+    const permissions = ref([] as Permissions[]);
 
-    onMounted(async () => {
+    onMounted(() => {
       getSocket('/core/permissions').emit('generic::getAll', (err, res) => {
         if (err) {
           return console.error(err);
@@ -204,14 +208,16 @@ export default defineComponent({
         permissions.value = res;
       });
       if (route.params.id !== 'new') {
-        const request = await $graphql.default.request(GET_ONE, { id: route.params.id });
-        if (request.randomizers.length === 0) {
-          EventBus.$emit('snack', 'error', 'Data not found.');
-          router.push({ path: '/registry/randomizer' });
-        } else {
-          item.value = cloneDeep(request.randomizers[0]);
-        }
-        loading.value = false;
+        axios.get('/api/registries/randomizer/' + route.params.id, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then((res: any) => {
+            if (!res.data.data) {
+              EventBus.$emit('snack', 'error', 'Data not found.');
+              router.push({ path: '/registry/randomizer' });
+            } else {
+              item.value = new Randomizer({ ...res.data.data });
+              loading.value = false;
+            }
+          });
       }
       loading.value = false;
     });
@@ -245,18 +251,15 @@ export default defineComponent({
         (form1.value as unknown as HTMLFormElement).validate()
       ) {
         saving.value = true;
-        $graphql.default.request(gql`
-      mutation randomizersSave($data_json: String!) {
-        randomizersSave(data: $data_json) { id }
-      }`, {
-          data_json: JSON.stringify({
-            ...item.value,
-            id: item.value.id ?? v4(),
-          }),
-        }).then((data: { randomizersSave: { id: any; }; }) => {
-          router.push({ params: { id: data.randomizersSave.id } });
-          EventBus.$emit('snack', 'success', 'Data saved.');
-        }).catch((e: any) => error(e))
+
+        axios.post(`${JSON.parse(localStorage.server)}/api/registries/randomizer`,
+          { ...item.value, id: item.value.id ?? v4() },
+          { headers: { authorization: `Bearer ${localStorage.accessToken}` } },
+        )
+          .then((res) => {
+            EventBus.$emit('snack', 'success', 'Data saved.');
+            router.push({ params: { id: res.data.data.id } });
+          }).catch((e: any) => error(e))
           .finally(() => (saving.value = false));
       }
     };
@@ -270,19 +273,17 @@ export default defineComponent({
           numOfDuplicates: 1,
           minimalSpacing:  1,
           groupId:         null,
-          randomizer:      undefined,
-          randomizerId:    undefined,
           order:           item.value.items.length,
         });
       }
     };
 
-    const generateItems = (items: Required<RandomizerItemInterface>[], generatedItems: Required<RandomizerItemInterface>[] = []) => {
+    const generateItems = (items: any[], generatedItems: Required<Randomizer['items']> = []) => {
       const beforeItems = cloneDeep(orderBy(items, 'order'));
       items = cloneDeep(orderBy(items, 'order'));
       items = items.filter(o => o.numOfDuplicates > 0);
 
-      const countGroupItems = (item2: RandomizerItemInterface, count = 0): number => {
+      const countGroupItems = (item2: Randomizer['items'][number], count = 0): number => {
         const child = items.find(o => o.groupId === item2.id);
         if (child) {
           return countGroupItems(child, count + 1);
@@ -290,12 +291,12 @@ export default defineComponent({
           return count;
         }
       };
-      const haveMinimalSpacing = (item2: Required<RandomizerItemInterface>) => {
+      const haveMinimalSpacing = (item2: any) => {
         const lastIdx = generatedItems.map(o => o.name).lastIndexOf(item2.name);
         const currentIdx = generatedItems.length;
         return lastIdx === -1 || lastIdx + item2.minimalSpacing + countGroupItems(item2) < currentIdx;
       };
-      const addGroupItems = (item2: RandomizerItemInterface, _generatedItems: RandomizerItemInterface[]) => {
+      const addGroupItems = (item2: Randomizer['items'][number], _generatedItems: Randomizer['items'][]) => {
         const child = items.find(o => o.groupId === item2.id);
         if (child) {
           _generatedItems.push(child);

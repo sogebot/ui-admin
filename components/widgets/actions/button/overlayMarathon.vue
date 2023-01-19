@@ -55,6 +55,7 @@ import {
   DAY, HOUR, MINUTE, SECOND,
 } from '@sogebot/ui-helpers/constants';
 import { getSocket } from '@sogebot/ui-helpers/socket';
+
 import { error } from '~/functions/error';
 
 const props = defineProps<{
@@ -67,7 +68,7 @@ let interval = 0;
 const selected = ref(props.item.selected);
 const tick = ref(0);
 const newTime = ref(0);
-const emit = defineEmits(['select', 'unselect', 'update:dialog'])
+const emit = defineEmits(['select', 'unselect', 'update:dialog']);
 watch(selected, (val) => {
   emit(val ? 'select' : 'unselect');
 });

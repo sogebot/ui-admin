@@ -36,13 +36,9 @@
 </template>
 
 <script setup lang="ts">
-import { RandomizerInterface } from '@entity/randomizer';
-import { getSocket } from '@sogebot/ui-helpers/socket';
-import gql from 'graphql-tag';
+import { Randomizer } from '@entity/randomizer';
+import axios from 'axios';
 
-import GET_ONE from '~/queries/randomizer/getOne.gql';
-
-const { $graphql } = useNuxtApp();
 const props = defineProps<{
   item: Record<string, any>,
   dialog: boolean,
@@ -51,14 +47,15 @@ const props = defineProps<{
 }>();
 
 const selected = ref(props.item.selected);
-const emit = defineEmits(['select', 'unselect', 'update:dialog'])
+const emit = defineEmits(['select', 'unselect', 'update:dialog']);
 watch(selected, (val) => {
   emit(val ? 'select' : 'unselect');
 });
 
-const cache = ref([] as RandomizerInterface[]);
+const cache = ref([] as Randomizer[]);
 const refetch = async () => {
-  cache.value = (await $graphql.default.request(GET_ONE, { id: props.item.options.randomizerId })).randomizers;
+  const res = await axios.get('/api/registries/randomizer/' + props.item.options.randomizerId, { headers: { authorization: `Bearer ${localStorage.accessToken}` } });
+  cache.value = [res.data.data];
   setTimeout(() => refetch(), 5000);
 };
 const randomizer = computed(() => {
@@ -102,16 +99,21 @@ const trigger = (ev: MouseEvent) => {
           && (getClassList(ev.target as Element).includes('minus') || mouseOffsetX < ((isText ? text.clientWidth : card.clientWidth) / 2));
 
     if (isDecrement) {
-      $graphql.default.request(gql`mutation randomizerSetVisibility($id: String!, $value: Boolean!) { randomizerSetVisibility(id: $id, value: $value) }`, {
-        id:    randomizer.value.id,
-        value: !randomizer.value.isShown,
-      });
+      randomizer.value.isShown = !randomizer.value.isShown;
+      if (randomizer.value.isShown) {
+        axios.post(`/api/registries/randomizer/${randomizer.value.id}/show`, null, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(refetch);
+      } else {
+        axios.post(`/api/registries/randomizer/hide`, null, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+          .then(refetch);
+      }
     } else {
       randomizerSpin.value = true;
-      getSocket('/registries/randomizer').emit('randomizer::startSpin');
-      setTimeout(() => {
-        randomizerSpin.value = false;
-      }, 5000);
+      axios.post(`/api/registries/randomizer/${randomizer.value.id}/spin`, null, { headers: { authorization: `Bearer ${localStorage.accessToken}` } }).then(() => {
+        setTimeout(() => {
+          randomizerSpin.value = false;
+        }, 5000);
+      });
     }
   }
 };

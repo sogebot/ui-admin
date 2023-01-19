@@ -149,13 +149,17 @@ import type { PermissionsInterface } from '@entity/permissions';
 import { ButtonStates } from '@sogebot/ui-helpers/buttonStates';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
+
+import { addToSelectedItem } from '~/functions/addToSelectedItem';
+
 import axios from 'axios';
+
+import { EventBus } from '~/functions/event-bus';
+
 import {
   capitalize, isEqual, orderBy,
 } from 'lodash';
 
-import { addToSelectedItem } from '~/functions/addToSelectedItem';
-import { EventBus } from '~/functions/event-bus';
 import { getPermissionName } from '~/functions/getPermissionName';
 import {
   minLength, minValue, required, startsWith,
@@ -219,7 +223,7 @@ const refresh = () => {
     permissions.value = res;
     loading.value = false;
   });
-  axios.get(`${localStorage.server}/api/systems/customcommands/groups`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
+  axios.get(`/api/systems/customcommands/groups`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } })
     .then(({ data }) => {
       groups.value = data.data;
     });
