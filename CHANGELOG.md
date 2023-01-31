@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [75.0.0](https://github.com/sogebot/ui-admin/compare/v74.0.0...v75.0.0) (2023-01-31)
+
+
+### Features
+
+* new overlay grouping ([910f9d9](https://github.com/sogebot/ui-admin/commit/910f9d90cd3dc62381fbef3a0820d9e879a2e7f4))
+
 ## [74.0.0](https://github.com/sogebot/ui-admin/compare/v73.0.1...v74.0.0) (2023-01-19)
 
 
