@@ -8,6 +8,12 @@
 
     <v-tabs-items v-model="tab">
       <v-tab-item eager>
+        <v-overlay style="text-align: center" absolute>
+          Please set your tokens at
+          <div style="font-size: 2em; font-weight: bold">
+            <a :href="`https://dash.sogebot.xyz/?server=${origin}`" target="_blank">https://dash.sogebot.xyz/?server={{ origin }}</a>
+          </div>
+        </v-overlay>
         <v-card>
           <v-card-text>
             <v-select
@@ -66,6 +72,12 @@
         </v-card>
       </v-tab-item>
       <v-tab-item eager>
+        <v-overlay style="text-align: center" absolute>
+          Please set your tokens at
+          <div style="font-size: 2em; font-weight: bold">
+            <a :href="`https://dash.sogebot.xyz/?server=${origin}`" target="_blank">https://dash.sogebot.xyz/?server={{ origin }}</a>
+          </div>
+        </v-overlay>
         <v-card>
           <v-card-text>
             <v-text-field
@@ -90,6 +102,12 @@
         </v-card>
       </v-tab-item>
       <v-tab-item eager>
+        <v-overlay style="text-align: center" absolute>
+          Please set your tokens at
+          <div style="font-size: 2em; font-weight: bold">
+            <a :href="`https://dash.sogebot.xyz/?server=${origin}`" target="_blank">https://dash.sogebot.xyz/?server={{ origin }}</a>
+          </div>
+        </v-overlay>
         <v-card>
           <v-card-text>
             <v-text-field
@@ -133,6 +151,8 @@ export default defineComponent({
   setup (props: Props, ctx) {
     const tab = ref(null);
 
+    const origin = location.origin;
+
     const _settings = ref(props.settings);
     watch(_settings, (val) => {
       ctx.emit('input', val);
@@ -173,6 +193,7 @@ export default defineComponent({
     return {
       _settings,
       translate,
+      origin,
       tab,
       redirectUri,
       botUrl,

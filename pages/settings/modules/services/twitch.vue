@@ -2,16 +2,16 @@
   <loading v-if="!settings" />
   <v-form v-else v-model="valid" lazy-validation>
     <v-tabs v-model="tab">
-      <v-tab>{{translate('categories.oauth')}}</v-tab>
-      <v-tab>{{translate('categories.general')}}</v-tab>
+      <v-tab>{{ translate('categories.oauth') }}</v-tab>
+      <v-tab>{{ translate('categories.general') }}</v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="tab">
       <v-tab-item eager>
-        <oauth :settings="settings" @update="settings = $event"/>
+        <oauth :settings="settings" @update="settings = $event" />
       </v-tab-item>
       <v-tab-item eager>
-        <general :settings="settings" @update="settings = $event"/>
+        <general :settings="settings" @update="settings = $event" />
       </v-tab-item>
     </v-tabs-items>
   </v-form>
@@ -32,8 +32,8 @@ import { minValue, required } from '~/functions/validators';
 
 export default defineComponent({
   components: {
-    oauth:    defineAsyncComponent(() => import('./twitch/oauth.vue')),
-    general:  defineAsyncComponent(() => import('./twitch/general.vue')),
+    oauth:   defineAsyncComponent(() => import('./twitch/oauth.vue')),
+    general: defineAsyncComponent(() => import('./twitch/general.vue')),
   },
   setup () {
     const settings = ref(null as Record<string, any> | null);
