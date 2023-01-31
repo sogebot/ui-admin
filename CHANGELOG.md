@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [75.0.1](https://github.com/sogebot/ui-admin/compare/v75.0.0...v75.0.1) (2023-01-31)
+
+
+### Bug Fixes
+
+* add link to new tokens generator ([9a8541c](https://github.com/sogebot/ui-admin/commit/9a8541c1dda3ae046a757fc03c72417d461bfb36))
+* fix eslint css ([039b559](https://github.com/sogebot/ui-admin/commit/039b559597c8a6dab686a5053657a97134596905))
+* update link directly to service ([d5fab08](https://github.com/sogebot/ui-admin/commit/d5fab08eefa6e80e76533ac9a65f7569d9896445))
+
 ## [75.0.0](https://github.com/sogebot/ui-admin/compare/v74.0.0...v75.0.0) (2023-01-31)
 
 
