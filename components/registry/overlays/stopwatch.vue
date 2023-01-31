@@ -52,7 +52,7 @@ export default defineComponent({
   setup (props, ctx) {
     const model = ref([0]);
     const id = ref(props.id!);
-    const options = ref(setDefaultOpts(props.value, 'stopwatch'));
+    const options = ref(setDefaultOpts(props.value!.opts, 'stopwatch'));
 
     watch(() => options.value.currentTime, (val) => {
       if (val < 0) {
@@ -61,7 +61,7 @@ export default defineComponent({
     });
 
     watch(options, (val) => {
-      if (!isEqual(props.value, options.value)) {
+      if (!isEqual(props.value, { ...props.value, opts: val })) {
         ctx.emit('input', val);
       }
     }, { deep: true, immediate: true });

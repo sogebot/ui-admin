@@ -29,10 +29,10 @@ export default defineComponent({
   props:      { value: [Object, Array] },
   setup (props, ctx) {
     const model = ref(0);
-    const options = ref(setDefaultOpts(props.value, 'tts'));
+    const options = ref(setDefaultOpts(props.value!.opts, 'tts'));
 
     watch(options, (val) => {
-      if (!isEqual(props.value, options.value)) {
+      if (!isEqual(props.value, { ...props.value, opts: val })) {
         ctx.emit('input', val);
       }
     }, { deep: true, immediate: true });

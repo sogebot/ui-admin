@@ -68,6 +68,7 @@
 </template>
 
 <script lang="ts">
+import type { RandomizerInterface } from '@entity/randomizer';
 import {
   defineComponent,
   reactive,
@@ -77,8 +78,6 @@ import {
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
-
-import type { RandomizerInterface } from '@entity/randomizer';
 
 interface Props {
   value: RandomizerInterface['position'];
@@ -98,27 +97,15 @@ export default defineComponent({
     const uuid = ref(v4());
 
     const anchorXOptions = [
-      {
-        value: 'left', text: translate('dialog.position.left'),
-      },
-      {
-        value: 'middle', text: translate('dialog.position.middle'),
-      },
-      {
-        value: 'right', text: translate('dialog.position.right'),
-      },
+      { value: 'left', text: translate('dialog.position.left') },
+      { value: 'middle', text: translate('dialog.position.middle') },
+      { value: 'right', text: translate('dialog.position.right') },
     ];
 
     const anchorYOptions = [
-      {
-        value: 'top', text: translate('dialog.position.top'),
-      },
-      {
-        value: 'middle', text: translate('dialog.position.middle'),
-      },
-      {
-        value: 'bottom', text: translate('dialog.position.bottom'),
-      },
+      { value: 'top', text: translate('dialog.position.top') },
+      { value: 'middle', text: translate('dialog.position.middle') },
+      { value: 'bottom', text: translate('dialog.position.bottom') },
     ];
 
     // refs
@@ -152,19 +139,13 @@ export default defineComponent({
             left = el.getBoundingClientRect().width;
           }
 
-          return {
-            transform: `translate(${(model.x * widthPxPerCent) - left}px, ${(model.y * heightPxPerCent) - top}px)`,
-          };
+          return { transform: `translate(${(model.x * widthPxPerCent) - left}px, ${(model.y * heightPxPerCent) - top}px)` };
         } else {
-          return {
-            transform: `translate(0, 0)`,
-          };
+          return { transform: `translate(0, 0)` };
         }
       }
 
-      return {
-        transform: `translate(0, 0)`,
-      };
+      return { transform: `translate(0, 0)` };
     };
 
     watch(model, (value) => {

@@ -41,14 +41,14 @@ import { isEqual } from 'lodash';
 import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
-  props: { value: [Object, Array] },
+  props: { value: Object },
   setup (props, ctx) {
     const model = ref(0);
 
-    const options = ref(setDefaultOpts(props.value, 'obswebsocket'));
+    const options = ref(setDefaultOpts(props.value!.opts, 'obswebsocket'));
 
     watch(options, (val) => {
-      if (!isEqual(props.value, options.value)) {
+      if (!isEqual(props.value, { ...props.value, opts: val })) {
         ctx.emit('input', val);
       }
     }, { deep: true, immediate: true });

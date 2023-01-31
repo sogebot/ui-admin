@@ -54,7 +54,7 @@ const options = ref(
   ));
 
 watch(options, (val: any) => {
-  if (!isEqual(props.value, options.value)) {
+  if (!isEqual(props.value, { ...props.value, opts: val })) {
     emit('input', val);
   }
 }, { deep: true, immediate: true });

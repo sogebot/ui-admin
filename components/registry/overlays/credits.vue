@@ -268,7 +268,7 @@ import { isEqual } from 'lodash';
 import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
-  props: { value: [Object, Array] },
+  props: { value: Object },
   setup (props: any, ctx) {
     const timestamp = ref(Date.now());
     const customTextTypes: { value: string, text: string }[] = [
@@ -299,10 +299,10 @@ export default defineComponent({
       { value: 'mdiYoutube', text: 'YouTube' },
     ];
 
-    const options = ref(setDefaultOpts(props.value, 'credits'));
+    const options = ref(setDefaultOpts(props.value!.opts, 'credits'));
 
     watch([options, timestamp], () => {
-      if (!isEqual(props.value, options.value)) {
+      if (!isEqual(props.value, { ...props.value, opts: val })) {
         ctx.emit('input', options.value);
       }
     }, { deep: true, immediate: true });

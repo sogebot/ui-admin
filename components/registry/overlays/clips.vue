@@ -34,10 +34,10 @@ import { isEqual } from 'lodash';
 import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
-  props: { value: [Object, Array] },
+  props: { value: Object },
   setup (props: any, ctx) {
     const model = ref(0);
-    const options = ref(setDefaultOpts(props.value, 'clips'));
+    const options = ref(setDefaultOpts(props.value!.opts, 'clips'));
 
     watch(options, (val: any) => {
       if (val.volume < 0) {
@@ -50,7 +50,7 @@ export default defineComponent({
 
       if (String(val.volume) === '') {
         val.volume = 0;
-      } if (!isEqual(props.value, options.value)) {
+      } if (!isEqual(props.value, { ...props.value, opts: val })) {
         ctx.emit('input', val);
       }
     }, { deep: true, immediate: true });

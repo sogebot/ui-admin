@@ -13,12 +13,12 @@
         >
           <template #selection="data">
             <strong v-if="data.item.name" class="text-button">{{ data.item.name }}&nbsp;|&nbsp;</strong>
-            <span class="text-overline">{{ data.item.value }}&nbsp;|&nbsp;</span>
+            <span class="text-overline">{{ data.item.opts.typeId }}&nbsp;|&nbsp;</span>
             <span class="text-caption">{{ data.item.id }}</span>
           </template>
           <template #item="data">
             <strong v-if="data.item.name" class="text-button">{{ data.item.name }}&nbsp;|&nbsp;</strong>
-            <span class="text-overline">{{ data.item.value }}&nbsp;|&nbsp;</span>
+            <span class="text-overline">{{ data.item.opts.typeId }}&nbsp;|&nbsp;</span>
             <span class="text-caption">{{ data.item.id }}</span>
           </template>
         </v-autocomplete>
@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import type { OverlayMappers } from '@entity/overlay';
+import type { Overlay } from '@entity/overlay';
 import {
   defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
@@ -39,9 +39,9 @@ import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 import { error } from '~/functions/error';
 
 export default defineComponent({
-  props: { value: [Object, Array] },
+  props: { value: Object },
   setup (props: any, ctx) {
-    const items = ref([] as OverlayMappers[]);
+    const items = ref([] as Overlay['items']);
     const loading = ref(true);
 
     onMounted(() => {
@@ -49,16 +49,23 @@ export default defineComponent({
         if (err) {
           return error(err);
         }
-        items.value = result.filter(o => o.value !== 'group');
+        items.value = [];
+        for (const group of result) {
+          for (const item of group.items) {
+            console.log({ item });
+            items.value.push(item);
+          }
+        }
         loading.value = false;
       });
     });
 
     const model = ref(0);
-    const options = ref(setDefaultOpts(props.value, 'reference'));
+    const options = ref(setDefaultOpts(props.value!.opts, 'reference'));
 
     watch(options, (val: any) => {
-      if (!isEqual(props.value, options.value)) {
+      console.log({ props, options });
+      if (!isEqual(props.value, { ...props.value, opts: val })) {
         ctx.emit('input', val);
       }
     }, { deep: true, immediate: true });

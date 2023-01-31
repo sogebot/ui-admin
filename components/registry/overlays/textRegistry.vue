@@ -29,7 +29,7 @@ import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 import { error } from '~/functions/error';
 
 export default defineComponent({
-  props: { value: [Object, Array] },
+  props: { value: Object },
   setup (props: any, ctx) {
     const isLoading = ref(true);
     const items = ref([] as TextInterface[]);
@@ -42,7 +42,7 @@ export default defineComponent({
     });
 
     const model = ref(0);
-    const options = ref(setDefaultOpts(props.value, 'textRegistry'));
+    const options = ref(setDefaultOpts(props.value!.opts, 'textRegistry'));
 
     onMounted(() => {
       getSocket('/registries/text').emit('generic::getAll', (err, itemsGetAll: TextInterface[]) => {
@@ -55,7 +55,7 @@ export default defineComponent({
     });
 
     watch(options, (val: any) => {
-      if (!isEqual(props.value, options.value)) {
+      if (!isEqual(props.value, { ...props.value, opts: val })) {
         ctx.emit('input', val);
       }
     }, { deep: true, immediate: true });

@@ -23,17 +23,10 @@
             v-model="item.name"
             :label="translate('name')"
           />
-          <v-select
-            v-model="item.value"
-            :label="translate('type')"
-            :items="overlayOptions"
-          />
-          <component
-            :is="item.value"
-            v-if="haveAnyOptions(item.value || '')"
+          <group
             :id="item.id"
-            v-model="item.opts"
-            @update="item.opts = $event;"
+            v-model="item"
+            @update="item = $event;"
           />
         </v-form>
       </v-container>
@@ -50,10 +43,9 @@
 </template>
 
 <script lang="ts">
-import type { OverlayMappers } from '@entity/overlay';
+import { Overlay } from '@sogebot/backend/dest/database/entity/overlay';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
-import { cloneDeep } from 'lodash';
 
 import { EventBus } from '../../../functions/event-bus';
 
@@ -70,26 +62,7 @@ export const haveAnyOptions = (type: string) => {
 };
 
 export default defineComponent({
-  components: {
-    chat:            () => import('~/components/registry/overlays/chat.vue'),
-    media:           () => import('~/components/registry/overlays/media.vue'),
-    countdown:       () => import('~/components/registry/overlays/countdown.vue'),
-    stopwatch:       () => import('~/components/registry/overlays/stopwatch.vue'),
-    marathon:        () => import('~/components/registry/overlays/marathon.vue'),
-    emotes:          () => import('~/components/registry/overlays/emotes.vue'),
-    emotesexplode:   () => import('~/components/registry/overlays/emotesexplode.vue'),
-    emotesfireworks: () => import('~/components/registry/overlays/emotesfireworks.vue'),
-    emotescombo:     () => import('~/components/registry/overlays/emotescombo.vue'),
-    clipscarousel:   () => import('~/components/registry/overlays/clipscarousel.vue'),
-    clips:           () => import('~/components/registry/overlays/clips.vue'),
-    credits:         () => import('~/components/registry/overlays/credits.vue'),
-    obswebsocket:    () => import('~/components/registry/overlays/obswebsocket.vue'),
-    tts:             () => import('~/components/registry/overlays/tts.vue'),
-    polls:           () => import('~/components/registry/overlays/polls.vue'),
-    eventlist:       () => import('~/components/registry/overlays/eventlist.vue'),
-    group:           () => import('~/components/registry/overlays/group.vue'),
-    wordcloud:       () => import('~/components/registry/overlays/wordcloud.vue'),
-  },
+  components: { group: () => import('~/components/registry/overlays/group.vue') },
   setup () {
     const { $store } = useNuxtApp();
     const route = useRoute();
@@ -97,43 +70,18 @@ export default defineComponent({
     const loading = ref(true);
     const saving = ref(false);
 
-    const item = ref(cloneDeep({
-      id:      route.params.id,
-      name:    '',
-      value:   null,
-      groupId: null,
-      opts:    null,
-    }) as OverlayMappers);
+    const item = ref(new Overlay({
+      id:     route.params.id,
+      name:   '',
+      canvas: {
+        height: 1080,
+        width:  1920,
+      },
+      items: [],
+    }));
 
     const form1 = ref(null);
     const valid1 = ref(true);
-
-    const overlayOptions = [
-      { value: null, text: 'Please select an option' },
-      { value: 'group', text: 'group of overlays' },
-      { value: 'chat', text: 'chat' },
-      { value: 'media', text: 'media' },
-      { value: 'bets', text: 'bets' },
-      { value: 'carousel', text: 'carousel' },
-      { value: 'countdown', text: 'countdown' },
-      { value: 'clips', text: 'clips' },
-      { value: 'clipscarousel', text: 'clipscarousel' },
-      { value: 'credits', text: 'credits' },
-      { value: 'emotes', text: 'emotes' },
-      { value: 'emotescombo', text: 'emotescombo' },
-      { value: 'emotesfireworks', text: 'emotesfireworks' },
-      { value: 'emotesexplode', text: 'emotesexplode' },
-      { value: 'eventlist', text: 'eventlist' },
-      { value: 'marathon', text: 'marathon' },
-      { value: 'obswebsocket', text: 'obswebsocket' },
-      { value: 'polls', text: 'polls' },
-      { value: 'randomizer', text: 'randomizer' },
-      { value: 'stats', text: 'stats' },
-      { value: 'wordcloud', text: 'wordcloud' },
-      { value: 'stopwatch', text: 'stopwatch' },
-      { value: 'tts', text: 'tts' },
-      { value: 'hypetrain', text: 'hypetrain' },
-    ];
 
     watch(item, () => {
       $store.commit('settings/pending', true);
@@ -174,7 +122,6 @@ export default defineComponent({
       form1,
       valid1,
       item,
-      overlayOptions,
 
       // rules
       required,

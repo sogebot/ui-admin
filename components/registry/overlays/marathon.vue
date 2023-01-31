@@ -129,12 +129,12 @@ export default defineComponent({
     font:     defineAsyncComponent(() => import('~/components/form/expansion/font.vue')),
     datetime: defineAsyncComponent({ loader: () => import('~/components/datetime.vue') }),
   },
-  props: { value: [Object, Array] },
+  props: { value: Object },
   setup (props, ctx) {
     const store = useStore<any>();
     const currency = ref(store.state.configuration.currency);
     const model = ref([0]);
-    const options = ref(setDefaultOpts(props.value, 'marathon'));
+    const options = ref(setDefaultOpts(props.value!.opts, 'marathon'));
 
     const maxEndTimeEnabled = computed({
       get () {
@@ -149,7 +149,7 @@ export default defineComponent({
       },
     });
     watch(options, (val) => {
-      if (!isEqual(props.value, options.value)) {
+      if (!isEqual(props.value, { ...props.value, opts: val })) {
         ctx.emit('input', val);
       }
     }, { deep: true, immediate: true });

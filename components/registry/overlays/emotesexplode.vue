@@ -51,13 +51,13 @@ import { isEqual } from 'lodash';
 import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
 
 export default defineComponent({
-  props: { value: [Object, Array] },
+  props: { value: Object },
   setup (props: any, ctx) {
     const model = ref(0);
-    const options = ref(setDefaultOpts(props.value, 'emotesexplode'));
+    const options = ref(setDefaultOpts(props.value!.opts, 'emotesexplode'));
 
     watch(options, (val: any) => {
-      if (!isEqual(props.value, options.value)) {
+      if (!isEqual(props.value, { ...props.value, opts: val })) {
         ctx.emit('input', val);
       }
     }, { deep: true, immediate: true });

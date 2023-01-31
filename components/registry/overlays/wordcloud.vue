@@ -35,10 +35,10 @@ export default defineComponent({
   props:      { value: [Object, Array] },
   setup (props, ctx) {
     const model = ref([0]);
-    const options = ref(setDefaultOpts(props.value, 'wordcloud'));
+    const options = ref(setDefaultOpts(props.value!.opts, 'wordcloud'));
 
     watch(options, (val) => {
-      if (!isEqual(props.value, options.value)) {
+      if (!isEqual(props.value, { ...props.value, opts: val })) {
         ctx.emit('input', val);
       }
     }, { deep: true, immediate: true });

@@ -141,7 +141,7 @@
 </template>
 
 <script lang="ts">
-import type { OverlayMappers } from '@entity/overlay';
+import type { Overlay } from '@entity/overlay';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { v4 } from 'uuid';
@@ -157,11 +157,11 @@ export default defineComponent({
     const router = useRouter();
     const search = ref('');
 
-    const selected = ref([] as OverlayMappers[]);
+    const selected = ref([] as Overlay[]);
     const copied = ref('');
-    const items = ref([] as OverlayMappers[]);
-    const currentItems = ref([] as OverlayMappers[]);
-    const saveCurrentItems = (value: OverlayMappers[]) => {
+    const items = ref([] as Overlay[]);
+    const currentItems = ref([] as Overlay[]);
+    const saveCurrentItems = (value: Overlay[]) => {
       currentItems.value = value;
     };
     const deleteDialog = ref(false);
@@ -188,7 +188,6 @@ export default defineComponent({
         value: 'id', text: 'ID', sortable: false,
       },
       { value: 'name', text: translate('name') },
-      { value: 'value', text: translate('type') },
       {
         value: 'actions', text: '', sortable: false,
       },
@@ -221,7 +220,7 @@ export default defineComponent({
           });
         }
 
-        items.value = result.filter(o => !o.groupId);
+        items.value = result;
         loading.value = false;
       });
     };

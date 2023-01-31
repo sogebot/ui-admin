@@ -106,10 +106,10 @@ export default defineComponent({
       username: 'testuser',
       message:  'This is testing message Kappa :)',
     });
-    const options = ref(setDefaultOpts(props.value, 'chat'));
+    const options = ref(setDefaultOpts(props.value!.opts, 'chat'));
 
     watch(options, (val) => {
-      if (!isEqual(props.value, options.value)) {
+      if (!isEqual(props.value, { ...props.value, opts: val })) {
         ctx.emit('input', val);
       }
     }, { deep: true, immediate: true });
