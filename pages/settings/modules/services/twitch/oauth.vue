@@ -8,9 +8,9 @@
 
     <v-tabs-items v-model="tab">
       <v-tab-item eager>
-        <v-overlay style="text-align: center" absolute>
+        <v-overlay style="text-align: center;" absolute>
           Please set your tokens at
-          <div style="font-size: 2em; font-weight: bold">
+          <div style="font-size: 2em; font-weight: bold;">
             <a :href="`https://dash.sogebot.xyz/settings/modules/services/twitch?server=${origin}`" target="_blank">https://dash.sogebot.xyz/settings/modules/services/twitch?server={{ origin }}</a>
           </div>
         </v-overlay>
@@ -72,9 +72,9 @@
         </v-card>
       </v-tab-item>
       <v-tab-item eager>
-        <v-overlay style="text-align: center" absolute>
+        <v-overlay style="text-align: center;" absolute>
           Please set your tokens at
-          <div style="font-size: 2em; font-weight: bold">
+          <div style="font-size: 2em; font-weight: bold;">
             <a :href="`https://dash.sogebot.xyz/settings/modules/services/twitch?server=${origin}`" target="_blank">https://dash.sogebot.xyz/settings/modules/services/twitch?server={{ origin }}</a>
           </div>
         </v-overlay>
@@ -102,9 +102,9 @@
         </v-card>
       </v-tab-item>
       <v-tab-item eager>
-        <v-overlay style="text-align: center" absolute>
+        <v-overlay style="text-align: center;" absolute>
           Please set your tokens at
-          <div style="font-size: 2em; font-weight: bold">
+          <div style="font-size: 2em; font-weight: bold;">
             <a :href="`https://dash.sogebot.xyz/settings/modules/services/twitch?server=${origin}`" target="_blank">https://dash.sogebot.xyz/settings/modules/services/twitch?server={{ origin }}</a>
           </div>
         </v-overlay>
