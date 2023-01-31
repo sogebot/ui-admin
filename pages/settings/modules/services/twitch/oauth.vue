@@ -11,7 +11,7 @@
         <v-overlay style="text-align: center" absolute>
           Please set your tokens at
           <div style="font-size: 2em; font-weight: bold">
-            <a :href="`https://dash.sogebot.xyz/?server=${origin}`" target="_blank">https://dash.sogebot.xyz/?server={{ origin }}</a>
+            <a :href="`https://dash.sogebot.xyz/settings/modules/services/twitch?server=${origin}`" target="_blank">https://dash.sogebot.xyz/settings/modules/services/twitch?server={{ origin }}</a>
           </div>
         </v-overlay>
         <v-card>
@@ -75,7 +75,7 @@
         <v-overlay style="text-align: center" absolute>
           Please set your tokens at
           <div style="font-size: 2em; font-weight: bold">
-            <a :href="`https://dash.sogebot.xyz/?server=${origin}`" target="_blank">https://dash.sogebot.xyz/?server={{ origin }}</a>
+            <a :href="`https://dash.sogebot.xyz/settings/modules/services/twitch?server=${origin}`" target="_blank">https://dash.sogebot.xyz/settings/modules/services/twitch?server={{ origin }}</a>
           </div>
         </v-overlay>
         <v-card>
@@ -105,7 +105,7 @@
         <v-overlay style="text-align: center" absolute>
           Please set your tokens at
           <div style="font-size: 2em; font-weight: bold">
-            <a :href="`https://dash.sogebot.xyz/?server=${origin}`" target="_blank">https://dash.sogebot.xyz/?server={{ origin }}</a>
+            <a :href="`https://dash.sogebot.xyz/settings/modules/services/twitch?server=${origin}`" target="_blank">https://dash.sogebot.xyz/settings/modules/services/twitch?server={{ origin }}</a>
           </div>
         </v-overlay>
         <v-card>
