@@ -501,11 +501,12 @@ export default defineComponent({
         const id = shortid();
         model.value.items.push({
           id,
-          width:  200,
-          height: 200,
-          alignX: 0,
-          alignY: 0,
-          opts:   { typeId: itemToAdd.value as any, ...setDefaultOpts({}, itemToAdd.value as any) },
+          width:     200,
+          height:    200,
+          isVisible: true,
+          alignX:    0,
+          alignY:    0,
+          opts:      { typeId: itemToAdd.value as any, ...setDefaultOpts({}, itemToAdd.value as any) },
         } as any);
         dialog.value = false;
         selected.value = id;
