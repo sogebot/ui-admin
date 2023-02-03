@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [75.1.0](https://github.com/sogebot/ui-admin/compare/v75.0.1...v75.1.0) (2023-02-03)
+
+
+### Features
+
+* remove twitter integration ([dc5df9b](https://github.com/sogebot/ui-admin/commit/dc5df9bf1f0b415e210d9d96056e4cb8fe42ce24))
+
 ### [75.0.1](https://github.com/sogebot/ui-admin/compare/v75.0.0...v75.0.1) (2023-01-31)
 
 
