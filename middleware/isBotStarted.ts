@@ -1,9 +1,9 @@
 import { setLocale } from '@sogebot/ui-helpers/dayjsHelper';
 import { getListOf, populateListOf } from '@sogebot/ui-helpers/getListOf';
 import { isBotStarted } from '@sogebot/ui-helpers/isBotStarted';
-import { isUserLoggedIn } from '@sogebot/ui-helpers/isUserLoggedIn';
 import { getConfiguration, getTranslations } from '@sogebot/ui-helpers/socket';
 import { cloneDeep } from 'lodash';
+import { isUserLoggedIn } from '~/functions/isUserLoggedIn';
 
 let lastCheck = 0;
 

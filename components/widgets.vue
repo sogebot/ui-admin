@@ -25,9 +25,6 @@
           <v-tab v-if="$store.state.$systems.find(o => o.name === 'raffles').enabled">
             {{ translate('widget-title-raffles') }}
           </v-tab>
-          <v-tab v-if="$store.state.$integrations.find(o => o.name === 'twitter').enabled">
-            {{ translate('widget-title-social') }}
-          </v-tab>
           <v-tab v-if="$store.state.$systems.find(o => o.name === 'checklist').enabled">
             {{ translate('menu.checklist') }}
           </v-tab>
@@ -49,9 +46,6 @@
       </v-tab-item>
       <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'raffles').enabled">
         <widgets-raffles :height="height" />
-      </v-tab-item>
-      <v-tab-item v-if="$store.state.$integrations.find(o => o.name === 'twitter').enabled">
-        <widgets-social :height="height" />
       </v-tab-item>
       <v-tab-item v-if="$store.state.$systems.find(o => o.name === 'checklist').enabled">
         <widgets-checklist :height="height" />
