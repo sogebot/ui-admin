@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [76.0.1](https://github.com/sogebot/ui-admin/compare/v76.0.0...v76.0.1) (2023-02-08)
+
 ## [76.0.0](https://github.com/sogebot/ui-admin/compare/v75.1.1...v76.0.0) (2023-02-08)
 
 
