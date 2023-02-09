@@ -36,6 +36,9 @@ export function getSocket<K0 extends keyof O, O extends Record<PropertyKey, Reco
     });
   }
 
+  const wsUrl = JSON.parse(location.origin).replace('https', '').replace('http', '');
+  sessionStorage.wsUrl = `${(JSON.parse(location.origin).startsWith('https') ? 'wss' : 'ws')}${wsUrl}`;
+
   const socket = io(sessionStorage.wsUrl + (namespace as string), {
     transports: ['websocket'],
     auth:       (cb: (data: { token: string | null}) => void) => {
