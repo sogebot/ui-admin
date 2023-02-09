@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [76.0.4](https://github.com/sogebot/ui-admin/compare/v76.0.3...v76.0.4) (2023-02-09)
+
+
+### Bug Fixes
+
+* fix init ([53634ce](https://github.com/sogebot/ui-admin/commit/53634cec7c3ddfd45369e222a817d01c176aba34))
+
 ### [76.0.3](https://github.com/sogebot/ui-admin/compare/v76.0.2...v76.0.3) (2023-02-09)
 
 
