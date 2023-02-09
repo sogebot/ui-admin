@@ -1,9 +1,10 @@
 import { setLocale } from '@sogebot/ui-helpers/dayjsHelper';
 import { getListOf, populateListOf } from '@sogebot/ui-helpers/getListOf';
 import { isBotStarted } from '@sogebot/ui-helpers/isBotStarted';
-import { getConfiguration, getTranslations } from '@sogebot/ui-helpers/socket';
 import { cloneDeep } from 'lodash';
+
 import { isUserLoggedIn } from '~/functions/isUserLoggedIn';
+import { getConfiguration, getTranslations } from '~/functions/socket';
 
 let lastCheck = 0;
 
@@ -33,6 +34,6 @@ export default async function ({ store }: { store: any, app: any }) {
 
     store.commit('setUILoaded');
   } catch (e) {
-    console.error(e)
+    console.error(e);
   }
 }
