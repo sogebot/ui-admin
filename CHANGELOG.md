@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [77.0.0](https://github.com/sogebot/ui-admin/compare/v76.0.4...v77.0.0) (2023-03-02)
+
+
+### Features
+
+* update alerts without gql ([31ffcca](https://github.com/sogebot/ui-admin/commit/31ffcca8c76a41f290a8209024a7556a0577884f))
+
 ### [76.0.4](https://github.com/sogebot/ui-admin/compare/v76.0.3...v76.0.4) (2023-02-09)
 
 
