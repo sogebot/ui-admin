@@ -103,38 +103,38 @@
       </template>
 
       <template #[`item.additional`]="{ item }">
-        <span :class="{'primary--text': item.follows.length > 0, 'grey--text text--darken-3': item.follows.length === 0}">
-          FOLLOW<span v-if="item.follows.length > 0">({{ item.follows.length }})</span>
+        <span :class="{'primary--text': computeLength(item, 'follow') > 0, 'grey--text text--darken-3': computeLength(item, 'follow') === 0}">
+          FOLLOW<span v-if="computeLength(item, 'follow') > 0">({{ computeLength(item, 'follow') }})</span>
         </span>
-        <span :class="{'primary--text': item.raids.length > 0, 'grey--text text--darken-3': item.raids.length === 0}">
-          RAID<span v-if="item.raids.length > 0">({{ item.raids.length }})</span>
+        <span :class="{'primary--text': computeLength(item, 'raid') > 0, 'grey--text text--darken-3': computeLength(item, 'raid') === 0}">
+          RAID<span v-if="computeLength(item, 'raid') > 0">({{ computeLength(item, 'raid') }})</span>
         </span>
-        <span :class="{'primary--text': item.cheers.length > 0, 'grey--text text--darken-3': item.cheers.length === 0}">
-          CHEERS<span v-if="item.cheers.length > 0">({{ item.cheers.length }})</span>
+        <span :class="{'primary--text': computeLength(item, 'cheer') > 0, 'grey--text text--darken-3': computeLength(item, 'cheer') === 0}">
+          CHEERS<span v-if="computeLength(item, 'cheer') > 0">({{ computeLength(item, 'cheer') }})</span>
         </span>
-        <span :class="{'primary--text': item.subs.length > 0, 'grey--text text--darken-3': item.subs.length === 0}">
-          SUBS<span v-if="item.subs.length > 0">({{ item.subs.length }})</span>
+        <span :class="{'primary--text': computeLength(item, 'sub') > 0, 'grey--text text--darken-3': computeLength(item, 'sub') === 0}">
+          SUBS<span v-if="computeLength(item, 'sub') > 0">({{ computeLength(item, 'sub') }})</span>
         </span>
-        <span :class="{'primary--text': item.resubs.length > 0, 'grey--text text--darken-3': item.resubs.length === 0}">
-          RESUBS<span v-if="item.resubs.length > 0">({{ item.resubs.length }})</span>
+        <span :class="{'primary--text': computeLength(item, 'resub') > 0, 'grey--text text--darken-3': computeLength(item, 'resub') === 0}">
+          RESUBS<span v-if="computeLength(item, 'resub') > 0">({{ computeLength(item, 'resub') }})</span>
         </span>
-        <span :class="{'primary--text': item.subgifts.length > 0, 'grey--text text--darken-3': item.subgifts.length === 0}">
-          SUBGIFTS<span v-if="item.subgifts.length > 0">({{ item.subgifts.length }})</span>
+        <span :class="{'primary--text': computeLength(item, 'subgift') > 0, 'grey--text text--darken-3': computeLength(item, 'subgift') === 0}">
+          SUBGIFTS<span v-if="computeLength(item, 'subgift') > 0">({{ computeLength(item, 'subgift') }})</span>
         </span>
-        <span :class="{'primary--text': item.subcommunitygifts.length > 0, 'grey--text text--darken-3': item.subcommunitygifts.length === 0}">
-          SUBCOMMUNITYGIFTS<span v-if="item.subcommunitygifts.length > 0">({{ item.subcommunitygifts.length }})</span>
+        <span :class="{'primary--text': computeLength(item, 'subcommunitygift') > 0, 'grey--text text--darken-3': computeLength(item, 'subcommunitygift') === 0}">
+          SUBCOMMUNITYGIFTS<span v-if="computeLength(item, 'subcommunitygift') > 0">({{ computeLength(item, 'subcommunitygift') }})</span>
         </span>
-        <span :class="{'primary--text': item.tips.length > 0, 'grey--text text--darken-3': item.tips.length === 0}">
-          TIPS<span v-if="item.tips.length > 0">({{ item.tips.length }})</span>
+        <span :class="{'primary--text': computeLength(item, 'tip') > 0, 'grey--text text--darken-3': computeLength(item, 'tip') === 0}">
+          TIPS<span v-if="computeLength(item, 'tip') > 0">({{ computeLength(item, 'tip') }})</span>
         </span>
-        <span :class="{'primary--text': item.cmdredeems.length > 0, 'grey--text text--darken-3': item.cmdredeems.length === 0}">
-          CUSTOM<span v-if="item.cmdredeems.length > 0">({{ item.cmdredeems.length }})</span>
+        <span :class="{'primary--text': computeLength(item, 'custom') > 0, 'grey--text text--darken-3': computeLength(item, 'custom') === 0}">
+          CUSTOM<span v-if="computeLength(item, 'custom') > 0">({{ computeLength(item, 'custom') }})</span>
         </span>
-        <span :class="{'primary--text': item.rewardredeems.length > 0, 'grey--text text--darken-3': item.rewardredeems.length === 0}">
-          RWDREDEEMS<span v-if="item.rewardredeems.length > 0">({{ item.rewardredeems.length }})</span>
+        <span :class="{'primary--text': computeLength(item, 'rewardredeem') > 0, 'grey--text text--darken-3': computeLength(item, 'rewardredeem') === 0}">
+          RWDREDEEMS<span v-if="computeLength(item, 'rewardredeem') > 0">({{ computeLength(item, 'rewardredeem') }})</span>
         </span>
-        <span :class="{'primary--text': item.promo.length > 0, 'grey--text text--darken-3': item.promo.length === 0}">
-          PROMO<span v-if="item.rewardredeems.length > 0">({{ item.promo.length }})</span>
+        <span :class="{'primary--text': computeLength(item, 'promo') > 0, 'grey--text text--darken-3': computeLength(item, 'promo') === 0}">
+          PROMO<span v-if="computeLength(item, 'promo') > 0">({{ computeLength(item, 'promo') }})</span>
         </span>
       </template>
 
@@ -169,31 +169,33 @@
 </template>
 
 <script setup lang="ts">
-import type { AlertInterface } from '@entity/alert';
+import type { Alert } from '@entity/alert';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
+import { cloneDeep } from 'lodash';
+import { v4 } from 'uuid';
 
 import { addToSelectedItem } from '~/functions/addToSelectedItem';
 import { EventBus } from '~/functions/event-bus';
-import CLONE from '~/queries/alert/clone.gql';
-import GET_ALL from '~/queries/alert/getAll.gql';
-import REMOVE from '~/queries/alert/remove.gql';
-
-const { $graphql } = useNuxtApp();
 
 const loading = ref(true);
 const cloning = ref([] as string[]);
-const items = ref([] as AlertInterface[]);
+const items = ref([] as Alert[]);
 const refetch = async () => {
-  const data = await $graphql.default.request(GET_ALL);
-  items.value = data.alerts;
+  const res = await axios.get(`/api/registries/alerts`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } });
+  items.value = res.data;
   loading.value = false;
+};
+
+const computeLength = (item: Alert, type: Alert['items'][number]['type']) => {
+  return item.items.filter(o => o.type === type).length;
 };
 
 const search = ref('');
 
-const selected = ref([] as AlertInterface[]);
-const currentItems = ref([] as AlertInterface[]);
-const saveCurrentItems = (value: AlertInterface[]) => {
+const selected = ref([] as Alert[]);
+const currentItems = ref([] as Alert[]);
+const saveCurrentItems = (value: Alert[]) => {
   currentItems.value = value;
 };
 const deleteDialog = ref(false);
@@ -218,21 +220,28 @@ onMounted(() => {
   refetch();
 });
 
-const deleteSelected = () => {
+const deleteSelected = async () => {
   deleteDialog.value = false;
-  selected.value.forEach((item) => {
-    $graphql.default.request(REMOVE, { id: item.id });
-  });
+  for (const item of selected.value) {
+    try {
+      await axios.delete(`/api/registries/alerts/${item.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } });
+    } catch {}
+  }
   selected.value = [];
+  refetch();
   EventBus.$emit('snack', 'success', 'Data removed.');
 };
 
-const clone = (id: string) => {
-  cloning.value = [...cloning.value, id];
-  $graphql.default.request(CLONE, { id }).then(() => {
-    EventBus.$emit('snack', 'success', 'Data cloned.');
+const clone = async (id: string) => {
+  const c = cloneDeep(items.value.find(o => o.id === id));
+  console.log('Cloning', id, c);
+  if (c) {
+    c.id = v4();
+    c.name = c.name + ' (clone)';
+    await axios.post(`/api/registries/alerts`,
+      c,
+      { headers: { authorization: `Bearer ${localStorage.accessToken}` } });
     refetch();
-    cloning.value = cloning.value.filter(o => o !== id);
-  });
+  }
 };
 </script>

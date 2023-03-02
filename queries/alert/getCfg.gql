@@ -1,5 +1,0 @@
-query AlertGetCfg {
-  areAlertsMuted: alertsSettingsGet(name: "areAlertsMuted")
-  isTTSMuted: alertsSettingsGet(name: "isTTSMuted")
-  isSoundMuted: alertsSettingsGet(name: "isSoundMuted")
-}

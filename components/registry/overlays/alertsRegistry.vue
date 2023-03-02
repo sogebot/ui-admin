@@ -16,20 +16,20 @@
 </template>
 
 <script setup lang="ts">
-import type { AlertInterface } from '@entity/alert';
+import type { Alert } from '@entity/alert';
+import axios from 'axios';
 import { isEqual } from 'lodash';
 
 import { setDefaultOpts } from '~/../backend/src/helpers/overlaysDefaultValues';
-import GET_ALL from '~/queries/alert/getAll.gql';
 
-const { $graphql } = useNuxtApp();
 const props = defineProps({ value: [Object, Array] });
 const emit = defineEmits(['input']);
 
 const loading = ref(true);
-const items = ref([] as AlertInterface[]);
+const items = ref([] as Alert[]);
 const refresh = async () => {
-  items.value = (await $graphql.default.request(GET_ALL)).alerts;
+  const res = await axios.get(`/api/registries/alerts`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } });
+  items.value = res.data;
   loading.value = false;
   setTimeout(() => refresh(), 5000);
 };

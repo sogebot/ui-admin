@@ -301,9 +301,6 @@ import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 import { get } from 'lodash';
 
-import GET_CFG from '~/queries/alert/getCfg.gql';
-import SET_CFG from '~/queries/alert/setCfg.gql';
-
 const { $graphql, $store } = useNuxtApp();
 
 defineProps({ height: Number });
@@ -312,10 +309,14 @@ const areAlertsMuted = ref(false);
 const isTTSMuted = ref(false);
 const isSoundMuted = ref(false);
 
-const cache = ref(null);
-const refresh = async () => {
-  cache.value = (await $graphql.default.request(GET_CFG));
-}
+const cache = ref<null | {
+  areAlertsMuted: boolean;
+  isSoundMuted: boolean;
+  isTTSMuted: boolean;
+}>(null);
+const refresh = () => {
+  getSocket('/registries/alerts').emit('alerts::settings', null, data => (cache.value = data));
+};
 watch(cache, (value) => {
   if (!value) {
     return;

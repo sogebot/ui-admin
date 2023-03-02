@@ -127,7 +127,7 @@
               v-for="event in supportedEvents"
               :key="'event-tab-' + event"
             >
-              <v-badge color="accent" :content="item[event].length" :value="item[event].length">
+              <v-badge color="accent" :content="computeLength(item, event)" :value="computeLength(item, event)">
                 {{ translate('registry.alerts.event.' + event) }}
               </v-badge>
             </v-tab>
@@ -143,7 +143,7 @@
                     v-model="variantTabs[event]"
                     vertical
                   >
-                    <template v-for="(alert, idx) of item[event]">
+                    <template v-for="(alert, idx) of item.items.filter(o => o.type === event)">
                       <v-tab
                         :key="'event-tab-items-' + alert.id"
                         style="text-align: left; justify-content: normal;"
@@ -184,7 +184,7 @@
                 </v-col>
                 <v-col>
                   <v-tabs-items v-model="variantTabs[event]">
-                    <v-tab-item v-for="alert of item[event]" :key="'event-tab-items-content-' + alert.id">
+                    <v-tab-item v-for="alert of item.items.filter(o => o.type === event)" :key="'event-tab-items-content-' + alert.id">
                       <registry-alerts-form
                         :value="alert"
                         :parent="item"
@@ -212,21 +212,20 @@
 </template>
 
 <script setup lang="ts">
-import { AlertInterface } from '@entity/alert';
 import translate from '@sogebot/ui-helpers/translate';
+import axios from 'axios';
 import { cloneDeep } from 'lodash';
 import { v4 } from 'uuid';
 
+import { Alert } from '~/../backend/dest/database/entity/alert';
 import { EventBus } from '~/functions/event-bus';
 import { required } from '~/functions/validators';
-import GET_ONE from '~/queries/alert/getOne.gql';
-import SAVE from '~/queries/alert/save.gql';
 
-const { $graphql, $store } = useNuxtApp();
+const { $store } = useNuxtApp();
 
-const emptyItem: AlertInterface = {
+const emptyItem: Partial<Alert> = {
   id:                  v4(),
-  updatedAt:           Date.now(),
+  updatedAt:           new Date().toISOString(),
   name:                '',
   alertDelayInMs:      0,
   profanityFilterType: 'replace-with-asterisk',
@@ -275,43 +274,38 @@ const emptyItem: AlertInterface = {
     }[],
   },
 
-  follows:           [],
-  raids:             [],
-  cheers:            [],
-  subs:              [],
-  tips:              [],
-  resubs:            [],
-  subgifts:          [],
-  subcommunitygifts: [],
-  cmdredeems:        [],
-  rewardredeems:     [],
-  promo:             [],
+  items: [],
 };
 
-const supportedEvents = ['follows', 'cheers', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'tips', 'raids', 'rewardredeems', 'cmdredeems', 'promo'] as const;
+const supportedEvents = ['follow', 'cheer', 'sub', 'resub', 'subcommunitygift', 'subgift', 'tip', 'raid', 'rewardredeem', 'custom', 'promo'] as const;
 
 const router = useRouter();
 const route = useRoute();
 
-const item = ref(cloneDeep(emptyItem) as AlertInterface);
+const item = ref(cloneDeep(new Alert(emptyItem)));
 
 const loading = ref(true);
 const saving = ref(false);
 
+const computeLength = (item: Alert, type: Alert['items'][number]['type']) => {
+  return item.items.filter(o => o.type === type).length;
+};
+
 onMounted(async () => {
   $store.commit('panel/back', '/registry/alerts');
   if (route.params.id !== 'new') {
-    const result = await $graphql.default.request(GET_ONE, { id: route.params.id });
-    if (result.alerts.length === 0) {
+    try {
+      const res = await axios.get(`/api/registries/alerts/${route.params.id}`, { headers: { authorization: `Bearer ${localStorage.accessToken}` } });
+      item.value = res.data;
+      loading.value = false;
+
+      console.groupCollapsed(`alert::${route.params.id}`);
+      console.log(item.value);
+      console.groupEnd();
+    } catch {
       EventBus.$emit('snack', 'error', 'Data not found.');
       router.push({ path: '/registry/alerts' });
     }
-    item.value = result.alerts[0];
-    loading.value = false;
-
-    console.groupCollapsed(`alert::${route.params.id}`);
-    console.log(item.value);
-    console.groupEnd();
   } else {
     loading.value = false;
   }
@@ -349,8 +343,10 @@ const save = async () => {
     (form1.value as unknown as HTMLFormElement).validate() && isValid
   ) {
     console.log('Saving', item.value);
-    const data = await $graphql.default.request(SAVE, { data_json: JSON.stringify({ ...item.value, id: item.value.id === 'new' ? v4() : item.value.id }) });
-    router.push({ params: { id: data.alertSave.id } });
+    const res = await axios.post(`/api/registries/alerts`,
+      { ...item.value, id: item.value.id === 'new' ? v4() : item.value.id },
+      { headers: { authorization: `Bearer ${localStorage.accessToken}` } });
+    router.push({ params: { id: res.data.id } });
     EventBus.$emit('snack', 'success', 'Data saved.');
   }
 };
@@ -416,8 +412,9 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
 
   switch (event) {
     case 'promo':
-      item.value.promo.push({
+      item.value.items.push({
         ..._default,
+        type:            'promo',
         messageTemplate: '{name} | {game}',
         ttsTemplate:     '{message}',
         message:         {
@@ -432,9 +429,10 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
         },
       });
       break;
-    case 'follows':
-      item.value.follows.push({
+    case 'follow':
+      item.value.items.push({
         ..._default,
+        type:            'follow',
         messageTemplate: '{name} is now following!',
         tts:             {
           enabled:        false,
@@ -442,9 +440,10 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
         },
       });
       break;
-    case 'cheers':
-      item.value.cheers.push({
+    case 'cheer':
+      item.value.items.push({
         ..._default,
+        type:            'cheer',
         messageTemplate: '{name} cheered! x{amount}',
         ttsTemplate:     '{message}',
         message:         {
@@ -456,21 +455,24 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
         },
       });
       break;
-    case 'subcommunitygifts':
-      item.value.subcommunitygifts.push({
+    case 'subcommunitygift':
+      item.value.items.push({
         ..._default,
+        type:            'subcommunitygift',
         messageTemplate: '{name} just gifted {amount} subscribes!',
       });
       break;
-    case 'subgifts':
-      item.value.subgifts.push({
+    case 'subgift':
+      item.value.items.push({
         ..._default,
+        type:            'subgift',
         messageTemplate: '{name} just gifted sub to {recipient}! {amount} {monthsName}',
       });
       break;
-    case 'rewardredeems':
-      item.value.rewardredeems.push({
+    case 'rewardredeem':
+      item.value.items.push({
         ..._default,
+        type:    'rewardredeem',
         message: {
           minAmountToShow: 0,
           allowEmotes:     {
@@ -488,9 +490,10 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
         },
       });
       break;
-    case 'cmdredeems':
-      item.value.cmdredeems.push({
+    case 'custom':
+      item.value.items.push({
         ..._default,
+        type:            'custom',
         // eslint-disable-next-line no-template-curly-in-string
         messageTemplate: '{name} was redeemed by {recipient} for x{amount}!',
         tts:             {
@@ -499,9 +502,10 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
         },
       });
       break;
-    case 'subs':
-      item.value.subs.push({
+    case 'sub':
+      item.value.items.push({
         ..._default,
+        type:            'sub',
         messageTemplate: '{name} just subscribed!',
         tts:             {
           enabled:        false,
@@ -509,9 +513,10 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
         },
       });
       break;
-    case 'resubs':
-      item.value.resubs.push({
+    case 'resub':
+      item.value.items.push({
         ..._default,
+        type:            'resub',
         ttsTemplate:     '{message}',
         messageTemplate: '{name} just resubscribed! {amount} {monthsName}',
         message:         {
@@ -522,9 +527,10 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
         },
       });
       break;
-    case 'tips':
-      item.value.tips.push({
+    case 'tip':
+      item.value.items.push({
         ..._default,
+        type:            'tip',
         messageTemplate: '{name} donated {amount}{currency}!',
         message:         {
           minAmountToShow: 0,
@@ -535,9 +541,10 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
         },
       });
       break;
-    case 'raids':
-      item.value.raids.push({
+    case 'raid':
+      item.value.items.push({
         ..._default,
+        type:            'raid',
         messageTemplate: '{name} is raiding with a party of {amount} raiders!',
       });
       break;

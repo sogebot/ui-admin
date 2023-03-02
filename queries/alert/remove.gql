@@ -1,3 +1,0 @@
-mutation AlertRemove($id: String!) {
-  alertRemove(id: $id)
-}
