@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [78.0.0](https://github.com/sogebot/ui-admin/compare/v77.0.0...v78.0.0) (2023-03-02)
+
+
+### Bug Fixes
+
+* fix test dialog ([bc07485](https://github.com/sogebot/ui-admin/commit/bc07485d6f4446bf015898b555532f515b0a8c1b))
+
 ## [77.0.0](https://github.com/sogebot/ui-admin/compare/v76.0.4...v77.0.0) (2023-03-02)
 
 
