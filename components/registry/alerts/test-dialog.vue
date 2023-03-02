@@ -27,7 +27,7 @@
 
         <v-divider class="py-2" />
 
-        <v-row v-if="event !== 'rewardredeems'" class="py-1">
+        <v-row v-if="event !== 'rewardredeem'" class="py-1">
           <v-col cols="auto" align-self="center">
             <v-btn icon :color="isUsernameRandomized ? 'success' : 'error'" @click="isUsernameRandomized = !isUsernameRandomized">
               <v-icon>mdi-dice-multiple</v-icon>
@@ -36,19 +36,19 @@
           <v-col>
             <v-text-field
               v-model="username"
-              :label="event === 'cmdredeems' ? translate('registry.alerts.testDlg.command') : translate('registry.alerts.testDlg.username')"
+              :label="event === 'custom' ? translate('registry.alerts.testDlg.command') : translate('registry.alerts.testDlg.username')"
               hide-details
               :disabled="isUsernameRandomized"
             />
           </v-col>
         </v-row>
 
-        <v-row v-if="event === 'rewardredeems'" class="py-1">
+        <v-row v-if="event === 'rewardredeem'" class="py-1">
           <v-col>
             <rewards
               v-model="rewardId"
-              @name="rewardName = $event"
               :state="null"
+              @name="rewardName = $event"
             />
           </v-col>
         </v-row>
@@ -86,7 +86,7 @@
           </v-col>
           <v-col>
             <v-autocomplete
-              v-if="event === 'tips'"
+              v-if="event === 'tip'"
               v-model="currency"
               :disabled="isAmountRandomized"
               :items="['USD', 'AUD', 'BGN', 'BRL', 'CAD', 'CHF', 'CNY', 'CZK', 'DKK', 'EUR', 'GBP', 'HKD', 'HRK', 'HUF', 'IDR', 'ILS', 'INR', 'ISK', 'JPY', 'KRW', 'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RON', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'ZAR']"
@@ -178,14 +178,16 @@ import { generateUsername } from '@sogebot/ui-helpers/generateUsername';
 import { getSocket } from '@sogebot/ui-helpers/socket';
 import translate from '@sogebot/ui-helpers/translate';
 
+import { Alert } from '~/../backend/dest/database/entity/alert';
+
 export default defineComponent({
   components: { rewards: defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }) },
   setup () {
     const store = useStore<any>();
-    const events = ['follows', 'cheers', 'tips', 'subs', 'resubs', 'subcommunitygifts', 'subgifts', 'raids', 'cmdredeems', 'rewardredeems', 'promo'] as const;
+    const events: Alert['items'][number]['type'][] = ['follow', 'cheer', 'tip', 'sub', 'resub', 'subcommunitygift', 'subgift', 'raid', 'custom', 'rewardredeem', 'promo'];
 
     const dialog = ref(false);
-    const event = ref('follows' as typeof events[number]);
+    const event = ref('follow' as typeof events[number]);
     const username = ref('');
     const rewardId = ref(null as null | string);
     const rewardName = ref(null as null | string);
@@ -194,13 +196,13 @@ export default defineComponent({
     const recipient = ref('');
     const isRecipientRandomized = ref(true);
     const haveRecipient = computed(() => {
-      return ['rewardredeems', 'subgifts', 'cmdredeems'].includes(event.value);
+      return ['rewardredeem', 'subgift', 'custom'].includes(event.value);
     });
 
     const message = ref('');
     const isMessageRandomized = ref(true);
     const haveMessage = computed(() => {
-      return ['tips', 'cheers', 'resubs', 'rewardredeems', 'promo'].includes(event.value);
+      return ['tip', 'cheer', 'resub', 'rewardredeem', 'promo'].includes(event.value);
     });
 
     const amount = ref(5);
@@ -211,17 +213,17 @@ export default defineComponent({
     const currency = ref(store.state.configuration.currency);
     const amountLabel = computed(() => {
       switch (event.value) {
-        case 'raids':
+        case 'raid':
           return translate('registry.alerts.testDlg.amountOfViewers');
-        case 'cheers':
-        case 'cmdredeems':
+        case 'cheer':
+        case 'custom':
           return translate('registry.alerts.testDlg.amountOfBits');
-        case 'tips':
-          return translate('registry.alerts.testDlg.amountOfTips');
-        case 'subcommunitygifts':
+        case 'tip':
+          return translate('registry.alerts.testDlg.amountOftip');
+        case 'subcommunitygift':
           return translate('registry.alerts.testDlg.amountOfGifts');
-        case 'resubs':
-        case 'subgifts':
+        case 'resub':
+        case 'subgift':
           return translate('registry.alerts.testDlg.amountOfMonths');
         default:
           return null;
@@ -232,14 +234,14 @@ export default defineComponent({
     const service = ref('tiltify' as typeof services[number]);
     const isServiceRandomized = ref(true);
     const haveService = computed(() => {
-      return ['tips'].includes(event.value);
+      return ['tip'].includes(event.value);
     });
 
     const tiers = ['Prime', '1', '2', '3'] as const;
     const tier = ref('Prime' as typeof tiers[number]);
     const isTierRandomized = ref(true);
     const haveTier = computed(() => {
-      return ['subs', 'resubs'].includes(event.value);
+      return ['subs', 'resub'].includes(event.value);
     });
 
     const onSubmit = () => {
@@ -256,7 +258,7 @@ export default defineComponent({
         amount:   isAmountRandomized.value ? Math.floor(Math.random() * 1000) : amount.value,
         rewardId: rewardId.value,
         name:
-          event.value === 'rewardredeems'
+          event.value === 'rewardredeem'
             ? rewardName.value || ''
             : (isUsernameRandomized.value ? generateUsername() : username.value),
         tier:       isTierRandomized.value ? tiers[shuffle([0, 1, 2, 3])[0]] : tier.value,
