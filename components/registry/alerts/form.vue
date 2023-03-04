@@ -6,7 +6,7 @@
     />
 
     <v-text-field
-      v-if="event === 'cmdredeems' && model.id && model.enabled"
+      v-if="event === 'custom' && model.id && model.enabled"
       readonly
       :value="'$triggerAlert(' + model.id +')'"
       persistent-hint
@@ -177,7 +177,7 @@
           </font>
         </v-expansion-panel-content>
       </v-expansion-panel>
-      <tts v-model="model.tts"/>
+      <tts v-model="model.tts" />
       <v-expansion-panel>
         <v-expansion-panel-header>
           {{ translate('registry.alerts.image.setting') }}
@@ -306,12 +306,12 @@
 </template>
 
 <script lang="ts">
+import type { AlertInterface, CommonSettingsInterface } from '@entity/alert';
 import {
   defineAsyncComponent, defineComponent, onMounted, ref, watch,
 } from '@nuxtjs/composition-api';
 import translate from '@sogebot/ui-helpers/translate';
 
-import type { AlertInterface, CommonSettingsInterface } from '@entity/alert';
 import { EventBus } from '~/functions/event-bus';
 import {
   highlighterCSS, highlighterHTML, highlighterJS, PrismEditor,
@@ -333,13 +333,9 @@ export default defineComponent({
     animationIn:   defineAsyncComponent(() => import('~/components/registry/alerts/inputs/animation-in.vue')),
     animationOut:  defineAsyncComponent(() => import('~/components/registry/alerts/inputs/animation-out.vue')),
     layoutPicker:  defineAsyncComponent(() => import('~/components/registry/alerts/inputs/layout-picker.vue')),
-    tts:           defineAsyncComponent({
-      loader: () => import('~/components/form/expansion/tts.vue'),
-    }),
-    media:   defineAsyncComponent(() => import('~/components/registry/alerts/inputs/media.vue')),
-    rewards: defineAsyncComponent({
-      loader: () => import('~/components/rewards.vue'),
-    }),
+    tts:           defineAsyncComponent({ loader: () => import('~/components/form/expansion/tts.vue') }),
+    media:         defineAsyncComponent(() => import('~/components/registry/alerts/inputs/media.vue')),
+    rewards:       defineAsyncComponent({ loader: () => import('~/components/rewards.vue') }),
   },
   props: {
     value: Object, parent: Object, event: String,
@@ -376,9 +372,7 @@ export default defineComponent({
 
     watch(model, (val) => {
       ctx.emit('input', val);
-    }, {
-      deep: true,
-    });
+    }, { deep: true });
 
     onMounted(() => {
       EventBus.$on('alert::validate', (cb: any) => cb((form1.value as unknown as HTMLFormElement).validate()));

@@ -164,12 +164,12 @@
                           </div>
                         </v-badge>
                         <v-spacer />
-                        <v-btn icon class="ml-4" small @click="duplicateVariant(event, idx)">
+                        <v-btn icon class="ml-4" small @click="duplicateVariant(alert.id)">
                           <v-icon small color="white">
                             mdi-content-copy
                           </v-icon>
                         </v-btn>
-                        <v-btn icon small @click="removeVariant(event, idx)">
+                        <v-btn icon small @click="removeVariant(alert.id)">
                           <v-icon color="red">
                             mdi-delete-forever
                           </v-icon>
@@ -551,15 +551,20 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
   }
 };
 
-const removeVariant = (event: keyof typeof supportedEvents, idx: number) => {
-  (item.value as any)[event].splice(idx, 1);
+const removeVariant = (id: string) => {
+  item.value = {
+    ...item.value,
+    items: item.value.items.filter(o => o.id !== id),
+  };
 };
 
-const duplicateVariant = (event: keyof typeof supportedEvents, idx: number) => {
+const duplicateVariant = (id: string) => {
   console.log('Duplicating variant');
-  const newVariant = cloneDeep((item.value as any)[event][idx]);
-  newVariant.id = v4();
-  newVariant.title = '';
-  (item.value as any)[event].push(newVariant as any);
+  const newVariant = item.value.items.find(o => o.id !== id);
+  if (newVariant) {
+    newVariant.id = v4();
+    newVariant.title = '';
+    item.value.items.push(newVariant);
+  }
 };
 </script>
