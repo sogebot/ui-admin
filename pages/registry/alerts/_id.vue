@@ -398,7 +398,7 @@ const newAlert = async (event: typeof supportedEvents[number]) => {
     enableAdvancedMode: false,
     advancedMode:       {
       html: defaultHtml,
-      css:  '',
+      css:  '/* available variables {fontMessageAttributes}, {fontAttributes} */',
       js:   defaultJs,
     },
     tts: {
